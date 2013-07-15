@@ -41,7 +41,7 @@
 	<script src="js/d3.v3.min.js"></script>
 
 	<script src="js/widgets.js"></script>
-
+	<script src="js/resigClassFramework.js"></script>
 	<script src="js/eventmanager.js"></script>
 	<script src="js/widget-base.js"></script>
 	<script src="js/widget-linegraph.js"></script>
@@ -74,7 +74,7 @@
 		]; // array of line data
 		
 	
-	//<div id="widgetTarget0"><p>0. Single bar graph</p></div>
+	//<div id="widgetTarget0"><p>0. Single image with caption</p></div>
 
 	var imgConfig0 =
 		{
@@ -83,15 +83,8 @@
 			caption: "The Whitewater-Baldy Complex wildfire.",
 			actualSize: {height: 960, width: 1280}
 		};
-
-	var cimgConfig0 =
-		{
-			id: "cimg0n",
-			image: new Image(imgConfig0),
-//			captionPosition: "below"
-		};
 		
-	var cntrSize = Size.matchRatioWithHeight(450 - 40, cimgConfig0.image.actualSize);
+	var cntrSize = Size.matchRatioWithHeight(450 - 40, imgConfig0.actualSize);
 	var cntrConfig0 = 
 		{
 			node: d3.select("#widgetTarget0"),
@@ -101,9 +94,9 @@
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
-	var cimg0 = new CaptionedImage(cimgConfig0);
+	var cimg0 = new CaptionedImageII(imgConfig0);
 	
-	cntr0.append(cimg0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 1});
+	cntr0.append(cimg0);
 	
 //	<div id="widgetTarget1"><p>1. Multiple images with autoCarousel</p></div>
 	var imgConfig1 =
