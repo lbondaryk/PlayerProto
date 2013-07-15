@@ -125,9 +125,9 @@ Slider.prototype.draw = function(container)
 								var newVal = ui.value;
 								//newVal = that.format(newVal);
 								//that.display.setValue(newVal);
-								readOut.html(ui.value)
+								readOut.html(newVal)
 								that.eventManager.publish(that.changedValueEventId,
-												{value: ui.value});
+												{value: newVal});
 							}
 						} )
 				)
