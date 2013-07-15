@@ -218,6 +218,9 @@ function MultipleChoiceQuestion(config, eventManager)
 	 * @property {SelecOneQuestion} question	-This question widget
 	 * @property {string} 			questionId	-The id which identifies this question to the scoring engine.
 	 * @property {string} 			answerKey	-The answerKey associated with the selected answer.
+	 * @property {function(Object)}	responseCallback
+	 * 											-[optional] function to call with the response when it is
+	 * 											 returned by the scoring engine.
 	 */
 
 	// subscribe to events of our 'child' widgets
@@ -312,8 +315,6 @@ MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetail
 MultipleChoiceQuestion.prototype.draw = function(container)
 {
 	this.lastdrawn.container = container;
-
-	var that = this;
 	
 	// make a div to hold the select one question
 	var widgetGroup = container.append("div")
