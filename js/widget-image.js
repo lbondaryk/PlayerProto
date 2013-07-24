@@ -411,8 +411,25 @@ setLastdrawnScaleFns2ExplicitOrDefault_: function (cntrSize)
 }); //end of Image Class
 
 
-var CaptionedImageII = Image.extend({
-
+/* **************************************************************************
+ * CaptionedImage                                                       *//**
+ *
+ * The CaptionedImage widget draws an image in an SVGContainer with a caption.
+ *
+ * @constructor
+ * @implements {IWidget}
+ *
+ * @param {Object}		config			-The settings to configure this Image
+ * @param {string|undefined}
+ * 						config.id		-String to uniquely identify this Image.
+ * 										 if undefined a unique id will be assigned.
+ * @param {Image}		config.image	-Image widget to be drawn w/ a caption.
+ * @param {string}		config.captionPosition
+ *										-Where the caption should be placed in
+ *										 relation to the image.
+ *
+ ****************************************************************************/
+var CaptionedImage = Image.extend({
 init: function (config, eventManager) 
 {
 	// constuct the base
@@ -511,13 +528,13 @@ redraw: function ()
 {
 	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
 	//       by doing nothing? -mjl
-	this.image.redraw();
+	this._super();
 
 	// NOTE: for some reason foreignObject in a d3 selector doesn't work
 	//       but body does.
 	// TODO: updating the html isn't causing it to be re-rendered (at least in Chrome)
 	var captionDiv = this.lastdrawn.widgetGroup.select("g body div")
-		.html(this.image.caption);
+		.html(this.caption);
 },
 
 /* **************************************************************************
@@ -533,7 +550,7 @@ redraw: function ()
  ****************************************************************************/
 changeImage: function (URI, opt_caption)
 {
-	this.image.changeImage(URI, opt_caption);
+	this._super(URI, opt_caption);
 },
 
 /* **************************************************************************
@@ -556,7 +573,7 @@ changeImage: function (URI, opt_caption)
  ****************************************************************************/
 setScale: function (xScale, yScale)
 {
-	this.image.setScale(xScale, yScale);
+	this._super(xScale, yScale);
 },
 
 /* **************************************************************************
@@ -571,79 +588,9 @@ setScale: function (xScale, yScale)
  ****************************************************************************/
 append: function (svgWidgets)
 {
-	this.image.append(svgWidgets);
+	this._super(svgWidgets);
 		
 }, // end of CaptionedImage.append()
 
-}); //end of CaptionedImageII Class
-
-/* **************************************************************************
- * CaptionedImage                                                       *//**
- *
- * The CaptionedImage widget draws an image in an SVGContainer with a caption.
- *
- * @constructor
- * @implements {IWidget}
- *
- * @param {Object}		config			-The settings to configure this Image
- * @param {string|undefined}
- * 						config.id		-String to uniquely identify this Image.
- * 										 if undefined a unique id will be assigned.
- * @param {Image}		config.image	-Image widget to be drawn w/ a caption.
- * @param {string}		config.captionPosition
- *										-Where the caption should be placed in
- *										 relation to the image.
- *
- ****************************************************************************/
-function CaptionedImage(config, eventManager)
-{
-	/**
-	 * A unique id for this instance of the captioned image widget
-	 * @type {string}
-	 */
-	this.id = getIdFromConfigOrAuto(config, CaptionedImage);
-
-	/**
-	 * The Image which is to be drawn with a caption.
-	 * @type {Image}
-	 */
-	this.image = config.image;
-	
-	
-	/**
-	 * Where the caption should be placed in relation to the image.
-	 *   <ul>
-	 *   <li> "above" - The caption should be below the image.
-	 *   <li> "below" - The caption should be above the image.
-	 *   </ul>
-	 * @type {string}
-	 */
-	this.captionPosition = config.captionPosition;
-	
-	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
-	 */
-	this.eventManager = eventManager;
-
-	/**
-	 * Information about the last drawn instance of this image (from the draw method)
-	 * @type {Object}
-	 */
-	this.lastdrawn =
-		{
-			container: null,
-			size: {height: 0, width: 0},
-			widgetGroup: null,
-		};
-} // end of CaptionedImage constructor
-
-/**
- * Prefix to use when generating ids for instances of CaptionedImage.
- * @const
- * @type {string}
- */
-CaptionedImage.autoIdPrefix = "cimg_auto_";
-
-
+}); //end of CaptionedImage Class
 

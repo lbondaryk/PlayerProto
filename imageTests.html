@@ -94,7 +94,7 @@
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
-	var cimg0 = new CaptionedImageII(imgConfig0);
+	var cimg0 = new CaptionedImage(imgConfig0);
 	
 	cntr0.append(cimg0);
 	
@@ -357,30 +357,23 @@
 	var contTrio = new SVGContainer(bigCntrCnfg);
 	var oneOfThree = new CaptionedImage({
 			id: "oneofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_2.jpg', caption: "Aerial image near downtown West Liberty, Kentucky.",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI: 'img/ch4_2.jpg',
+			caption: "Aerial image near downtown West Liberty, Kentucky.",
+			actualSize: {height: 500, width: 500}
 			});
 			
 	var twoOfThree = new CaptionedImage({
 			id: "twoofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_3.jpg', caption: "Withering Iowa corn.",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI:'img/ch4_3.jpg',
+			caption: "Withering Iowa corn.",
+			actualSize: {height: 500, width: 500}
 			});
-	
 			
 	var threeOfThree = new CaptionedImage({
 			id: "threeofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_4.jpg', caption: "Seaside, NJ, after Hurricane Sandy",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI:'img/ch4_4.jpg',
+			caption: "Seaside, NJ, after Hurricane Sandy",
+			actualSize: {height: 500, width: 500}
 			});
 			
 	contTrio.append(oneOfThree, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.33});
