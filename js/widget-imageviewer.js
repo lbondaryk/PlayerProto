@@ -15,6 +15,12 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.ecourses.brix.ImageViewer');
+
+goog.require('pearson.ecourses.brix.Image');
+goog.require('pearson.ecourses.brix.CaptionedImage');
+goog.require('pearson.ecourses.brix.Carousel');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -44,7 +50,7 @@
  * @param {EventManager}	eventManager	-allows the widget to publish and subscribe to events
  *
  ****************************************************************************/
-function ImageViewer(config, eventManager)
+pearson.ecourses.brix.ImageViewer = function (config, eventManager)
 {
 	var that = this;
 	
@@ -52,7 +58,7 @@ function ImageViewer(config, eventManager)
 	 * A unique id for this instance of the image viewer widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, ImageViewer);
+	this.id = getIdFromConfigOrAuto(config, pearson.ecourses.brix.ImageViewer);
 
 	/**
 	 * The list of widgets presented by the Carousel in this ImageViewer.
@@ -78,7 +84,7 @@ function ImageViewer(config, eventManager)
 	 * The carousel widget used by this ImageViewer to present the images.
 	 * @type {Carousel}
 	 */
-	this.carousel = new Carousel(crslConfig, eventManager);
+	this.carousel = new pearson.ecourses.brix.Carousel(crslConfig, eventManager);
 
 	// We may want to eventually support an empty image, but for now
 	// we'll just copy the 1st image into the display image.
@@ -102,7 +108,7 @@ function ImageViewer(config, eventManager)
 	 * in the carousel.
 	 * @type {CaptionedImage}
 	 */
-	this.image = new CaptionedImage(cimgConfig);
+	this.image = new pearson.ecourses.brix.CaptionedImage(cimgConfig);
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
@@ -144,14 +150,14 @@ function ImageViewer(config, eventManager)
 			size: {height: 0, width: 0},
 			widgetGroup: null,
 		};
-} // end of ImageViewer constructor
+}; // end of ImageViewer constructor
 
 /**
  * Prefix to use when generating ids for instances of ImageViewer.
  * @const
  * @type {string}
  */
-ImageViewer.autoIdPrefix = "imgvwr_auto_";
+pearson.ecourses.brix.ImageViewer.autoIdPrefix = "imgvwr_auto_";
 
 /* **************************************************************************
  * ImageViewer.draw                                                    */ /**
@@ -163,7 +169,7 @@ ImageViewer.autoIdPrefix = "imgvwr_auto_";
  * @param {Size}	size		-The height and width in pixels for the carousel
  *
  ****************************************************************************/
-ImageViewer.prototype.draw = function(container, size)
+pearson.ecourses.brix.ImageViewer.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -210,7 +216,7 @@ ImageViewer.prototype.draw = function(container, size)
  * Redrawing the ImageViewer currently does nothing.
  *
  ****************************************************************************/
-ImageViewer.prototype.redraw = function ()
+pearson.ecourses.brix.ImageViewer.prototype.redraw = function ()
 {
 };
 
@@ -222,7 +228,7 @@ ImageViewer.prototype.redraw = function ()
  * @return {Object} the carousel item which is currently selected.
  *
  ****************************************************************************/
-ImageViewer.prototype.selectedItem = function ()
+pearson.ecourses.brix.ImageViewer.prototype.selectedItem = function ()
 {
 	return this.carousel.selectedItem();
 };
@@ -235,7 +241,7 @@ ImageViewer.prototype.selectedItem = function ()
  * @param {number}	index	-the 0-based index of the item to flag as selected.
  *
  ****************************************************************************/
-ImageViewer.prototype.selectItemAtIndex = function (index)
+pearson.ecourses.brix.ImageViewer.prototype.selectItemAtIndex = function (index)
 {
 	this.carousel.selectItemAtIndex(index);
 };
@@ -252,7 +258,7 @@ ImageViewer.prototype.selectItemAtIndex = function (index)
  * 			specified key.
  *
  ****************************************************************************/
-ImageViewer.prototype.itemKeyToIndex = function(key)
+pearson.ecourses.brix.ImageViewer.prototype.itemKeyToIndex = function(key)
 {
 	return this.carousel.itemKeyToIndex(key);
 };
@@ -266,7 +272,7 @@ ImageViewer.prototype.itemKeyToIndex = function(key)
  * @private
  *
  ****************************************************************************/
-ImageViewer.prototype.assignMissingItemKeys_ = function ()
+pearson.ecourses.brix.ImageViewer.prototype.assignMissingItemKeys_ = function ()
 {
 	this.items.forEach(function (item, i)
 					   {
@@ -287,7 +293,7 @@ ImageViewer.prototype.assignMissingItemKeys_ = function ()
  * @param {string|number}	liteKey	-The key associated with the image(s) to be highlighted.
  *
  ****************************************************************************/
-ImageViewer.prototype.lite = function (liteKey)
+pearson.ecourses.brix.ImageViewer.prototype.lite = function (liteKey)
 {
 	console.log("called ImageViewer.lite( " + liteKey + " )");
 

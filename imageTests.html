@@ -38,6 +38,7 @@
 	<script src="js/jquery-ui-1.10.2.custom.js"></script>
 	<script src="js/toc-structure.js"></script>    
 	<script src="js/eCourse-master.js"></script>    
+	<script src="js/goog.base.js"></script>    
 	<script src="js/d3.v3.min.js"></script>
 
 	<script src="js/widgets.js"></script>
@@ -76,34 +77,28 @@
 	
 	//<div id="widgetTarget0"><p>0. Single bar graph</p></div>
 
-	var imgConfig0 =
-		{
-			id: "img0n",
-			URI: 'img/ch4_1.jpg',
-			caption: "The Whitewater-Baldy Complex wildfire.",
-			actualSize: {height: 960, width: 1280}
-		};
-
 	var cimgConfig0 =
 		{
 			id: "cimg0n",
-			image: new Image(imgConfig0),
+			URI: 'img/ch4_1.jpg',
+			caption: "The Whitewater-Baldy Complex wildfire.",
+			actualSize: {height: 960, width: 1280}
 //			captionPosition: "below"
 		};
 		
-	var cntrSize = Size.matchRatioWithHeight(450 - 40, cimgConfig0.image.actualSize);
+	var cntrSize = Size.matchRatioWithHeight(450 - 40, cimgConfig0.actualSize);
 	var cntrConfig0 = 
 		{
 			node: d3.select("#widgetTarget0"),
-			maxSize: Size.matchRatioWithHeight(450 - 40, imgConfig0.actualSize),
+			maxSize: Size.matchRatioWithHeight(450 - 40, cimgConfig0.actualSize),
 			maxWid: cntrSize.width, //550,
 			maxHt: 450
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
-	var cimg0 = new CaptionedImage(cimgConfig0);
+	var cimg0 = new pearson.ecourses.brix.CaptionedImage(cimgConfig0);
 	
-	cntr0.append(cimg0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 1});
+	cntr0.append(cimg0);
 	
 //	<div id="widgetTarget1"><p>1. Multiple images with autoCarousel</p></div>
 	var imgConfig1 =
@@ -152,12 +147,12 @@
 		{
 			items:
 				[
-					new Image(imgConfig1[0]),
-					new Image(imgConfig1[1]),
-					new Image(imgConfig1[2]),
-					new Image(imgConfig1[3]),
-					new Image(imgConfig1[4]),
-					new Image(imgConfig1[5])
+					new pearson.ecourses.brix.Image(imgConfig1[0]),
+					new pearson.ecourses.brix.Image(imgConfig1[1]),
+					new pearson.ecourses.brix.Image(imgConfig1[2]),
+					new pearson.ecourses.brix.Image(imgConfig1[3]),
+					new pearson.ecourses.brix.Image(imgConfig1[4]),
+					new pearson.ecourses.brix.Image(imgConfig1[5])
 				],
 			layout: "horizontal",
 			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
@@ -169,12 +164,12 @@
 		{
 			items:
 				[
-					new Image(imgConfig1[5]),
-					new Image(imgConfig1[4]),
-					new Image(imgConfig1[3]),
-					new Image(imgConfig1[2]),
-					new Image(imgConfig1[1]),
-					new Image(imgConfig1[0])
+					new pearson.ecourses.brix.Image(imgConfig1[5]),
+					new pearson.ecourses.brix.Image(imgConfig1[4]),
+					new pearson.ecourses.brix.Image(imgConfig1[3]),
+					new pearson.ecourses.brix.Image(imgConfig1[2]),
+					new pearson.ecourses.brix.Image(imgConfig1[1]),
+					new pearson.ecourses.brix.Image(imgConfig1[0])
 				],
 			layout: "horizontal",
 			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
@@ -190,8 +185,8 @@
 		};
 
 	var cntr1 = new SVGContainer(cntrConfig1);
-	var crsl1 = new Carousel(crslConfig1, eventManager);
-	var crsl2 = new Carousel(crslConfig2, eventManager);
+	var crsl1 = new pearson.ecourses.brix.Carousel(crslConfig1, eventManager);
+	var crsl2 = new pearson.ecourses.brix.Carousel(crslConfig2, eventManager);
 	
 	cntr1.append(crsl1, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.45, widthPercent: 1});
 	cntr1.append(crsl2, {topPercentOffset: 0.55, leftPercentOffset: 0, heightPercent: 0.45, widthPercent: 1});
@@ -207,16 +202,16 @@
 		{
 			items:
 				[
-					new Image(imgConfig1[3]),
-					new Image(imgConfig1[4]),
-					new Image( 
+					new pearson.ecourses.brix.Image(imgConfig1[3]),
+					new pearson.ecourses.brix.Image(imgConfig1[4]),
+					new pearson.ecourses.brix.Image( 
 						{
 							URI: 'img/ch4_3.jpg',
 							caption: "Withering crops in Iowa summer heat.",
 							preserveAspectRatio: "xMidYMid",
 							actualSize: {height: 550, width: 550},
 						}),
-					new Image(imgConfig1[5])
+					new pearson.ecourses.brix.Image(imgConfig1[5])
 				],
 		};
 
@@ -228,7 +223,7 @@
 		};
 
 	var cntr4 = new SVGContainer(cntrConfig4);
-	var imgvwr4 = new ImageViewer(imgvwrConfig4, eventManager);
+	var imgvwr4 = new pearson.ecourses.brix.ImageViewer(imgvwrConfig4, eventManager);
 	
 	cntr4.append(imgvwr4, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 1});
 	
@@ -308,7 +303,7 @@
 						   label: "Strata dividing line" },
 		};
 
-	var img5 = new Image(imgConfig5);
+	var img5 = new pearson.ecourses.brix.Image(imgConfig5);
 	var lg5 = new LineGraph(lgConfig5);
 	lg5.append(img5, "before");
 	var cntr5 = new SVGContainer(cntrConfig5);
@@ -362,32 +357,26 @@
 		};
 		
 	var contTrio = new SVGContainer(bigCntrCnfg);
-	var oneOfThree = new CaptionedImage({
+	var oneOfThree = new pearson.ecourses.brix.CaptionedImage({
 			id: "oneofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_2.jpg', caption: "Aerial image near downtown West Liberty, Kentucky.",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI:'img/ch4_2.jpg',
+			caption: "Aerial image near downtown West Liberty, Kentucky.",
+			actualSize: {height: 500, width: 500}
 			});
 			
-	var twoOfThree = new CaptionedImage({
+	var twoOfThree = new pearson.ecourses.brix.CaptionedImage({
 			id: "twoofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_3.jpg', caption: "Withering Iowa corn.",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI:'img/ch4_3.jpg',
+			caption: "Withering Iowa corn.",
+			actualSize: {height: 500, width: 500}
 			});
 	
 			
-	var threeOfThree = new CaptionedImage({
+	var threeOfThree = new pearson.ecourses.brix.CaptionedImage({
 			id: "threeofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_4.jpg', caption: "Seaside, NJ, after Hurricane Sandy",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI:'img/ch4_4.jpg',
+			caption: "Seaside, NJ, after Hurricane Sandy",
+			actualSize: {height: 500, width: 500}
 			});
 			
 	contTrio.append(oneOfThree, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.33});
