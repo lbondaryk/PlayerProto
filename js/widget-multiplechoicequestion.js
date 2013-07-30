@@ -171,7 +171,7 @@ function MultipleChoiceQuestion(config, eventManager)
 	var submitBtnConfig =
 	{
 		id: this.id + "_sbmtBtn",
-		text: "Select an answer above",
+		text: "Select an answer",
 		enabled: false
 	};
 

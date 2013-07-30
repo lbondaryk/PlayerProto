@@ -18,13 +18,8 @@
  ****************************************************************************/
 
 // Sample SubmitManager constructor configuration
-(function()
-{
-	var submit1Config = {
-		sequenceNodeID: 'ThrowTheBall',
-		container: q1Button.lastdrawn.container
-		};
-});
+// NA - information about the container to return to and the question ID is
+// passed from the question type, e.g. multiple choice. No config.
 
 /* **************************************************************************
  * SubmitManager                                                       */ /**
@@ -48,7 +43,7 @@
  * is a callback associated w/ the request.
  *
  ****************************************************************************/
-function SubmitManager(config, eventManager)
+function SubmitManager(eventManager)
 {
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
