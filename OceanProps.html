@@ -94,8 +94,8 @@
 							
 var svg3D = new SVGContainer({
 		node: d3.select("#oceanTemp"),
-		maxWid: 850,
-		maxHt: 650
+		maxWid: 1000,
+		maxHt: 475
 	});
 	
 var layers = new ImageViewer({
@@ -103,47 +103,105 @@ var layers = new ImageViewer({
 			[
 				new Image({
 				URI: 'img/oceans/oceanTemp0m.png',
-				caption: "",
+				caption: "Ocean Temperature at 0 m (surface)",
 				actualSize: {height: 530, width: 930}
 				}),
 				new Image({
 				URI: 'img/oceans/oceanTemp500m.png',
-				caption: "",
+				caption: "Ocean Temperature at 500 m",
 				actualSize: {height: 530, width: 930}
 				}),
 				new Image({
 				URI: 'img/oceans/oceanTemp1000m.png',
-				caption: "",
+				caption: "Ocean Temperature at 1000 m",
 				actualSize: {height: 530, width: 930}
 				}),
 				new Image({
 				URI: 'img/oceans/oceanTemp2500m.png',
-				caption: "",
+				caption: "Ocean Temperature at 2500 m",
 				actualSize: {height: 530, width: 930}
 				})
 			],
 	}, eventManager);
 
-svg3D.append(layers);
+svg3D.append(layers, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.6});
 							
-var labels = new LabelGroup(
+var labels1 = new LabelGroup(
 		{type: "latin-upper",
 		labels: 	
 		  [	
-			{content: "1", xyPos:[0.5, 0.58], width: 0, key: "A"},
-			{content: "2", xyPos:[0.78, 0.58], width: 0, key: "B"},
-			{content: "3", xyPos:[0.62, 0.44], width: 0, key: "C"},
-			{content: "", xyPos:[0.77, 0.25], width: 0, key: "D"},
+			{content: "", xyPos:[0.5, 0.67], width: 0, key: "A"},
+			{content: "", xyPos:[0.78, 0.67], width: 0, key: "B"},
+			{content: "", xyPos:[0.62, 0.48], width: 0, key: "C"},
+			{content: "", xyPos:[0.79, 0.25], width: 0, key: "D"},
 			{content: "", xyPos:[0.33, 0.2], width: 0, key: "E"},
 		  ]
 		}, eventManager);
 		
 	// write the labels onto the graph in the local coordinates, inside the 
 	// data area
-	svg3D.append(labels);
+	layers.image.append(labels1);
+var labels2 = new LabelGroup(
+		{type: "latin-upper",
+		labels: 	
+		  [	
+			{content: "", xyPos:[0.5, 0.67], width: 0, key: "A"},
+			{content: "", xyPos:[0.78, 0.67], width: 0, key: "B"},
+			{content: "", xyPos:[0.62, 0.48], width: 0, key: "C"},
+			{content: "", xyPos:[0.79, 0.25], width: 0, key: "D"},
+			{content: "", xyPos:[0.33, 0.2], width: 0, key: "E"},
+		  ]
+		}, eventManager);
+
+var labels3 = new LabelGroup(
+		{type: "latin-upper",
+		labels: 	
+		  [	
+			{content: "", xyPos:[0.5, 0.67], width: 0, key: "A"},
+			{content: "", xyPos:[0.78, 0.67], width: 0, key: "B"},
+			{content: "", xyPos:[0.62, 0.48], width: 0, key: "C"},
+			{content: "", xyPos:[0.79, 0.25], width: 0, key: "D"},
+			{content: "", xyPos:[0.33, 0.2], width: 0, key: "E"},
+		  ]
+		}, eventManager);;
+
+
+var salImage = new CaptionedImage ({
+			image: new Image({
+				URI: 'img/oceans/oceanSalinity.png',
+				caption: "Ocean Salinity at 0 m (surface)",
+				actualSize: {height: 530, width: 930}
+				}),
+			captionPosition: "below"
+		}
+	)
+
+var oxyImage = new CaptionedImage ({
+			image: new Image({
+				URI: 'img/oceans/oceanOxygen.png',
+				caption: "Ocean Oxygen Concentration at 0 m (surface)",
+				actualSize: {height: 530, width: 930}
+				}),
+			captionPosition: "below"
+		}
+	)
+
+svg3D.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+
+salImage.append(labels2);
+
+svg3D.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+
+oxyImage.append(labels3);
+
 
 eventManager.subscribe(profiles.changedValueEventId, carouselUpdate);
 eventManager.subscribe(layers.selectedEventId, dropdownUpdate);
+
+eventManager.subscribe(labels1.selectedEventId, labelLite);
+eventManager.subscribe(labels2.selectedEventId, labelLite);
+eventManager.subscribe(labels3.selectedEventId, labelLite);
+
 
 function carouselUpdate (eventDetails)
 {
@@ -158,16 +216,7 @@ function dropdownUpdate ()
 	profiles.setSelectedIndex(newval);
 }
 
-// draw the highlightable dates table
-	var clickDates = new Callouts({
-		show: "all",
-		headers: ["Date", "CO<sub>2</sub> Concentration (ppm)" ],
-		textBits: [
-		{cols: ["a question"]},
-			]
-	}, eventManager);
-	
-	//clickDates.draw(d3.select("#dates"));
+ 
 /* configure and draw the SVG container and the graph of the multiple co2 data
 
 	var cont1 = new SVGContainer({
@@ -218,7 +267,7 @@ function dropdownUpdate ()
 	// graph is written to the bottom 80% of SVG area
 	lines.append([marks, legLines]);
 
-*/
+
 	
 	
 	
@@ -229,8 +278,32 @@ function dropdownUpdate ()
 	eventManager.subscribe(lines.selectedEventId,
 						   handleHighlight);
 
-
+*/
 	
+
+/************************************************************************
+* labelLite			                                            *//**
+*
+* handleInputValueChanged is called from the event handler for one of
+* the input widgets when the user changes its value. It updates the
+* given matching input widget's value to match the new value and then
+* updates the bar chart.
+*
+* @param eventDetails			These are the keyed values returned by 
+*								the event, in this case, a selection
+*								(click).
+*************************************************************************/
+	function labelLite(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+	
+		labels1.lite(eventDetails.selectKey);
+		labels2.lite(eventDetails.selectKey);
+		labels3.lite(eventDetails.selectKey);
+		
+	}
+
 /************************************************************************
 * handleHighlight                                            *//**
 *
@@ -243,7 +316,7 @@ function dropdownUpdate ()
 *								the event, in this case, a selection
 *								(click).
 *************************************************************************/
-	function handleHighlight(eventDetails)
+/*	function handleHighlight(eventDetails)
 	{
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
@@ -252,41 +325,8 @@ function dropdownUpdate ()
 		legLines.lite(eventDetails.selectKey);
 		
 	}
+*/
 
-// Handle highlight clicks on the markers and table
-	eventManager.subscribe(clickDates.selectedEventId,
-						   handleSelectionChanged);
-	eventManager.subscribe(marks.selectedEventId,
-						   handleSelectionChanged);
-
- 
-//TEST: set the start highlight state of 0 index by calling the 
-//handler with a hard-set index of 0.  This should result in the
-//first label getting highlighted and the first callout being displayed.
-	handleSelectionChanged({selectKey: '0'});
-	
-/************************************************************************
-* handleSelectionChanged                                            *//**
-*
-* handleInputValueChanged is called from the event handler for one of
-* the input widgets when the user changes its value. It updates the
-* given matching input widget's value to match the new value and then
-* updates the bar chart.
-*
-* @param eventDetails			These are the keyed values returned by 
-*								the event, in this case, a selection
-*								(click).
-*************************************************************************/
-	function handleSelectionChanged(eventDetails)
-	{
-		//Handler needs to get written into each page, 
-		//each widget will have it's own way of responding  
-		//LabelLite should be a method of Labels, once Labels
-		//is written as a constructor
-		clickDates.lite(eventDetails.selectKey);
-		marks.lite(eventDetails.selectKey);
-		
-	}
 	
 	
 	</script>
