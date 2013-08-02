@@ -195,7 +195,7 @@ svg3D.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPe
 oxyImage.append(labels3);
 
 
-eventManager.subscribe(profiles.changedValueEventId, carouselUpdate);
+eventManager.subscribe(profiles.selectedEventId, carouselUpdate);
 eventManager.subscribe(layers.selectedEventId, dropdownUpdate);
 
 eventManager.subscribe(labels1.selectedEventId, labelLite);
@@ -206,14 +206,14 @@ eventManager.subscribe(labels3.selectedEventId, labelLite);
 function carouselUpdate (eventDetails)
 {
 	 
-	layers.selectItemAtIndex(eventDetails.selectedIndex);
+	layers.selectItemAtIndex(eventDetails.selectKey);
 }
 
 function dropdownUpdate ()
 {
 	var newImage = layers.selectedItem();
 	var newval = layers.itemKeyToIndex(newImage.key);
-	profiles.setSelectedIndex(newval);
+	profiles.lite(newval);
 }
 
  

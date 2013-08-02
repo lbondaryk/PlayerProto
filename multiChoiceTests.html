@@ -20,22 +20,20 @@
                 <h2 class="setTitle"></h2>
 				<div><p>0. Radio button w/ 4 answers</p>
 					<p>Q1: Why?</p>
-					<div id="rb-test" style="margin: 0 0 15px 15px;"/>
-						<p>In order to manually test that selecting an answer correctly
+					<div id="rb-test" style="margin: 0 0 15px 15px;"></div>
+					<p>In order to manually test that selecting an answer correctly
 						publishes the selected event, we have an event handler that displays
 						the answer key of the selection. It should change as you manually
 						select an answer.</p>
-						<p>The answer key selected is: <b id="rb-test-key">none</b>.</p>
-						<p id="rb-test-resp"/>
+					<p>The answer key selected is: <b id="rb-test-key">none</b>.</p>
+					<p id="rb-test-resp"></p>
 				</div>
 				<hr />
 				<div id="radioRnd"><p>Q1-test. Multiple Choice question, randomized</p></div>
 				<hr />
 				<div id="radioOrd"><p>Q2-test. Multiple Choice question, nonrandomized</p></div>
 				<hr />
-                <div id="selectOrd"><p>Q3-test. Multiple Choice question, dropdown</p></div>
-
-			</div>
+            </div>
 			<div class="span6 rightCol">
 				<div id="graphIn"><p>4. Graphs as responses (radio buttons containing widgets)</p></div>
 				<hr />
@@ -148,19 +146,6 @@
 	Q2.draw(d3.select("#radioOrd"));
 
 	submitManager.handleRequestsFrom(Q2);
- 
-	//<div id="selectOrd"><p>3. Multiple Choice question, dropdown</p></div>
-
-	var Q3 = new MultipleChoiceQuestion({
-			id: "Q3",
-			question: "Why?",
-			choices: Q1Choices,
-			order: "ordered",
-			widget: SelectGroup,
-			widgetConfig: {},
-		}, eventManager);
-
-	Q3.draw(d3.select("#selectOrd"));
  
 
 
