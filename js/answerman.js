@@ -48,6 +48,11 @@ var answerMan = function (sequenceNode, studAnswer)
 	//response.  Should be either 0 for wrong, 1 for right, or anything else for
 	//partial credit for the fallthrough case.
 				
+	//note that the current implementation of the submitmanager uses the score
+	//as an array index, and so these must be integers.  Not sure if we'll want
+	//to keep doing that in the long term, but eventually we'll need some kind of 
+	//sliding scale functionality that allows some answers to be more correct
+	//and some less -lb
 	switch(ansKey)
 		{
 		case 1:
@@ -66,8 +71,8 @@ var answerMan = function (sequenceNode, studAnswer)
 			
 		//fallthrough case for partially correct answers.
 		default:
-  			scored.score = 0.5;
-			scored.response =" Sorta kinda.";
+  			scored.score = 2;
+			//scored.response =" Sorta kinda.";
   			break;
 		}
 	

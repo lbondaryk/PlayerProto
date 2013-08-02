@@ -98,7 +98,7 @@ var activities = {
 				response:  "I believe you are thinking of vampires.",
 				},
 		},
-	ThrowTheBall: { 
+	"ThrowTheBall": { 
 		question: "Set the initial velocity and angle of the throw such that the player makes the basket.",
 		"notright": {
 				content: "",
@@ -109,6 +109,24 @@ var activities = {
 				content: "v<sub>i</sub> = 7.3, &theta; = 59&deg;",
 				score: 1,
 				response:  "Right on target.",
+				}
+		},
+	"LabelsMC": { 
+		question: "Which of these is on top.",
+		"top": {
+				content: "A",
+				score: 1,
+				response: "Glad you know which end is up."
+				},
+		"middle": {
+				content: "B",
+				score: 0.5,
+				response:  "Try going all the way up.",
+				},
+		"bottom": {
+				content: "C",
+				score: 0,
+				response:  "You seem to be upside down.",
 				}
 		},
 	"http://hub.paf.pearson.com/resources/sequences/123/nodes/1": {

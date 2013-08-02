@@ -150,6 +150,8 @@ function MultipleChoiceQuestion(config, eventManager)
 
 	var choices = config.choices;
 
+	this.svgSize = config.svgSize;
+
 	if (config.order === undefined || config.order === "randomized")
 	{
 		// clone the array before we rearrange it so we don't modify the
@@ -329,10 +331,28 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 		.text(this.question);
 	
 	var choiceWidgetCntr = widgetGroup.append("div")
-		.attr("class", "choices");
+		.attr("class", "choices")
+		.attr("id", "choice_id");
 
-	this.choiceWidget.draw(choiceWidgetCntr);
+	// check if it's an SVG widget with a size, in which case
+	// create 
 
+	if (Array.isArray(this.svgSize)){
+
+		var mcSVG = new SVGContainer({
+			node: d3.select("#choice_id"),
+			maxWid: this.svgSize[0],
+			maxHt: this.svgSize[1]
+		});
+
+		mcSVG.append(this.choiceWidget);
+	}
+	
+	else {
+		this.choiceWidget.draw(choiceWidgetCntr);
+	}
+
+	// draw the submit button below
 	var submitButtonCntr = widgetGroup.append("div")
 		.attr("class", "submit");
 

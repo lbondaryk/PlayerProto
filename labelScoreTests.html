@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title class="setTitle"></title>
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<meta content="eCourses Author, Title" name="description">   	
+    <!-- Bootstrap -->
+  
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+	<link href="css/widgets.css" rel="stylesheet">
+	<link href="css/learning-objective.css" rel="stylesheet">
+	<link href="css/module-opener.css" rel="stylesheet">
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	</head>
+	<body>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span6 leftCol">
+                <h2 class="setTitle"></h2>
+				<div id="multiChoice"><p>0. Labels as Multiple Choice inputs</p>
+				</div>
+				<div id="multiSel"><p>1. Labels as multiselect</p></div>
+	              
+			</div>
+			<div class="span6 rightCol">
+				<div id="labelsDrop">
+					<p>2. Labels as dropdowns</p>
+                </div>
+				<div id="dragnDrop"><p>3. Labels as DragnDrop</p></div>
+			</div>
+		</div>
+	</div>
+    
+    
+	<script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
+    <script src="js/eventmanager.js"></script>
+	<script src="js/d3.v3.min.js"></script>
+	<script src="js/widget-base.js"></script>
+	<script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+	<script src="js/widget-button.js"></script>
+	<script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-multiplechoicequestion.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+<script>
+
+	var eventManager = new EventManager();
+	var submitManager = new SubmitManager(eventManager);
+
+	var Q1 = new MultipleChoiceQuestion({
+			questionId: "LabelsMC",
+			question: "Which of these is at the top?",
+			svgSize: [300,300],
+			choices: [	
+					{content: "A", xyPos:[0.5, 0.9], width: 0, answerKey: "top"},
+					{content: "B", xyPos:[0.78, 0.5], width: 0, answerKey: "middle"},
+					{content: "C", xyPos:[0.33, 0.2], width: 0, answerKey: "bottom"},
+		  			],
+			order: "ordered",
+			widget: LabelGroup,
+			widgetConfig: {
+				 type: "latin-upper",
+				 question: true
+			},
+		}, eventManager);
+
+	Q1.draw(d3.select("#multiChoice"));
+ 
+	submitManager.handleRequestsFrom(Q1);
+		
+	
+</script>
+</body>
+</html>

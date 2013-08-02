@@ -234,13 +234,13 @@ SubmitManager.appendResponseWithDefaultFormatting = function (container, respons
 	var responseFormat = {
 			correct: {
 				icon: "icon-ok-sign",
-				answerPrefix: "Congratulations, Your answer, ",
+				answerPrefix: "Congratulations, your answer, ",
 				answerSuffix:  ", is correct. ",
 				responseClass: "alert-success"
 			},
 			incorrect: {
 				icon: "icon-remove",
-				answerPrefix: "Sorry, Your answer, ",
+				answerPrefix: "Sorry, your answer, ",
 				answerSuffix:  ", is not correct. ",
 				responseClass: "alert-error"
 			},
@@ -257,7 +257,7 @@ SubmitManager.appendResponseWithDefaultFormatting = function (container, respons
 			}
 		};
 
-	var scoreAnsType = ["unknown", "incorrect", "correct"];
+	var scoreAnsType = ["unknown", "incorrect", "correct", "partial"];
 
 	var ansType = "unknown";
 	if (typeof responseDetails.score === "number")

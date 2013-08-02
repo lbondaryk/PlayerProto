@@ -73,6 +73,7 @@
  * @param {string}		config.type		-string specifying "bullets" for dots, "numbered"
  *										 for dots and #, "alpha" for letters, or anything 
  *										 else for just labels
+ * @param {boolean}		config.question		-flag specifying whether to use as a question
  * @param {EventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
@@ -97,7 +98,10 @@ function LabelGroup(config, eventManager)
 	 *   // here are 2 traces, 1st w/ 2 points, 2nd with 3 points:
 	 *   [ [{x: -1.2, y: 2.0} {x: 2, y: 3.1}], [{x: -2, y: -2}, {x: 0, y: 0}, {x: 2, y: 2}] ]
 	 */
-	this.labels = config.labels;
+
+	 // if we are using labels as a question input, get the labels from the choices property.
+	 // otherwise get them from the correctly named labels property
+	this.labels = config.question ? config.choices : config.labels;
 
 	/**
 	 * The type specifies an adornment on each label or no adornment if it is not specified.
@@ -287,12 +291,16 @@ LabelGroup.prototype.draw = function(container, size)
 				function (d, i)
 				{
 					that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+					that.lite(d.key);
 				});
 				
 	this.lastdrawn.labelCollection = labelsContainer.selectAll("g.widgetLabel");
 
 }; // end of LabelGroup.draw()
 
+LabelGroup.prototype.redraw = function () {
+
+};
 /* **************************************************************************
  * LabelGroup.setScale                                                 */ /**
  *
@@ -347,6 +355,22 @@ LabelGroup.prototype.lite = function (liteKey)
 		console.log("No key '" + liteKey + "' in Labels group " + this.id );
 	}
 }; // end of LabelGroup.lite()
+
+/* **************************************************************************
+ * LabelGroup.selectedItem                                         */ /**
+ *
+ * Return the selected item's data in the select group.
+ *
+ * @return {Object} the select group item data which is currently selected.
+ *
+ ****************************************************************************/
+LabelGroup.prototype.selectedItem = function ()
+{
+	
+	var inputCollection = this.lastdrawn.widgetGroup;
+	var selectedInput = inputCollection.selectAll(".lit");
+	return !selectedInput.empty() ? selectedInput.datum() : null;
+};
 
 /* **************************************************************************
  * LabelGroup.setLastdrawnScaleFns2ExplicitOrDefault_                  */ /**

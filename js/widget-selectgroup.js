@@ -21,7 +21,8 @@
 	[
 		{
 			content: "Dewatering and hydrofracking",
-			answerKey: "correct"
+			answerKey: "correct",
+			key: "litemeUp"
 		},
 		{
 			content: "Dewatering and mining",
@@ -275,15 +276,14 @@ SelectGroup.prototype.lite = function (liteKey)
  ****************************************************************************/
 SelectGroup.prototype.selectedItem = function ()
 {
-	var selectedInputSelector = "div.widgetSelectGroup select[name='" + this.id + "']:selected";
-
-
 	var inputCollection = this.lastdrawn.widgetGroup.select("select");
+	// selectedIndex is 0-based, but nth child is 1-based, so add 1
 	var index = inputCollection[0][0].selectedIndex + 1;
 	var selectedInput = inputCollection.selectAll(":nth-child(" + index + ")");
 	
 	return !selectedInput.empty() ? selectedInput.datum() : null;
 };
+
 /* **************************************************************************
  * SelectGroup.selectItemAtIndex                                      */ /**
  *
