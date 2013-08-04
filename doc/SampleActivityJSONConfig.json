@@ -1,0 +1,52 @@
+{
+	"activityId": <PAF activity guid>,
+	"containerConfig":
+		[
+			{
+				"containerId": <ID of page container, perhaps div or iframe or object element id that is the target of this configuration>,
+				"brixConfig":
+					[
+						{
+							"bricId": <unique id for this bric in this container>,
+							"bricType": "Button"|"Linegraph"|"Callout"|"CaptionedImage"|"ImageViewer"|...etc,
+							"config":
+								{
+									... config for bric type specified
+								},
+							"configFixup":
+							{
+								<[optional] object describing runtime modifications to the config, perhaps
+									adding properties referencing a previously created bric>
+							}
+						},
+						{
+							"bricType": ...
+							"config": ...
+						},
+						...
+					],
+				"cementConfig":
+					[
+						{
+							"cementId": <unique id for this cement in this container>,
+							"cementType": "BrixEventHandler"|"DataConverter"|"Action"|...etc,
+							"config":
+								{
+									... config for cement type specified
+								}
+						},
+						{
+							"cementType": ...
+							"config": ...
+						},
+						...
+					]
+			},
+			{
+				"containerId": ...
+				"brixConfig": ...
+				"cementConfig": ...
+			},
+			...
+		]
+}
