@@ -14,10 +14,10 @@
 									... config for bric type specified
 								},
 							"configFixup":
-							{
-								<[optional] object describing runtime modifications to the config, perhaps
-									adding properties referencing a previously created bric>
-							}
+								{
+									<[optional] object describing runtime modifications to the config, perhaps
+										adding properties referencing a previously created bric>
+								}
 						},
 						{
 							"bricType": ...
@@ -37,6 +37,27 @@
 						},
 						{
 							"cementType": ...
+							"config": ...
+						},
+						...
+					]
+				"hookupActions":
+					[
+						{
+							"actionType": "method-call", /* the method-call handles a lot of the actions needed, but I expect there are other types of actions */
+							"config":
+								{
+									"objectId": "Invoker-GUID",
+									"methodName": "registerObject",
+									"args":
+										[
+											{ "type": "static", "value": "barChart_GUID" }, /* static args use the value specified here */
+											{ "type": "bric-obj-ref", "id": "barChart_GUID" } /* obj refs are replaced w/ the object created above w/ the specified id */
+										]
+								}
+						},
+						{
+							"actionType": ...
 							"config": ...
 						},
 						...

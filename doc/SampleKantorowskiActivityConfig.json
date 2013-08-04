@@ -1,8 +1,8 @@
 {
 	/* 
-		ActivityConfig JSON for the Kanrorowski.
+		ActivityConfig JSON for the Kantorowski.
 
-		Based on Mikes initial draft.
+		Based on Mike's initial draft.
 
 		Within the comments there are topics surrounded by double brackets.
 		Those are topic related to that comment
@@ -34,16 +34,32 @@
 							*/
 						}
 					}
-				]
+				],
 			"cementConfig":
 				[
 					/* Mike's Invoker, so the levo slide gets changed by dextro's update */ 
 					{
 						"cementId": "Invoker-GUID",
+						"cementType": "Invoker",
 						"config":
 							{
 								"topic": "invoke", /* by default the topic will be 'invoke' */
-								"references": ["levo_GUID"] /*object(s) registered to the Invoker */
+							}
+					}
+				],
+			"hookupActions":
+				[
+					{
+						"actionType": "method-call",
+						"config":
+							{
+								"objectId": "Invoker-GUID", /* If the cement id's may be the same as a brix id we'll need to identify type */
+								"methodName": "registerObject",
+								"args":
+									[
+										{ "type": "static", "value": "levo_GUID" },
+										{ "type": "bric-obj-ref", "id": "levo_GUID" }
+									]
 							}
 					}
 				]
@@ -75,15 +91,29 @@
 							*/
 						}
 					}
-				]
+				],
 			"cementConfig":
 				[
 					/* Mike's Invoker, so the dextro slide gets changed by levo's update */ 
 					{
 						"cementId": "Invoker-GUID",
+						"cementType": "Invoker",
+						"config": {}
+					}
+				],
+			"hookupActions":
+				[
+					{
+						"actionType": "method-call",
 						"config":
 							{
-								"references": ["dextro_GUID"] /* objects registered to the Invoker */
+								"objectId": "Invoker-GUID", /* If the cement id's may be the same as a brix id we'll need to identify type */
+								"methodName": "registerObject",
+								"args":
+									[
+										{ "type": "static", "value": "dextro_GUID" },
+										{ "type": "bric-obj-ref", "id": "dextro_GUID" }
+									]
 							}
 					}
 				]
@@ -97,7 +127,7 @@
 						"bricType": "MarkerGroup",
 						"config":
 							{
-								"marks":  65
+								"marks": 65
 							},
 					},
 					{
@@ -125,10 +155,6 @@
 											   orientation: "left",
 											    }
 							},
-						"configFixup":
-						{
-							"append": "barMarks_GUID" /* translation of: Bars.append(barMarks) */
-						}
 					},
 					{
 						"bricId": "barContainer_GUID",
@@ -143,19 +169,8 @@
 								maxWid: 450,
 								maxHt: 400
 							},
-						"configFixup":
-						{
-							"append":
-								{
-									"objectId": "barChart_GUID", 
-									topPercentOffset: 0.2, 
-									leftPercentOffset: 0, 
-									heightPercent: 0.8, 
-									widthPercent: 1
-								}
-						}
 					},
-				]
+				],
 			"cementConfig":
 				[
 					/* Just in case barchart object is invoked. */ 
@@ -253,6 +268,51 @@
 								"
 							}
 					},
+				],
+			"hookupActions":
+				[
+					{
+						"actionType": "method-call",
+						"config":
+							{
+								"objectId": "Invoker-GUID",
+								"methodName": "registerObject",
+								"args":
+									[
+										{ "type": "static", "value": "barChart_GUID" },
+										{ "type": "bric-obj-ref", "id": "barChart_GUID" }
+									]
+							}
+					},
+					{
+						"actionType": "method-call",
+						"config":
+							{
+								"objectId": "barChart_GUID",
+								"methodName": "append",
+								"args":
+									[
+										{ "type": "bric-obj-ref", "id": "barMarks_GUID" }
+									]
+							}
+					},
+					{
+						"actionType": "method-call",
+						"config":
+							{
+								"objectId": "barContainer_GUID",
+								"methodName": "append",
+								"args":
+									[
+										{ "type": "bric-obj-ref", "id": "barChart_GUID" },
+										{ "type": "static",
+										  "value": { topPercentOffset: 0.2, 
+													 leftPercentOffset: 0, 
+													 heightPercent: 0.8, 
+													 widthPercent: 1 } }
+									]
+							}
+					}
 				]
 		}, 
 		{
