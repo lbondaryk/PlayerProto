@@ -1,6 +1,6 @@
 /* **************************************************************************
  * $Workfile:: widget-multiplechoicequestion.js                             $
- * **********************************************************************//**
+ * *********************************************************************/ /**
  *
  * @fileoverview Implementation of the MultipleChoiceQuestion widget.
  *
@@ -10,7 +10,7 @@
  * Created on		May 29, 2013
  * @author			Michael Jay Lippert
  *
- * Copyright (c) 2013 Pearson, All rights reserved.
+ * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
@@ -80,10 +80,9 @@
 
 
 /* **************************************************************************
- * MultipleChoiceQuestion                                               *//**
+ * MultipleChoiceQuestion                                              */ /**
  *
- * The MultipleChoiceQuestion widget displays a question and a set of possible
- * answers one of which must be selected and submitted to be scored.
+ * Constructor function for MultipleChoiceQuestion brix.
  *
  * @constructor
  * @implements {IWidget}
@@ -112,6 +111,10 @@
  * @param {EventManager}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
+ *
+ * @classdesc
+ * The MultipleChoiceQuestion widget displays a question and a set of possible
+ * answers one of which must be selected and submitted to be scored.
  *
  ****************************************************************************/
 function MultipleChoiceQuestion(config, eventManager)
@@ -147,6 +150,8 @@ function MultipleChoiceQuestion(config, eventManager)
 
 	var choices = config.choices;
 
+	this.svgSize = config.svgSize;
+
 	if (config.order === undefined || config.order === "randomized")
 	{
 		// clone the array before we rearrange it so we don't modify the
@@ -168,7 +173,7 @@ function MultipleChoiceQuestion(config, eventManager)
 	var submitBtnConfig =
 	{
 		id: this.id + "_sbmtBtn",
-		text: "Select an answer above",
+		text: "Select an answer",
 		enabled: false
 	};
 
@@ -247,7 +252,7 @@ function MultipleChoiceQuestion(config, eventManager)
 MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleSubmitRequested_                        *//**
+ * MultipleChoiceQuestion.handleSubmitRequested_                       */ /**
  *
  * Handle the pressed event from the submit button which means that we want
  * to fire the submit answer requested event.
@@ -269,7 +274,7 @@ MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleAnswerSelected_                         *//**
+ * MultipleChoiceQuestion.handleAnswerSelected_                        */ /**
  *
  * Handle the selected event from the choice widget which means that the
  * submit button can be enabled.
@@ -283,7 +288,7 @@ MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleSubmitResponse_                         *//**
+ * MultipleChoiceQuestion.handleSubmitResponse_                        */ /**
  *
  * Handle the response to submitting an answer.
  *
@@ -303,7 +308,7 @@ MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetail
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.draw                                          *//**
+ * MultipleChoiceQuestion.draw                                         */ /**
  *
  * Draw this MultipleChoiceQuestion in the given container.
  *
@@ -326,10 +331,28 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 		.text(this.question);
 	
 	var choiceWidgetCntr = widgetGroup.append("div")
-		.attr("class", "choices");
+		.attr("class", "choices")
+		.attr("id", "choice_id");
 
-	this.choiceWidget.draw(choiceWidgetCntr);
+	// check if it's an SVG widget with a size, in which case
+	// create 
 
+	if (Array.isArray(this.svgSize)){
+
+		var mcSVG = new SVGContainer({
+			node: d3.select("#choice_id"),
+			maxWid: this.svgSize[0],
+			maxHt: this.svgSize[1]
+		});
+
+		mcSVG.append(this.choiceWidget);
+	}
+	
+	else {
+		this.choiceWidget.draw(choiceWidgetCntr);
+	}
+
+	// draw the submit button below
 	var submitButtonCntr = widgetGroup.append("div")
 		.attr("class", "submit");
 
@@ -343,7 +366,7 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 }; // end of MultipleChoiceQuestion.draw()
 
 /* **************************************************************************
- * MultipleChoiceQuestion.selectedItem                                  *//**
+ * MultipleChoiceQuestion.selectedItem                                 */ /**
  *
  * Return the selected choice from the choice widget or null if nothing has been
  * selected.
@@ -357,7 +380,7 @@ MultipleChoiceQuestion.prototype.selectedItem = function ()
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.selectItemAtIndex                             *//**
+ * MultipleChoiceQuestion.selectItemAtIndex                            */ /**
  *
  * Select the choice in the choice widget at the given index. If the choice is
  * already selected, do nothing. The index is the displayed choice index and

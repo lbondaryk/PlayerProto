@@ -1,6 +1,6 @@
 /* **************************************************************************
  * $Workfile:: answerman.js                                                 $
- * **********************************************************************//**
+ * *********************************************************************/ /**
  *
  * @fileoverview Client-side answer evaluation engine object.
  *
@@ -10,20 +10,21 @@
  * Created on		June 17, 2013
  * @author			Leslie Bondaryk
  *
- * Copyright (c) 2013 Pearson, All rights reserved.
+ * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
-/* -----------------------------------------------
-Student feedback and scoring functions
--------------------------------------------------*/
-
-var answerMan = function (config, studAnswer)
-{
-	//set the sequence node. This will be used to look up the activity
-	var sequenceNode = config.sequenceNode;
-	var activity = sequenceNode;
-	
+/* **************************************************************************
+ * answerMan                                                           */ /**
+ *
+ * Mock scoring engine.
+ *
+ * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
+ * @param {string} 		studAnswer		-The student's answer.
+ ****************************************************************************/
+var answerMan = function (sequenceNode, studAnswer)
+{ 
+	 
 	//lookup the student answer in the answer key in fakeactivitydb.js, which
 	//got loaded with the page
 	var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
@@ -38,7 +39,6 @@ var answerMan = function (config, studAnswer)
 	//(specifies where to write the responses), the value of the student submission,
 	//the score, and any specialized response.
 	var scored = {
-				container: config.container,
 				submission: solution.content,
 				response: feedback
 				};
@@ -48,6 +48,11 @@ var answerMan = function (config, studAnswer)
 	//response.  Should be either 0 for wrong, 1 for right, or anything else for
 	//partial credit for the fallthrough case.
 				
+	//note that the current implementation of the submitmanager uses the score
+	//as an array index, and so these must be integers.  Not sure if we'll want
+	//to keep doing that in the long term, but eventually we'll need some kind of 
+	//sliding scale functionality that allows some answers to be more correct
+	//and some less -lb
 	switch(ansKey)
 		{
 		case 1:
@@ -66,8 +71,8 @@ var answerMan = function (config, studAnswer)
 			
 		//fallthrough case for partially correct answers.
 		default:
-  			scored.score = 0.5;
-			scored.response =" Sorta kinda.";
+  			scored.score = 2;
+			//scored.response =" Sorta kinda.";
   			break;
 		}
 	

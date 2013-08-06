@@ -23,7 +23,7 @@
    	<script src="../js/widget-base.js"></script>
 	<script src="../js/widget-slider.js"></script>
 	<script src="../js/widget-numeric.js"></script>
-	<script src="../js/eventmanager.js"></script>
+	<script src="../js/eventmanager_ex.js"></script>
 
 	<script>
 var eventManager = new EventManager();
@@ -32,7 +32,7 @@ var eventManager = new EventManager();
 var buteneExtent = [1, 6];
 
 // slider instantiation
-var buteneSlide1 = new Slider ({
+var buteneSlide2 = new Slider ({
 		id: "b2Val",
 		startVal: 1,
 		minVal: buteneExtent[0],
@@ -42,17 +42,17 @@ var buteneSlide1 = new Slider ({
 		format: d3.format('5.0f'),
 	}, eventManager);
 
-buteneSlide1.draw(d3.select("#bricTarget"));
+buteneSlide2.draw(d3.select("#bricTarget"));
 
 // changing the slider or clicking an image should trigger events
-var fullrotselectedEventId = 'transIv' + '_crsl' + '_itemSelected';
+var fullrotselectedEventId = 'cisIv' + '_crsl' + '_itemSelected';
 
-eventManager.subscribe(fullrotselectedEventId, buteneHandleSelection1);
+eventManager.subscribe(fullrotselectedEventId, buteneHandleSelection2);
 
 // clicking an image should update the carousel and the slider
-function buteneHandleSelection1(eventDetails)
+function buteneHandleSelection2(eventDetails)
 {
-	buteneSlide1.setValue(eventDetails.index + 1);
+	buteneSlide2.setValue(eventDetails.index + 1);
 }
 
 
@@ -62,6 +62,8 @@ function buteneHandleSelection1(eventDetails)
              height: document.documentElement.offsetHeight
                 }, '*');
         };
+
+eventManager.listenBroker();
 	
 	</script>
 </body>

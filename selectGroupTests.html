@@ -19,20 +19,27 @@
 			<div class="span6 leftCol">
                 <h2 class="setTitle"></h2>
 				<div><p>0. Dropdown SelectGroup w/o question</p>
+					<div id="sb-test"/>
+						<p>In order to manually test that selecting an answer correctly
+						publishes the selected event, we have an event handler that displays
+						the answer key of the selection. It should change as you manually
+						select an answer.</p>
+						<p>The key selected is: <b id="sb-test-key">none</b>.</p>
 					<p> 
-					<span id="resLength"></span> These are some options
+					 These are some options: <span id="resLength"></span>
 					</p>
 				</div>
-				<div><p>1. Multiple Choice dropdown question, randomized</p></div>
-				<div id="selectRnd"><p>2. Multiple Choice dropdown question, nonrandomized</p></div>
-                <div id="selectEvents"><p>3. Multiple Choice dropdown selector as UI (events)</p>
-                </div>
-                <div id="seaImages"></div>
+				<div id="selectRnd"><p>1. Multiple Choice dropdown question, randomized</p></div>
+				<div id="selectOrd"><p>2. Multiple Choice dropdown question, nonrandomized</p></div>
+                
 			</div>
 			<div class="span6 rightCol">
+				<div id="selectEvents">
+					<p>3. Multiple Choice dropdown selector as UI (events)</p>
+					<div id="seaImages"></div>
+                </div>
 				<div id="graphIn"><p>4. Dropdowns on top of image (labeling)</p></div>
 				<div id="graphIn"><p>5. Dropdowns of objects</p></div>
-	
 			</div>
 		</div>
 	</div>
@@ -49,48 +56,103 @@
 	<script src="js/widget-selectgroup.js"></script>
     <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
+	<script src="js/widget-button.js"></script>
 	<script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-multiplechoicequestion.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
 <script>
 
 	var eventManager = new EventManager();
+	var submitManager = new SubmitManager(eventManager);
 
 	var selector2 = new SelectGroup(
 		{	id: "foobar",
 			choices: [
 			{
 			content: "smaller",
-			response: "Longer length requires more potential to move electrons across.",
-			answerKey: "wrong1",
+			key: "Imakey",
 			},
 			{
        		content: "greater",
 			response: "Longer length requires more potential to move electrons across.",
-			answerKey: "correct",
  			},
 			{
 			content: "approximately the same",
 			response: "Longer length requires more potential to move electrons across.",
-			answerKey: "wrong2",
 			}]
 		}, eventManager);
 		
 	selector2.draw(d3.select("#resLength"));
 	
 	// Handle dropdown changes
-	eventManager.subscribe(selector2.changedValueEventId,
-							function(eventDetails){ alert(
-							eventDetails.selectValue);
+	eventManager.subscribe(selector2.selectedEventId,
+							function(eventDetails){ 
+								d3.select("#sb-test-key").text(eventDetails.selectKey);
 							});
+
+	
 							
-	/*var Q1 = new SelectGroupQuestion({
-			id: "Q1",
-			question: "A wire of shorter length has" + selector2 + " resistance as a wire of greater length.",
-			choices: selector2.choices,
-			type: "randomized", //default, even if not specified
-	});
+	//<div id="selectOrd"><p>2. Multiple Choice question, dropdown, nonrandomized</p></div>
+
+	var Q1Choices = [
+		{
+			content: "Because as the population increases, the absolute number of births increases even though the growth rate stays constant",
+			response: "Growth rate stays constant.",
+			answerKey: "answer000"
+		},
+		{
+			content: "Because the growth rate increases as the population rises",
+			response: "Does the growth rate change with population size?",
+			answerKey: "answer001"
+		},
+		{
+			content: "Because the total fertility rate increases with population",
+			response: "Does the fertility rate change with population size?",
+			answerKey: "answer002"
 	
-	Q1.draw(d3.select("#selectRnd")); */
-	
+		},
+		{
+			content: "Because social behaviors change and people decide to have more children",
+			response: "This might happen but is it something is necessarily occurs?",
+			answerKey: "answer003"
+		}
+		];
+
+	var Q2 = new MultipleChoiceQuestion({
+			questionId: "SanVan001",
+			question: "Why not dropdown choices?",
+			choices: Q1Choices,
+			order: "randomized",
+			widget: SelectGroup,
+			widgetConfig: {
+				numberFormat: "latin-lower",
+				question: true,
+			},
+		}, eventManager);
+
+	Q2.draw(d3.select("#selectRnd"));
+ 
+	submitManager.handleRequestsFrom(Q2);
+		
+	var Q3 = new MultipleChoiceQuestion({
+			questionId: "SanVan001",
+			question: "Why not dropdown choices?",
+			choices: Q1Choices,
+			order: "ordered",
+			widget: SelectGroup,
+			widgetConfig: {
+				numberFormat: "latin-lower",
+				question: true,
+			},
+		}, eventManager);
+
+	Q3.draw(d3.select("#selectOrd"));
+ 
+	submitManager.handleRequestsFrom(Q3);
      //<div id="selectEvents"><p>3. Multiple Choice dropdown selector as UI (events)</p></div>
 //////////////////////////////////////////////
 /* temperature images in a carousel		*/
@@ -101,23 +163,15 @@ var profiles = new SelectGroup(
 			choices: [
 			{
 			content: "Sea Surface Temperature",
-			//response: "Longer length requires more potential to move electrons across.",
-			//answerKey: "wrong1",
 			},
 			{
        		content: "Sea Height Anomoly",
-			//response: "Longer length requires more potential to move electrons across.",
-			//answerKey: "correct",
- 			},
+			},
 			{
 			content: "Depth to 26&deg;C Isotherm",
-			//response: "Longer length requires more potential to move electrons across.",
-			//answerKey: "wrong2",
 			},
 			{
 			content: "Tropical Cyclone Heat Potential",
-			//response: "Longer length requires more potential to move electrons across.",
-			//answerKey: "wrong2",
 			}]
 			
 		}, eventManager);
@@ -157,22 +211,21 @@ var layers = new ImageViewer({
 	}, eventManager);
 
 svg3D.append(layers);
-							
 
-eventManager.subscribe(profiles.changedValueEventId, carouselUpdate);
+eventManager.subscribe(profiles.selectedEventId, carouselUpdate);
 eventManager.subscribe(layers.selectedEventId, dropdownUpdate);
 
 function carouselUpdate (eventDetails)
 {
 	 
-	layers.selectItemAtIndex(eventDetails.selectedIndex);
+	layers.selectItemAtIndex(eventDetails.selectKey);
 }
 
 function dropdownUpdate ()
 {
 	var newImage = layers.selectedItem();
 	var newval = layers.itemKeyToIndex(newImage.key);
-	profiles.setSelectedIndex(newval);
+	profiles.lite(newval);
 }
 	
 /************************************************************************

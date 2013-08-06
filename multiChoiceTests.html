@@ -20,22 +20,20 @@
                 <h2 class="setTitle"></h2>
 				<div><p>0. Radio button w/ 4 answers</p>
 					<p>Q1: Why?</p>
-					<div id="rb-test" style="margin: 0 0 15px 15px;"/>
-						<p>In order to manually test that selecting an answer correctly
+					<div id="rb-test" style="margin: 0 0 15px 15px;"></div>
+					<p>In order to manually test that selecting an answer correctly
 						publishes the selected event, we have an event handler that displays
 						the answer key of the selection. It should change as you manually
 						select an answer.</p>
-						<p>The answer key selected is: <b id="rb-test-key">none</b>.</p>
-						<p id="rb-test-resp"/>
+					<p>The answer key selected is: <b id="rb-test-key">none</b>.</p>
+					<p id="rb-test-resp"></p>
 				</div>
 				<hr />
 				<div id="radioRnd"><p>Q1-test. Multiple Choice question, randomized</p></div>
 				<hr />
 				<div id="radioOrd"><p>Q2-test. Multiple Choice question, nonrandomized</p></div>
 				<hr />
-                <div id="selectOrd"><p>Q3-test. Multiple Choice question, dropdown</p></div>
-
-			</div>
+            </div>
 			<div class="span6 rightCol">
 				<div id="graphIn"><p>4. Graphs as responses (radio buttons containing widgets)</p></div>
 				<hr />
@@ -62,34 +60,42 @@
 	<script src="js/widget-selectgroup.js"></script>
 	<script src="js/widget-button.js"></script>
 	<script src="js/widget-multiplechoicequestion.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
 
 <script>
 
 	var eventManager = new EventManager();
+	var submitManager = new SubmitManager(eventManager);
+
 
 	var Q1Choices = [
 		{
 			content: "Because as the population increases, the absolute number of births increases even though the growth rate stays constant.",
 			response: "Growth rate stays constant.",
-			answerKey: "correct"
+			answerKey: "answer000"
 		},
 		{
 			content: "Because the growth rate increases as the population rises.",
 			response: "Does the growth rate change with population size?",
-			answerKey: "wrong1"
+			answerKey: "answer001"
 		},
 		{
 			content: "Because the total fertility rate increases with population.",
 			response: "Does the fertility rate change with population size?",
-			answerKey: "wrong2"
+			answerKey: "answer002"
 	
 		},
 		{
 			content: "Because social behaviors change and people decide to have more children.",
 			response: "This might happen but is it something is necessarily occurs?",
-			answerKey: "wrong3"
+			answerKey: "answer003"
 		}
 		];
+		
 	//<div id="radioRnd"><p>0. Multiple Choice question, randomized</p></div>
 	
 	var radioButtons = new RadioGroup({
@@ -113,7 +119,8 @@
 	// Test a select one question using a radio group widget
 	var Q1 = new MultipleChoiceQuestion({
 			id: "Q1",
-			question: "Wherefore?",
+			questionId: "SanVan001",
+			question: "Why does it take less and less time to add each additional billion people to the planet?",
 			choices: Q1Choices,
 			order: "randomized",
 			widget: RadioGroup,
@@ -122,31 +129,23 @@
 	
 	Q1.draw(d3.select("#radioRnd"));
 	
+	submitManager.handleRequestsFrom(Q1);
+
 	//<div id="radioOrd"><p>1. Multiple Choice question, nonrandomized</p></div>
 
 	var Q2 = new MultipleChoiceQuestion({
 			id: "Q2",
+			questionId: "SanVan001",
 			question: "Why?",
 			choices: Q1Choices,
 			order: "ordered",
 			widget: RadioGroup,
 			widgetConfig: { numberFormat: "latin-lower" },
 		}, eventManager);
-
-	Q2.draw(d3.select("#radioOrd"));
  
-	//<div id="selectOrd"><p>3. Multiple Choice question, dropdown</p></div>
+	Q2.draw(d3.select("#radioOrd"));
 
-	var Q3 = new MultipleChoiceQuestion({
-			id: "Q3",
-			question: "Why?",
-			choices: Q1Choices,
-			order: "ordered",
-			widget: SelectGroup,
-			widgetConfig: {},
-		}, eventManager);
-
-	Q3.draw(d3.select("#selectOrd"));
+	submitManager.handleRequestsFrom(Q2);
  
 
 
@@ -357,7 +356,7 @@ var Africa = [
 * @param eventDetails			These are the keyed values returned by 
 *								the event, in this case, a submission.
 *************************************************************************/
-	function handleSsubmit(eventDetails)
+	function handleSubmit(eventDetails)
 	{
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  

@@ -1,6 +1,6 @@
 /* **************************************************************************
  * $Workfile:: submitmanager.js                                             $
- * **********************************************************************//**
+ * *********************************************************************/ /**
  *
  * @fileoverview Implementation of a SubmitManager object.
  *
@@ -9,7 +9,7 @@
  * Created on		June 04, 2013
  * @author			Seann Ives
  *
- * Copyright (c) 2013 Pearson, All rights reserved.
+ * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
@@ -18,24 +18,13 @@
  ****************************************************************************/
 
 // Sample SubmitManager constructor configuration
-(function()
-{
-	var submit1Config = {
-		sequenceNodeID: 'ThrowTheBall',
-		container: q1Button.lastdrawn.container
-		};
-});
+// NA - information about the container to return to and the question ID is
+// passed from the question type, e.g. multiple choice. No config.
 
 /* **************************************************************************
- * SubmitManager                                                        *//**
+ * SubmitManager                                                       */ /**
  *
- * @constructor
- *
- * The submit manager handles your submissions, yo.
- * It listens (subscribes) for scoring requests from registered widgets,
- * handles getting the request to the scoring engine and processes the
- * response, returning that response to the requesting widget if there
- * is a callback associated w/ the request.
+ * Constructor function for the SubmitManager class
  *
  * @constructor
  *
@@ -45,8 +34,16 @@
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
+ * @classdesc
+ * The submit manager handles your submissions, yo.
+ *
+ * It listens (subscribes) for scoring requests from registered widgets,
+ * handles getting the request to the scoring engine and processes the
+ * response, returning that response to the requesting widget if there
+ * is a callback associated w/ the request.
+ *
  ****************************************************************************/
-function SubmitManager(config, eventManager)
+function SubmitManager(eventManager)
 {
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
@@ -86,7 +83,7 @@ function SubmitManager(config, eventManager)
 }
 
 /* **************************************************************************
- * SubmitManager.handleRequestsFrom                                     *//**
+ * SubmitManager.handleRequestsFrom                                    */ /**
  *
  * Register the given question widget w/ this SubmitManager to handle any
  * submitScoreRequest events the widget may publish.
@@ -104,7 +101,7 @@ SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
 };
 
 /* **************************************************************************
- * SubmitManager.handleScoreRequest_                                    *//**
+ * SubmitManager.handleScoreRequest_                                   */ /**
  *
  * The event handler of this SubmitManager for submitScoreRequest events
  * from registered question widgets.
@@ -137,7 +134,7 @@ SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 };
 
 /* **************************************************************************
- * SubmitManager.submitForScoring_                                      *//**
+ * SubmitManager.submitForScoring_                                     */ /**
  *
  * Send the score request to the scoring engine using whatever means required
  * to access that scoring engine.
@@ -162,7 +159,7 @@ SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 	// todo: Although we're getting a synchronous response here, we should
 	// enhance this to have the "answerMan" give us an asynchronous
 	// response, probably via an eventManager event. -mjl
-	var submissionResponse = answerMan({sequenceNode: submitDetails.sequenceNodeId},
+	var submissionResponse = answerMan(submitDetails.sequenceNodeId,
 										submitDetails.answer);
 
 	// We handle the reply from the scoring engine (in the event handler eventually)
@@ -178,7 +175,7 @@ SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 };
 
 /* **************************************************************************
- * SubmitManager.submit                                                 *//**
+ * SubmitManager.submit                                                */ /**
  *
  * Submit the student's submission to the answer engine.  Publish the result.
  *
@@ -207,7 +204,7 @@ SubmitManager.prototype.submit = function (submission)
 };
 
 /* **************************************************************************
- * SubmitManager.appendResponseWithDefaultFormatting                    *//**
+ * SubmitManager.appendResponseWithDefaultFormatting                   */ /**
  *
  * This is a temporary helper method to format the responses to submitted
  * answers.
@@ -237,13 +234,13 @@ SubmitManager.appendResponseWithDefaultFormatting = function (container, respons
 	var responseFormat = {
 			correct: {
 				icon: "icon-ok-sign",
-				answerPrefix: "Congratulations, Your answer, ",
+				answerPrefix: "Congratulations, your answer, ",
 				answerSuffix:  ", is correct. ",
 				responseClass: "alert-success"
 			},
 			incorrect: {
 				icon: "icon-remove",
-				answerPrefix: "Sorry, Your answer, ",
+				answerPrefix: "Sorry, your answer, ",
 				answerSuffix:  ", is not correct. ",
 				responseClass: "alert-error"
 			},
@@ -260,7 +257,7 @@ SubmitManager.appendResponseWithDefaultFormatting = function (container, respons
 			}
 		};
 
-	var scoreAnsType = ["unknown", "incorrect", "correct"];
+	var scoreAnsType = ["unknown", "incorrect", "correct", "partial"];
 
 	var ansType = "unknown";
 	if (typeof responseDetails.score === "number")
@@ -281,7 +278,7 @@ SubmitManager.appendResponseWithDefaultFormatting = function (container, respons
 };
 
 /* **************************************************************************
- * fancyAnswerEngine                                                    *//**
+ * fancyAnswerEngine                                                   */ /**
  *
  * I'm just a stub
  * Yes, I'm only a stub

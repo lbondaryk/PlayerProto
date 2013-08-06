@@ -62,7 +62,7 @@
 	
 	///////////////////////////////////////////
 	
-	// Test 1: One slider, one button.
+	// Test 1: One slider, one button. This is bogus because sliders aren't really a question type yet.
 	var t1Extent = [0, 11];
 	
 	/* Seann Notes:
@@ -97,6 +97,7 @@
 	*
 	* t1handleClick is called from the event handler for the "submit" button,
 	* firing the dummy question's submitScoreRequestEvent
+	* This one is just for the slider
 	*************************************************************************/
 	function t1handleClick()
 	{
@@ -141,7 +142,7 @@
 		sequenceNodeID: 'SanVan003',
 		container: t1Button.lastdrawn.container
 	};
-	var submitManager = new SubmitManager(t1SubmitManagerConfig, eventManager);
+	var submitManager = new SubmitManager(eventManager);
 
 	// Get the submit manager to handle scoring requests from the dummy slider question
 	submitManager.handleRequestsFrom(dummyQ);

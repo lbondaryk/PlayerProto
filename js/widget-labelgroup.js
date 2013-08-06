@@ -1,6 +1,6 @@
 /* **************************************************************************
  * $Workfile:: widget-labelgroup.js                                         $
- * **********************************************************************//**
+ * *********************************************************************/ /**
  *
  * @fileoverview Implementation of the LabelGroup widget.
  *
@@ -11,7 +11,7 @@
  * @author			Leslie Bondaryk
  * @author			Michael Jay Lippert
  *
- * Copyright (c) 2013 Pearson, All rights reserved.
+ * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
@@ -20,6 +20,7 @@
 {
 	var lbl1Config = {
 			id: "lbl1",
+			type: "numbered",
 			labels: 	
 			[	
 				{ content: "Pre-development",	xyPos: [ 0, -.25], width: 100 },
@@ -50,7 +51,7 @@
  */
 	
 /* **************************************************************************
- * LabelGroup                                                           *//**
+ * LabelGroup                                                          */ /**
  *
  * The LabelGroup widget draws a group of labels at specified locations
  * in an SVGContainer.
@@ -69,10 +70,14 @@
  * @param {Array.<LabelConfig>}
  *						config.labels	-An array describing each label in the group.
  *										  
- * @param {string}		type			-string specifying bullets for dots, numbered
- *										 for dots and #, or anything else for just labels
+ * @param {string}		config.type		-string specifying "bullets" for dots, "numbered"
+ *										 for dots and #, "alpha" for letters, or anything 
+ *										 else for just labels
+ * @param {boolean}		config.question		-flag specifying whether to use as a question
+ * @param {EventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
  *
- * NOTES:
  * @todo: role: a string which is one of "label", "distractor".
  * @todo: we need some sort of autowidth intelligence on these, but I don't
  * know how to reconcile that with giving user control over wrapping
@@ -88,23 +93,28 @@ function LabelGroup(config, eventManager)
 	/**
 	 * Array of traces to be graphed, where each trace is an array of points and each point is an
 	 * object w/ a {number} x and {number} y property.
-	 * @type Array.<Array.<{x: number, y: number}>
-	 * e.g. 2 traces, 1st w/ 2 points, 2nd with 3 points:
+	 * @type {Array.<Array.<{x: number, y: number}>>}
+	 * @example
+	 *   // here are 2 traces, 1st w/ 2 points, 2nd with 3 points:
 	 *   [ [{x: -1.2, y: 2.0} {x: 2, y: 3.1}], [{x: -2, y: -2}, {x: 0, y: 0}, {x: 2, y: 2}] ]
 	 */
-	this.labels = config.labels;
+
+	 // if we are using labels as a question input, get the labels from the choices property.
+	 // otherwise get them from the correctly named labels property
+	this.labels = config.question ? config.choices : config.labels;
 
 	/**
 	 * The type specifies an adornment on each label or no adornment if it is not specified.
 	 * It must be one of:
-	 * <ul>
-	 *  <li> "bullets" for a solid bullet adornment
-	 *  <li> "numbered" for a bullet containing the index number adornment
-	 * </ul>
+	 *
+	 * - "bullets" for a solid bullet adornment
+	 * - "numbered" for a bullet containing the index number adornment
+	 * - "latin-upper" for a bullet containing a sequential capital letter
+	 *
 	 * @type {string|undefined}
 	 */
-	this.type = config.type;
-	
+	this.type = config.type || "none";
+
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
 	 * @type {EventManager}
@@ -164,7 +174,7 @@ function LabelGroup(config, eventManager)
 LabelGroup.autoIdPrefix = "lblg_auto_";
 
 /* **************************************************************************
- * LabelGroup.draw                                                      *//**
+ * LabelGroup.draw                                                     */ /**
  *
  * Draw this LabelGroup in the given container.
  *
@@ -247,7 +257,7 @@ LabelGroup.prototype.draw = function(container, size)
 
 	// bullets type just puts big black circle markers on key areas of a diagram
 	// a precursor to hotspot answertypes
-	if (this.type == "bullets" || this.type == "numbered")
+	if (this.type != "none")
 	{
 		labelCollection.append("circle")
 			.attr("class", "numSteps")
@@ -259,26 +269,40 @@ LabelGroup.prototype.draw = function(container, size)
 	// bug in Chrome when highlighting circles or anything that overlaps the 
 	// foreign object. Recommend using either numbers or text labels. -lb
 	
-	if (this.type == "numbered")
+	if (this.type !== "none")
+	{
+		var choiceIndex = this.getChoiceNumberToDisplayFn_();
+
+		labelCollection.append("text")
+			.attr("text-anchor", "middle")
+			.attr("alignment-baseline", "middle")
+			.text(function (d, i) {return choiceIndex(i);});
+	}
+
+	/* if (this.type == "numbered")
 	{
 		labelCollection.append("text")
 			.attr("text-anchor", "middle")
 			.attr("alignment-baseline", "middle")
 			.text(function (d, i) { return i + 1; });
 	}
-	
+	*/
 	labelCollection.on('click',
 				function (d, i)
 				{
 					that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+					that.lite(d.key);
 				});
 				
 	this.lastdrawn.labelCollection = labelsContainer.selectAll("g.widgetLabel");
 
 }; // end of LabelGroup.draw()
 
+LabelGroup.prototype.redraw = function () {
+
+};
 /* **************************************************************************
- * LabelGroup.setScale                                                  *//**
+ * LabelGroup.setScale                                                 */ /**
  *
  * Called to preempt the normal scale definition which is done when the
  * widget is drawn. This is usually called in order to force one widget
@@ -299,7 +323,7 @@ LabelGroup.prototype.setScale = function (xScale, yScale)
 };
 
 /* **************************************************************************
- * LabelGroup.lite                                                      *//**
+ * LabelGroup.lite                                                     */ /**
  *
  * Highlight the label(s) associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
@@ -333,7 +357,23 @@ LabelGroup.prototype.lite = function (liteKey)
 }; // end of LabelGroup.lite()
 
 /* **************************************************************************
- * LabelGroup.setLastdrawnScaleFns2ExplicitOrDefault_                   *//**
+ * LabelGroup.selectedItem                                         */ /**
+ *
+ * Return the selected item's data in the select group.
+ *
+ * @return {Object} the select group item data which is currently selected.
+ *
+ ****************************************************************************/
+LabelGroup.prototype.selectedItem = function ()
+{
+	
+	var inputCollection = this.lastdrawn.widgetGroup;
+	var selectedInput = inputCollection.selectAll(".lit");
+	return !selectedInput.empty() ? selectedInput.datum() : null;
+};
+
+/* **************************************************************************
+ * LabelGroup.setLastdrawnScaleFns2ExplicitOrDefault_                  */ /**
  *
  * Set this.lastdrawn.xScale and yScale to those stored in explicitScales
  * or to the default scale functions w/ a data domain of [0,1].
@@ -367,7 +407,7 @@ LabelGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSiz
 }; // end of LabelGroup.setLastdrawnScaleFns2ExplicitOrDefault_()
 
 /* **************************************************************************
- * LabelGroup.setOpacity                                                  *//**
+ * LabelGroup.setOpacity                                               */ /**
  *
  * Set the opacity of the sketch
  *
@@ -390,3 +430,40 @@ LabelGroup.prototype.setOpacity = function (opacity, duration, delay)
 
 
 };
+
+/* **************************************************************************
+ * LabelGroup.getChoiceNumberToDisplayFn_                              */ /**
+ *
+ * Get a function which returns the string that should be prefixed to the
+ * choice at a given index
+ *
+ * @private
+ *
+ ****************************************************************************/
+LabelGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
+{
+	var formatIndexUsing =
+	{
+		"none": function (i)
+				{
+					return "";
+				},
+		"latin-upper": function (i)
+				{
+					return String.fromCharCode("A".charCodeAt(0) + i);
+				},
+		"latin-lower": function (i)
+				{
+					return String.fromCharCode("a".charCodeAt(0) + i);
+				},
+		"numbered": function (i)
+				{
+					return (i+1).toString();
+				},
+	};
+
+	return (this.type in formatIndexUsing) ? formatIndexUsing[this.type]
+												   : formatIndexUsing["none"];
+};
+
+

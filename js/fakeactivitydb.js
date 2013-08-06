@@ -1,6 +1,29 @@
+/* **************************************************************************
+ * $Workfile:: widget-multiplechoicequestion.js                             $
+ * *********************************************************************/ /**
+ *
+ * @fileoverview Defines a fake database used by the mock scoring engine.
+ *
+ * If it had been possible to read a local JSON file, this would not define
+ * a global variable, the scoring engine would have processed a strict
+ * JSON file.
+ *
+ * Created on		June 18, 2013
+ * @author			Leslie Bondaryk
+ *
+ * @copyright (c) 2013 Pearson, All rights reserved.
+ *
+ * **************************************************************************/
 // JSON FakeActiviyDB Document
+/**
+ * activities is a global object used as a scoring database.
+ * It is an object whose keys are the sequenceNodeId's that identify
+ * the activity being scored, and the value contains properties used by
+ * the mock scoring engine {@link answerMan}.
+ * @type {Object}
+ * */
 var activities = {		
-	SanVan001: { 
+	"SanVan001": { 
 		question: "Why does it take less and less time to add each additional billion people to the planet?",
 		answer000: {
 				content: "Because as the population increases, the absolute number of births increases even though the growth rate stays constant.",
@@ -75,7 +98,7 @@ var activities = {
 				response:  "I believe you are thinking of vampires.",
 				},
 		},
-	ThrowTheBall: { 
+	"ThrowTheBall": { 
 		question: "Set the initial velocity and angle of the throw such that the player makes the basket.",
 		"notright": {
 				content: "",
@@ -86,6 +109,24 @@ var activities = {
 				content: "v<sub>i</sub> = 7.3, &theta; = 59&deg;",
 				score: 1,
 				response:  "Right on target.",
+				}
+		},
+	"LabelsMC": { 
+		question: "Which of these is on top.",
+		"top": {
+				content: "A",
+				score: 1,
+				response: "Glad you know which end is up."
+				},
+		"middle": {
+				content: "B",
+				score: 0.5,
+				response:  "Try going all the way up.",
+				},
+		"bottom": {
+				content: "C",
+				score: 0,
+				response:  "You seem to be upside down.",
 				}
 		},
 	"http://hub.paf.pearson.com/resources/sequences/123/nodes/1": {

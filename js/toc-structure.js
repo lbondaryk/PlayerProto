@@ -165,6 +165,18 @@ var bookConfig = {
                 id: "n.3.7",
                 title: "Cicerelli Brain hotspots"
             }, 
+            {
+                type: "objective",
+                url: "KeelingCurve.html",
+                id: "n.3.8",
+                title: "The Keeling Curve"
+            }, 
+            {
+                type: "objective",
+                url: "OceanProps.html",
+                id: "n.3.9",
+                title: "Ocean Properties"
+            }, 
 
             ]
 		},
