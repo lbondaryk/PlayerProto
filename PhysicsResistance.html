@@ -29,19 +29,8 @@
             	<p>You can think of passing current through a low-resistivity material as pushing water through an empty pipe. Nothing impedes the water. In reality, it's actually the presence rather than abscence of free electrons to pass along the charge that lowers the resistivity. </p>
             	<p>Resistivity is different from <b>resistance</b>, which is dependent on length and cross section of the physical object. A long, thin copper wire has a much larger resistance than a thick, short copper wire.  </p>
 				<p>Experiment with the effect on resistance of the physical properties of a wire, then make these statements correct for the variable you are changing: </p>
-				
-                <div class="form-actions"> 
-                	<p>A wire of greater cross-section has 
-					<span id="resCross"></span> resistance as a wire of smaller cross section.
-                  	</p>
-                	<button class="btn-primary">Check it!</button>
-				</div>
-                 <div class="form-actions"> 
-                 	<p>A wire of shorter length has 
-					<span id="resLength"></span> resistance as a wire of greater length.
-					</p>
-                <button class="btn-primary">Check it!</button>
-				</div>
+				<div id="resCross"></div>
+				<div id="resLength"></div>
              </div>
 			<div class="span6 rightCol">
          	    <div id="sliders">
@@ -80,89 +69,82 @@
     <script src="js/widget-numeric.js"></script>
     <script src="js/widget-sketch.js"></script>
     <script src="js/widget-selectgroup.js"></script>
+	<script src="js/widget-multiplechoicequestion.js"></script>
+	<script src="js/widget-button.js"></script>
 	<script src="js/eventmanager.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
 
 	<script>
-
-
-
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
 	var eventManager = new EventManager();
-	
+	var submitManager = new SubmitManager(eventManager);
+
 	// Select widget config
-	var selector1 = new SelectGroup(
-		{
-			choices: [
+	var selector1 = [
 			{
 			content: "smaller",
-			response: "More area allows more room for electrons to move through.",
-			answerKey: "correct",
+			answerKey: "smaller",
 			},
 			{
        		content: "greater",
-			response: "More area allows more room for electrons to move through.",
-			answerKey: "wrong1",
+			answerKey: "greater",
  			},
 			{
 			content: "the same",
-			response: "More area allows more room for electrons to move through.",
-			answerKey: "wrong2",
-			}]
-		}, eventManager);
-		
-	selector1.draw(d3.select("#resCross"));
-	
-	var selector2 = new SelectGroup(
-		{	id: "foobar",
-			choices: [
+			answerKey: "same",
+			}];
+			
+	var selector2 = [
 			{
 			content: "smaller",
-			response: "Longer length requires more potential to move electrons across.",
-			answerKey: "wrong1",
+			answerKey: "smaller",
 			},
 			{
        		content: "greater",
-			response: "Longer length requires more potential to move electrons across.",
-			answerKey: "correct",
+			answerKey: "greater",
  			},
 			{
 			content: "approximately the same",
-			response: "Longer length requires more potential to move electrons across.",
-			answerKey: "wrong2",
-			}]
+			answerKey: "same",
+			}];
+ 
+	
+	var Q1 = new MultipleChoiceQuestion({
+			questionId: "Resist1",
+			question: "What is the change in resistance for a wire of greater cross-section?",
+			choices: selector1,
+			order: "randomized",
+			widget: SelectGroup,
+			widgetConfig: {
+				numberFormat: "latin-lower",
+				question: true,
+			},
 		}, eventManager);
+
+
+	Q1.draw(d3.select("#resCross"));
+ 
+	submitManager.handleRequestsFrom(Q1);
+
 		
-	selector2.draw(d3.select("#resLength"));
+	var Q2 = new MultipleChoiceQuestion({
+			questionId: "Resist2",
+			question: "What is the change in resistance for a wire of shorter length?",
+			choices: selector2,
+			order: "random",
+			widget: SelectGroup,
+			widgetConfig: {
+				numberFormat: "latin-lower",
+				question: true,
+			},
+		}, eventManager);
+
+	Q2.draw(d3.select("#resLength"));
+ 
+	submitManager.handleRequestsFrom(Q2);
 	
-	// Handle dropdown changes
-	eventManager.subscribe(selector1.changedValueEventId,
-							function(eventDetails){ 
-								alert(eventDetails.selectValue);
-							});
-	eventManager.subscribe(selector2.changedValueEventId,
-							function(eventDetails){ alert(
-							eventDetails.selectValue);
-							console.log(document.getElementsByName("foobar")[0].selectedIndex);});
 	
-	// Create the callout array, which also emits events so you 
-	//can click on the table row to highlight the labels.  
-	/*var rowDefs = new Callouts({
-		id: "varDefs",
-		show: "all",
-		//type: "numbered",
-		headers: ["where" ],
-		textBits: [
-		{cols: ['<span class="math">R</span> is resistance,']},
-		{cols:[ '<span class="math">&#961;</span> is resistivity, ']},
-		{cols:[ '<span class="math">L</span> is length, and']},
-		{cols:['<span class="math">A</span> is area.']}
-		]
-	},eventManager);
-	
-	rowDefs.draw(d3.select("#defs"));
-	*/
 	var rhoExtent = [0,1], 
 		LExtent = [1,10],
 		AExtent = [1,50];

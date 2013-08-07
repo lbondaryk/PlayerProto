@@ -23,6 +23,56 @@
  * @type {Object}
  * */
 var activities = {		
+	"lowMonth": { 
+		question: "In what month is the CO2 concentration usually the lowest?",
+		answer000: {
+				content: "August",
+				score: 1,
+				response: "When plants are in leaf and performing photosynthesis, CO<sub>2</sub> drops."
+				},
+		answer001: {
+				content: "May",
+				score: 0,
+				response:  "You're looking for the lowest concentration, which will occur at the end of the vegitation growth season.",
+				},
+		answer002: {
+				content: "January",
+				score: 0,
+				response:  "The concentration has little to do with the calendar.",
+				},
+		answer003: {
+				content: "June-July",
+				score: 0,
+				response:  "You are close, but read the graph more carefully.",
+				}
+		},
+
+	"highMonth": { 
+		question: "In what month is the CO2 concentration usually the highest?",
+		answer000: {
+				content: "August",
+				score: 0,
+				response: "When plants are in leaf and performing photosynthesis, CO<sub>2</sub> drops."
+				},
+		answer001: {
+				content: "May",
+				score: 1,
+				response:  "When plants are just starting their growth season, CO<sub>2</sub> is elevated.",
+				},
+		answer002: {
+				content: "January",
+				score: 0,
+				response:  "The concentration has little to do with the calendar.",
+				},
+		answer003: {
+				content: "June-July",
+				score: 0,
+				response:  "You are close, but read the graph more carefully.",
+				}
+		},
+
+
+
 	"SanVan001": { 
 		question: "Why does it take less and less time to add each additional billion people to the planet?",
 		answer000: {
@@ -127,6 +177,42 @@ var activities = {
 				content: "C",
 				score: 0,
 				response:  "You seem to be upside down.",
+				}
+		},
+	"Resist1": { 
+		"question": "What is the change in resistance for a wire of greater cross-section?",
+		"smaller": {
+				content: "smaller resistance",
+				score: 1,
+				response:  "More area allows more room for electrons to move and pass charge."
+				},
+		"greater": {
+				content: "greater resistance",
+				score: 0,
+				response:   "More area allows more room for electrons to move and pass charge.",
+				},
+		"same": {
+				content: "the same resistance",
+				score: 0,
+				response:  "More area allows more room for electrons to move and pass charge.",
+				}
+		},
+	"Resist2": { 
+		"question": "What is the change in resistance for a wire of shorter length?",
+		"smaller": {
+				content: "smaller resistance",
+				score: 1,
+				response:  "More length impedes electrons, making it harder to pass charge."
+				},
+		"greater": {
+				content: "greater resistance",
+				score: 1,
+				response:   "More length impedes electrons, making it harder to pass charge.",
+				},
+		"same": {
+				content: "the same resistance",
+				score: 0,
+				response:  "More length impedes electrons, making it harder to pass charge.",
 				}
 		},
 	"http://hub.paf.pearson.com/resources/sequences/123/nodes/1": {
