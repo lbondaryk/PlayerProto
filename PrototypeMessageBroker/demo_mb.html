@@ -19,7 +19,7 @@
     <link href="../css/eCourse-master.css" rel="stylesheet" media="screen">
 
     <script src="../js/jquery-latest.js"></script>
-    <script src="messagebroker.js"></script>
+    <script src="../js/messagebroker.js"></script>
     
 </head>
 
@@ -75,6 +75,7 @@
         // YSAP - All the message handling was encapsulated here
         // Brad's July 11th version uses a shim file, requiring no javascript code at all. 
         var messageBroker = new MessageBroker();
+        messageBroker.initialize();
         
     </script>
 

@@ -35,6 +35,67 @@ var helper = (function () {
 	    return body.append("div").node();
 	};
 
+
+	/* **************************************************************************
+	 * createNewObject                                                      *//**
+	 *
+	 * createNewObject will create a new object element from the document and
+	 * return that object.
+	 * The caller is responsible of attaching the returned element.
+	 *
+	 * @param {DOM} containerEl				The element which the new node will be appended as child
+	 * @param {string} classAttrVal			Value for the class attribute
+	 * @param {string} dataAttrVal			Value for the data attribute
+	 * @return {Element} the newly created object element
+	 *
+	 ****************************************************************************/
+	var createNewObject = function createNewObject(containerEl, classAttrVal, dataAttrVal, otherAttrs)
+	{
+        var objectEl = document.createElement("object");
+        containerEl.appendChild(objectEl);
+        if (classAttrVal !== undefined) {
+        	objectEl.setAttribute("class", classAttrVal);
+        }
+        if (dataAttrVal !== undefined) {
+        	objectEl.setAttribute("data", dataAttrVal);
+        }
+        
+	    return objectEl;
+	};
+
+	/* **************************************************************************
+	 * appendChild                                                          *//**
+	 *
+	 * appendChild will append a new object element to the document body and
+	 * return that object.
+	 *
+	 * @param {string} id			Id of element to append the childNode
+	 * @param {DOMNode} childNode	The element to append
+	 * @return {Element} the newly created object element
+	 *
+	 ****************************************************************************/
+	var appendChild = function(id, childNode) {
+		var parentEl = document.getElementById(id);
+		parentEl.appendChild(childNode);
+	};
+
+	/* **************************************************************************
+	 * removeAllChildren                                                    *//**
+	 *
+	 * removeAllChildren will remove all children of a given element with id.
+	 *
+	 * @param {string} id			Id of element which all child elements will be removed
+	 * @return {Element} the newly created object element
+	 *
+	 ****************************************************************************/
+	var removeAllChildren = function(node) {
+		//var myNode = document.getElementById(id);
+		var myNode = node;
+		while (myNode.firstChild) {
+		    myNode.removeChild(myNode.firstChild);
+		}
+	}
+
 	/* **************************************************************************
 	 * createNewSvgContainer                                                *//**
 	 *
@@ -137,6 +198,9 @@ var helper = (function () {
 	return {
 		createNewDiv: createNewDiv,
 		createNewSvgContainer: createNewSvgContainer,
+		createNewObject: createNewObject,
+		appendChild: appendChild,
+		removeAllChildren: removeAllChildren,
 		expectElementTree: expectElementTree,
 	};
 
