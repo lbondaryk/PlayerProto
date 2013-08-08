@@ -54,6 +54,7 @@ Then use npm (node package manager) to install karma:
 ## Testing iframes ##
 When opening the test file from browser, you will run into security issues related with iframe not being able to load Javascript.
 In Chrome console you will get an error message similar to 
+
     Not allowed to load local resource: file://.../PlayerProto/js/eventmanager_ex.js 
 
 The workaround is to open the page from a web server.
