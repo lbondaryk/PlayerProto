@@ -50,3 +50,9 @@ The npm package depends on the nodejs package (among others).
 Then use npm (node package manager) to install karma:
 
     $ sudo npm install -g karma
+
+## Testing iframes ##
+When opening the file from browser, you will run into security issues of iframe not being able to load Javascript.
+The workaround is to open the page from a web server.
+In Mac Python is pre-installed, so you can run a tiny web server
+	$ python -m SimpleHTTPServer

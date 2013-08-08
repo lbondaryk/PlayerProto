@@ -99,6 +99,7 @@
             after(function () {
                 // Clean up test modifications to the DOM
                 helper.removeAllChildren(containerDiv);
+                // Releasing reference and registered event listeners in the Message Bro 
                 messageBroker.dispose();
             });
 
