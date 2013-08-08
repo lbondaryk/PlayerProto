@@ -52,6 +52,9 @@
  */
 var MessageBroker = function(options) {
 
+	// Auto call to the initialization method disabled 
+	// favoring the use of MessageBroker as singleton.
+	//this.initialize.apply(this, arguments);
 }
 
 /**
