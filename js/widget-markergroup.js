@@ -89,11 +89,10 @@ function MarkerGroup(config, eventManager)
 	this.marks = config.marks;
 
 	/**
-	 * The type specifies an adornment on each label or no adornment if it is not specified.
-	 * It must be one of:
+	 * The type specifies the orientation on each marker, and must be one of
 	 *
-	 *  - "bullets" for a solid bullet adornment
-	 *  - "numbered" for a bullet containing the index number adornment
+	 *  - "x" for vertical markers positioned on the x axis
+	 *  - "y" for horizontal markers positions on the y axis
 	 *
 	 * @type {string|undefined}
 	 */
@@ -122,7 +121,7 @@ function MarkerGroup(config, eventManager)
 	/**
 	 * The scale functions set explicitly for this MarkerGroup using setScale.
 	 * If these are not null when draw is called they will be used to position
-	 * the labels. Otherwise a data extent of [0,1] will be mapped to the given
+	 * the markers. Otherwise a data extent of [0,1] will be mapped to the given
 	 * container area.
 	 * @type Object
 	 * @property {function(number): number}
@@ -173,7 +172,7 @@ MarkerGroup.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
-	var xScale = this.lastdrawn.xScale ,
+	var xScale = this.lastdrawn.xScale,
 		yScale = this.lastdrawn.yScale;
 	this.setLastdrawnScaleFns2ExplicitOrDefault_(size);
 
@@ -334,9 +333,13 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 		//if a full data point crossing is specified, put a dot there.
 	markerCollection.append("circle")
 		.attr("cx", function (d){	
-			return d.x ? d3.round(that.lastdrawn.xScale(that.type === "y" ? d.x : 0)) : NaN;
+			return d.x ? d3.round(that.lastdrawn.xScale(that.type === "y" ? d.x : 0)) : -size.width;
 		})
 		.attr("cy", function (d){	
+			// if a y value is specified, and the markers are horizontal, put the dot at 0, which
+			// will be on the edge of the correctly located marker group.  If the markers are vertical
+			// put the dot on the y value vertically.  If no value is specified, draw them at the top
+			// of the graph under the marker label.
 			return d.y ? d3.round(that.lastdrawn.yScale(that.type === "y" ? 0 : d.y )) : -size.height;
 		})
 		.attr("r", 6);
@@ -388,7 +391,10 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 			.html(function(d, i) {
 				// make the label from value, or, if a label is 
 				// specified, use just that
-					return d.y ? ("x: " + (that.axisType == "time" ? d3.time.format("%b %Y")(new Date(d.x)): d.x) + "<br> y: " + d.y) : d.label;
+				var xInfo = ('x' in d) ? ("x: " + (that.axisType == "time" ? d3.time.format("%b %Y")(new Date(d.x)): d.x) + "<br>") : "";
+				var yInfo = ('y' in d) ? ("y: " + d.y + "<br>") : "";
+				var labelInfo = ('label' in d) ? d.label : "";
+				return xInfo + yInfo + labelInfo;
 			}); 
 		
 	// autokey entries which have no key with the data index
@@ -397,13 +403,46 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 					d.key = 'key' in d ? d.key : i.toString();
 					});
 	
+	var dragBehavior = d3.behavior.drag()
+		// todo: learn how to use d3 origin control on drags
+    	//.origin(function(d) { return d; })
+    	.on("drag", function(d, i) {
+    		
+    		//calculate new position in pixels, and convert back to local coordinates
+    		var xVal = xScale.invert(d3.event.x);
 
-	
-	markerCollection.on('click',
+    		/*
+    		@todo: it might be desirable to snap to data points when dragging 
+    		markers, but this requires the data from the graph to be fed to the marker object
+    		and I don't have a good strategy for that yet. This also allows you to update
+    		the y value on the marker.  There are issues here with multiple traces. It's kind of 
+    		a mess. But here's how! -lb
+    		xVal = that.snapTo(xData, size.width)(d3.event.x);
+			xindex = xData.indexOf(xVal);
+			d.y = yData[xindex];
+			*/
+
+    		//if this is a time axis, then data is specified as a string, not the Date 
+    		//object returned by xScale.invert, so fix that up
+			d.x = that.axisType == "time" ? xVal.toString() : d3.round(xVal,2);
+			
+			//and redraw with the new data
+  			that.redraw();
+		})
+		.on("dragend", function(d, i) {
+			console.log("TODO: log fired marker " + d.key + " to position " + d.x);
+		});
+
+
+	markerCollection
+		.on('click',
 				function (d, i)
 				{
 					that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+					that.lite(d.key);
 				});
+
+	markerCollection.call(dragBehavior);
 				
 	this.lastdrawn.markerCollection = markerGroup.selectAll("g.marker");
 
@@ -465,6 +504,7 @@ MarkerGroup.prototype.lite = function (liteKey)
 	}
 }; // end of MarkerGroup.lite()
 
+
 /* **************************************************************************
  * MarkerGroup.setLastdrawnScaleFns2ExplicitOrDefault_                 */ /**
  *
@@ -503,7 +543,7 @@ MarkerGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSi
 /* **************************************************************************
  * MarkerGroup.setOpacity                                              */ /**
  *
- * Set the opacity of the sketch
+ * Set the opacity of the marker (show/hide)
  *
  * @param {number}		opacity		- opacity value to be set to (0: transparent, 1: opaque)
  * @param {number}		duration	- the duration of the transition in milliseconds
@@ -512,8 +552,6 @@ MarkerGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSi
  ****************************************************************************/
 MarkerGroup.prototype.setOpacity = function (opacity, duration, delay)
 {
-	var xScale = this.lastdrawn.xScale;
-	var yScale = this.lastdrawn.yScale;
 
 	var allMarkers = this.lastdrawn.markerCollection;
 
@@ -523,3 +561,25 @@ MarkerGroup.prototype.setOpacity = function (opacity, duration, delay)
 
 
 };
+
+/* **************************************************************************
+ * MarkerGroup.snapTo                                             */ /**
+ *
+ * Snap to a data value in the series, rather than open-ended drag positioning.
+ *
+ * @param {array}		data		- the data values to snap to as {x: val, y: val}
+ * @param {array}		range 		- two element array with the start and end point of the canvas
+*
+ ****************************************************************************/
+MarkerGroup.prototype.snapTo = function (data, range) 
+{
+	
+	//relies on the cardinality of (number of points) of data 
+	// uses the quantized scale in reverse to assign only points
+	// in the data as values in the pixel coordinate domain 
+	// accessible by mouse/touch moves across a container
+	return d3.scale.quantize().domain(range) 
+	.range(data); 
+}
+
+
