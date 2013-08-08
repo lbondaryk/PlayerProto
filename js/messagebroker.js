@@ -1,12 +1,16 @@
 /**
- * @fileoverview Implementation of a MessageBroker
+ * @fileoverview Implementation of the MessageBroker
 
  * MessageBroker is the component that lives in the master document (html) and 
- * serves as "middleware" that relays messages between iframes.
+ * serves as a middleware that relays messages between iframes.
  *
- * For the mean time the implementation of brokering is very rudimentary.
- * It just relays every 'bricevent' messages to the rest of the iframes except
- * where the event was originated.
+ * There are three channels of event handling based on messageType.
+ * 1. The 'bricevent' channel  will forward the message to the internal EvenManager, 
+ *    that will in turn propagate to the subscribed iframes.
+ * 2. The 'resize' channel will handle resizing.
+ * 3. The 'topic' channel will handle subscription and unsubscription.
+ *
+ * NOTE: The current implementation does not handle topic.
  *
  * The message format is as follows (the inner structure 'data' is the actual payload').
  * Notice that the message contains the topic.
@@ -14,7 +18,7 @@
  Event = {
  	source: <source>,
  	data: {
- 		messageType: <bricevent, resize>
+ 		messageType: <bricevent, resize, topic>
  		#case bricevent, this is what actually sent at EventManager scope
 	 	message: {
 	 		sendTime: <time was sent in unix format>
@@ -22,9 +26,13 @@
 			eventData: <specific data, usually collection of key-value pairs> 
 	 	}
 
-	 	#case resize
+	 	#case 'resize'
 		width:<w>,
 		height:<h>
+
+		#case 'topic' (implementation pending)
+		topic:<the topic name>,
+		action:<subscribe | unsubscribe>
 	 }
  }
 
@@ -44,41 +52,108 @@
  */
 var MessageBroker = function(options) {
 
-	// List of iframes that contains brics
-	this.bricIframes = null;
-
-
-	// Calls the initialization method.
-	// (Remember that we are already in constructor scope)
-	this.initialize.apply(this, arguments);
+	// Auto call to the initialization method disabled 
+	// favoring the use of MessageBroker as singleton.
+	//this.initialize.apply(this, arguments);
 }
+
+/**
+ * List of iframes that contains brics
+ * @type {Object[]}
+ */
+MessageBroker.prototype.bricIframes = null;
+
+/**
+ * The log level. Higher the number higher the log detail.
+ * @type {int}
+ */
+MessageBroker.prototype.logLevel = 0; // by default, no logging
+
+/**
+ * The Number of bric messages received.
+ * @type {int}
+ */
+MessageBroker.prototype.bricMessageCounter = 0;
+
+/**
+ * The Number of resize messages receved.
+ * @type {int}
+ */
+MessageBroker.prototype.resizeMessageCounter = 0;
+
+/**
+ * The Number of resize messages receved.
+ * @type {int}
+ */
+MessageBroker.prototype.messageHandler = null;
+
+/**
+ * Logs messages to the console.
+ * In order to actually output log message, the logLevel must be greater than the argument level 
+ *
+ * @param {int} level		The level of the current message (E.g. 1= coarse detail .. 5= high detail).
+ * @param {String} message	The actual message.
+ */
+MessageBroker.prototype.log = function (level, message) {
+	if (this.logLevel >= level) {
+			console.log("[MB] " + message);
+		}
+	}
 
 /**
  * MessageBroker.initialize
  *
  * The initialization method.
  *
- * @param {Object} options		Options (currently no option is used) .
+ * @param {Object} options		Options (traceLevel: 0 - no logging, 1 - some logging .. 5=detailed logging ) .
  * 
  */
 MessageBroker.prototype.initialize = function (options) {
+		if (options !== undefined) {
+			if (options.logLevel !== undefined)
+				this.logLevel = options.logLevel;
+		}
 
 		this.convertObjectTagToIframeTag();
 
 		this.bricIframes = document.querySelectorAll('iframe.bric'); // 
-		//this.bricIframes = $("iframe.bric");  // Using jQuery 
+		//this.bricIframes = $("iframe.bric");  // Alternatively can use jQuery 
 
-		// Listen to messages.
 		var _self = this;
-		window.addEventListener('message', function(evt){
-console.log("[MB] Message Received: " + evt.data.messageType);
-			if (evt.data.messageType === 'bricevent') _self.relay(evt);
-			if (evt.data.messageType === 'resize') _self.resize(evt);
-		});
+
+		// Function defined here so we can access the this pointer
+		// (aliased as _self)
+		var _messageHandler = function(evt){
+				_self.log(1, "Message Received: " + evt.data);
+				if (evt.data.messageType === 'bricevent') {
+					_self.bricMessageCounter++;
+					_self.relay(evt);
+				}
+				else if (evt.data.messageType === 'resize') {
+					_self.resizeMessageCounter++;
+					_self.resize(_self, evt);	
+				} 
+				// @todo: implement 'topic' channel
+			}
+
+		// We'd like to keep the pointer to the handler function 
+		// to be able to unregister later.
+		this.messageHandler = _messageHandler;
+
+		// Listen to messages events
+		window.addEventListener('message', this.messageHandler);
 	};
 
-
-	////////// The rest of methods //////////
+/**
+ * MessageBroker.dispose
+ *
+ * Releases used references (the list of iframes), and unregister the message event listener.
+ */
+MessageBroker.prototype.dispose = function () {
+		this.bricIframes = null;
+		window.removeEventListener('message', this.messageHandler);
+		this.log(1, "MessageBroker disposed (listeners removed).");
+	};
 
 /**
  * MessageBroker.initialize
@@ -93,7 +168,8 @@ console.log("[MB] Message Received: " + evt.data.messageType);
  */
 MessageBroker.prototype.relay = function (evt) {
 
-		[].forEach.call(this.bricIframes, function(bricIframe){
+		var _self = this;
+		[].forEach.call(_self.bricIframes, function(bricIframe){
 			// Skip over the iframe that sent the message.
 			if (evt.source === bricIframe.contentWindow) return;
 
@@ -101,7 +177,11 @@ MessageBroker.prototype.relay = function (evt) {
 				messageType: evt.data.messageType,
 				message: evt.data.message
 			}
-			bricIframe.contentWindow.postMessage(message, '*');
+			_self.log(1, "Sending message: " + message);
+			if (bricIframe) {
+				bricIframe.contentWindow.postMessage(message, '*');	
+			}
+			
 		});
 	};
 
@@ -115,16 +195,20 @@ MessageBroker.prototype.relay = function (evt) {
  *
  * @param {Object} evt		The event object as sent by the postMessage().
  */
-MessageBroker.prototype.resize = function (evt) {
-		console.log("Resizing to " + evt.data.width + " x " + evt.data.height);
-		var sourceObject = findIFrameWithWindow(evt.source);
-		sourceObject.style.width = evt.data.width + 'px';
-		sourceObject.style.height = evt.data.height + 'px';
+MessageBroker.prototype.resize = function (that, evt) {
+		
+		var sourceObject = that.findIFrameWithWindow(evt.source);
+		if (sourceObject) {
+			sourceObject.style.width = evt.data.width + 'px';
+			sourceObject.style.height = evt.data.height + 'px';
+		}
 	};
+
+
 
 	////////// methods related to DOM
 	// Maybe is a good idea to refactor them to to a separate class
-	// Say, MasterDocumentManager, that handles DOM related events.
+	// say, DomHelper, that handles DOM related events.
 	// And provides abstraction of specific DOM manipulation
 
 /**

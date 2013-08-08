@@ -113,7 +113,7 @@ $(document).ready(function(){
 	    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 	}
 
-	// I can call parent's function
+	// SEE: I can call parent's function. Limitation: they both must be from same URL
 	var parentsData = parent.window.globalData;
 	parentsData = parent.window.hello();
 	console.log("Accessing global data: "+ parentsData);
