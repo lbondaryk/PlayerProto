@@ -63,7 +63,7 @@ svg g.widgetImageViewer>rect.background
 svg g.bricMarkers line
 {
   fill:     none;
-  stroke:   #ccc;
+  stroke:   #e4e4e4;
   stroke-width: 2;
 }
 
@@ -75,7 +75,6 @@ svg g.bricMarkers circle
 svg g.bricMarkers .lit line
 {
   stroke:   #F05A24;
-  stroke-width: 3;
 }
 
 svg g.bricMarkers polygon,
@@ -83,6 +82,7 @@ svg g.bricMarkers rect,
 svg g.bricMarkers circle
 {
   fill:     #f4f4f4;
+  stroke:   #e4e4e4;
 }
 
 svg g.bricMarkers .lit rect,
@@ -103,14 +103,11 @@ svg g.bricMarkers .lit circle
 
 svg g.bricMarkers .markerLabel
 {
-  max-width: 12em;
   padding: 2px;
   text-align:right;
   color: 666;
   font: Helvetica 9pt;
-  border: 2px solid #e4e4e4;
-  background-color: #f4f4f4;
-  background-image: -webkit-linear-gradient(left, #f4f4f4 0%, #e4e4e4 100%);
+  background-color: #e4e4e4;
   padding: 8px 8px;
 }
 
@@ -173,22 +170,45 @@ div.widgetRadioGroup table.questionTable tr>td:nth-of-type(2)
 	padding-left:	8px;
 }
 
-/* tables of callouts
+
+/* Sliders
+================================================== */
+
+span.widgetSlider 
+{
+  font-size: 14px;
+  margin-left: 3px;  
+  margin-right: 10px; 
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #e4e4e4;
+  max-width: 30px;
+}
+
+span.widgetSlider .range
+{
+  margin: 10px;
+}
+
+/* tables of callouts/data
 ================================================== */
 table.widgetCallout {
   border: 2px solid #f4f4f4;
-  width: 90%; }
+  width: auto; }
 
 table.widgetCallout td {
   vertical-align: top;
   padding-top: 5px;
+  padding-bottom: 3px;
   padding-right: 15px;
-  padding-left: 15px; }
+  padding-left: 15px; 
+  text-align: right;}
 
 table.widgetCallout thead>tr td {
   border-bottom: 2px solid #f4f4f4;
-  padding-bottom: 2px;
-  font-weight: bold; }
+  padding-bottom: 3px;
+  font-weight: bold; 
+  text-align: right;}
   
 
 table tr.widgetCallout.lit 
@@ -196,15 +216,8 @@ table tr.widgetCallout.lit
 	color:#1d456e;
 	border-left: 4px solid #F05A24;
 	background-color: #f4f4f4;
-  background-image: -webkit-linear-gradient(left, #f4f4f4 0%, #e4e4e4 100%);
 }
 
-table tr.widgetCallout.lit .stepBadge
-{
-  
-  background-color: #F05A24;
-
-}
 /* used in callout automatic step numbering */
 
 .stepBadge {
@@ -286,9 +299,6 @@ svg g.widgetSketch .shape>text {
     margin-top: 0;
     margin-right: 5px; }
 
-table.questionTable td {
-  vertical-align: top; }
-
 .hanging {
   padding-left: 22px;
   text-indent: -22px; }
@@ -351,14 +361,6 @@ table.questionTable td {
   padding: 0em 0.2em; }
 
 
-
-
-.sliderLabel {
-  font-weight: bold;
-  	margin-left: 3px;  
-    border: none;
-    margin-right: 10px; 
-	max-width: 30px;}
 	
 /* Axes
 ================================================== */
@@ -524,32 +526,9 @@ svg g .fillNone {
   fill: none;
 }
 
-/* tables of data and readouts
+/* readouts
 ================================================== */
-table.data {
-  border-collapse: collapse;
-  width: 100%; }
 
-table.data td {
-  vertical-align: top;
-  padding-top: 5px;
-  padding-right: 15px;
-  padding-left: 5px; }
-
-thead.data tr td {
-  border-bottom: 1px solid #000000;
-  padding-bottom: 2px;
-  font-weight: bold; }
-
-td.rightAlign {
-  padding: 5px;
-  text-align: right;
-  min-width: 5em; }
-
-tr:first-child td {
-  padding-bottom: 10px; }
-tr.liteable td {
-  padding-bottom: 0; }
 
 .dataLabel {
   font-weight: bold;
