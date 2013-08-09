@@ -307,6 +307,16 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 		// TODO: logic here is a little flawed, it assumes that the axes is on the 
 		// bottom and left of the graph - lb
 
+		//Date formats apparently differ across platforms, so it's necessary to parse them out,
+		//something like this.  This doesn't work on my iPad, although stackOverflow claims it should
+		// http://stackoverflow.com/questions/5324178/javascript-date-parsing-on-iphone
+		function makeDate(dateString) 
+		{
+			var dateArr = dateString.split(/[- / :]/);
+    		return new Date(dateArr[0], dateArr[1]-1);
+
+		} 
+
 		var xVal = d3.round(that.lastdrawn.xScale(that.type === "y" ? 0 : (that.axisType == "time" ? new Date(d.x): d.x)));
 		var yVal = d3.round(that.type === "y" ? that.lastdrawn.yScale(d.y) : 0);
 
