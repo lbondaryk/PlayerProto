@@ -32,6 +32,32 @@ var activities = {
 				},
 		},
 
+	"co2Decrease": { 
+		question: "What is the average seasonal decrease in CO2 concentration for these three years (high &minus; low)?",
+		"001": {
+				correctValue: 15.6,
+				score: 1,
+				response: "For example, in 1972, the difference was 335.5 &minus; 318.77 = 16.73."
+				},
+		},
+
+	"co2Increase": { 
+		question: "What is the average seasonal increase in CO2 concentration for these three years (high &minus; low)?",
+		"001": {
+				correctValue: 17.3,
+				score: 1,
+				response: "For example, between 1972 and 1973, the difference was 336.95 &minus; 318.77 = 18.18."
+				},
+		},
+
+	"co2Yr": { 
+		question: "What is the average seasonal increase in CO2 concentration for these three years (high &minus; low)?",
+		"001": {
+				correctValue: 1.7,
+				score: 1,
+				response: ""
+				},
+		},
 	"lowMonth": { 
 		question: "In what month is the CO2 concentration usually the lowest?",
 		answer000: {

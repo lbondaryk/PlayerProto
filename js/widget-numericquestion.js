@@ -267,7 +267,7 @@ NumericQuestion.prototype.draw = function(container)
 
 	var question = widgetGroup.append("p")
 		.attr("class", "question")
-		.text(this.question);
+		.html(this.question);
 	
 	var choiceWidgetCntr = widgetGroup.append("div")
 		.attr("class", "choices")
@@ -291,11 +291,9 @@ NumericQuestion.prototype.draw = function(container)
 		this.choiceWidget.draw(choiceWidgetCntr);
 	}
 
-	// draw the submit button below
-	var submitButtonCntr = widgetGroup.append("div")
-		.attr("class", "submit");
+	// draw the submit button 
 
-	this.submitButton.draw(submitButtonCntr);
+	this.submitButton.draw(choiceWidgetCntr);
 
 	widgetGroup.append("div")
 		.attr("class", "responses");

@@ -99,6 +99,15 @@ function MarkerGroup(config, eventManager)
 	this.type = config.type;
 	
 	/**
+	 * The mode specifies whether markers can be dragged
+	 *
+	 *  - "drags" for for draggable
+	 *
+	 * @type {string|undefined}
+	 */
+	this.mode = config.mode;
+	
+	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
 	 * @type {EventManager}
 	 */
@@ -308,7 +317,7 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 		// bottom and left of the graph - lb
 
 		//Date formats apparently differ across platforms, so it's necessary to parse them out,
-		//something like this.  This doesn't work on my iPad, although stackOverflow claims it should
+		//something like this.  We'll need to do this properly everywhere.
 		// http://stackoverflow.com/questions/5324178/javascript-date-parsing-on-iphone
 		function makeDate(dateString) 
 		{
@@ -343,7 +352,7 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 		//if a full data point crossing is specified, put a dot there.
 	markerCollection.append("circle")
 		.attr("cx", function (d){	
-			return d.x ? d3.round(that.lastdrawn.xScale(that.type === "y" ? d.x : 0)) : -size.width;
+			return d.x ? d3.round(that.lastdrawn.xScale(that.type === "y" ? (that.axisType == "time" ? new Date(d.x): d.x) : 0)) : -size.width;
 		})
 		.attr("cy", function (d){	
 			// if a y value is specified, and the markers are horizontal, put the dot at 0, which
@@ -413,6 +422,7 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 					d.key = 'key' in d ? d.key : i.toString();
 					});
 	
+	if (this.mode == "drags") {
 	var dragBehavior = d3.behavior.drag()
 		// todo: learn how to use d3 origin control on drags
     	//.origin(function(d) { return d; })
@@ -443,6 +453,8 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 			console.log("TODO: log fired marker " + d.key + " to position " + d.x);
 		});
 
+		markerCollection.call(dragBehavior);
+	}
 
 	markerCollection
 		.on('click',
@@ -452,8 +464,7 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 					that.lite(d.key);
 				});
 
-	markerCollection.call(dragBehavior);
-				
+
 	this.lastdrawn.markerCollection = markerGroup.selectAll("g.marker");
 
 }; // end of MarkerGroup.draw()
