@@ -23,6 +23,15 @@
  * @type {Object}
  * */
 var activities = {		
+	"louder": { 
+		question: "How high does it go?",
+		"001": {
+				correctValue: 11,
+				score: 1,
+				response: "It's one louder."
+				},
+		},
+
 	"lowMonth": { 
 		question: "In what month is the CO2 concentration usually the lowest?",
 		answer000: {
@@ -206,7 +215,7 @@ var activities = {
 				},
 		"greater": {
 				content: "greater resistance",
-				score: 1,
+				score: 0,
 				response:   "More length impedes electrons, making it harder to pass charge.",
 				},
 		"same": {
