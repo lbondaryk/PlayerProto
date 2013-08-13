@@ -332,7 +332,7 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 	
 	var choiceWidgetCntr = widgetGroup.append("div")
 		.attr("class", "choices")
-		.attr("id", "choice_id");
+		.attr("id", this.id + "_choice_id");
 
 	// check if it's an SVG widget with a size, in which case
 	// create 
@@ -340,7 +340,7 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 	if (Array.isArray(this.svgSize)){
 
 		var mcSVG = new SVGContainer({
-			node: d3.select("#choice_id"),
+			node: choiceWidgetCntr,
 			maxWid: this.svgSize[0],
 			maxHt: this.svgSize[1]
 		});
