@@ -298,9 +298,16 @@ LabelGroup.prototype.draw = function(container, size)
 
 }; // end of LabelGroup.draw()
 
+/* *************************************************************************
+ * currently there are no features that require updates of data/position/etc.
+ * to label groups, so redraw is empty.  Eventually, when we need to drag 
+ * labels around, we'll have to parcel out the redraw and draw methods.
+ ************************************************************************/
 LabelGroup.prototype.redraw = function () {
 
 };
+
+
 /* **************************************************************************
  * LabelGroup.setScale                                                 */ /**
  *

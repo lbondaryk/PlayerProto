@@ -58,6 +58,128 @@ var activities = {
 				response: ""
 				},
 		},
+	"bWarmA": { 
+		question: "Why is B (Atlantic) warmer than A (Pacific)",
+		answer000: {
+				content:  "Because the gulf stream warms to water on the Atlantic coast",
+				score: 1,
+				response: ""
+				},
+		answer001: {
+				content:  "Because it's shallower",
+				score: 0,
+				response:  "",
+				},
+		answer002: {
+				content: "Because it's deeper",
+				score: 0,
+				response:  "",
+				},
+		answer003: {
+				content: "Because it's saltier",
+				score: 0,
+				response:  "",
+				}
+		},
+
+		"oceanRegion": { 
+		question: "Which region stands out as having either the lowest or the highest overall value for each of the data shown?",
+		a01: {
+				content:  "Region A, upper Pacific Ocean",
+				score: 0,
+				response: "While dissolved oxygen and nitrate are extremes, tempeature and salinity are ganged tightly with other values."
+				},
+		a02: {
+				content:  "Region B, upper Atlantic Ocean",
+				score: 1,
+				response:  "Temperature, salinity, and oxygen are all higher than the others for most depths, and nitrate is substantially lower.",
+				},
+		a03: {
+				content: "Region C, equatorial Pacific Ocean",
+				score: 0,
+				response:  "",
+				},
+		a04: {
+				content: "Region D, lower Atlantic Ocean",
+				score: 0,
+				response:  "",
+				},
+		a05: {
+				content: "Region E, South Polar oceans",
+				score: 0,
+				response:  "",
+				}
+		},
+		"cOxyE": { 
+		question: "Why does C (Pacific) have less oxygent than E (by the South Pole)?",
+		answer000: {
+				content:  "It's colder",
+				score: 1,
+				response: ""
+				},
+		answer001: {
+				content:  "It's shallower",
+				score: 0,
+				response:  "",
+				},
+		answer002: {
+				content: "It's saltier",
+				score: 0,
+				response:  "",
+				},
+		answer003: {
+				content: "Air currents bring more oxygen to the South Pole",
+				score: 0,
+				response:  "",
+				}
+		},
+	"bSaltyA": { 
+		question: "Why is B (Atlantic) warmer than A (Pacific)",
+		answer000: {
+				content: "The gulf stream carries salt to the mid Atlantic",
+				score: 0,
+				response: ""
+				},
+		answer001: {
+				content:  "Minimal rainfall and a lot of evaporation occur in the Atlantic",
+				score: 1,
+				response:  "This area, the saltiest anywhere in the open ocean, is analogous to deserts on land, where little rainfall and a lot of evaporation occur. ",
+				},
+		answer002: {
+				content: "Because it's shallower than the Pacific",
+				score: 0,
+				response:  "",
+				},
+		answer003: {
+				content: "Because it's more oxygenated",
+				score: 0,
+				response:  "",
+				}
+		},
+
+	"cWarmE": { 
+		question: "In what month is the CO2 concentration usually the lowest?",
+		answer000: {
+				content: "Because it is more oxygenated",
+				score: 0,
+				response: ""
+				},
+		answer001: {
+				content: "Because it is in the Pacific Ocean",
+				score: 0,
+				response:  "",
+				},
+		answer002: {
+				content: "Because the equator is exposed to more sunlight during the year",
+				score: 1,
+				response:  "",
+				},
+		answer003: {
+				content: "It is not warmer",
+				score: 0,
+				response:  "",
+				}
+		},
 	"lowMonth": { 
 		question: "In what month is the CO2 concentration usually the lowest?",
 		answer000: {

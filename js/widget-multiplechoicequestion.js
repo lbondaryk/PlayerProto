@@ -151,6 +151,7 @@ function MultipleChoiceQuestion(config, eventManager)
 	var choices = config.choices;
 
 	this.svgSize = config.svgSize;
+	this.svgBaseBrix = config.svgBaseBrix;
 
 	if (config.order === undefined || config.order === "randomized")
 	{
@@ -345,7 +346,14 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 			maxHt: this.svgSize[1]
 		});
 
-		mcSVG.append(this.choiceWidget);
+		if(this.svgBaseBrix) {
+		 	this.svgBaseBrix.append(this.choiceWidget);
+		 	mcSVG.append(this.svgBaseBrix);
+		}
+		
+		else {
+		mcSVG.append(this.choiceWidget)
+		}
 	}
 	
 	else {

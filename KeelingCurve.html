@@ -122,9 +122,7 @@
 
 
 
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
+	//the eventManager and submitManager are created for every page for Brix on that page
 	var eventManager = new EventManager();
 	var submitManager = new SubmitManager(eventManager);
 
