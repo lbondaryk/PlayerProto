@@ -12,46 +12,37 @@
 
             var eventManager = new EventManager();
 
-            eventManager.subscribe("topicTest", function(content) {
-            	rxMessageCtr++;
-
-            	/* Sending message to the master page to assert unit test */
-				window.parent.postMessage({
-		            messageType:"unittest",
-		            originId:iframeID,
-		            rcvCounter:rxMessageCtr
-		        }, '*');
-
-            	console.log("[" + iframeID + "] Rx: " + rxMessageCtr);
-            });
-	        eventManager.listenBroker();
 
 			window.onload = function(){
+				eventManager.subscribe("topicTest", function(content) {
+	            	rxMessageCtr++;
+
+	            	/* Sending message to the master page to assert unit test */
+					window.parent.postMessage({
+			            channel:"unittest",
+			            originId:iframeID,
+			            rcvCounter:rxMessageCtr
+			        }, '*');
+
+	            	console.log("[" + iframeID + "] Rx: " + rxMessageCtr);
+	            });
+
+		        eventManager.listenBroker();
+
+		        eventManager.publish("topicTest", {value:'testval'});
+
+		        /*
 				window.parent.postMessage({
-		            messageType:"bricevent",
+		            channel:"bricevent",
 		            message: {
 				 		sendTime:"2013-05-27T12:00:01",
 				 		topic:"topicTest",
-						eventData: {value:25}
+						eventData: {value:'testval'}
 				 	}
-		        }, '*');
+		        }, '*');*/
 				
-		        //listenBroker(iframeID);
 		    }
 
-
-	        /**
-	         * Start listening to the broker messages
-	         */
-	        function listenBroker(iframeID)
-			{
-				window.addEventListener('message', function(e){
-					var data = e.data;
-					if (data.messageType === 'bricevent'){
-console.log("["+iframeID+"] EventManager: Handling bricevent:" + JSON.stringify(data));
-					}
-				});
-			}
 
 			/**
 			 * Get parameter from the url

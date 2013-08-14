@@ -99,6 +99,18 @@ EventManager.prototype.subscribe = function(eventId, handler)
 	
 	// Add the handler to the list of handlers of the eventId
 	event.handlers.push(handler);
+
+	// YSAP - Send to the parent window as well.
+	// For the message structure see messagebroker.js
+	if (this.publishToBroker_) {
+		window.parent.postMessage(
+		{
+			channel: "topic",
+			topic: eventId,
+			action: "subscribe"
+		}, '*');	
+console.log("["+location.href+"] EventManager: published to MessageBroker with topic '" + eventId + "'");
+	}
 };
 
 
@@ -155,7 +167,7 @@ EventManager.prototype.publish = function(eventId, eventDetails)
 	if (this.publishToBroker_) {
 		window.parent.postMessage(
 		{
-			messageType: "bricevent",
+			channel: "bricevent",
 			message: {
 				topic: eventId,
 				eventData: eventDetails
@@ -181,7 +193,7 @@ EventManager.prototype.listenBroker = function()
 	window.addEventListener('message', function(e){
 	var data = e.data;
 	var here = location.href;
-	if (data.messageType === 'bricevent'){
+	if (data.channel === 'bricevent'){
 console.log("["+location.href+"] EventManager: Handling bricevent:" + JSON.stringify(data));
 			// Publish in the local iframe 
 			_this.publishLocal(data.message.topic, data.message.eventData, true);

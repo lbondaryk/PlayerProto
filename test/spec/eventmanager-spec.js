@@ -7,10 +7,10 @@
      * Wrapper function to do delayed check
      * @see http://stackoverflow.com/questions/11235815/is-there-a-way-to-get-chai-working-with-asynchronous-mocha-tests
      */
-    function asyncCheck( done, f ) {
+    function asyncCheck( done, func ) {
         try {
-            f()
-        done()
+            func();
+            done();
         } catch( e ) {
             done( e )
         }
@@ -66,6 +66,8 @@
                 expect(topicRcvCounter['TRES']).to.equal(3);
             });
         });
+        
+         
 
         /**
          * Test the functionality of EventManager with MessageBroker.
@@ -80,23 +82,24 @@
             var iframeRcvCounter = {};
 
             before(function () {
-
+                console.log("## TEST/EventManager/before:");
+                // Message Listener to collect number of bric messages received by iframes
+                window.addEventListener('message', function(evt){
+                    if (evt.data.channel === 'unittest') {
+                        iframeRcvCounter[evt.data.originId] = evt.data.rcvCounter;
+                    } 
+                });
+ 
                 containerDiv = helper.createNewDiv();
                 var objNode1 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=ALPHA");
                 var objNode2 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=BETA");
 
                 messageBroker = new MessageBroker();
-                messageBroker.initialize({logLevel:1});
-
-                /* Message Listener to collect number of bric messages received by iframes */
-                window.addEventListener('message', function(evt){
-                    if (evt.data.messageType === 'unittest') {
-                        iframeRcvCounter[evt.data.originId] = evt.data.rcvCounter;
-                    } 
-                });
+                messageBroker.initialize({logLevel:4});
             });
 
             after(function () {
+                console.log("## TEST/EventManager/after:");
                 // Clean up test modifications to the DOM
                 helper.removeAllChildren(containerDiv);
                 // Releasing reference and registered event listeners in the Message Bro 
