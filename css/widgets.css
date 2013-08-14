@@ -463,30 +463,41 @@ svg g.widgetLegend .legendBox {
 }
 
 svg g .stroke0 {
-  stroke: #6176ba; }
+  stroke: #87c26a; }
 
 svg g .stroke1 {
-  stroke: #27a9b0; }
+  stroke: #5688d6; }
 
 svg g .stroke2 {
-  stroke: #d04753; }
+  stroke: #fabc4a; }
 
 svg g .stroke3 {
-  stroke: #78ad5c; }
+  stroke: #f25757; }
 
 svg g .stroke4 {
- stroke: #f05a24; }
+  stroke: #19bac2; }
 
 svg g .stroke5 {
-  stroke: #f1b13b; }
+  stroke: #cc76cc; }
 
 svg g .stroke6 {
-  stroke: #667383; }
+  stroke: #96b5e0; }
 
 svg g .stroke7 {
-  stroke: #3c434d; }
+  stroke: #ff7747; }
 
+svg g .stroke8 {
+  stroke: #2ea0d9; }
 
+svg g .stroke9 {
+  stroke: #d19469; }
+
+svg g .stroke10 {
+  stroke: #339999; }
+
+svg g .stroke11 {
+  stroke: #8063c7; }
+  
 /* bars, lines and points
 ================================================== */
 svg g.widgetBarChart rect,
@@ -499,28 +510,40 @@ svg g.widgetBarChart rect .lit {
 
 
 svg g .fill0 {
-  fill: #6176ba; }
+  fill: #87c26a; }
 
 svg g .fill1 {
-  fill: #27a9b0; }
+  fill: #5688d6; }
 
 svg g .fill2 {
-  fill: #d04753; }
+  fill: #fabc4a; }
 
 svg g .fill3 {
-  fill: #78ad5c; }
+  fill: #f25757; }
 
 svg g .fill4 {
-  fill: #f05a24; }
+  fill: #19bac2; }
 
 svg g .fill5 {
-  fill: #f1b13b; }
+  fill: #cc76cc; }
 
 svg g .fill6 {
-  fill: #667383; }
+  fill: #96b5e0; }
 
 svg g .fill7 {
-  fill: #3c434d; }
+  fill: #ff7747; }
+
+svg g .fill8 {
+  fill: #2ea0d9; }
+
+svg g .fill9 {
+  fill: #d19469; }
+
+svg g .fill10 {
+  fill: #339999; }
+
+svg g .fill11 {
+  fill: #8063c7; }
 
 svg g .fillWhite {
   fill: #fff;
@@ -543,7 +566,7 @@ svg g .fillNone {
   margin-left: 3px; 
   }
   
-  .dataLabel.green {
+.dataLabel.green {
     background: green;
     color: #fff;
     border: 1px solid #004d00;

@@ -810,6 +810,9 @@ function Axes(container, config)
 
 		if (this.xFmt.type == "linear")
 		{
+			// if the mode is reverse, swap the order of the extent so it's drawn in reverse
+			(this.xFmt.mode === "reverse") ? xExtent.reverse() : null;
+	
 			this.xScale = d3.scale.linear().domain(xExtent)
 				.rangeRound([0, dataAreaWidth]);
 			//xScale is now a linear function mapping x-data to the width of the drawing space
@@ -989,6 +992,7 @@ function Axes(container, config)
 	    }
 		else
 		{
+			
 			//check that the y range extends down to 0, because data graphs
 			// that don't include 0 for y are misleading
 			if (this.yFmt.extent[0] > 0)
@@ -1000,6 +1004,9 @@ function Axes(container, config)
 
 			if (this.yFmt.type == "linear")
 			{
+				// if the mode is reverse, swap the order of the extent so it's drawn in reverse
+				(this.yFmt.mode === "reverse") ? yExtent.reverse() : null;
+				
 				this.yScale = d3.scale.linear().domain(yExtent)
 					.rangeRound([dataAreaHeight, 0]);
 			}

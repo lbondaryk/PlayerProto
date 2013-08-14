@@ -221,7 +221,7 @@ LineGraph.prototype.draw = function(container, size)
 	
 	
 	//todo: the y axis probably needs similar conditioning to the x axis settings,
-	//ticks and extent are only synonymous if you are drawing bar charts, and even
+	//ticks and extent are only synonymous if you are drawing ordinal charts, and even
 	//then that's not a perfect assumption -lb
 	if (axesConfig.yAxisFormat.type == 'ordinal' && !Array.isArray(axesConfig.yAxisFormat.ticks))
 	{
@@ -242,7 +242,6 @@ LineGraph.prototype.draw = function(container, size)
 		if(Array.isArray(axesConfig.xAxisFormat.ticks))
 		{
 			axesConfig.xAxisFormat.ticks = axesConfig.xAxisFormat.ticks.map(function (pt) {return new Date(pt);});
-			console.log("ticks " , axesConfig.xAxisFormat.ticks);
 		}
 
 
@@ -255,6 +254,7 @@ LineGraph.prototype.draw = function(container, size)
 
 
 	}
+
 	//make the axes for this graph - draw these first because these are the 
 	//pieces that need extra unknown space for ticks, ticklabels, axis label
 	this.lastdrawn.axes = new Axes(this.lastdrawn.container, axesConfig);

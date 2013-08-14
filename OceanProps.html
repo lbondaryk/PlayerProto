@@ -44,7 +44,7 @@
 		<div class="row-fluid">
 			<div class="span6 leftCol">
 				<p>The ocean has a variety of properties that allow us to interrogate climate change, physical oceanography, and other phenomena.  Some of these properties drive and affect others, and some are reflective of regional differences.
-				Select any letter marker on the map to see it's related data.
+				Select any letter marker on the map to see it's related data. Use these explorations to answer the question about the data.
 			</p>
 				<div id="earth"></div>
 			</div>
@@ -1163,12 +1163,13 @@ var Q0Choices = [
 			xAxisFormat: { type: "linear",
 						   ticks: [0, 4, 8, 12, 16, 20, 24],
 						   orientation: "top",
-						   label: "Temperature (&deg;C)" },
+						   label: "Temperature (&deg;C)",
+						 },
 			yAxisFormat: { type: "linear",
 						   orientation: "left",
-						   sense: "reverse",
+						   mode: "reverse",
 						   label: "Depth (m)",
-						    ticks: 6,
+						   ticks: 6,
 						    },
 		}, eventManager);	
 
@@ -1182,9 +1183,9 @@ var Q0Choices = [
 						   label: "Salinity (psu)" },
 			yAxisFormat: { type: "linear",
 						   orientation: "left",
-						   sense: "reverse",
+						   mode: "reverse",
 						   label: "Depth (m)",
-						    ticks: 6,
+						   ticks: 6,
 						    },
 		}, eventManager);	
 			
@@ -1198,9 +1199,9 @@ var Q0Choices = [
 						   label: "Dissolved Oxygen (&micro;mol/kg)" },
 			yAxisFormat: { type: "linear",
 						   orientation: "left",
-						   sense: "reverse",
+						   mode: "reverse",
 						   label: "Depth (m)",
-						    ticks: 6,
+						   ticks: 6,
 						    },
 		}, eventManager);	
 
@@ -1214,7 +1215,7 @@ var Q0Choices = [
 						   label: "Nitrate (&micro;mol/kg)" },
 			yAxisFormat: { type: "linear",
 						   orientation: "left",
-						   sense: "reverse",
+						   mode: "reverse",
 						   label: "Depth (m)",
 						    ticks: 6,
 						    },
