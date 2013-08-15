@@ -1,18 +1,21 @@
 /* **************************************************************************
  * $Workfile:: eventmanager.js                                              $
- * *********************************************************************/ /**
+ * **********************************************************************//**
  *
  * @fileoverview Implementation of an EventManager object.
  *
  * The EventManager implements the Observer pattern, aka (Publish/Subscribe)
- * as described here: {@link http://msdn.microsoft.com/en-us/magazine/hh201955.aspx}
+ * as described here: http://msdn.microsoft.com/en-us/magazine/hh201955.aspx
  * A javascript implementation of this pattern is available at:
- * {@link https://github.com/mroderick/PubSubJS}
+ * https://github.com/mroderick/PubSubJS
+ *
+ * @todo: See whether changing to object literal (singleton) makes more sense.
+ *        Make it requirejs friendly
+ *        Do we need regexp or subtopic matching? 
  *
  * Created on		March 18, 2013
  * @author			Michael Jay Lippert
- *
- * @copyright (c) 2013 Michael Jay Lippert, All rights reserved.
+ * @author			Young Suk Ahn Park
  *
  * **************************************************************************/
 
@@ -25,7 +28,9 @@
  ****************************************************************************/
 
 /* **************************************************************************
- * EventManager                                                        */ /**
+ * EventManager                                                         *//**
+ *
+ * @constructor
  *
  * The event manager keeps track of subscribers of a particular topic (event)
  * so that when a publisher publishes that topic all of the subscribers can
@@ -35,11 +40,11 @@
  * one widget on a page to respond to an event published (fired) by another
  * widget on the page. It also will allow for multiple response to a single
  * event.
- *
- * @constructor
+ * @param {boolean} publishToBroker		Whether or not to send message to the 
+ * 										MessageBroker in the parent window 
  *
  ****************************************************************************/
-function EventManager()
+function EventManager(publishToBroker)
 {
 	// Private Fields (should not be referenced except by EventManager methods)
 	
@@ -50,10 +55,25 @@ function EventManager()
 	 * @private
 	 */
 	this.events_ = {};
+
+	this.publishToBroker_ = (publishToBroker === undefined) ? true : publishToBroker;
 }
 
+
 /* **************************************************************************
- * EventManager.subscribe                                              */ /**
+ * EventManager.enablePublishToBroker                                   *//**
+ *
+ * Method to enable or disable publishing the message to the MessageBroker
+ * in the parent window.
+ *
+ * @param {boolean} enable		True enables, false disables.
+ *								
+ ****************************************************************************/
+EventManager.prototype.enablePublishToBroker = function(enable) {
+	this.publishToBroker_ = enable;
+}
+/* **************************************************************************
+ * EventManager.subscribe                                               *//**
  *
  * EventManager class method to subscribe to an event that an object may fire.
  *
@@ -81,11 +101,42 @@ EventManager.prototype.subscribe = function(eventId, handler)
 	event.handlers.push(handler);
 };
 
+
 /* **************************************************************************
- * EventManager.publish                                                */ /**
+ * EventManager.publishLocal                                           *//**
  *
  * EventManager class method to publish (fire) an event calling the
  * notification function of all subscribers of that event.
+ * This method does not send message to the MessageBroker.
+ *
+ * @param {string} eventId		The identifier of the event being fired.
+ *								aka topic.
+ * @param {Object} eventDetails	The details of the event to be passed to each
+ *								subscriber's notification function. Its value
+ *								is specific to the particular event.
+ *
+ ****************************************************************************/
+EventManager.prototype.publishLocal = function(eventId, eventDetails)
+{
+	// If there are no subscribers, do nothing
+	if (eventId in this.events_)
+	{
+		var event = this.events_[eventId];
+		
+		// Call all the subscribed notification functions for this event
+		for (var i = 0; i < event.handlers.length; ++i)
+		{
+			var handler = event.handlers[i];
+			handler(eventDetails);
+		}
+	}
+}
+
+/* **************************************************************************
+ * EventManager.publish                                                 *//**
+ *
+ * Besides publishing the event to the local subscribers, it also sends 
+ * to the MessageBroker which is an message listener at parent window.
  *
  * @param {string} eventId		The identifier of the event being fired.
  *								aka topic.
@@ -97,17 +148,43 @@ EventManager.prototype.subscribe = function(eventId, handler)
 EventManager.prototype.publish = function(eventId, eventDetails)
 {
 	// If there are no subscribers, do nothing
-	if (!(eventId in this.events_))
-	{
-		return;
+	this.publishLocal(eventId, eventDetails);
+
+	// YSAP - Send to the parent window as well.
+	// For the message structure see messagebroker.js
+	if (this.publishToBroker_) {
+		window.parent.postMessage(
+		{
+			messageType: "bricevent",
+			message: {
+				topic: eventId,
+				eventData: eventDetails
+			}
+		}, '*');	
 	}
 	
-	var event = this.events_[eventId];
-	
-	// Call all the subscribed notification functions for this event
-	for (var i = 0; i < event.handlers.length; ++i)
-	{
-		var handler = event.handlers[i];
-		handler(eventDetails);
-	}
 };
+
+/* **************************************************************************
+ * EventManager.listenBroker                                             *//**
+ *
+ * Start listening to the window's message event. 
+ * Only required if the iframe contains bric that listens to events.
+ * The iframe are supposed to invoke this method when all the objects are 
+ * ready to handle events. 
+ *
+ *
+ ****************************************************************************/
+EventManager.prototype.listenBroker = function()
+{
+	var _this = this;
+	window.addEventListener('message', function(e){
+	var data = e.data;
+	var here = location.href;
+	if (data.messageType === 'bricevent'){
+console.log("["+location.href+"] EventManager: Handling bricevent:" + JSON.stringify(data));
+			// Publish in the local iframe 
+			_this.publishLocal(data.message.topic, data.message.eventData, true);
+		}
+	});
+}
