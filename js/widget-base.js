@@ -810,6 +810,9 @@ function Axes(container, config)
 
 		if (this.xFmt.type == "linear")
 		{
+			// if the mode is reverse, swap the order of the extent so it's drawn in reverse
+			(this.xFmt.mode === "reverse") ? xExtent.reverse() : null;
+	
 			this.xScale = d3.scale.linear().domain(xExtent)
 				.rangeRound([0, dataAreaWidth]);
 			//xScale is now a linear function mapping x-data to the width of the drawing space
@@ -831,7 +834,6 @@ function Axes(container, config)
 
 	    if (this.xFmt.type == "time")
 	    {
-	    	console.log("x extent", xExtent);
 	    	this.xScale = d3.time.scale()
     			.domain(xExtent)
     			.rangeRound([0, dataAreaWidth]);
@@ -909,7 +911,6 @@ function Axes(container, config)
 
 			else {
 				this.xAxis.ticks(xTicks);
-				console.log(" ticks : ", this.xAxis.ticks);
 			}
 		}
 		else if (this.xFmt.type == "log")
@@ -989,6 +990,7 @@ function Axes(container, config)
 	    }
 		else
 		{
+			
 			//check that the y range extends down to 0, because data graphs
 			// that don't include 0 for y are misleading
 			if (this.yFmt.extent[0] > 0)
@@ -1000,6 +1002,9 @@ function Axes(container, config)
 
 			if (this.yFmt.type == "linear")
 			{
+				// if the mode is reverse, swap the order of the extent so it's drawn in reverse
+				(this.yFmt.mode === "reverse") ? yExtent.reverse() : null;
+				
 				this.yScale = d3.scale.linear().domain(yExtent)
 					.rangeRound([dataAreaHeight, 0]);
 			}
@@ -1015,9 +1020,7 @@ function Axes(container, config)
 
 		//if y ticks are specified explicitly, use them
 		Array.isArray(yTicks) ? (this.yAxis.tickValues(yTicks)) : (this.yAxis.ticks(yTicks));
-		//test tick type switch
-		console.log("ytick specified explicitly?", yTicks, Array.isArray(yTicks), this.yAxis.ticks());
-
+		 
 		this.yaxis = this.group.append("g")
 			.attr("transform", "translate(" + ((yOrient == "right") ? dataAreaWidth : 0) + ",0)")
 			//move it over if the axis is at the bottom of the graph
@@ -1041,11 +1044,6 @@ function Axes(container, config)
 					.attr("class", "axisLabel")
 					.html(this.yFmt.label) //make the label
 				;
-
-			/* this requires jquery be loaded, and I've otherwise removed
-			 * jquery as a dependency of this file -mjl
-			console.log("label size ", $('#label' + this.id).height());*/
-			
 			//toDO use this to correctly move to the left of axis
 		}
 
@@ -1112,7 +1110,6 @@ function Axes(container, config)
 		if (this.yFmt.type=="ordinal")
 		{
 			this.yScale.rangeRoundBands([dataAreaHeight, 0], .3);
-			console.log("ordinal bandsize ", this.yScale.rangeBand());
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 30% white space
 		}

@@ -74,7 +74,20 @@ function Slider(config, eventManager)
 	this.minVal = config.minVal;
 	this.maxVal = config.maxVal;
 	this.stepVal = config.stepVal;
+
+	/**
+	 * Text unit to display after the readout.  Currently for display only.
+	 * later could be used to multiply the value by a unit.
+	 * @type {string}
+	 */
+
 	this.unit = config.unit;
+
+	/**
+	 * Text to display before the readout and slider.  Currently for display only.
+	 * later could be used to multiply the value by a unit.
+	 * @type {string}
+	 */
 	this.label = config.label;
 
 	/**
@@ -148,15 +161,17 @@ Slider.prototype.draw = function(container)
 	var widgetGroup = $("<span />").addClass("widgetSlider");
 	$(cntrElement).append(widgetGroup);
 
-	//write a label in front of the input if there is one
+	
 	widgetGroup
-				.addClass("dataInput") // TODO: There is styling associated w/ this class that isn't widget specific. I don't think we want that. -mjl
+	//write a label in front of the input if there is one
 				.append($("<span role='label' />")
 					.html(this.label ? this.label : "")
 				)
 				.append("&nbsp;&nbsp;&nbsp;")
+	//prepend a readout so user setting for value is visible
 				.append(readOut)
-				.append($("<span />")
+	//prepend the minimum value for the slider in the display
+				.append($("<span class='range'/>")
 					.html(" &nbsp;&nbsp;&nbsp;" + this.minVal)
 				)
 				.append($("<span class='slider' style='display:inline-block; min-width: 100px;' />")
@@ -182,18 +197,10 @@ Slider.prototype.draw = function(container)
 							}
 						} )
 				)
-				.append($("<span />")
+	//prepend the maximum value for the slider in the display
+				.append($("<span class='range'/>")
 					.text(this.maxVal)
 				);
-	
-	/*this.display = new Readout({
-			node: d3.select("#"+readOutId),
-			id: that.id + "_Display",
-			startVal: 0,//this.format(this.startVal),
-			readOnly: true,
-			size: 4,
-			unit:  (this.unit ? this.unit : ""), 
-		});*/
 
 	this.lastdrawn.value = this.startVal;
 	this.lastdrawn.widgetGroup = widgetGroup.get(0);
@@ -246,3 +253,20 @@ Slider.prototype.setValue = function(newValue)
 	return oldValue;
 };
 
+/* **************************************************************************
+ * Slider.selectedValue                                             */ /**
+ *
+ * Return the selectedValue of the slider.  If, in future, we wish to make a slider
+ * carry data or an expression associated with it's set value, this might
+ * be a place to hang it, to be parallel to the way multiple choice radio
+ * buttons work.
+ *
+ * @return {Object} the radio group data corresponding to the choice 
+ * which is currently selected or null.
+ *
+ ****************************************************************************/
+Slider.prototype.selectedItem = function ()
+{
+	var selectedValue = this.getValue();
+	return selectedValue;
+};

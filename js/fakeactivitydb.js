@@ -23,7 +23,214 @@
  * @type {Object}
  * */
 var activities = {		
-	SanVan001: { 
+	"louder": { 
+		question: "How high does it go?",
+		"001": {
+				correctValue: 11,
+				score: 1,
+				response: "It's one louder."
+				},
+		},
+
+	"co2Decrease": { 
+		question: "What is the average seasonal decrease in CO2 concentration for these three years (high &minus; low)?",
+		"001": {
+				correctValue: 15.6,
+				score: 1,
+				response: "For example, in 1972, the difference was 335.5 &minus; 318.77 = 16.73."
+				},
+		},
+
+	"co2Increase": { 
+		question: "What is the average seasonal increase in CO2 concentration for these three years (high &minus; low)?",
+		"001": {
+				correctValue: 17.3,
+				score: 1,
+				response: "For example, between 1972 and 1973, the difference was 336.95 &minus; 318.77 = 18.18."
+				},
+		},
+
+	"co2Yr": { 
+		question: "What is the average seasonal increase in CO2 concentration for these three years (high &minus; low)?",
+		"001": {
+				correctValue: 1.7,
+				score: 1,
+				response: ""
+				},
+		},
+	"bWarmA": { 
+		question: "Why is B (Atlantic) warmer than A (Pacific)",
+		answer000: {
+				content:  "Because the gulf stream warms to water on the Atlantic coast",
+				score: 1,
+				response: ""
+				},
+		answer001: {
+				content:  "Because it's shallower",
+				score: 0,
+				response:  "",
+				},
+		answer002: {
+				content: "Because it's deeper",
+				score: 0,
+				response:  "",
+				},
+		answer003: {
+				content: "Because it's saltier",
+				score: 0,
+				response:  "",
+				}
+		},
+
+		"oceanRegion": { 
+		question: "Which region stands out as having either the lowest or the highest overall value for each of the data shown?",
+		a01: {
+				content:  "Region A, upper Pacific Ocean",
+				score: 0,
+				response: "While dissolved oxygen and nitrate are extremes, tempeature and salinity are ganged tightly with other values."
+				},
+		a02: {
+				content:  "Region B, upper Atlantic Ocean",
+				score: 1,
+				response:  "Temperature, salinity, and oxygen are all higher than the others for most depths, and nitrate is substantially lower.",
+				},
+		a03: {
+				content: "Region C, equatorial Pacific Ocean",
+				score: 0,
+				response:  "",
+				},
+		a04: {
+				content: "Region D, lower Atlantic Ocean",
+				score: 0,
+				response:  "",
+				},
+		a05: {
+				content: "Region E, South Polar oceans",
+				score: 0,
+				response:  "",
+				}
+		},
+		"cOxyE": { 
+		question: "Why does C (Pacific) have less oxygent than E (by the South Pole)?",
+		answer000: {
+				content:  "It's colder",
+				score: 1,
+				response: ""
+				},
+		answer001: {
+				content:  "It's shallower",
+				score: 0,
+				response:  "",
+				},
+		answer002: {
+				content: "It's saltier",
+				score: 0,
+				response:  "",
+				},
+		answer003: {
+				content: "Air currents bring more oxygen to the South Pole",
+				score: 0,
+				response:  "",
+				}
+		},
+	"bSaltyA": { 
+		question: "Why is B (Atlantic) warmer than A (Pacific)",
+		answer000: {
+				content: "The gulf stream carries salt to the mid Atlantic",
+				score: 0,
+				response: ""
+				},
+		answer001: {
+				content:  "Minimal rainfall and a lot of evaporation occur in the Atlantic",
+				score: 1,
+				response:  "This area, the saltiest anywhere in the open ocean, is analogous to deserts on land, where little rainfall and a lot of evaporation occur. ",
+				},
+		answer002: {
+				content: "Because it's shallower than the Pacific",
+				score: 0,
+				response:  "",
+				},
+		answer003: {
+				content: "Because it's more oxygenated",
+				score: 0,
+				response:  "",
+				}
+		},
+
+	"cWarmE": { 
+		question: "In what month is the CO2 concentration usually the lowest?",
+		answer000: {
+				content: "Because it is more oxygenated",
+				score: 0,
+				response: ""
+				},
+		answer001: {
+				content: "Because it is in the Pacific Ocean",
+				score: 0,
+				response:  "",
+				},
+		answer002: {
+				content: "Because the equator is exposed to more sunlight during the year",
+				score: 1,
+				response:  "",
+				},
+		answer003: {
+				content: "It is not warmer",
+				score: 0,
+				response:  "",
+				}
+		},
+	"lowMonth": { 
+		question: "In what month is the CO2 concentration usually the lowest?",
+		answer000: {
+				content: "August",
+				score: 1,
+				response: "When plants are in leaf and performing photosynthesis, CO<sub>2</sub> drops."
+				},
+		answer001: {
+				content: "May",
+				score: 0,
+				response:  "You're looking for the lowest concentration, which will occur at the end of the vegitation growth season.",
+				},
+		answer002: {
+				content: "January",
+				score: 0,
+				response:  "The concentration has little to do with the calendar.",
+				},
+		answer003: {
+				content: "June-July",
+				score: 0,
+				response:  "You are close, but read the graph more carefully.",
+				}
+		},
+
+	"highMonth": { 
+		question: "In what month is the CO2 concentration usually the highest?",
+		answer000: {
+				content: "August",
+				score: 0,
+				response: "When plants are in leaf and performing photosynthesis, CO<sub>2</sub> drops."
+				},
+		answer001: {
+				content: "May",
+				score: 1,
+				response:  "When plants are just starting their growth season, CO<sub>2</sub> is elevated.",
+				},
+		answer002: {
+				content: "January",
+				score: 0,
+				response:  "The concentration has little to do with the calendar.",
+				},
+		answer003: {
+				content: "June-July",
+				score: 0,
+				response:  "You are close, but read the graph more carefully.",
+				}
+		},
+
+
+
+	"SanVan001": { 
 		question: "Why does it take less and less time to add each additional billion people to the planet?",
 		answer000: {
 				content: "Because as the population increases, the absolute number of births increases even though the growth rate stays constant.",
@@ -98,7 +305,7 @@ var activities = {
 				response:  "I believe you are thinking of vampires.",
 				},
 		},
-	ThrowTheBall: { 
+	"ThrowTheBall": { 
 		question: "Set the initial velocity and angle of the throw such that the player makes the basket.",
 		"notright": {
 				content: "",
@@ -109,6 +316,60 @@ var activities = {
 				content: "v<sub>i</sub> = 7.3, &theta; = 59&deg;",
 				score: 1,
 				response:  "Right on target.",
+				}
+		},
+	"LabelsMC": { 
+		question: "Which of these is on top.",
+		"top": {
+				content: "A",
+				score: 1,
+				response: "Glad you know which end is up."
+				},
+		"middle": {
+				content: "B",
+				score: 0.5,
+				response:  "Try going all the way up.",
+				},
+		"bottom": {
+				content: "C",
+				score: 0,
+				response:  "You seem to be upside down.",
+				}
+		},
+	"Resist1": { 
+		"question": "What is the change in resistance for a wire of greater cross-section?",
+		"smaller": {
+				content: "smaller resistance",
+				score: 1,
+				response:  "More area allows more room for electrons to move and pass charge."
+				},
+		"greater": {
+				content: "greater resistance",
+				score: 0,
+				response:   "More area allows more room for electrons to move and pass charge.",
+				},
+		"same": {
+				content: "the same resistance",
+				score: 0,
+				response:  "More area allows more room for electrons to move and pass charge.",
+				}
+		},
+	"Resist2": { 
+		"question": "What is the change in resistance for a wire of shorter length?",
+		"smaller": {
+				content: "smaller resistance",
+				score: 1,
+				response:  "More length impedes electrons, making it harder to pass charge."
+				},
+		"greater": {
+				content: "greater resistance",
+				score: 0,
+				response:   "More length impedes electrons, making it harder to pass charge.",
+				},
+		"same": {
+				content: "the same resistance",
+				score: 0,
+				response:  "More length impedes electrons, making it harder to pass charge.",
 				}
 		},
 	"http://hub.paf.pearson.com/resources/sequences/123/nodes/1": {

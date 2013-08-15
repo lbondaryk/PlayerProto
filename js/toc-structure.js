@@ -177,7 +177,12 @@ var bookConfig = {
                 id: "n.3.9",
                 title: "Ocean Properties"
             }, 
-
+            {
+                type: "objective",
+                url: "NeffBarAnim.html",
+                id: "n.3.10",
+                title: "Age Structure and Dependency Ratio"
+            }, 
             ]
 		},
 		{

@@ -22,18 +22,35 @@
  * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
  * @param {string} 		studAnswer		-The student's answer.
  ****************************************************************************/
-var answerMan = function (sequenceNode, studAnswer)
+var answerMan = function (sequenceNode, studAnswerKey, studAnswerValue)
 { 
 	 
 	//lookup the student answer in the answer key in fakeactivitydb.js, which
 	//got loaded with the page
+	
 	var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
-	var solution = (studAnswer in activity) ? activity[studAnswer] : "solution key not found";
+	var solution = (studAnswerKey in activity) ? activity[studAnswerKey] : "solution key not found";
 
 	// stash the answer score and response in some variables
 	//var ansKey = ('score' in solution) ? activity.score : "answer key not found";
-	var ansKey = solution.score;
+	
+	// what follows is an unbelievably bogus implementation of numerical answer
+	// scoring.  There is only one answer key for numerical problems, and it always
+	// returns correct.  The numerical right answer is stored in the correctValue key.
+	// This can only be absolutely compared with the submitted value.  If they match,
+	// you get one, otherwise, 0, and the content (used in the response generator),
+	// is set to the value the student submitted.
+	
 	var feedback = solution.response;
+	if (studAnswerValue)
+		{
+		ansKey = studAnswerValue != solution.correctValue ? 0 : 1;
+		solution.content = studAnswerValue;
+		}
+	else
+		{
+			var ansKey = solution.score;
+		}
 	
 	//initialized the scored return object.  We'll need to know it's container
 	//(specifies where to write the responses), the value of the student submission,
@@ -48,6 +65,11 @@ var answerMan = function (sequenceNode, studAnswer)
 	//response.  Should be either 0 for wrong, 1 for right, or anything else for
 	//partial credit for the fallthrough case.
 				
+	//note that the current implementation of the submitmanager uses the score
+	//as an array index, and so these must be integers.  Not sure if we'll want
+	//to keep doing that in the long term, but eventually we'll need some kind of 
+	//sliding scale functionality that allows some answers to be more correct
+	//and some less -lb
 	switch(ansKey)
 		{
 		case 1:
@@ -66,8 +88,8 @@ var answerMan = function (sequenceNode, studAnswer)
 			
 		//fallthrough case for partially correct answers.
 		default:
-  			scored.score = 0.5;
-			scored.response =" Sorta kinda.";
+  			scored.score = 2;
+			//scored.response =" Sorta kinda.";
   			break;
 		}
 	

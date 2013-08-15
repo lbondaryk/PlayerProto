@@ -21,7 +21,8 @@
 	[
 		{
 			content: "Dewatering and hydrofracking",
-			answerKey: "correct"
+			answerKey: "correct",
+			key: "litemeUp"
 		},
 		{
 			content: "Dewatering and mining",
@@ -59,8 +60,10 @@
 });
 
 /**
- * Answers are presented to users by certain widgets that allow the user to
- * select one (or more of them).
+ * choices are presented through dropdown widgets that allow the user to
+ * select one (or more of them). Nominally they need content.  But if they are
+ * configured as a question they need an answerKey to go with each choice.  As with 
+ * other brix, they can optionally have an associative highlighting key.
  *
  * @typedef {Object} Answer
  * @property {string}	content		-The content of the answer, which presents the
@@ -69,10 +72,11 @@
  * 									 they choose/submit this answer.
  * @property {string}	answerKey	-This is the unique ID that will be returned
  * 									 to the scoring engine to identify that the
- * 									 user has chosen this answer.
+ * 									 user has chosen this answer
+ * @property {string|undefined}	key 		-highlighting key saying which to select and which
+ *									 other things to select on the page.
  *
- * @todo: the content currently must be text (a string) however, we are likely
- * to want to make the content be a chemical symbol or math equation widget in future.
+ * @todo: response isn't really used here, it comes from the answer database.
  * @todo: One important use of select is as a quiz-me version of a labeled diagram
  * or image.  We will need to layer these on top of SVG objects in SVG pixel positions.
  */
@@ -92,7 +96,10 @@
  * 						config.id		-String to uniquely identify this SelectGroup.
  * 										 if undefined a unique id will be assigned.
  * @param {Array.<Answer>}
- *						config.choices	-The list of choices (answers) to be presented by the SelectGroup.
+ *						config.choices	-The list of choices to be presented by the SelectGroup.
+ * 
+ * @param {boolean.question}			-A flag indicating whether the bric is
+ *										to be configured as a question to the student
  *
  ****************************************************************************/
 function SelectGroup(config, eventManager)
@@ -111,6 +118,8 @@ function SelectGroup(config, eventManager)
 	 */
 	this.choices = config.choices;
 
+	this.question = config.question;
+
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
 	 * @type {EventManager}
@@ -122,7 +131,7 @@ function SelectGroup(config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.changedValueEventId = this.id + '_option';
+	this.selectedEventId = this.id + '_option';
 	
 	/**
 	 * The event details for this.selectedEventId events
@@ -138,6 +147,7 @@ function SelectGroup(config, eventManager)
 		{
 			container: null,
 			widgetGroup: null,
+			options: null,
 			choiceSelected: null,
 		};
 } // end of SelectGroup constructor
@@ -170,7 +180,9 @@ SelectGroup.prototype.draw = function(container)
 	var widgetGroup = container.append("span")
 		.attr("class", "widgetSelectGroup")
 		.attr("id", this.id);
-		
+	
+	this.lastdrawn.widgetGroup = widgetGroup;
+
 	var selectTag = widgetGroup.append("select")
 						.attr("name", this.id)
 						//set the width to auto so it sizes to content
@@ -180,50 +192,119 @@ SelectGroup.prototype.draw = function(container)
 	var options = selectTag.selectAll("option").data(this.choices);
 	
 	options.enter().append("option") 
-			.attr("value", function (d) {return d.answerKey;})
 			//use html to populate the options so any markup is retained
 			.html(function(d) {return d.content});
+	
+	// autokey entries which have no key with the data index
+	options.each(function (d, i) { 
+					// if there is no key assigned, make one from the index
+					d.key = 'key' in d ? d.key : i.toString();
+					});
+
+	options.attr("value", function (d) {return d.key;});
 	
 	selectTag.on('change',
 				function ()
 				{
-					that.eventManager.publish(that.changedValueEventId, {
-							selectedIndex: this.selectedIndex,
-							selectValue: that.choices[this.selectedIndex].answerKey});
+					that.eventManager.publish(that.selectedEventId, {
+						// the selected key is in the value, so figure out 
+						// which entry you picked, and return it's value, that
+						// is the same as the key.  There's probably a more elegant
+						// way to do this with the datum associated, but it escaped me -lb
+							selectKey: options[0][this.selectedIndex].value
+						});
 				});
 	
-	//when the page first loads, we want the selectedIndex to be -1
+	//when the page first loads, we want the selectedIndex to be -1 for unanswered questions
 	//which causes the dropdown to display a blank. This means that any choice,
 	//even the first one in the list, represents a change.  Prolly want to do
 	//this differently once we've implemented state. -lb			
-	selectTag[0][0].selectedIndex = -1;
 	
-	this.lastdrawn.widgetGroup = widgetGroup;
+	if (this.question == true) {
+		selectTag[0][0].selectedIndex = -1;
+	}
+
+	this.lastdrawn.options = options;
+
 
 }; // end of SelectGroup.draw()
 
 /* **************************************************************************
- * SelectGroup.getselectedIndex                                        */ /**
+ * SelectGroup.lite                                                     */ /**
  *
- * Return the selected item in the select group.
+ * Highlight the label(s) associated w/ the given liteKey (key) and
+ * remove any highlighting on all other labels.
  *
- * @return {Object} the select group item which is currently selected.
+ * @param {string}	liteKey	-The key associated with the elements to be highlighted.
  *
  ****************************************************************************/
-SelectGroup.prototype.getSelectedIndex = function ()
+SelectGroup.prototype.lite = function (liteKey)
 {
-	return document.getElementById(this.id).selectedIndex;
-};
+	console.log("TODO: log fired Select highlite " + liteKey);
+	
+	//highlighting a dropdown means both selecting an element and
+	//giving focus to the dropdown to call attention to it's possible
+	//selection change
+	this.lastdrawn.widgetGroup.select("select")[0][0].focus();
+	var allOptions = this.lastdrawn.options;
+	// turn off all selections
+	allOptions.property("selected", false);
+	
+	// create a filter function that will match all instances of the liteKey
+	var matchesKey = function (d, i) { return d.key === liteKey.toString(); };
+	// then find the set that matches
+	var pickMe = allOptions.filter(matchesKey);
+
+	// select it the matching options  
+	pickMe.property("selected", true);
+	
+
+	if (pickMe.empty())
+	{
+		console.log("No key '" + liteKey + "' in select group " + this.id );
+	}
+}; // end of LabelGroup.lite()
+
+
 /* **************************************************************************
- * SelectGroup.selectedItem                                            */ /**
+ * SelectGroup.selectedItem                                         */ /**
  *
- * Return the selected item in the select group.
+ * Return the selected item's data in the select group.
  *
- * @return {Object} the select group item which is currently selected.
+ * @return {Object} the select group item data which is currently selected.
  *
  ****************************************************************************/
-SelectGroup.prototype.setSelectedIndex = function (newIndex)
+SelectGroup.prototype.selectedItem = function ()
 {
-	document.getElementsByName(this.id)[0].selectedIndex = newIndex;
+	var inputCollection = this.lastdrawn.widgetGroup.select("select");
+	// selectedIndex is 0-based, but nth child is 1-based, so add 1
+	var index = inputCollection[0][0].selectedIndex + 1;
+	var selectedInput = inputCollection.selectAll(":nth-child(" + index + ")");
+	
+	return !selectedInput.empty() ? selectedInput.datum() : null;
+};
+
+/* **************************************************************************
+ * SelectGroup.selectItemAtIndex                                      */ /**
+ *
+ * Sets the selection to the selected input's data, and publishes the answerKey.
+ *
+ * @return {Object} publish the selectKey with the answerKey for scoring.
+ *
+ ****************************************************************************/
+SelectGroup.prototype.selectItemAtIndex = function (index)
+{
+	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetSelectGroup select");
+	var selectedInput = choiceInputs[0][index];
+
+	if (selectedInput.selected)
+	{
+		return;
+	}
+
+	// choice at index is not selected, so select it and publish selected event
+	selectedInput.selected = true;
+
+	this.eventManager.publish(this.selectedEventId, {selectKey: d3.select(selectedInput).datum().answerKey});
 };
 

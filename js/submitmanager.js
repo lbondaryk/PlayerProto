@@ -18,13 +18,8 @@
  ****************************************************************************/
 
 // Sample SubmitManager constructor configuration
-(function()
-{
-	var submit1Config = {
-		sequenceNodeID: 'ThrowTheBall',
-		container: q1Button.lastdrawn.container
-		};
-});
+// NA - information about the container to return to and the question ID is
+// passed from the question type, e.g. multiple choice. No config.
 
 /* **************************************************************************
  * SubmitManager                                                       */ /**
@@ -48,7 +43,7 @@
  * is a callback associated w/ the request.
  *
  ****************************************************************************/
-function SubmitManager(config, eventManager)
+function SubmitManager(eventManager)
 {
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
@@ -124,6 +119,7 @@ SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 		{
 			sequenceNodeId: eventDetails.questionId,
 			answer: eventDetails.answerKey,
+			value: eventDetails.submissionValue,
 			responseCallback: eventDetails.responseCallback,
 			requestDetails: eventDetails,
 		};
@@ -165,7 +161,7 @@ SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 	// enhance this to have the "answerMan" give us an asynchronous
 	// response, probably via an eventManager event. -mjl
 	var submissionResponse = answerMan(submitDetails.sequenceNodeId,
-										submitDetails.answer);
+										submitDetails.answer, submitDetails.value);
 
 	// We handle the reply from the scoring engine (in the event handler eventually)
 	// by removing the request from the list of pending request
@@ -239,13 +235,13 @@ SubmitManager.appendResponseWithDefaultFormatting = function (container, respons
 	var responseFormat = {
 			correct: {
 				icon: "icon-ok-sign",
-				answerPrefix: "Congratulations, Your answer, ",
+				answerPrefix: "Congratulations, your answer, ",
 				answerSuffix:  ", is correct. ",
 				responseClass: "alert-success"
 			},
 			incorrect: {
 				icon: "icon-remove",
-				answerPrefix: "Sorry, Your answer, ",
+				answerPrefix: "Sorry, your answer, ",
 				answerSuffix:  ", is not correct. ",
 				responseClass: "alert-error"
 			},
@@ -262,7 +258,7 @@ SubmitManager.appendResponseWithDefaultFormatting = function (container, respons
 			}
 		};
 
-	var scoreAnsType = ["unknown", "incorrect", "correct"];
+	var scoreAnsType = ["unknown", "incorrect", "correct", "partial"];
 
 	var ansType = "unknown";
 	if (typeof responseDetails.score === "number")

@@ -24,10 +24,32 @@
 		<div class="row-fluid">
 			<div class="span12 leftCol">
             	<h2 class="setTitle"></h2>
-              	<p>Ocean temperature grows colder with depth.  Here are heat maps showing the distribution of ocean water temperatures across the globe at four depths.  Answer the questions about each temperature.
+              	<p>Ocean temperature grows colder with depth.  Here are heat maps showing the distribution of ocean water temperatures across the globe at four depths, alongside images showing the salinity and the oxygen concentration at the ocean surface. Answer the questions about the variations across the globe.
               	</p>
 				<div id="selectEvents"></div>
 				<div id="oceanTemp"></div>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span6 leftCol">
+				<div id="qCwarmE"></div>
+				<div id="qBwarmA"></div>
+			</div>
+			<div class="span6 rightCol">
+				<div id="qBsaltyA"></div>
+				<div id="qEfresh"></div>
+				<div id="qCoxyE"></div>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span6 leftCol">
+				<p>The ocean has a variety of properties that allow us to interrogate climate change, physical oceanography, and other phenomena.  Some of these properties drive and affect others, and some are reflective of regional differences.
+				Select any letter marker on the map to see it's related data. Use these explorations to answer the question about the data.
+			</p>
+				<div id="earth"></div>
+			</div>
+			<div class="span6 rightCol">
+				<div id="graphs"></div>
 			</div>
 		</div>
 	</div>
@@ -51,19 +73,23 @@
     <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
     <script src="js/widget-imageviewer.js"></script>
-    <script src="js/widget-selectgroup.js"></script>
-	<script src="js/eventmanager.js"></script>
+	<script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/eventmanager.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
 
 	<script>
 
-
-
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
+	//the eventManager and submitManager are created for every page for Brix on that page
 	var eventManager = new EventManager();
+	var submitManager = new SubmitManager(eventManager);
 
-	//salinity carousel
+	//temperature carousel
 	var profiles = new SelectGroup(
 		{	id: "seas",
 			choices: [
@@ -94,8 +120,8 @@
 							
 var svg3D = new SVGContainer({
 		node: d3.select("#oceanTemp"),
-		maxWid: 850,
-		maxHt: 650
+		maxWid: 1000,
+		maxHt: 475
 	});
 	
 var layers = new ImageViewer({
@@ -103,71 +129,90 @@ var layers = new ImageViewer({
 			[
 				new Image({
 				URI: 'img/oceans/oceanTemp0m.png',
-				caption: "",
+				caption: "Ocean Temperature at 0 m (surface)",
 				actualSize: {height: 530, width: 930}
 				}),
 				new Image({
 				URI: 'img/oceans/oceanTemp500m.png',
-				caption: "",
+				caption: "Ocean Temperature at 500 m",
 				actualSize: {height: 530, width: 930}
 				}),
 				new Image({
 				URI: 'img/oceans/oceanTemp1000m.png',
-				caption: "",
+				caption: "Ocean Temperature at 1000 m",
 				actualSize: {height: 530, width: 930}
 				}),
 				new Image({
 				URI: 'img/oceans/oceanTemp2500m.png',
-				caption: "",
+				caption: "Ocean Temperature at 2500 m",
 				actualSize: {height: 530, width: 930}
 				})
 			],
 	}, eventManager);
 
-svg3D.append(layers);
+svg3D.append(layers, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.6});
 							
-var labels = new LabelGroup(
+var labels1 = new LabelGroup(
 		{type: "latin-upper",
 		labels: 	
 		  [	
-			{content: "1", xyPos:[0.5, 0.58], width: 0, key: "A"},
-			{content: "2", xyPos:[0.78, 0.58], width: 0, key: "B"},
-			{content: "3", xyPos:[0.62, 0.44], width: 0, key: "C"},
-			{content: "", xyPos:[0.77, 0.25], width: 0, key: "D"},
+			{content: "", xyPos:[0.5, 0.67], width: 0, key: "A"},
+			{content: "", xyPos:[0.78, 0.67], width: 0, key: "B"},
+			{content: "", xyPos:[0.62, 0.48], width: 0, key: "C"},
+			{content: "", xyPos:[0.79, 0.25], width: 0, key: "D"},
 			{content: "", xyPos:[0.33, 0.2], width: 0, key: "E"},
 		  ]
 		}, eventManager);
 		
 	// write the labels onto the graph in the local coordinates, inside the 
 	// data area
-	svg3D.append(labels);
+	layers.image.append(labels1);
 
-eventManager.subscribe(profiles.changedValueEventId, carouselUpdate);
+var salImage = new CaptionedImage ({
+			image: new Image({
+				URI: 'img/oceans/oceanSalinity.png',
+				caption: "Ocean Salinity at 0 m (surface)",
+				actualSize: {height: 530, width: 930}
+				}),
+			captionPosition: "below"
+		}
+	)
+
+var oxyImage = new CaptionedImage ({
+			image: new Image({
+				URI: 'img/oceans/oceanOxygen.png',
+				caption: "Ocean Oxygen Concentration at 0 m (surface)",
+				actualSize: {height: 530, width: 930}
+				}),
+			captionPosition: "below"
+		}
+	)
+
+svg3D.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+
+svg3D.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+
+
+eventManager.subscribe(profiles.selectedEventId, carouselUpdate);
 eventManager.subscribe(layers.selectedEventId, dropdownUpdate);
+
+eventManager.subscribe(labels1.selectedEventId, labelLite);
+
 
 function carouselUpdate (eventDetails)
 {
 	 
-	layers.selectItemAtIndex(eventDetails.selectedIndex);
+	layers.selectItemAtIndex(eventDetails.selectKey);
 }
 
 function dropdownUpdate ()
 {
 	var newImage = layers.selectedItem();
 	var newval = layers.itemKeyToIndex(newImage.key);
-	profiles.setSelectedIndex(newval);
+	profiles.lite(newval);
 }
 
-// draw the highlightable dates table
-	var clickDates = new Callouts({
-		show: "all",
-		headers: ["Date", "CO<sub>2</sub> Concentration (ppm)" ],
-		textBits: [
-		{cols: ["a question"]},
-			]
-	}, eventManager);
-	
-	//clickDates.draw(d3.select("#dates"));
+ 
 /* configure and draw the SVG container and the graph of the multiple co2 data
 
 	var cont1 = new SVGContainer({
@@ -218,7 +263,7 @@ function dropdownUpdate ()
 	// graph is written to the bottom 80% of SVG area
 	lines.append([marks, legLines]);
 
-*/
+
 	
 	
 	
@@ -229,8 +274,30 @@ function dropdownUpdate ()
 	eventManager.subscribe(lines.selectedEventId,
 						   handleHighlight);
 
-
+*/
 	
+
+/************************************************************************
+* labelLite			                                            *//**
+*
+* handleInputValueChanged is called from the event handler for one of
+* the input widgets when the user changes its value. It updates the
+* given matching input widget's value to match the new value and then
+* updates the bar chart.
+*
+* @param eventDetails			These are the keyed values returned by 
+*								the event, in this case, a selection
+*								(click).
+*************************************************************************/
+	function labelLite(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+	
+		labels1.lite(eventDetails.selectKey);
+		
+	}
+
 /************************************************************************
 * handleHighlight                                            *//**
 *
@@ -243,7 +310,7 @@ function dropdownUpdate ()
 *								the event, in this case, a selection
 *								(click).
 *************************************************************************/
-	function handleHighlight(eventDetails)
+/*	function handleHighlight(eventDetails)
 	{
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
@@ -252,43 +319,979 @@ function dropdownUpdate ()
 		legLines.lite(eventDetails.selectKey);
 		
 	}
+*/
 
-// Handle highlight clicks on the markers and table
-	eventManager.subscribe(clickDates.selectedEventId,
-						   handleSelectionChanged);
-	eventManager.subscribe(marks.selectedEventId,
-						   handleSelectionChanged);
+//Multiple Choice questions randomized
 
- 
-//TEST: set the start highlight state of 0 index by calling the 
-//handler with a hard-set index of 0.  This should result in the
-//first label getting highlighted and the first callout being displayed.
-	handleSelectionChanged({selectKey: '0'});
+var Q0Choices = [
+		{
+			content: "Because it is more oxygenated",
+			answerKey: "answer000"
+		},
+		{
+			content: "Because it is in the Pacific Ocean",
+			answerKey: "answer001"
+		},
+		{
+			content: "Because the equator is exposed to more sunlight during the year",
+			answerKey: "answer002"
 	
+		},
+		{
+			content: "It is not warmer",
+			answerKey: "answer003"
+		}
+		];
+
+	var Q0 = new MultipleChoiceQuestion({
+			questionId: "cWarmE",
+			question: "Why is C warmer than E?",
+			choices: Q0Choices,
+			order: "randomized",
+			widget: RadioGroup,
+			widgetConfig: {
+				numberFormat: "none",
+			},
+		}, eventManager);
+
+	Q0.draw(d3.select("#qCwarmE"));
+
+	submitManager.handleRequestsFrom(Q0);
+
+
+	var Q1Choices = [
+		{
+			content: "Because the gulf stream warms to water on the Atlantic coast",
+			answerKey: "answer000"
+		},
+		{
+			content: "Because it's shallower",
+			answerKey: "answer001"
+		},
+		{
+			content: "Because it's deeper",
+			answerKey: "answer002"
+	
+		},
+		{
+			content: "Because it's saltier",
+			answerKey: "answer003"
+		}
+		];
+
+	var Q1 = new MultipleChoiceQuestion({
+			questionId: "bWarmA",
+			question: "Why is B warmer than A?",
+			choices: Q1Choices,
+			order: "randomized",
+			widget: RadioGroup,
+			widgetConfig: {
+				numberFormat: "none",
+				question: true,
+			},
+		}, eventManager);
+
+	Q1.draw(d3.select("#qBwarmA"));
+
+	submitManager.handleRequestsFrom(Q1);
+	
+
+	var Q2Choices = [
+		{
+			content: "The gulf stream carries salt to the mid Atlantic",
+			answerKey: "answer000"
+		},
+		{
+			content: "Minimal rainfall and a lot of evaporation occur in the Atlantic",
+			answerKey: "answer001"
+		},
+		{
+			content: "Because it's shallower than the Pacific",
+			answerKey: "answer002"
+	
+		},
+		{
+			content: "Because it's more oxygenated",
+			answerKey: "answer003"
+		}
+		];
+
+	var Q2 = new MultipleChoiceQuestion({
+			questionId: "bSaltyA",
+			question: "Why is B saltier than A?",
+			choices: Q2Choices,
+			order: "randomized",
+			widget: RadioGroup,
+			widgetConfig: {
+				numberFormat: "none",
+				question: true,
+			},
+		}, eventManager);
+
+	Q2.draw(d3.select("#qBsaltyA"));
+
+
+	var Q3Choices = [
+		{
+			content: "colder",
+			answerKey: "answer000"
+		},
+		{
+			content: "shallower",
+			answerKey: "answer001"
+		},
+		{
+			content: "saltier",
+			answerKey: "answer002"
+	
+		},
+		{
+			content: "closer to the South Pole",
+			answerKey: "answer003"
+		}
+		];
+
+	var Q3 = new MultipleChoiceQuestion({
+			questionId: "cOxyE",
+			question: "The water at E has more dissolved oxygen than at C because it is",
+			choices: Q3Choices,
+			order: "randomized",
+			widget: SelectGroup,
+			widgetConfig: {
+				numberFormat: "none",
+				question: true,
+			},
+		}, eventManager);
+
+	Q3.draw(d3.select("#qCoxyE"));
+
+	submitManager.handleRequestsFrom(Q3);
+
+	//multiple data for each letter region
+
+	var tempData= [
+	[
+	{y: 	0	, x: 	18.4	},
+{y:	10	, x:	18.25	},
+{y:	20	, x:	17.92	},
+{y:	30	, x:	17.28	},
+{y:	50	, x:	15.77	},
+{y:	75	, x:	14.46	},
+{y:	100	, x:	13.58	},
+{y:	125	, x:	12.95	},
+{y:	150	, x:	12.45	},
+{y:	200	, x:	11.75	},
+{y:	250	, x:	11.09	},
+{y:	300	, x:	10.39	},
+{y:	400	, x:	8.889	},
+{y:	500	, x:	7.087	},
+{y:	600	, x:	5.588	},
+{y:	700	, x:	4.684	},
+{y:	800	, x:	4.084	},
+{y:	900	, x:	3.678	},
+{y:	1000	, x:	3.409	},
+{y:	1100	, x:	3.172	},
+{y:	1200	, x:	2.987	},
+{y:	1300	, x:	2.838	},
+{y:	1400	, x:	2.663	},
+{y:	1500	, x:	2.543	},
+{y:	1750	, x:	2.216	},
+{y:	2000	, x:	1.974	},
+{y:	2500	, x:	1.679	},
+{y:	3000	, x:	1.545	},
+{y:	3500	, x:	1.501	},
+{y:	4000	, x:	1.487	},
+{y:	4500	, x:	1.508	},
+{y:	5000	, x:	1.553	},
+{y:	5500	, x:	1.583	},
+
+	],
+	[ {y:	0	, x:	21.76	},
+{y:	10	, x:	21.69	},
+{y:	20	, x:	21.53	},
+{y:	30	, x:	21.18	},
+{y:	50	, x:	20.33	},
+{y:	75	, x:	19.47	},
+{y:	100	, x:	18.88	},
+{y:	125	, x:	18.5	},
+{y:	150	, x:	18.26	},
+{y:	200	, x:	17.93	},
+{y:	250	, x:	17.66	},
+{y:	300	, x:	17.34	},
+{y:	400	, x:	16.57	},
+{y:	500	, x:	15.39	},
+{y:	600	, x:	13.72	},
+{y:	700	, x:	11.77	},
+{y:	800	, x:	9.634	},
+{y:	900	, x:	8.079	},
+{y:	1000	, x:	6.764	},
+{y:	1100	, x:	5.903	},
+{y:	1200	, x:	5.361	},
+{y:	1300	, x:	4.96	},
+{y:	1400	, x:	4.672	},
+{y:	1500	, x:	4.439	},
+{y:	1750	, x:	4.071	},
+{y:	2000	, x:	3.823	},
+{y:	2500	, x:	3.364	},
+{y:	3000	, x:	2.951	},
+{y:	3500	, x:	2.57	},
+{y:	4000	, x:	2.339	},
+
+	],
+	[{y:	0	, x:	24.68	},
+{y:	10	, x:	24.49	},
+{y:	20	, x:	24.29	},
+{y:	30	, x:	23.91	},
+{y:	50	, x:	22.43	},
+{y:	75	, x:	19.35	},
+{y:	100	, x:	16.33	},
+{y:	125	, x:	14.48	},
+{y:	150	, x:	13.51	},
+{y:	200	, x:	12.73	},
+{y:	250	, x:	12.27	},
+{y:	300	, x:	11.74	},
+{y:	400	, x:	9.732	},
+{y:	500	, x:	8.084	},
+{y:	600	, x:	7.028	},
+{y:	700	, x:	6.21	},
+{y:	800	, x:	5.52	},
+{y:	900	, x:	4.96	},
+{y:	1000	, x:	4.554	},
+{y:	1100	, x:	4.183	},
+{y:	1200	, x:	3.846	},
+{y:	1300	, x:	3.499	},
+{y:	1400	, x:	3.284	},
+{y:	1500	, x:	3.042	},
+{y:	1750	, x:	2.545	},
+{y:	2000	, x:	2.25	},
+{y:	2500	, x:	1.885	},
+{y:	3000	, x:	1.687	},
+{y:	3500	, x:	1.514	},
+{y:	4000	, x:	1.476	},
+
+	],
+	[ 
+	{y:	0	, x:	16.76	},
+{y:	10	, x:	16.7	},
+{y:	20	, x:	16.6	},
+{y:	30	, x:	16.48	},
+{y:	50	, x:	15.88	},
+{y:	75	, x:	15.1	},
+{y:	100	, x:	14.37	},
+{y:	125	, x:	13.65	},
+{y:	150	, x:	13.04	},
+{y:	200	, x:	11.87	},
+{y:	250	, x:	10.64	},
+{y:	300	, x:	9.954	},
+{y:	400	, x:	8.009	},
+{y:	500	, x:	6.108	},
+{y:	600	, x:	5.111	},
+{y:	700	, x:	4.401	},
+{y:	800	, x:	3.826	},
+{y:	900	, x:	3.416	},
+{y:	1000	, x:	3.153	},
+{y:	1100	, x:	3.004	},
+{y:	1200	, x:	2.927	},
+{y:	1300	, x:	2.816	},
+{y:	1400	, x:	2.768	},
+{y:	1500	, x:	2.801	},
+{y:	1750	, x:	2.878	},
+{y:	2000	, x:	2.891	},
+{y:	2500	, x:	2.764	},
+{y:	3000	, x:	2.183	},
+{y:	3500	, x:	1.401	},
+{y:	4000	, x:	0.7934	},
+{y:	4500	, x:	0.3464	},
+{y:	5000	, x:	0.2517	},
+{y:	5500	, x:	0.272	},
+	],
+	[
+	{y:	0	, x:	3.184	},
+{y:	10	, x:	3.124	},
+{y:	20	, x:	3.199	},
+{y:	30	, x:	3.12	},
+{y:	50	, x:	3.04	},
+{y:	75	, x:	2.863	},
+{y:	100	, x:	2.416	},
+{y:	125	, x:	2.058	},
+{y:	150	, x:	1.849	},
+{y:	200	, x:	1.893	},
+{y:	250	, x:	2.096	},
+{y:	300	, x:	2.24	},
+{y:	400	, x:	2.276	},
+{y:	500	, x:	2.413	},
+{y:	600	, x:	2.319	},
+{y:	700	, x:	2.365	},
+{y:	800	, x:	2.308	},
+{y:	900	, x:	2.225	},
+{y:	1000	, x:	2.152	},
+{y:	1100	, x:	2.146	},
+{y:	1200	, x:	2	},
+{y:	1300	, x:	1.983	},
+{y:	1400	, x:	1.915	},
+{y:	1500	, x:	1.875	},
+{y:	1750	, x:	1.663	},
+{y:	2000	, x:	1.398	},
+{y:	2500	, x:	0.9642	},
+{y:	3000	, x:	0.558	},
+{y:	3500	, x:	0.2992	},
+{y:	4000	, x:	0.1586	},
+{y:	4500	, x:	0.02132	},
+	]
+	];
+
+	var saltyData = [
+	[
+	{y: 	0	, x: 	34.4	},
+{y:	10	, x:	34.42	},
+{y:	20	, x:	34.41	},
+{y:	30	, x:	34.4	},
+{y:	50	, x:	34.38	},
+{y:	75	, x:	34.34	},
+{y:	100	, x:	34.3	},
+{y:	125	, x:	34.29	},
+{y:	150	, x:	34.28	},
+{y:	200	, x:	34.27	},
+{y:	250	, x:	34.24	},
+{y:	300	, x:	34.2	},
+{y:	400	, x:	34.1	},
+{y:	500	, x:	34.01	},
+{y:	600	, x:	34	},
+{y:	700	, x:	34.06	},
+{y:	800	, x:	34.15	},
+{y:	900	, x:	34.24	},
+{y:	1000	, x:	34.3	},
+{y:	1100	, x:	34.36	},
+{y:	1200	, x:	34.41	},
+{y:	1300	, x:	34.45	},
+{y:	1400	, x:	34.48	},
+{y:	1500	, x:	34.52	},
+{y:	1750	, x:	34.57	},
+{y:	2000	, x:	34.6	},
+{y:	2500	, x:	34.64	},
+{y:	3000	, x:	34.66	},
+{y:	3500	, x:	34.67	},
+{y:	4000	, x:	34.68	},
+{y:	4500	, x:	34.69	},
+{y:	5000	, x:	34.69	},
+{y:	5500	, x:	34.69	},
+	],
+	[
+	{y:	0	, x:	36.41	},
+{y:	10	, x:	36.42	},
+{y:	20	, x:	36.42	},
+{y:	30	, x:	36.42	},
+{y:	50	, x:	36.44	},
+{y:	75	, x:	36.47	},
+{y:	100	, x:	36.47	},
+{y:	125	, x:	36.47	},
+{y:	150	, x:	36.46	},
+{y:	200	, x:	36.44	},
+{y:	250	, x:	36.41	},
+{y:	300	, x:	36.38	},
+{y:	400	, x:	36.26	},
+{y:	500	, x:	36.05	},
+{y:	600	, x:	35.79	},
+{y:	700	, x:	35.52	},
+{y:	800	, x:	35.3	},
+{y:	900	, x:	35.19	},
+{y:	1000	, x:	35.13	},
+{y:	1100	, x:	35.1	},
+{y:	1200	, x:	35.08	},
+{y:	1300	, x:	35.06	},
+{y:	1400	, x:	35.04	},
+{y:	1500	, x:	35.02	},
+{y:	1750	, x:	35	},
+{y:	2000	, x:	34.99	},
+{y:	2500	, x:	34.97	},
+{y:	3000	, x:	34.95	},
+{y:	3500	, x:	34.92	},
+{y:	4000	, x:	34.9	},
+	],
+	[
+{y:	0	, x:	34.91	},
+{y:	10	, x:	34.82	},
+{y:	20	, x:	34.84	},
+{y:	30	, x:	34.88	},
+{y:	50	, x:	34.95	},
+{y:	75	, x:	35	},
+{y:	100	, x:	35.02	},
+{y:	125	, x:	34.96	},
+{y:	150	, x:	34.94	},
+{y:	200	, x:	34.89	},
+{y:	250	, x:	34.87	},
+{y:	300	, x:	34.84	},
+{y:	400	, x:	34.71	},
+{y:	500	, x:	34.63	},
+{y:	600	, x:	34.59	},
+{y:	700	, x:	34.56	},
+{y:	800	, x:	34.55	},
+{y:	900	, x:	34.55	},
+{y:	1000	, x:	34.56	},
+{y:	1100	, x:	34.56	},
+{y:	1200	, x:	34.58	},
+{y:	1300	, x:	34.59	},
+{y:	1400	, x:	34.59	},
+{y:	1500	, x:	34.61	},
+{y:	1750	, x:	34.63	},
+{y:	2000	, x:	34.64	},
+{y:	2500	, x:	34.67	},
+{y:	3000	, x:	34.68	},
+{y:	3500	, x:	34.69	},
+{y:	4000	, x:	34.69	},
+],
+[
+{y:	0	, x:	35.25	},
+{y:	10	, x:	35.28	},
+{y:	20	, x:	35.31	},
+{y:	30	, x:	35.36	},
+{y:	50	, x:	35.41	},
+{y:	75	, x:	35.43	},
+{y:	100	, x:	35.4	},
+{y:	125	, x:	35.33	},
+{y:	150	, x:	35.26	},
+{y:	200	, x:	35.08	},
+{y:	250	, x:	34.92	},
+{y:	300	, x:	34.81	},
+{y:	400	, x:	34.57	},
+{y:	500	, x:	34.37	},
+{y:	600	, x:	34.27	},
+{y:	700	, x:	34.24	},
+{y:	800	, x:	34.23	},
+{y:	900	, x:	34.25	},
+{y:	1000	, x:	34.28	},
+{y:	1100	, x:	34.32	},
+{y:	1200	, x:	34.37	},
+{y:	1300	, x:	34.43	},
+{y:	1400	, x:	34.48	},
+{y:	1500	, x:	34.53	},
+{y:	1750	, x:	34.66	},
+{y:	2000	, x:	34.75	},
+{y:	2500	, x:	34.84	},
+{y:	3000	, x:	34.81	},
+{y:	3500	, x:	34.74	},
+{y:	4000	, x:	34.7	},
+{y:	4500	, x:	34.68	},
+{y:	5000	, x:	34.68	},
+{y:	5500	, x:	34.67	},
+],
+[
+{y:	0	, x:	33.9	},
+{y:	10	, x:	33.9	},
+{y:	20	, x:	33.91	},
+{y:	30	, x:	33.91	},
+{y:	50	, x:	33.91	},
+{y:	75	, x:	33.92	},
+{y:	100	, x:	33.94	},
+{y:	125	, x:	33.96	},
+{y:	150	, x:	34.01	},
+{y:	200	, x:	34.14	},
+{y:	250	, x:	34.23	},
+{y:	300	, x:	34.28	},
+{y:	400	, x:	34.38	},
+{y:	500	, x:	34.46	},
+{y:	600	, x:	34.53	},
+{y:	700	, x:	34.6	},
+{y:	800	, x:	34.64	},
+{y:	900	, x:	34.65	},
+{y:	1000	, x:	34.69	},
+{y:	1100	, x:	34.7	},
+{y:	1200	, x:	34.73	},
+{y:	1300	, x:	34.74	},
+{y:	1400	, x:	34.74	},
+{y:	1500	, x:	34.75	},
+{y:	1750	, x:	34.75	},
+{y:	2000	, x:	34.74	},
+{y:	2500	, x:	34.72	},
+{y:	3000	, x:	34.7	},
+{y:	3500	, x:	34.69	},
+{y:	4000	, x:	34.69	},
+{y:	4500	, x:	34.68	},
+]
+	];
+
+	var oxyData = [
+	[
+		{y: 	0	, x: 	235.7	},
+	{y:	10	, x:	237	},
+	{y:	20	, x:	240.5	},
+	{y:	30	, x:	246.3	},
+	{y:	50	, x:	255	},
+	{y:	75	, x:	251.5	},
+	{y:	100	, x:	244.9	},
+	{y:	125	, x:	238.9	},
+	{y:	150	, x:	234.8	},
+	{y:	200	, x:	232.6	},
+	{y:	250	, x:	225.9	},
+	{y:	300	, x:	221.1	},
+	{y:	400	, x:	200.9	},
+	{y:	500	, x:	166.8	},
+	{y:	600	, x:	121	},
+	{y:	700	, x:	80.5	},
+	{y:	800	, x:	44.72	},
+	{y:	900	, x:	27.71	},
+	{y:	1000	, x:	18.44	},
+	{y:	1100	, x:	15.42	},
+	{y:	1200	, x:	14.97	},
+	{y:	1300	, x:	19.26	},
+	{y:	1400	, x:	25.82	},
+	{y:	1500	, x:	28.8	},
+	{y:	1750	, x:	45.18	},
+	{y:	2000	, x:	64.54	},
+	{y:	2500	, x:	95.11	},
+	{y:	3000	, x:	115.9	},
+	{y:	3500	, x:	132.6	},
+	{y:	4000	, x:	141.9	},
+	{y:	4500	, x:	147	},
+	{y:	5000	, x:	152.8	},
+	{y:	5500	, x:	154.3	},
+		],
+		[
+{y:	0	, x:	222.8	},
+{y:	10	, x:	225.2	},
+{y:	20	, x:	225.7	},
+{y:	30	, x:	226.6	},
+{y:	50	, x:	227.5	},
+{y:	75	, x:	224.2	},
+{y:	100	, x:	219.1	},
+{y:	125	, x:	216.5	},
+{y:	150	, x:	214	},
+{y:	200	, x:	212.2	},
+{y:	250	, x:	210	},
+{y:	300	, x:	207.9	},
+{y:	400	, x:	200.1	},
+{y:	500	, x:	191.8	},
+{y:	600	, x:	182.3	},
+{y:	700	, x:	173.3	},
+{y:	800	, x:	170	},
+{y:	900	, x:	182.3	},
+{y:	1000	, x:	196.9	},
+{y:	1100	, x:	212.4	},
+{y:	1200	, x:	227.4	},
+{y:	1300	, x:	236.6	},
+{y:	1400	, x:	244.8	},
+{y:	1500	, x:	250.6	},
+{y:	1750	, x:	258.1	},
+{y:	2000	, x:	258.8	},
+{y:	2500	, x:	258.6	},
+{y:	3000	, x:	259.6	},
+{y:	3500	, x:	260.4	},
+{y:	4000	, x:	262.1	},
+],
+[
+{y:	0	, x:	203.9	},
+{y:	10	, x:	202	},
+{y:	20	, x:	198.5	},
+{y:	30	, x:	193	},
+{y:	50	, x:	166.3	},
+{y:	75	, x:	133.5	},
+{y:	100	, x:	100.8	},
+{y:	125	, x:	89.45	},
+{y:	150	, x:	84.11	},
+{y:	200	, x:	67.92	},
+{y:	250	, x:	50.3	},
+{y:	300	, x:	35.61	},
+{y:	400	, x:	31.16	},
+{y:	500	, x:	37.76	},
+{y:	600	, x:	53.48	},
+{y:	700	, x:	69.24	},
+{y:	800	, x:	78.18	},
+{y:	900	, x:	79.72	},
+{y:	1000	, x:	80.7	},
+{y:	1100	, x:	81.92	},
+{y:	1200	, x:	81.09	},
+{y:	1300	, x:	83.97	},
+{y:	1400	, x:	85.78	},
+{y:	1500	, x:	88.68	},
+{y:	1750	, x:	96.44	},
+{y:	2000	, x:	103.9	},
+{y:	2500	, x:	116.5	},
+{y:	3000	, x:	134.2	},
+{y:	3500	, x:	145.8	},
+{y:	4000	, x:	155	},
+],
+[
+{y:	0	, x:	244	},
+{y:	10	, x:	244.9	},
+{y:	20	, x:	245	},
+{y:	30	, x:	244.4	},
+{y:	50	, x:	241.2	},
+{y:	75	, x:	238.5	},
+{y:	100	, x:	234.5	},
+{y:	125	, x:	232.8	},
+{y:	150	, x:	231.8	},
+{y:	200	, x:	238.3	},
+{y:	250	, x:	236.7	},
+{y:	300	, x:	237.3	},
+{y:	400	, x:	242.8	},
+{y:	500	, x:	249.4	},
+{y:	600	, x:	255.9	},
+{y:	700	, x:	251.5	},
+{y:	800	, x:	246.2	},
+{y:	900	, x:	242.9	},
+{y:	1000	, x:	233	},
+{y:	1100	, x:	222.7	},
+{y:	1200	, x:	210.4	},
+{y:	1300	, x:	203.5	},
+{y:	1400	, x:	195.7	},
+{y:	1500	, x:	192.5	},
+{y:	1750	, x:	193	},
+{y:	2000	, x:	199.3	},
+{y:	2500	, x:	216.9	},
+{y:	3000	, x:	210.9	},
+{y:	3500	, x:	206.7	},
+{y:	4000	, x:	209.5	},
+{y:	4500	, x:	216.2	},
+{y:	5000	, x:	219.1	},
+{y:	5500	, x:	222	},
+],
+[
+{y:	0	, x:	320.2	},
+{y:	10	, x:	319.9	},
+{y:	20	, x:	321	},
+{y:	30	, x:	321.4	},
+{y:	50	, x:	322.2	},
+{y:	75	, x:	325.8	},
+{y:	100	, x:	326.6	},
+{y:	125	, x:	323.6	},
+{y:	150	, x:	316.9	},
+{y:	200	, x:	279	},
+{y:	250	, x:	253.1	},
+{y:	300	, x:	230.1	},
+{y:	400	, x:	203.7	},
+{y:	500	, x:	190.7	},
+{y:	600	, x:	183.1	},
+{y:	700	, x:	182.6	},
+{y:	800	, x:	184.2	},
+{y:	900	, x:	184.5	},
+{y:	1000	, x:	186.6	},
+{y:	1100	, x:	187.6	},
+{y:	1200	, x:	192.9	},
+{y:	1300	, x:	193.3	},
+{y:	1400	, x:	195.9	},
+{y:	1500	, x:	198.5	},
+{y:	1750	, x:	203.2	},
+{y:	2000	, x:	200.8	},
+{y:	2500	, x:	205.6	},
+{y:	3000	, x:	211.2	},
+{y:	3500	, x:	218.5	},
+{y:	4000	, x:	223.2	},
+{y:	4500	, x:	233.6	},
+]
+];
+
+	var nitroData = [
+	[
+	{y: 	0	, x: 	0.2862	},
+{y:	10	, x:	0.1123	},
+{y:	20	, x:	0.1329	},
+{y:	30	, x:	0.1568	},
+{y:	50	, x:	0.4312	},
+{y:	75	, x:	1.415	},
+{y:	100	, x:	2.119	},
+{y:	125	, x:	4.397	},
+{y:	150	, x:	6.077	},
+{y:	200	, x:	8.574	},
+{y:	250	, x:	11.28	},
+{y:	300	, x:	13.28	},
+{y:	400	, x:	18.81	},
+{y:	500	, x:	25.51	},
+{y:	600	, x:	31	},
+{y:	700	, x:	38.08	},
+{y:	800	, x:	40.73	},
+{y:	900	, x:	40.44	},
+{y:	1000	, x:	41.8	},
+{y:	1100	, x:	42.29	},
+{y:	1200	, x:	42.03	},
+{y:	1300	, x:	42.41	},
+{y:	1400	, x:	44.31	},
+{y:	1500	, x:	40.56	},
+{y:	1750	, x:	41.79	},
+{y:	2000	, x:	41.09	},
+{y:	2500	, x:	39.3	},
+{y:	3000	, x:	37.85	},
+{y:	3500	, x:	36.38	},
+{y:	4000	, x:	35.61	},
+{y:	4500	, x:	35.31	},
+{y:	5000	, x:	34.75	},
+{y:	5500	, x:	35.07	},
+],
+[
+{y:	0	, x:	0.6337	},
+{y:	10	, x:	0.3789	},
+{y:	20	, x:	0.3822	},
+{y:	30	, x:	0.4721	},
+{y:	50	, x:	0.6754	},
+{y:	75	, x:	0.6961	},
+{y:	100	, x:	1.265	},
+{y:	125	, x:	1.462	},
+{y:	150	, x:	1.769	},
+{y:	200	, x:	4.301	},
+{y:	250	, x:	2.855	},
+{y:	300	, x:	3.362	},
+{y:	400	, x:	6.461	},
+{y:	500	, x:	9.566	},
+{y:	600	, x:	13.08	},
+{y:	700	, x:	18.1	},
+{y:	800	, x:	20.63	},
+{y:	900	, x:	21.17	},
+{y:	1000	, x:	20.54	},
+{y:	1100	, x:	19.35	},
+{y:	1200	, x:	18.77	},
+{y:	1300	, x:	18.29	},
+{y:	1400	, x:	17.91	},
+{y:	1500	, x:	17.81	},
+{y:	1750	, x:	17.55	},
+{y:	2000	, x:	17.5	},
+{y:	2500	, x:	17.79	},
+{y:	3000	, x:	17.94	},
+{y:	3500	, x:	18.05	},
+{y:	4000	, x:	18.52	},
+],
+[
+{y:	0	, x:	5.931	},
+{y:	10	, x:	6.146	},
+{y:	20	, x:	6.215	},
+{y:	30	, x:	6.57	},
+{y:	50	, x:	8.151	},
+{y:	75	, x:	11.47	},
+{y:	100	, x:	16.79	},
+{y:	125	, x:	20.37	},
+{y:	150	, x:	22.75	},
+{y:	200	, x:	24.63	},
+{y:	250	, x:	27.53	},
+{y:	300	, x:	29.27	},
+{y:	400	, x:	33.02	},
+{y:	500	, x:	36.57	},
+{y:	600	, x:	36.16	},
+{y:	700	, x:	35.97	},
+{y:	800	, x:	35.78	},
+{y:	900	, x:	38.96	},
+{y:	1000	, x:	38.09	},
+{y:	1100	, x:	39.79	},
+{y:	1200	, x:	39.83	},
+{y:	1300	, x:	40	},
+{y:	1400	, x:	40.03	},
+{y:	1500	, x:	39.35	},
+{y:	1750	, x:	38.79	},
+{y:	2000	, x:	38.29	},
+{y:	2500	, x:	37.61	},
+{y:	3000	, x:	37	},
+{y:	3500	, x:	36.27	},
+{y:	4000	, x:	35.28	},
+],
+[
+{y:	0	, x:	3.555	},
+{y:	10	, x:	3.243	},
+{y:	20	, x:	3.251	},
+{y:	30	, x:	3.293	},
+{y:	50	, x:	4.271	},
+{y:	75	, x:	6.712	},
+{y:	100	, x:	7.267	},
+{y:	125	, x:	8.662	},
+{y:	150	, x:	9.403	},
+{y:	200	, x:	13.94	},
+{y:	250	, x:	14.27	},
+{y:	300	, x:	15.12	},
+{y:	400	, x:	18.64	},
+{y:	500	, x:	22.68	},
+{y:	600	, x:	24.44	},
+{y:	700	, x:	25.72	},
+{y:	800	, x:	26.96	},
+{y:	900	, x:	29.41	},
+{y:	1000	, x:	29.65	},
+{y:	1100	, x:	31.59	},
+{y:	1200	, x:	31.76	},
+{y:	1300	, x:	32.8	},
+{y:	1400	, x:	32.18	},
+{y:	1500	, x:	31.51	},
+{y:	1750	, x:	29.62	},
+{y:	2000	, x:	26.51	},
+{y:	2500	, x:	24.42	},
+{y:	3000	, x:	27.07	},
+{y:	3500	, x:	29.83	},
+{y:	4000	, x:	31.36	},
+{y:	4500	, x:	31.93	},
+{y:	5000	, x:	31.88	},
+{y:	5500	, x:	32.02	},
+],
+[
+{y:	0	, x:	23.03	},
+{y:	10	, x:	23.7	},
+{y:	20	, x:	22.53	},
+{y:	30	, x:	23.34	},
+{y:	50	, x:	24.26	},
+{y:	75	, x:	24.37	},
+{y:	100	, x:	25.25	},
+{y:	125	, x:	26.6	},
+{y:	150	, x:	27.68	},
+{y:	200	, x:	29.79	},
+{y:	250	, x:	30.54	},
+{y:	300	, x:	30.6	},
+{y:	400	, x:	32.41	},
+{y:	500	, x:	32.53	},
+{y:	600	, x:	33.84	},
+{y:	700	, x:	31.29	},
+{y:	800	, x:	31.7	},
+{y:	900	, x:	31.95	},
+{y:	1000	, x:	31.22	},
+{y:	1100	, x:	30.73	},
+{y:	1200	, x:	30.71	},
+{y:	1300	, x:	30.31	},
+{y:	1400	, x:	30.34	},
+{y:	1500	, x:	30.38	},
+{y:	1750	, x:	31.04	},
+{y:	2000	, x:	31.1	},
+{y:	2500	, x:	30.92	},
+{y:	3000	, x:	31.94	},
+{y:	3500	, x:	31.95	},
+{y:	4000	, x:	30.85	},
+{y:	4500	, x:	31.48	},
+]
+	];
+
+	var cont1 = new SVGContainer({
+			node: d3.select("#graphs"),
+			maxWid: 570,
+			maxHt: 600
+		});
+		
+	var temperature = new LineGraph({
+			id: "lg0",
+			Data: tempData, 
+			type: "lines",
+			xAxisFormat: { type: "linear",
+						   ticks: [0, 4, 8, 12, 16, 20, 24],
+						   orientation: "top",
+						   label: "Temperature (&deg;C)",
+						 },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   mode: "reverse",
+						   label: "Depth (m)",
+						   ticks: 6,
+						    },
+		}, eventManager);	
+
+	var salt = new LineGraph({
+			id: "lg0",
+			Data: saltyData, 
+			type: "lines",
+			xAxisFormat: { type: "linear",
+						   ticks: 4,
+						   orientation: "top",
+						   label: "Salinity (psu)" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   mode: "reverse",
+						   label: "Depth (m)",
+						   ticks: 6,
+						    },
+		}, eventManager);	
+			
+	var oxygen = new LineGraph({
+			id: "lg0",
+			Data: oxyData, 
+			type: "lines",
+			xAxisFormat: { type: "linear",
+						   ticks: 4,
+						   orientation: "top",
+						   label: "Dissolved Oxygen (&micro;mol/kg)" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   mode: "reverse",
+						   label: "Depth (m)",
+						   ticks: 6,
+						    },
+		}, eventManager);	
+
+	var nitrogen = new LineGraph({
+			id: "lg0",
+			Data: nitroData, 
+			type: "lines",
+			xAxisFormat: { type: "linear",
+						   ticks: 4,
+						   orientation: "top",
+						   label: "Nitrate (&micro;mol/kg)" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   mode: "reverse",
+						   label: "Depth (m)",
+						    ticks: 6,
+						    },
+		}, eventManager);	
+
+	cont1.append(temperature, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.5, widthPercent: 0.5});
+	cont1.append(salt, {topPercentOffset: 0, leftPercentOffset: 0.5, heightPercent: 0.5, widthPercent: 0.5});
+	cont1.append(oxygen, {topPercentOffset: 0.5, leftPercentOffset: 0, heightPercent: 0.5, widthPercent: 0.5});
+	cont1.append(nitrogen, {topPercentOffset: 0.5, leftPercentOffset: 0.5, heightPercent: 0.5, widthPercent: 0.5});
+	
+
+	mapLegend = new Image({
+				URI: 'img/oceans/oceanTemp0m.png',
+				caption: "Ocean Temperature at 0 m (surface)",
+				actualSize: {height: 530, width: 930}
+				});
+
+
+
+	var Qoceans = new MultipleChoiceQuestion({
+			questionId: "oceanRegion",
+			question: "Which region stands out as having either the lowest or the highest overall value for each of the data shown?",
+			svgSize: [600,343],
+			svgBaseBrix: mapLegend,
+			choices: [	
+					{content: "A", xyPos:[0.5, 0.67], width: 0, answerKey: "a01" },
+					{content: "B", xyPos:[0.78, 0.67], width: 0, answerKey: "a02"},
+					{content: "C", xyPos:[0.62, 0.48], width: 0, answerKey: "a03" },
+					{content: "D", xyPos:[0.79, 0.25], width: 0, answerKey: "a04" },
+					{content: "E", xyPos:[0.33, 0.2], width: 0, answerKey: "a05" }
+		  			],
+			order: "ordered",
+			widget: LabelGroup,
+			widgetConfig: {
+				 type: "latin-upper",
+				 question: true
+			},
+		}, eventManager);
+
+	Qoceans.draw(d3.select("#earth"));
+
+	submitManager.handleRequestsFrom(Qoceans);
+		
+
+	eventManager.subscribe(Qoceans.choiceWidget.selectedEventId,
+						   mapLegLite);
+	eventManager.subscribe(temperature.selectedEventId,
+						   mapLegLite);
+	eventManager.subscribe(salt.selectedEventId,
+						   mapLegLite);
+	eventManager.subscribe(oxygen.selectedEventId,
+						   mapLegLite);
+	eventManager.subscribe(nitrogen.selectedEventId,
+						   mapLegLite);
+
+	mapLegLite({selectKey: '0'})
 /************************************************************************
-* handleSelectionChanged                                            *//**
+* mapLegLite                                           *//**
 *
-* handleInputValueChanged is called from the event handler for one of
-* the input widgets when the user changes its value. It updates the
-* given matching input widget's value to match the new value and then
-* updates the bar chart.
+* highlights lines on the graphs corresponding to the labelled regions
+* on the map
 *
-* @param eventDetails			These are the keyed values returned by 
-*								the event, in this case, a selection
-*								(click).
 *************************************************************************/
-	function handleSelectionChanged(eventDetails)
+	function mapLegLite(eventDetails)
 	{
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
-		//LabelLite should be a method of Labels, once Labels
-		//is written as a constructor
-		clickDates.lite(eventDetails.selectKey);
-		marks.lite(eventDetails.selectKey);
+	
+		temperature.lite(eventDetails.selectKey);
+		salt.lite(eventDetails.selectKey);
+		oxygen.lite(eventDetails.selectKey);
+		nitrogen.lite(eventDetails.selectKey);
+		Qoceans.choiceWidget.lite(eventDetails.selectKey);
 		
 	}
-	
-	
+
 	</script>
 </body>
 </html>

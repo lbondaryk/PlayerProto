@@ -36,15 +36,6 @@
 			</div>
 			<div class="span8 rightCol">         
                 <div id="graph0"></div> 
-               		<table width="100%">
-                    <tr><td colspan="2">
-                	<span id="growthSlider"></span> </td></tr>
-					<tr><td class="rightAlign"><span id="popDay"></span></td>
-                    	<td class="rightAlign"><span id="pop2010"></span></td></tr>
-                    <tr><td class="rightAlign"><span id="popWeek"></span></td>
-                    	<td class="rightAlign"><span id="pop2050"></span></td></tr>
-                    <tr><td class="rightAlign"><span id="popYear"></span></td></tr>
-            		</table>
 			</div>
 		</div>
 
@@ -53,17 +44,38 @@
             	<h2>Trend in CO<sub>2</sub> concentration</h2>
               	<p> The trend Keeling found is still continuing; in fact, the yearly increase is getting larger – it is twice as big today (2013) as it was when he started taking measurements 55 years ago.
               	</p>
-				<div id="graph1"></div>
-				<p>Here is a map of the world-wide sampling network for atmospheric carbon dioxide.
-Click on any of the closed symbols (red circles, blue squares, or green triangles) to see the actual monthly data of atmospheric CO2 recorded at that site. The red circles are locations where a person opens a flask to take a discrete air sample. The flask is sealed and mailed to Colorado, where the concentration of CO2 in the flask is determined. The blue squares are the 4 permanent observatories, where CO2 is recorded continuously by a machine. The green triangles are the “Tall Tower” measurements that are also made continuously.</p>
+				
+				<p>Here is a map of the world-wide sampling network for atmospheric carbon dioxide.</p>
+				<div id="map0"></div> 
+				<p>Click on any of the closed symbols (red circles, blue squares, or green triangles) to see the actual monthly data of atmospheric CO2 recorded at that site. The red circles are locations where a person opens a flask to take a discrete air sample. The flask is sealed and mailed to Colorado, where the concentration of CO2 in the flask is determined. The blue squares are the 4 permanent observatories, where CO2 is recorded continuously by a machine. The green triangles are the “Tall Tower” measurements that are also made continuously.</p>
 
 			</div>
 			<div class="span6 rightCol">    
+				<p>Select from among the four sample sites shown with bullets on the map to see the historical data from that site.</p>   
+				<div id="graph1"></div>
+                
 				<p>NOAA ESRL Carbon Cycle operates 4 measurement programs.  Semi-continuous measurements are made at 4 baseline observatories, a few surface sites, and from tall towers.  Discrete surface and aircraft samples are measured in Boulder, CO. Presently, atmospheric carbon dioxide, methane, carbon monoxide, hydrogen, nitrous oxide, sulfur hexafluoride, the stable isotopes of carbon dioxide and methane, and halocarbon and volatile organice compounds are measured. Contact: Dr. Pieter Tans, NOAA ESRL Carbon Cycle, Boulder, CO.  http://www.esrl.noaa.gov/gmd/ccgg/</p> 
-				<p>Select sample sites on the map to see the historical data from that site.</p>   
-                <div id="map0"></div> 
+				
 			</div>
 		</div>
+
+		<div class="row-fluid">
+			<div class="span6 leftCol">
+            	<h2>Analyzing CO<sub>2</sub> data</h2>
+              	<p> Here is a table of the Barrow, AK station data between 1972 and 1974.
+              	</p>
+				  <div id="tableData"></div> 
+				<p id="lowMonth"></p>
+				
+			</div>
+			<div class="span6 rightCol">    
+				<div id="graph2"></div>     
+              	<div id="avgDecrease"></div>
+				<div id="avgIncrease"></div>
+				<div id="avgYearly"></div>
+			</div>
+		</div>
+
 		<div class="row-fluid">
 			<div class="span6 leftCol">
             	<h2>Compare CO<sub>2</sub> concentrations at different locations</h2>
@@ -74,25 +86,6 @@ Click on any of the closed symbols (red circles, blue squares, or green triangle
 			<div class="span6 rightCol">    
 				<p>Determine the annual growth rate for each station between: 1985 and 1990, 1990 and 1995, 1995 and 2000, 2005 and 2010 by determining the annual mean value in each of these years for each of the stations, and then dividing by the number of years (5 in each case).</p> 
                 <div id="compTable"></div> 
-			</div>
-		</div>
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-            	<h2>Analyzing CO<sub>2</sub> data</h2>
-              	<p> Here is a table of the barrow data between 1972 and 1974.
-              	</p>
-				  <div id="tableData"></div> 
-				<p>In what month is the CO2 usually highest for each year? May</p>
-				<p>In what month is it the lowest? Aug</p>
-				<p>What is the average decrease for these three years (high-low)? 15.6 ppm</p>
-				<p>What is the average increase in ppm from each of the 2 winters</p>
-					(change between the low in fall to the￼following high the next spring)? 17.3ppm</p>
-				<p>Based on 3&4, what is the yearly increase in ppm/yr?1.7 ppm/yr</p>
-			</div>
-			<div class="span6 rightCol">    
-				<p>Select the series of plotted points which represents the data in the table.</p>
-				<div id="graph2"></div>     
-              
 			</div>
 		</div>
 	</div>
@@ -116,17 +109,23 @@ Click on any of the closed symbols (red circles, blue squares, or green triangle
     <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
     <script src="js/widget-imageviewer.js"></script>
+    <script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
 	<script src="js/eventmanager.js"></script>
-
+	<script src="js/submitmanager.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
 	<script>
 
 
 
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
+	//the eventManager and submitManager are created for every page for Brix on that page
 	var eventManager = new EventManager();
-	 
+	var submitManager = new SubmitManager(eventManager);
+
 	var iceFloe = [
 	{x:	"1957 9"	, y:	306.78	},
 	{x:	"1957 10"	, y:	311	},
@@ -135,30 +134,30 @@ Click on any of the closed symbols (red circles, blue squares, or green triangle
 	]; 
 	
 	var maunaLoa = [
-	{x:	"1958 3", y:	311.7},
-	{x:	"1958 4", y:	313	},
-	{x:	"1958 5", y:	314	},
-	{x:	"1958 7", y:	313	},
-	{x:	"1958 8", y:	312	},
-	{x:	"1958 9", y:	311	},
-	{x:	"1958 10", y:	310.5},
-	{x:	"1958 11", y:	310	},
-	{x:	"1958 12", y:	311	},
-	{x:	"1959 1", y:	312	},
-	{x:	"1959 2", y:	312.5	},
-	{x:	"1959 3", y:	313	},
-	{x:	"1959 4", y:	314.7	},
-	{x:	"1959 5", y:	315	},
-	{x:	"1959 6", y:	314.8	},
-	{x:	"1959 7", y:	313	},
-	{x:	"1959 8", y:	311	},
-	{x:	"1959 9", y:	310.5	},
-	{x:	"1959 10", y:	310	},
-	{x:	"1959 11", y:	311.5	},
-	{x:	"1959 12", y:	313.2	},
-	{x:	"1960 1", y:	313.8	},
-	{x:	"1960 2", y:	314.2	},
-	{x:	"1960 3", y:	315.7	},
+	{x:	"1958/3", y:	311.7},
+	{x:	"1958/4", y:	313	},
+	{x:	"1958/5", y:	314	},
+	{x:	"1958/7", y:	313	},
+	{x:	"1958/8", y:	312	},
+	{x:	"1958/9", y:	311	},
+	{x:	"1958/10", y:	310.5},
+	{x:	"1958/11", y:	310	},
+	{x:	"1958/12", y:	311	},
+	{x:	"1959/1", y:	312	},
+	{x:	"1959/2", y:	312.5	},
+	{x:	"1959/3", y:	313	},
+	{x:	"1959/4", y:	314.7	},
+	{x:	"1959/5", y:	315	},
+	{x:	"1959/6", y:	314.8	},
+	{x:	"1959/7", y:	313	},
+	{x:	"1959/8", y:	311	},
+	{x:	"1959/9", y:	310.5	},
+	{x:	"1959/10", y:	310	},
+	{x:	"1959/11", y:	311.5	},
+	{x:	"1959/12", y:	313.2	},
+	{x:	"1960/1", y:	313.8	},
+	{x:	"1960/2", y:	314.2	},
+	{x:	"1960/3", y:	315.7	},
 	]; 
 
 
@@ -1995,23 +1994,22 @@ var spo = [
 
 var Data = [iceFloe, maunaLoa, aircraftHigh, aircraftLow];
 
-var observatories = [
 
-		{x: "145\u00B0W", y: "14.2\u00B0S", key: "smo"},
-		{x: "140\u00B0W", y: "19.5\u00B0N", key: "smo"},
-		{x: "140\u00B0W", y: "71.3\u00B0N", key: "smo"},
-		{x: "80\u00B0W", y: "90\u00B0S", key: "spo"},
-	];
+function makeDate(dateString) 
+		{
+			var dateArr = dateString.split(/[- / :]/);
 
+    		return new Date(dateArr[0], dateArr[1]-1);
+		} 
 
 // draw the highlightable dates table
 	var clickDates = new Callouts({
 		show: "all",
 		headers: ["Date", "CO<sub>2</sub> Concentration (ppm)" ],
 		textBits: [
-		{cols: [d3.time.format("%b %Y")(new Date(maunaLoa[0].x)), maunaLoa[0].y]},
-		{cols: [d3.time.format("%b %Y")(new Date(maunaLoa[11].x)), maunaLoa[11].y]},
-		{cols: [d3.time.format("%b %Y")(new Date(maunaLoa[23].x)), maunaLoa[23].y]}
+		{cols: [d3.time.format("%b %Y")(makeDate(maunaLoa[0].x)), maunaLoa[0].y]},
+		{cols: [d3.time.format("%b %Y")(makeDate(maunaLoa[11].x)), maunaLoa[11].y]},
+		{cols: [d3.time.format("%b %Y")(makeDate(maunaLoa[23].x)), maunaLoa[23].y]}
 		]
 	}, eventManager);
 	
@@ -2066,168 +2064,7 @@ var observatories = [
 	// graph is written to the bottom 80% of SVG area
 	lines.append([marks, legLines]);
 
-
-	//this draws the long-term swappable CO2 concentration graphs
-	var cont2 = new SVGContainer({
-			node: d3.select("#graph1"),
-			maxWid: 570,
-			maxHt: 500
-		});
-		
-	var barrowGraph = new LineGraph({
-			//id: "lg0",
-			Data: [barrow], 
-			type: "lines",
-			xAxisFormat: { type: "time",
-						   ticks: 8,
-						   orientation: "bottom",
-						   label: "Year" },
-			yAxisFormat: { type: "linear",
-						   orientation: "left",
-						   label: "CO<sub>2</sub> Concentration (ppm)",
-						    ticks: [300,325,350,375,400],
-						    },
-		},eventManager);	
-
-	cont2.append(barrowGraph);
-
-
-	//this draws the map with the selectable points that select data sets for the 
-	// CO2 graphs
-	var mapImg = new Image({
-		URI: 'img/CO2SamplesMap.png',
-		caption: "Cooperative Measurement Programs: NOAA ESRL Carbon Cycle",
-		preserveAspectRatio: "xMidYMid",
-		actualSize: {height: 350, width: 400}
-	});
-
-	var measure = new LineGraph(
-		{
-			Data: [observatories],
-			type: "points",
-			xAxisFormat: { type: "ordinal",
-						   ticks: 5,
-						   orientation: "bottom",
-						  },
-			yAxisFormat: { type: "ordinal",
-						   ticks: 5,
-						   orientation: "left",
-						   },
-		}, eventManager);
-	
-	
-	var mapSVG = new SVGContainer({
-			node: d3.select("#map0"),
-			maxWid: 500,
-			maxHt: 400
-		});
-	mapSVG.append(measure);
-	
-	measure.append(mapImg, "before");
-	
-	//this draws the 4 long-term data series CO2 concentration comparison graph
-	var contComp = new SVGContainer({
-			node: d3.select("#graphComp"),
-			maxWid: 570,
-			maxHt: 500
-		});
-		
-	var comparisonGraph = new LineGraph({
-			//id: "lg0",
-			Data: [barrow, mlo, smo, spo], 
-			type: "lines",
-			xAxisFormat: { type: "time",
-						   ticks: 8,
-						   orientation: "bottom",
-						   label: "Year" },
-			yAxisFormat: { type: "linear",
-						   orientation: "left",
-						   label: "CO<sub>2</sub> Concentration (ppm)",
-						    ticks: [300,325,350,375,400],
-						    },
-		},eventManager);	
-
-	contComp.append(comparisonGraph, {topPercentOffset: 0.2, leftPercentOffset: 0, heightPercent: 0.8, widthPercent: 0.8});
-
-	// configure and append the legend to the graph
-
-	var legComp = new Legend({
-		xPos: "right", yPos: "bottom",
-		labels: [
-				{ content: "Barrow, AK (71.3\u00B0N)"},
-				{ content: "Mauna Loa, HI (19.5\u00B0N)"},
-				{ content: "American Samoa (14.2\u00B0S)"},
-				{ content: "South Pole, Antarctica (90\u00B0S)"}
-				],
-		type: "line"
-	},eventManager);
-	
-	// add markers to the graph
-	var compmarks = new MarkerGroup(
-		{
-		type: "x",
-		marks: [barrow[350]]
-		}, eventManager);
-		
-	// write the markers and legend onto the graph in the local coordinates, inside the 
-	// data area.  These are designed to slop over the top, that's why the
-	// graph is written to the bottom 80% of SVG area
-	comparisonGraph.append([compmarks, legComp]);
-
-	//this draws the CO2 concentration question graph
-	var cont3 = new SVGContainer({
-			node: d3.select("#graph2"),
-			maxWid: 570,
-			maxHt: 500
-		});
-		
-	var qGraph = new LineGraph({
-			//id: "lg0",
-			Data: [barrow], 
-			type: "points",
-			xAxisFormat: { type: "time",
-						   ticks: ["1972 1", "1973 1", "1974 1", "1974 5"],
-						   orientation: "bottom",
-						   label: "Date" },
-			yAxisFormat: { type: "linear",
-						   orientation: "left",
-						   label: "CO<sub>2</sub> Concentration (ppm)",
-						    ticks: [315,320,325,330,335,340],
-						    },
-		},eventManager);	
-
-	cont3.append(qGraph, {topPercentOffset: 0.2, leftPercentOffset: 0, heightPercent: 0.8, widthPercent: 0.8});
-
-	// add markers to the graph
-	var qMark = new MarkerGroup(
-		{
-		type: "x",
-		marks: [{x: "1972", label: "Set to month of highest concentration"}, {x: "1972", label: "Set to month of lowest concentration"}]
-		}, eventManager);
-		
-	// write the markers onto the qGraph in the local coordinates, inside the 
-	// data area.  These are designed to slop over the top, that's why the
-	// graph is written to the bottom 80% of SVG area
-	qGraph.append([qMark]);
-
-
-	// CO2 question data table
-	// draw the highlightable dates table
-
-	var colData = [];
-	for (var i = 20 - 1; i >= 0; i--) {
-		colData[i] = { cols: [ d3.time.format("%b %Y")(new Date(barrow[i].x)), barrow[i].y] };
-	};
-
-	var qtableData = new Callouts({
-		show: "all",
-		headers: ["Date", "CO<sub>2</sub> Concentration (ppm)" ],
-		textBits: colData,
-	}, eventManager);
-	
-	qtableData.draw(d3.select("#tableData"));
-	// Handle changes of the growth rate slider (one subscription per
-	// event we listen to)
+	// Handle changes in the legend click and highlighted lines
 	
 	eventManager.subscribe(legLines.selectedEventId,
 						   handleHighlight);
@@ -2239,14 +2076,8 @@ var observatories = [
 /************************************************************************
 * handleHighlight                                            *//**
 *
-* handleInputValueChanged is called from the event handler for one of
-* the input widgets when the user changes its value. It updates the
-* given matching input widget's value to match the new value and then
-* updates the bar chart.
+* handle the legend highlighting on the first graph
 *
-* @param eventDetails			These are the keyed values returned by 
-*								the event, in this case, a selection
-*								(click).
 *************************************************************************/
 	function handleHighlight(eventDetails)
 	{
@@ -2258,6 +2089,7 @@ var observatories = [
 		
 	}
 
+
 // Handle highlight clicks on the markers and table
 	eventManager.subscribe(clickDates.selectedEventId,
 						   handleSelectionChanged);
@@ -2265,7 +2097,7 @@ var observatories = [
 						   handleSelectionChanged);
 
  
-//TEST: set the start highlight state of 0 index by calling the 
+//Set the start highlight state of 0 index by calling the 
 //handler with a hard-set index of 0.  This should result in the
 //first label getting highlighted and the first callout being displayed.
 	handleSelectionChanged({selectKey: '0'});
@@ -2293,6 +2125,425 @@ var observatories = [
 		
 	}
 	
+	//Page 2: this draws the long-term swappable CO2 concentration graphs
+	var cont2 = new SVGContainer({
+			node: d3.select("#graph1"),
+			maxWid: 570,
+			maxHt: 500
+		});
+		
+	var stationData = [];
+	var stationGraph = new LineGraph({
+			//id: "lg0",
+			Data: [barrow], 
+			type: "lines",
+			xAxisFormat: { type: "time",
+						   ticks: 8,
+						   orientation: "bottom",
+						   label: "Year" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: "CO<sub>2</sub> Concentration (ppm)",
+						    ticks: [300,325,350,375,400],
+						    },
+		},eventManager);	
+
+	cont2.append(stationGraph);
+	//draw the highlightable table of measurement stations
+	// draw the highlightable dates table
+
+	var observatories = [
+			{content: "Barrow, AK (71.3&deg;N)", xyPos:[.33, 0.89], width: 0, key: "bar"},
+			{content: "Mauna Loa, HI (19.5&deg;N)", xyPos:[0.33, 0.63], width: 0, key: "mlo"},
+			{content: "American Samoa (14.2&deg;S)", xyPos:[0.3, 0.47], width: 0, key: "smo"},
+			{content: "South Pole, Antarctica (90&deg;S) ", xyPos:[0.5, 0.125], width: 0, key: "spo"},
+	];
+
+	var stations = new Callouts({
+		show: "all",
+		headers: ["Station (Latitude)" ],
+		textBits: [
+		{cols: [observatories[0].content], key:observatories[0].key},
+		{cols: [observatories[1].content], key:observatories[1].key},
+		{cols: [observatories[2].content], key:observatories[2].key},
+		{cols: [observatories[3].content], key:observatories[3].key}
+		]
+	}, eventManager);
+	
+	stations.draw(d3.select("#map0"));
+
+	//this draws the map with the selectable points that select data sets for the 
+	// CO2 graphs
+	var mapImg = new Image({
+		URI: 'img/CO2SamplesMap.png',
+		caption: "Cooperative Measurement Programs: NOAA ESRL Carbon Cycle",
+		preserveAspectRatio: "xMidYMid",
+		actualSize: {height: 350, width: 400}
+	});
+
+	var observe = new LabelGroup(
+		{
+			labels: observatories,
+			type: "latin-upper",
+		}, eventManager);
+	
+	var mapSVG = new SVGContainer({
+			node: d3.select("#map0"),
+			maxWid: 700,
+			maxHt: 450
+		});
+
+	mapSVG.append(mapImg);
+	mapImg.append(observe);
+	
+// Handle highlight clicks on the markers and table
+	eventManager.subscribe(stations.selectedEventId,
+						   handleStationChoice);
+	eventManager.subscribe(observe.selectedEventId,
+						   handleStationChoice);
+
+ handleStationChoice({selectKey: "bar"})
+//TEST: set the start highlight state of 0 index by calling the 
+//handler with a hard-set index of 0.  This should result in the
+//first label getting highlighted and the first callout being displayed.
+	//handleStationChoice({selectKey: 'bar'});
+	
+/************************************************************************
+* handleSelectionChanged                                            *//**
+*
+* handleInputValueChanged is called from the event handler for one of
+* the input widgets when the user changes its value. It updates the
+* given matching input widget's value to match the new value and then
+* updates the bar chart.
+*
+* @param eventDetails			These are the keyed values returned by 
+*								the event, in this case, a selection
+*								(click).
+*************************************************************************/
+	function handleStationChoice(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		//LabelLite should be a method of Labels, once Labels
+		//is written as a constructor
+		
+		switch(eventDetails.selectKey)
+		{
+		case 'mlo':
+  		stationGraph.data = [mlo];
+  		break;
+			
+		case 'spo':
+  		stationGraph.data = [spo];
+  		break;
+
+		case 'smo':
+	  	stationGraph.data = [smo];
+  		break;
+			
+		//fallthrough case 
+		default:
+  		stationGraph.data = [barrow];
+  		break;
+		}
+
+		//stationGraph.Data[0][0] = mlo[0];
+		stations.lite(eventDetails.selectKey);
+		observe.lite(eventDetails.selectKey);
+		stationGraph.redraw();
+		
+	}
+	
+
+//page3
+	//this draws the 4 long-term data series CO2 concentration comparison graph
+	var contComp = new SVGContainer({
+			node: d3.select("#graphComp"),
+			maxWid: 570,
+			maxHt: 500
+		});
+		
+	var comparisonGraph0 = new LineGraph({
+			//id: "lg0",
+			Data: [barrow], 
+			type: "lines",
+			xAxisFormat: { type: "time",
+						   ticks: 4,
+						   orientation: "bottom",
+						   label: "Year [Barrow]" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: "CO<sub>2</sub> Concentration (ppm)",
+						    ticks: [300,325,350,375,400],
+						    },
+		},eventManager);	
+	var comparisonGraph1 = new LineGraph({
+			//id: "lg0",
+			Data: [mlo], 
+			type: "lines",
+			xAxisFormat: { type: "time",
+						   ticks: 4,
+						   orientation: "bottom",
+						   label: "Year [Mauna Loa]" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: "",
+						    ticks: [300,325,350,375,400],
+						    },
+		},eventManager);	
+
+	var comparisonGraph2 = new LineGraph({
+			//id: "lg0",
+			Data: [smo], 
+			type: "lines",
+			xAxisFormat: { type: "time",
+						   ticks: 4,
+						   orientation: "bottom",
+						   label: "Year [Samoa]" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: "CO<sub>2</sub> Concentration (ppm)",
+						    ticks: [300,325,350,375,400],
+						    },
+		},eventManager);	
+
+	var comparisonGraph3 = new LineGraph({
+			//id: "lg0",
+			Data: [spo], 
+			type: "lines",
+			xAxisFormat: { type: "time",
+						   ticks: 4,
+						   orientation: "bottom",
+						   label: "Year [South Pole]" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: "",
+						    ticks: [300,325,350,375,400],
+						    },
+		},eventManager);	
+
+
+	contComp.append(comparisonGraph0, {topPercentOffset: .1, leftPercentOffset: 0, heightPercent: 0.5, widthPercent: 0.5});
+	contComp.append(comparisonGraph1, {topPercentOffset: .1, leftPercentOffset: .5, heightPercent: 0.5, widthPercent: 0.5});
+	contComp.append(comparisonGraph2, {topPercentOffset: .5, leftPercentOffset: 0, heightPercent: 0.5, widthPercent: 0.5});
+	contComp.append(comparisonGraph3, {topPercentOffset: .5, leftPercentOffset: .5, heightPercent: 0.5, widthPercent: 0.5});
+
+	
+	// add markers to the graph
+	var compmarks0 = new MarkerGroup(
+		{
+		type: "x",
+		marks: [{x: "1990"}],
+		mode: "drags"
+		}, eventManager);
+		
+	var compmarks1 = new MarkerGroup(
+		{
+		type: "x",
+		marks: [{x: "1990"}],
+		mode: "drags"
+		}, eventManager);
+		
+	// write the markers and legend onto the graph in the local coordinates, inside the 
+	// data area.  These are designed to slop over the top, that's why the
+	// graph is written to the bottom 80% of SVG area
+	comparisonGraph0.append(compmarks0);
+	comparisonGraph1.append(compmarks1);
+
+// Handle highlight clicks on the markers and table
+	eventManager.subscribe(comparisonGraph0.selectedEventId,
+						   handleCO2Legends);
+
+
+//TEST: set the start highlight state of 0 index by calling the 
+//handler with a hard-set index of 0.  This should result in the
+//first label getting highlighted and the first callout being displayed.
+	//handleStationChoice({selectKey: 'bar'});
+	
+/************************************************************************
+* handleSelectionChanged                                            *//**
+*
+* handleInputValueChanged is called from the event handler for one of
+* the input widgets when the user changes its value. It updates the
+* given matching input widget's value to match the new value and then
+* updates the bar chart.
+*
+* @param eventDetails			These are the keyed values returned by 
+*								the event, in this case, a selection
+*								(click).
+*************************************************************************/
+	function handleCO2Legends(eventDetails)
+	{
+	
+		comparisonGraph0.lite(eventDetails.selectKey);
+		legComp.lite(eventDetails.selectKey);
+	
+	}
+	
+	//this draws the CO2 concentration question graph
+	var cont3 = new SVGContainer({
+			node: d3.select("#graph2"),
+			maxWid: 570,
+			maxHt: 500
+		});
+		
+	var qGraph = new LineGraph({
+			//id: "lg0",
+			Data: [barrow], 
+			type: "points",
+			xAxisFormat: { type: "time",
+						   ticks: ["1971 6", "1972 1", "1972 5", "1973 1", "1974 1", "1974 6"],
+						   orientation: "bottom",
+						   label: "Date" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: "CO<sub>2</sub> Concentration (ppm)",
+						    ticks: [315,320,325,330,335,340],
+						    },
+		},eventManager);	
+
+	cont3.append(qGraph, {topPercentOffset: 0.2, leftPercentOffset: 0, heightPercent: 0.8, widthPercent: 0.8});
+
+	// add markers to the graph
+	var qMark = new MarkerGroup(
+		{
+		type: "x",
+		marks: [{x: barrow[5].x}],
+		mode: "drags"
+		}, eventManager);
+		
+	// write the markers onto the qGraph in the local coordinates, inside the 
+	// data area.  These are designed to slop over the top, that's why the
+	// graph is written to the bottom 80% of SVG area
+	qGraph.append([qMark]);
+
+
+	// CO2 question data table
+	// draw the highlightable dates table
+
+	var colData = [];
+	for (var i = 24 - 1; i >= 0; i--) {
+		colData[i] = { cols: [ d3.time.format("%b %Y")(new Date(barrow[i+8].x)), barrow[i+8].y] };
+	};
+
+	var qtableData = new Callouts({
+		show: "all",
+		headers: ["Date", "CO<sub>2</sub> Concentration (ppm)" ],
+		textBits: colData,
+	}, eventManager);
+	
+	qtableData.draw(d3.select("#tableData"));
+
+//Multiple Choice questions, dropdown, randomized
+
+	var Q1Choices = [
+		{
+			content: "August",
+			answerKey: "answer000"
+		},
+		{
+			content: "May",
+			answerKey: "answer001"
+		},
+		{
+			content: "January",
+			answerKey: "answer002"
+	
+		},
+		{
+			content: "June-July",
+			answerKey: "answer003"
+		}
+		];
+
+	var Q1 = new MultipleChoiceQuestion({
+			questionId: "highMonth",
+			question: "In what month is the CO2 usually highest for each year?",
+			choices: Q1Choices,
+			order: "randomized",
+			widget: SelectGroup,
+			widgetConfig: {
+				numberFormat: "latin-lower",
+				question: true,
+			},
+		}, eventManager);
+
+	Q1.draw(d3.select("#lowMonth"));
+
+	var Q2 = new MultipleChoiceQuestion({
+			questionId: "lowMonth",
+			question: "In what month is the CO2 usually lowest for each year?",
+			choices: Q1Choices,
+			order: "randomized",
+			widget: SelectGroup,
+			widgetConfig: {
+				numberFormat: "latin-lower",
+				question: true,
+			},
+		}, eventManager);
+
+	Q2.draw(d3.select("#lowMonth"));
+ 	submitManager.handleRequestsFrom(Q1);
+	submitManager.handleRequestsFrom(Q2);
+
+// numeric questions
+	var QDec = new NumericQuestion({
+			questionId: "co2Decrease",
+			question: "What is the average seasonal decrease in CO<sub>2</sub> concentration for these three years in ppm (high &minus; low)?",
+			widget: Slider,
+			widgetConfig:  {
+			startVal: 14,
+			minVal: 12.0,
+			maxVal: 18.0,
+			stepVal: .1,
+			unit: "ppm",
+			label: "Level:",
+			format: d3.format('5.1f'),
+			} ,
+		}, eventManager);
+
+	QDec.draw(d3.select("#avgDecrease"));
+
+ 	submitManager.handleRequestsFrom(QDec);
+
+ 	var QInc = new NumericQuestion({
+			questionId: "co2Increase",
+			question: "What is the average seasonal increase in CO<sub>2</sub> concentration for these three years in ppm (change between the low in fall to the￼following high the next spring)?",
+			widget: Slider,
+			widgetConfig:  {
+			startVal: 14,
+			minVal: 12.0,
+			maxVal: 18.0,
+			stepVal: .1,
+			unit: "ppm",
+			label: "Level:",
+			format: d3.format('5.1f'),
+			} ,
+		}, eventManager);
+
+	QInc.draw(d3.select("#avgDecrease"));
+
+ 	submitManager.handleRequestsFrom(QInc);
+
+ 	var QYr = new NumericQuestion({
+			questionId: "co2Yr",
+			question: "What is the average yearly increase in CO<sub>2</sub> concentration for these three years in ppm/yr?",
+			widget: Slider,
+			widgetConfig:  {
+			startVal: 3,
+			minVal: 0.0,
+			maxVal: 5.0,
+			stepVal: .1,
+			unit: "ppm/yr",
+			label: "Level:",
+			format: d3.format('5.1f'),
+			} ,
+		}, eventManager);
+
+	QYr.draw(d3.select("#avgDecrease"));
+
+ 	submitManager.handleRequestsFrom(QYr);
+
 	
 	</script>
 </body>

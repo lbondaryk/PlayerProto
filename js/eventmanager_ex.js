@@ -59,6 +59,19 @@ function EventManager(publishToBroker)
 	this.publishToBroker_ = (publishToBroker === undefined) ? true : publishToBroker;
 }
 
+
+/* **************************************************************************
+ * EventManager.enablePublishToBroker                                   *//**
+ *
+ * Method to enable or disable publishing the message to the MessageBroker
+ * in the parent window.
+ *
+ * @param {boolean} enable		True enables, false disables.
+ *								
+ ****************************************************************************/
+EventManager.prototype.enablePublishToBroker = function(enable) {
+	this.publishToBroker_ = enable;
+}
 /* **************************************************************************
  * EventManager.subscribe                                               *//**
  *
