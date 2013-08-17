@@ -1,6 +1,6 @@
 /* **************************************************************************
  * $Workfile:: eventmanager.js                                              $
- * **********************************************************************//**
+ * *********************************************************************/ /**
  *
  * @fileoverview Implementation of an EventManager object.
  *
@@ -19,6 +19,8 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.utils.EventManager');
+
 /* **************************************************************************
  * Constants
  ****************************************************************************/
@@ -28,7 +30,7 @@
  ****************************************************************************/
 
 /* **************************************************************************
- * EventManager                                                         *//**
+ * EventManager                                                        */ /**
  *
  * @constructor
  *
@@ -40,28 +42,35 @@
  * one widget on a page to respond to an event published (fired) by another
  * widget on the page. It also will allow for multiple response to a single
  * event.
- * @param {boolean} publishToBroker		Whether or not to send message to the 
- * 										MessageBroker in the parent window 
+ * @param {boolean=} publishToBroker	Whether or not to send message to the 
+ * 										MessageBroker in the parent window,
+ * 										the default is true.
  *
  ****************************************************************************/
-function EventManager(publishToBroker)
+pearson.utils.EventManager = function (publishToBroker)
 {
 	// Private Fields (should not be referenced except by EventManager methods)
 	
 	/**
 	 * events_ associates eventIds with an array of publishers and an array of
 	 * subscribers to that event.
-	 * @type Object.<string, ManagedEventInfo>
+	 * @type {Object.<string, ManagedEventInfo>}
 	 * @private
 	 */
 	this.events_ = {};
 
+	/**
+	 * The publishToBroker flag determines whether published events should
+	 * be sent to the MessageBroker, which propogates the event to EventManager
+	 * subscriptions in other iframes.
+	 * @type {boolean}
+	 * @private
+	 */
 	this.publishToBroker_ = (publishToBroker === undefined) ? true : publishToBroker;
-}
-
+};
 
 /* **************************************************************************
- * EventManager.enablePublishToBroker                                   *//**
+ * EventManager.enablePublishToBroker                                  */ /**
  *
  * Method to enable or disable publishing the message to the MessageBroker
  * in the parent window.
@@ -69,11 +78,13 @@ function EventManager(publishToBroker)
  * @param {boolean} enable		True enables, false disables.
  *								
  ****************************************************************************/
-EventManager.prototype.enablePublishToBroker = function(enable) {
+pearson.utils.EventManager.prototype.enablePublishToBroker = function (enable)
+{
 	this.publishToBroker_ = enable;
-}
+};
+
 /* **************************************************************************
- * EventManager.subscribe                                               *//**
+ * EventManager.subscribe                                              */ /**
  *
  * EventManager class method to subscribe to an event that an object may fire.
  *
@@ -87,7 +98,7 @@ EventManager.prototype.enablePublishToBroker = function(enable) {
  * - If you subscribe to the same callback multiple times, when the event is
  *   fired it will be called once for each subscription.
  ****************************************************************************/
-EventManager.prototype.subscribe = function(eventId, handler)
+pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
 {
 	// If the eventId has never been subscribed to, add it
 	if (!(eventId in this.events_))
@@ -101,9 +112,8 @@ EventManager.prototype.subscribe = function(eventId, handler)
 	event.handlers.push(handler);
 };
 
-
 /* **************************************************************************
- * EventManager.publishLocal                                           *//**
+ * EventManager.publishLocal                                          */ /**
  *
  * EventManager class method to publish (fire) an event calling the
  * notification function of all subscribers of that event.
@@ -116,7 +126,7 @@ EventManager.prototype.subscribe = function(eventId, handler)
  *								is specific to the particular event.
  *
  ****************************************************************************/
-EventManager.prototype.publishLocal = function(eventId, eventDetails)
+pearson.utils.EventManager.prototype.publishLocal = function (eventId, eventDetails)
 {
 	// If there are no subscribers, do nothing
 	if (eventId in this.events_)
@@ -130,10 +140,10 @@ EventManager.prototype.publishLocal = function(eventId, eventDetails)
 			handler(eventDetails);
 		}
 	}
-}
+};
 
 /* **************************************************************************
- * EventManager.publish                                                 *//**
+ * EventManager.publish                                                */ /**
  *
  * Besides publishing the event to the local subscribers, it also sends 
  * to the MessageBroker which is an message listener at parent window.
@@ -145,28 +155,28 @@ EventManager.prototype.publishLocal = function(eventId, eventDetails)
  *								is specific to the particular event.
  *
  ****************************************************************************/
-EventManager.prototype.publish = function(eventId, eventDetails)
+pearson.utils.EventManager.prototype.publish = function (eventId, eventDetails)
 {
 	// If there are no subscribers, do nothing
 	this.publishLocal(eventId, eventDetails);
 
 	// YSAP - Send to the parent window as well.
 	// For the message structure see messagebroker.js
-	if (this.publishToBroker_) {
+	if (this.publishToBroker_)
+	{
 		window.parent.postMessage(
-		{
-			messageType: "bricevent",
-			message: {
-				topic: eventId,
-				eventData: eventDetails
-			}
-		}, '*');	
+			{
+				messageType: "bricevent",
+				message: {
+					topic: eventId,
+					eventData: eventDetails
+				}
+			}, '*');	
 	}
-	
 };
 
 /* **************************************************************************
- * EventManager.listenBroker                                             *//**
+ * EventManager.listenBroker                                           */ /**
  *
  * Start listening to the window's message event. 
  * Only required if the iframe contains bric that listens to events.
@@ -175,16 +185,21 @@ EventManager.prototype.publish = function(eventId, eventDetails)
  *
  *
  ****************************************************************************/
-EventManager.prototype.listenBroker = function()
+pearson.utils.EventManager.prototype.listenBroker = function ()
 {
-	var _this = this;
-	window.addEventListener('message', function(e){
-	var data = e.data;
-	var here = location.href;
-	if (data.messageType === 'bricevent'){
-console.log("["+location.href+"] EventManager: Handling bricevent:" + JSON.stringify(data));
-			// Publish in the local iframe 
-			_this.publishLocal(data.message.topic, data.message.eventData, true);
-		}
-	});
+	var that = this;
+	window.addEventListener('message',
+			function(e)
+			{
+				var data = e.data;
+				var here = location.href;
+				if (data.messageType === 'bricevent')
+				{
+					window.console.log("[" + here + "] EventManager: Handling bricevent:" +
+								JSON.stringify(data));
+					// Publish in the local iframe 
+					that.publishLocal(data.message.topic, data.message.eventData, true);
+				}
+			}
+	);
 }

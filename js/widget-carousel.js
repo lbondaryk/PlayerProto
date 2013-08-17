@@ -14,7 +14,7 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.ecourses.brix.Carousel');
+goog.provide('pearson.brix.Carousel');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -66,7 +66,7 @@ goog.provide('pearson.ecourses.brix.Carousel');
  * @todo Implement the "scroll" presentation, after we figure out what it means to fit naturally (maybe it means we specify an itemAspectRatio). -mjl
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel = function (config, eventManager)
+pearson.brix.Carousel = function (config, eventManager)
 {
 	var that = this;
 	
@@ -74,7 +74,7 @@ pearson.ecourses.brix.Carousel = function (config, eventManager)
 	 * A unique id for this instance of the carousel widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, pearson.ecourses.brix.Carousel);
+	this.id = getIdFromConfigOrAuto(config, pearson.brix.Carousel);
 
 	/**
 	 * The list of widgets presented by the Carousel.
@@ -147,7 +147,7 @@ pearson.ecourses.brix.Carousel = function (config, eventManager)
  * @const
  * @type {string}
  */
-pearson.ecourses.brix.Carousel.autoIdPrefix = "crsl_auto_";
+pearson.brix.Carousel.autoIdPrefix = "crsl_auto_";
 
 /* **************************************************************************
  * Carousel.draw                                                       */ /**
@@ -161,7 +161,7 @@ pearson.ecourses.brix.Carousel.autoIdPrefix = "crsl_auto_";
  * @param {number}	size.width	-The width in pixels of the area the carousel is drawn within.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel.prototype.draw = function(container, size)
+pearson.brix.Carousel.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -243,7 +243,7 @@ pearson.ecourses.brix.Carousel.prototype.draw = function(container, size)
  * redrawn into the same container area as it was last drawn.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel.prototype.redraw = function ()
+pearson.brix.Carousel.prototype.redraw = function ()
 {
 	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
 	//       by doing nothing? -mjl
@@ -262,7 +262,7 @@ pearson.ecourses.brix.Carousel.prototype.redraw = function ()
  * @return {Object} the carousel item which is currently selected.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel.prototype.selectedItem = function ()
+pearson.brix.Carousel.prototype.selectedItem = function ()
 {
 	return this.lastdrawn.widgetGroup.select("g.widgetItem.selected").datum();
 };
@@ -276,7 +276,7 @@ pearson.ecourses.brix.Carousel.prototype.selectedItem = function ()
  * @param {number}	index	-the 0-based index of the item to flag as selected.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel.prototype.selectItemAtIndex = function (index)
+pearson.brix.Carousel.prototype.selectItemAtIndex = function (index)
 {
 	var itemGroups = this.lastdrawn.widgetGroup.selectAll("g.widgetItem");
 	var selectedItemGroup = d3.select(itemGroups[0][index]);
@@ -303,7 +303,7 @@ pearson.ecourses.brix.Carousel.prototype.selectItemAtIndex = function (index)
  * 			specified key.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel.prototype.itemKeyToIndex = function(key)
+pearson.brix.Carousel.prototype.itemKeyToIndex = function(key)
 {
 	for (var i = 0; i < this.items.length; ++i)
 	{
@@ -324,11 +324,11 @@ pearson.ecourses.brix.Carousel.prototype.itemKeyToIndex = function(key)
  *
  * @param {number}	width	-The width available to lay out the images in the carousel.
  *
- * @return {number) The optimum height for the carousel to display its items
+ * @return {number} The optimum height for the carousel to display its items
  * 					in the given width.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel.prototype.calcOptimumHeightForWidth = function (width)
+pearson.brix.Carousel.prototype.calcOptimumHeightForWidth = function (width)
 {
 	// Carve the width up for the n items
 	var itemCnt = this.items.length;
@@ -356,7 +356,7 @@ pearson.ecourses.brix.Carousel.prototype.calcOptimumHeightForWidth = function (w
  * @private
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel.prototype.assignMissingItemKeys_ = function ()
+pearson.brix.Carousel.prototype.assignMissingItemKeys_ = function ()
 {
 	this.items.forEach(function (item, i)
 					   {
@@ -377,9 +377,9 @@ pearson.ecourses.brix.Carousel.prototype.assignMissingItemKeys_ = function ()
  * @param {string|number}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Carousel.prototype.lite = function (liteKey)
+pearson.brix.Carousel.prototype.lite = function (liteKey)
 {
-	console.log("called Carousel.lite( " + liteKey + " )");
+	window.console.log("called Carousel.lite( " + liteKey + " )");
 
 	// todo: this works well when all the items are Images but not so well for other widget types
 	this.items.forEach(function (item) {item.lite(liteKey);});

@@ -15,8 +15,8 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.ecourses.brix.Image');
-goog.provide('pearson.ecourses.brix.CaptionedImage');
+goog.provide('pearson.brix.Image');
+goog.provide('pearson.brix.CaptionedImage');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -69,13 +69,13 @@ goog.provide('pearson.ecourses.brix.CaptionedImage');
  *										 image should be highlighted.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image = function (config, eventManager)
+pearson.brix.Image = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the image widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, pearson.ecourses.brix.Image);
+	this.id = getIdFromConfigOrAuto(config, pearson.brix.Image);
 
 	/**
 	 * The URI where the image resource is located.
@@ -160,7 +160,7 @@ pearson.ecourses.brix.Image = function (config, eventManager)
  * @const
  * @type {string}
  */
-pearson.ecourses.brix.Image.autoIdPrefix = "img_auto_";
+pearson.brix.Image.autoIdPrefix = "img_auto_";
 
 /* **************************************************************************
  * Image.draw                                                          */ /**
@@ -174,7 +174,7 @@ pearson.ecourses.brix.Image.autoIdPrefix = "img_auto_";
  * @param {number}	size.width	-The width in pixels of the area the labels are drawn within.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.draw = function(container, size)
+pearson.brix.Image.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -231,7 +231,7 @@ pearson.ecourses.brix.Image.prototype.draw = function(container, size)
  * redrawn into the same container area as it was last drawn.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.redraw = function ()
+pearson.brix.Image.prototype.redraw = function ()
 {
 	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
 	//       by doing nothing? -mjl
@@ -256,7 +256,7 @@ pearson.ecourses.brix.Image.prototype.redraw = function ()
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.drawWidget_ = function (widget)
+pearson.brix.Image.prototype.drawWidget_ = function (widget)
 {
 	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
 	widget.draw(this.lastdrawn.widgetGroup, this.lastdrawn.size);
@@ -274,7 +274,7 @@ pearson.ecourses.brix.Image.prototype.drawWidget_ = function (widget)
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.redrawWidget_ = function (widget)
+pearson.brix.Image.prototype.redrawWidget_ = function (widget)
 {
 	widget.redraw();
 };
@@ -290,7 +290,7 @@ pearson.ecourses.brix.Image.prototype.redrawWidget_ = function (widget)
  * @param	{string=}	opt_caption	-The new caption for the image.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.changeImage = function (URI, opt_caption)
+pearson.brix.Image.prototype.changeImage = function (URI, opt_caption)
 {
 	if (URI)
 	{
@@ -318,7 +318,7 @@ pearson.ecourses.brix.Image.prototype.changeImage = function (URI, opt_caption)
  *								 to the pixel offset into the data area.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.setScale = function (xScale, yScale)
+pearson.brix.Image.prototype.setScale = function (xScale, yScale)
 {
 	this.explicitScales_.xScale = xScale;
 	this.explicitScales_.yScale = yScale;
@@ -337,9 +337,9 @@ pearson.ecourses.brix.Image.prototype.setScale = function (xScale, yScale)
  *									 this image's area.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.append = function(svgWidgets)
+pearson.brix.Image.prototype.append = function(svgWidgets)
 {
-	if (!$.isArray(svgWidgets))
+	if (!Array.isArray(svgWidgets))
 	{
 		this.append_one_(svgWidgets);
 	}
@@ -361,7 +361,7 @@ pearson.ecourses.brix.Image.prototype.append = function(svgWidgets)
  * @private
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.append_one_ = function(widget)
+pearson.brix.Image.prototype.append_one_ = function(widget)
 {
 	this.childWidgets.push(widget);
 	
@@ -378,7 +378,7 @@ pearson.ecourses.brix.Image.prototype.append_one_ = function(widget)
  * @param {string}	liteKey	-The key associated with this image if it is to be highlighted.
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.lite = function (liteKey)
+pearson.brix.Image.prototype.lite = function (liteKey)
 {
 	var shouldHilight = liteKey === this.key;
 	this.lastdrawn.widgetGroup.classed('lit', shouldHilight);
@@ -394,7 +394,7 @@ pearson.ecourses.brix.Image.prototype.lite = function (liteKey)
  * @private
  *
  ****************************************************************************/
-pearson.ecourses.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
+pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
 {
 	if (this.explicitScales_.xScale !== null)
 	{
@@ -424,8 +424,8 @@ pearson.ecourses.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = 
  * The CaptionedImage widget draws an image in an SVGContainer with a caption.
  *
  * @constructor
- * @extends {pearson.ecourses.brix.Image}
- * @implements {pearson.ecourses.brix.IWidget}
+ * @extends {pearson.brix.Image}
+ * @implements {pearson.brix.IWidget}
  *
  * @param {Object}		config			-The settings to configure this CaptionedImage
  * @param {string|undefined}
@@ -446,13 +446,13 @@ pearson.ecourses.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = 
  *										 relation to the image.
  *
  ****************************************************************************/
-pearson.ecourses.brix.CaptionedImage = function (config, eventManager)
+pearson.brix.CaptionedImage = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the captioned image widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, pearson.ecourses.brix.CaptionedImage);
+	this.id = getIdFromConfigOrAuto(config, pearson.brix.CaptionedImage);
 
 	// call the base class constructor
 	config.id = config.id + '_base';
@@ -481,14 +481,14 @@ pearson.ecourses.brix.CaptionedImage = function (config, eventManager)
 			caption: null,
 		};
 }; // end of CaptionedImage constructor
-goog.inherits(pearson.ecourses.brix.CaptionedImage, pearson.ecourses.brix.Image);
+goog.inherits(pearson.brix.CaptionedImage, pearson.ecourses.brix.Image);
 
 /**
  * Prefix to use when generating ids for instances of CaptionedImage.
  * @const
  * @type {string}
  */
-pearson.ecourses.brix.CaptionedImage.autoIdPrefix = "cimg_auto_";
+pearson.brix.CaptionedImage.autoIdPrefix = "cimg_auto_";
 
 /* **************************************************************************
  * CaptionedImage.draw                                                 */ /**
@@ -502,7 +502,7 @@ pearson.ecourses.brix.CaptionedImage.autoIdPrefix = "cimg_auto_";
  * @param {number}	size.width	-The width in pixels of the area the captioned image are drawn within.
  *
  ****************************************************************************/
-pearson.ecourses.brix.CaptionedImage.prototype.draw = function(container, size)
+pearson.brix.CaptionedImage.prototype.draw = function(container, size)
 {
 	this.captioned_lastdrawn.container = container;
 	this.captioned_lastdrawn.size = size;
@@ -555,7 +555,7 @@ pearson.ecourses.brix.CaptionedImage.prototype.draw = function(container, size)
  * redrawn into the same container area as it was last drawn.
  *
  ****************************************************************************/
-pearson.ecourses.brix.CaptionedImage.prototype.redraw = function ()
+pearson.brix.CaptionedImage.prototype.redraw = function ()
 {
 	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
 	//       by doing nothing? -mjl
@@ -579,7 +579,7 @@ pearson.ecourses.brix.CaptionedImage.prototype.redraw = function ()
  * @param	{string=}	opt_caption	-The new caption for the image.
  *
  ****************************************************************************/
-pearson.ecourses.brix.CaptionedImage.prototype.changeImage = function (URI, opt_caption)
+pearson.brix.CaptionedImage.prototype.changeImage = function (URI, opt_caption)
 {
 	goog.base(this, 'changeImage', URI, opt_caption);
 };
@@ -602,7 +602,7 @@ pearson.ecourses.brix.CaptionedImage.prototype.changeImage = function (URI, opt_
  *								 to the pixel offset into the data area.
  *
  ****************************************************************************/
-pearson.ecourses.brix.CaptionedImage.prototype.setScale = function (xScale, yScale)
+pearson.brix.CaptionedImage.prototype.setScale = function (xScale, yScale)
 {
 	goog.base(this, 'setScale', xScale, yScale);
 };
@@ -617,7 +617,7 @@ pearson.ecourses.brix.CaptionedImage.prototype.setScale = function (xScale, ySca
  *									 this encapsulated image's area.
  *
  ****************************************************************************/
-pearson.ecourses.brix.CaptionedImage.prototype.append = function(svgWidgets)
+pearson.brix.CaptionedImage.prototype.append = function(svgWidgets)
 {
 	goog.base(this, 'append', svgWidgets);
 		
