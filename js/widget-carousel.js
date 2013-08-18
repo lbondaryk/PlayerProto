@@ -58,7 +58,7 @@ goog.provide('pearson.brix.Carousel');
  *										-If the carousel presentation is "scroll" should it
  *										 wrap from one end to the other or stop when the
  *										 first or last item is visible.
- * @param {EventManager=}
+ * @param {pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -112,7 +112,7 @@ pearson.brix.Carousel = function (config, eventManager)
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager;
 

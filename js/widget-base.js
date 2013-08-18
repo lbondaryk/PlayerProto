@@ -74,9 +74,9 @@ pearson.brix.utils.sign = function (x)
  * function name and arguments.
  *
  * @param {string}		fnName		-Function name that will be called.
- * @param {...number} 	arguments	-Arguments for the function call.
+ * @param {...number} 	var_args	-Arguments for the function call.
  ****************************************************************************/
-pearson.brix.utils.attrFnVal = function (fnName)
+pearson.brix.utils.attrFnVal = function (fnName, var_args)
 {
 	// get the fn args into an Array
 	var args = Array.prototype.slice.call(arguments, 1);
@@ -473,10 +473,10 @@ pearson.brix.SVGContainerConfig = function ()
  *
  * @constructor
  *
- * @param {Object}        config -The settings to configure this SVGContainer
- * @param {!d3.selection}  config.node -The parent node for the created svg element
- * @param {number}        config.maxWid -The maximum width of the svg container (in pixels)
- * @param {number}        config.maxHt -The maximum width of the svg container (in pixels)
+ * @param {Object}			config			-The settings to configure this SVGContainer
+ * @param {!d3.selection}	config.node		-The parent node for the created svg element
+ * @param {number}			config.maxWid	-The maximum width of the svg container (in pixels)
+ * @param {number}			config.maxHt	-The maximum width of the svg container (in pixels)
  *
  ****************************************************************************/
 pearson.brix.SVGContainer = function (config)

@@ -67,6 +67,9 @@ goog.provide('pearson.brix.CaptionedImage');
  *										-The actual height and width in pixels of the image.
  * @param {string}		config.key		-Association key used to determine if this
  *										 image should be highlighted.
+ * @param {pearson.utils.IEventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
  *
  ****************************************************************************/
 pearson.brix.Image = function (config, eventManager)
@@ -123,7 +126,7 @@ pearson.brix.Image = function (config, eventManager)
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager;
 
@@ -444,6 +447,9 @@ pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function 
  * @param {string}		config.captionPosition
  *										-Where the caption should be placed in
  *										 relation to the image.
+ * @param {pearson.utils.IEventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
  *
  ****************************************************************************/
 pearson.brix.CaptionedImage = function (config, eventManager)

@@ -22,17 +22,50 @@
 goog.provide('pearson.utils.EventManager');
 
 /* **************************************************************************
- * Constants
+ * IEventManager                                                       */ /**
+ *
+ * Interface for event managers.
+ *
+ * @interface
+ *
  ****************************************************************************/
+pearson.utils.IEventManager = function () {};
 
 /* **************************************************************************
- * Page variables
+ * IEventManager.publish                                               */ /**
+ *
+ * Notify the event manager that a particular event (topic) has occurred
+ * so that the event manager can call the handlers of all subscribers to that
+ * event (topic).
+ *
+ * @param {string}	eventId			-The identifier of the event being fired.
+ *									 aka topic.
+ * @param {Object}	eventDetails	-The details of the event to be passed to each
+ *									 subscriber's notification function. Its value
+ *									 is specific to the particular event.
+ *
  ****************************************************************************/
+pearson.utils.IEventManager.prototype.publish = function (eventId, eventDetails) {};
+
+/* **************************************************************************
+ * IEventManager.subscribe                                             */ /**
+ *
+ * Request that when a particular event (topic) is published, the given
+ * handler function will be called w/ that event's event details.
+ *
+ * @param {string}		eventId		-The identifier of the event that when fired
+ *									 should invoke the given callback. aka topic.
+ * @param {Function}	handler		-The function that will be called when the
+ *									 event is fired.  
+ *
+ ****************************************************************************/
+pearson.utils.IEventManager.prototype.subscribe = function (eventId, handler) {};
 
 /* **************************************************************************
  * EventManager                                                        */ /**
  *
  * @constructor
+ * @implements {pearson.utils.IEventManager}
  *
  * The event manager keeps track of subscribers of a particular topic (event)
  * so that when a publisher publishes that topic all of the subscribers can
@@ -54,7 +87,7 @@ pearson.utils.EventManager = function (publishToBroker)
 	/**
 	 * events_ associates eventIds with an array of publishers and an array of
 	 * subscribers to that event.
-	 * @type {Object.<string, ManagedEventInfo>}
+	 * @type {Object.<string, pearson.utils.EventManager.ManagedEventInfo_>}
 	 * @private
 	 */
 	this.events_ = {};
@@ -68,6 +101,17 @@ pearson.utils.EventManager = function (publishToBroker)
 	 */
 	this.publishToBroker_ = (publishToBroker === undefined) ? true : publishToBroker;
 };
+
+/**
+ * ManagedEventInfo_ is the information stored internally by the EventManager
+ * for each subscribed eventId.
+ *
+ * @typedef {Object} ManagedEventInfo_
+ * @property {Array.<Function>}	handlers	-List of subscribed handlers for an
+ * 											 eventId.
+ * @private
+ */
+pearson.utils.EventManager.ManagedEventInfo_;
 
 /* **************************************************************************
  * EventManager.enablePublishToBroker                                  */ /**
@@ -113,11 +157,13 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
 };
 
 /* **************************************************************************
- * EventManager.publishLocal                                          */ /**
+ * EventManager.publishLocal_                                          */ /**
  *
  * EventManager class method to publish (fire) an event calling the
  * notification function of all subscribers of that event.
  * This method does not send message to the MessageBroker.
+ *
+ * @private
  *
  * @param {string} eventId		The identifier of the event being fired.
  *								aka topic.
@@ -126,7 +172,7 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
  *								is specific to the particular event.
  *
  ****************************************************************************/
-pearson.utils.EventManager.prototype.publishLocal = function (eventId, eventDetails)
+pearson.utils.EventManager.prototype.publishLocal_ = function (eventId, eventDetails)
 {
 	// If there are no subscribers, do nothing
 	if (eventId in this.events_)
@@ -157,8 +203,8 @@ pearson.utils.EventManager.prototype.publishLocal = function (eventId, eventDeta
  ****************************************************************************/
 pearson.utils.EventManager.prototype.publish = function (eventId, eventDetails)
 {
-	// If there are no subscribers, do nothing
-	this.publishLocal(eventId, eventDetails);
+	// Notify any "local" subscribers
+	this.publishLocal_(eventId, eventDetails);
 
 	// YSAP - Send to the parent window as well.
 	// For the message structure see messagebroker.js
@@ -183,7 +229,6 @@ pearson.utils.EventManager.prototype.publish = function (eventId, eventDetails)
  * The iframe are supposed to invoke this method when all the objects are 
  * ready to handle events. 
  *
- *
  ****************************************************************************/
 pearson.utils.EventManager.prototype.listenBroker = function ()
 {
@@ -197,8 +242,9 @@ pearson.utils.EventManager.prototype.listenBroker = function ()
 				{
 					window.console.log("[" + here + "] EventManager: Handling bricevent:" +
 								JSON.stringify(data));
-					// Publish in the local iframe 
-					that.publishLocal(data.message.topic, data.message.eventData, true);
+
+					// Publish the remote event to any local subscribers
+					that.publishLocal_(data.message.topic, data.message.eventData);
 				}
 			}
 	);
