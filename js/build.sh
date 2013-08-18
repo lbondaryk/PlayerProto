@@ -11,6 +11,7 @@ declare -a COMPILER_ARGS=(\
 	"--create_source_map=${OUTFILE}.map"\
 	"--language_in=ECMASCRIPT5_STRICT"\
 	"--warning_level=VERBOSE"\
+	"--extra_annotation_name=note"\
 	"--externs=d3.v3-externs.js"\
 	)
 

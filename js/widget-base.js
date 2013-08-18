@@ -13,6 +13,14 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.utils');
+goog.provide('pearson.utils');
+goog.provide('pearson.utils.Rect');
+goog.provide('pearson.utils.Size');
+goog.provide('pearson.brix.IWidget');
+goog.provide('pearson.brix.SVGContainer');
+goog.provide('pearson.brix.AxisFormat');
+goog.provide('pearson.brix.Axes');
 
 /* **************************************************************************
  * Utilities
@@ -20,7 +28,7 @@
  * @todo These need to be moved out of global scope! -mjl
  * **************************************************************************/
 
-function measure(container)
+pearson.brix.utils.measure = function (container)
 {
 	if (!container)
 		return { height: 0, width: 0 };
@@ -30,15 +38,15 @@ function measure(container)
 	//container.remove();
 	return { height: bbox.height,
 			 width:  bbox.width };
-}
+};
 
-function logFormat(d)
+pearson.brix.utils.logFormat = function (d)
 {
 	//find the log base 10 (plus a little for zero padding)
 	var x = (Math.log(d) / Math.log(10)) + 1e-6;  
 	//then see if the log has abscissa 1, and only return numbers for those, and even
 	return (Math.abs(x - Math.floor(x)) < .1)&&(Math.floor(x)%2==0) ? d3.round(Math.log(d)/Math.log(10)) : "";
-}
+};
 
 /* **************************************************************************
  * sign                                                                */ /**
@@ -54,7 +62,7 @@ function logFormat(d)
  * write: y = sign(x) * abs(y);
  * so it is useful to consider 0 positive even though it isn't. -mjl
  ****************************************************************************/
-function sign(x)
+pearson.brix.utils.sign = function (x)
 {
 	return x ? x < 0 ? -1 : 1 : 0;
 };
@@ -68,7 +76,7 @@ function sign(x)
  * @param {string}		fnName		-Function name that will be called.
  * @param {...number} 	arguments	-Arguments for the function call.
  ****************************************************************************/
-function attrFnVal(fnName)
+pearson.brix.utils.attrFnVal = function (fnName)
 {
 	// get the fn args into an Array
 	var args = Array.prototype.slice.call(arguments, 1);
@@ -78,7 +86,7 @@ function attrFnVal(fnName)
 	fnCallStr += ')';
 	
 	return fnCallStr;
-}
+};
 
 /* **************************************************************************
  * getIdFromConfigOrAuto                                               */ /**
@@ -95,7 +103,7 @@ function attrFnVal(fnName)
  * @todo seems like this would be better as a static base class method once
  *       we have a base class for widgets.
  ****************************************************************************/
-function getIdFromConfigOrAuto(config, autoIdClass)
+pearson.brix.utils.getIdFromConfigOrAuto = function getIdFromConfigOrAuto(config, autoIdClass)
 {
 	if (config.id !== undefined)
 	{
@@ -111,11 +119,20 @@ function getIdFromConfigOrAuto(config, autoIdClass)
 
 	if (!('autoIdPrefix' in autoIdClass))
 	{
-		autoIdClass.autoIdPrefix = "auto" + (++getIdFromConfigOrAuto.autoPrefixCount) + "_";
+		//Testing if the naming the function expression so I can reference it here works - mjl
+		//var idCnt = ++pearson.brix.utils.getIdFromConfigOrAuto.autoPrefixCount;
+		var idCnt = ++getIdFromConfigOrAuto.autoPrefixCount;
+		autoIdClass.autoIdPrefix = "auto" + idCnt + "_";
 	}
 
 	return autoIdClass.autoIdPrefix + (++autoIdClass.autoIdCount);
-}
+};
+
+/**
+ * Count of class autoIdPrefix properties that have been set by getIdFromConfigOrAuto.
+ * @type {number}
+ */
+pearson.brix.utils.getIdFromConfigOrAuto.autoPrefixCount = 0;
 
 /* **************************************************************************
  * randomizeArray                                                      */ /**
@@ -125,7 +142,7 @@ function getIdFromConfigOrAuto(config, autoIdClass)
  * @param {Array}	a		-The array whose elements are to be randomized
  *
  ****************************************************************************/
-randomizeArray = function(a)
+pearson.utils.randomizeArray = function (a)
 {
 	// We'll do this by assigning each element of the given array a random number
 	// then sort by that number.
@@ -144,11 +161,6 @@ randomizeArray = function(a)
 	};
 };
 
-/**
- * Count of class autoIdPrefix properties that have been set by getIdFromConfigOrAuto.
- */
-getIdFromConfigOrAuto.autoPrefixCount = 0;
-
 /* **************************************************************************
  * Rect                                                                */ /**
  *
@@ -165,7 +177,7 @@ getIdFromConfigOrAuto.autoPrefixCount = 0;
  * @todo consider using javascript property accessor for width/height, so dependent properties stay consistent
  *
  ****************************************************************************/
-function Rect(x, y, width, height)
+pearson.utils.Rect = function (x, y, width, height)
 {
 	this.x = x;
 	this.y = y;
@@ -176,7 +188,7 @@ function Rect(x, y, width, height)
 	this.left = x;
 	this.bottom = this.top + height;
 	this.right = this.left + width;
-}
+};
 
 /* **************************************************************************
  * Rect.getSize                                                        */ /**
@@ -185,7 +197,7 @@ function Rect(x, y, width, height)
  *
  * @return {Size}
  ****************************************************************************/
- Rect.prototype.getSize = function ()
+ pearson.utils.Rect.prototype.getSize = function ()
  {
 	return { height: this.height, width: this.width };
  };
@@ -202,7 +214,7 @@ function Rect(x, y, width, height)
  *								 and 2 horizontal values (l,r,w).
  * @return {Rect}
  ****************************************************************************/
-Rect.makeRect = function (definedBy)
+pearson.utils.Rect.makeRect = function (definedBy)
 {
 	var vertCnt = 0;
 	
@@ -246,10 +258,10 @@ Rect.makeRect = function (definedBy)
 	
 	// todo: What is the appropriate abort mechanism? throw? if so throw what? -mjl
 	if (vertCnt < 2)
-		console.log("Cannot define rect, not enough vertical values", definedBy);
+		window.console.log("Cannot define rect, not enough vertical values", definedBy);
 
 	if (horizCnt < 2)
-		console.log("Cannot define rect, not enough horizontal values", definedBy);
+		window.console.log("Cannot define rect, not enough horizontal values", definedBy);
 		
 	if (haveT)
 	{
@@ -291,7 +303,7 @@ Rect.makeRect = function (definedBy)
  * @param {number}	height	-The vertical dimension in the common units
  * @param {number}	width	-The horizontal dimension in the common units
  ****************************************************************************/
-function Size(height, width)
+pearson.utils.Size = function (height, width)
 {
 	/**
 	 * The number of units that measures the vertical dimension.
@@ -304,7 +316,7 @@ function Size(height, width)
 	 * @type {number}
 	 */
 	this.width = width;
-}
+};
  
 /* **************************************************************************
  * Size.matchRatioWithHeight                                           */ /**
@@ -316,7 +328,7 @@ function Size(height, width)
  * @param {Size}	desiredRatio	-A Size whose ratio should be preserved in the returned Size.
  * @return {Size}
  ****************************************************************************/
-Size.matchRatioWithHeight = function (desiredHeight, desiredRatio)
+pearson.utils.Size.matchRatioWithHeight = function (desiredHeight, desiredRatio)
 {
 	return {height: desiredHeight,
 			width: desiredRatio.width * desiredHeight / desiredRatio.height};
@@ -332,7 +344,7 @@ Size.matchRatioWithHeight = function (desiredHeight, desiredRatio)
  * @param {Size}	desiredRatio	-A Size whose ratio should be preserved in the returned Size.
  * @return {Size}
  ****************************************************************************/
-Size.matchRatioWithWidth = function (desiredWidth, desiredRatio)
+pearson.utils.Size.matchRatioWithWidth = function (desiredWidth, desiredRatio)
 {
 	return {height: desiredRatio.height * desiredWidth / desiredRatio.width,
 			width: desiredWidth};
@@ -350,7 +362,7 @@ Size.matchRatioWithWidth = function (desiredWidth, desiredRatio)
  * on all widgets defined by this library.
  * @interface
  ****************************************************************************/
-IWidget = function () {};
+pearson.brix.IWidget = function () {};
  
 /* **************************************************************************
  * IWidget.draw                                                        */ /**
@@ -364,7 +376,7 @@ IWidget = function () {};
  * @param {number}	size.width	-The width for the widget.
  *
  ****************************************************************************/
-IWidget.prototype.draw = function (container, size) {};
+pearson.brix.IWidget.prototype.draw = function (container, size) {};
 
 /* **************************************************************************
  * IWidget.redraw                                                      */ /**
@@ -373,7 +385,7 @@ IWidget.prototype.draw = function (container, size) {};
  * redrawn into the same container area as it was last drawn.
  *
  ****************************************************************************/
-IWidget.prototype.redraw = function () {};
+pearson.brix.IWidget.prototype.redraw = function () {};
 
 /* **************************************************************************
  * IWidget.setScale                                                    */ /**
@@ -389,7 +401,7 @@ IWidget.prototype.redraw = function () {};
  *						yScale	-function to convert a vertical data offset
  *								 to the pixel offset into the data area.
  ****************************************************************************/
-IWidget.prototype.setScale = function (xScale, yScale) {};
+pearson.brix.IWidget.prototype.setScale = function (xScale, yScale) {};
 
 /* **************************************************************************
  * IWidget.lite                                                        */ /**
@@ -402,7 +414,7 @@ IWidget.prototype.setScale = function (xScale, yScale) {};
  * @param {string}	liteKey	-The key associated with the area to be highlighted.
  *
  ****************************************************************************/
-IWidget.prototype.lite = function (liteKey) {};
+pearson.brix.IWidget.prototype.lite = function (liteKey) {};
 
 /* **************************************************************************
  * IWidget.xScale                                                      */ /**
@@ -412,7 +424,7 @@ IWidget.prototype.lite = function (liteKey) {};
  * @param {number}	dataX	-position along the X axis from the data domain.
  * @return {number} horizontal pixel offset corresponding to that data position.
  ****************************************************************************/
-IWidget.prototype.xScale = function (dataX) {};
+pearson.brix.IWidget.prototype.xScale = function (dataX) {};
 
 /* **************************************************************************
  * IWidget.yScale                                                      */ /**
@@ -422,7 +434,7 @@ IWidget.prototype.xScale = function (dataX) {};
  * @param {number}	dataY	-position along the Y axis from the data domain.
  * @return {number} vertical pixel offset corresponding to that data position.
  ****************************************************************************/
-IWidget.prototype.yScale = function (dataY) {};
+pearson.brix.IWidget.prototype.yScale = function (dataY) {};
 
  /**
  * Definition of the fields of the configuration object used by the
@@ -430,7 +442,7 @@ IWidget.prototype.yScale = function (dataY) {};
  * documentation, not to be called/instantiated.
  * @constructor
  */
-function SVGContainerConfig()
+pearson.brix.SVGContainerConfig = function ()
 {
 	/**
 	 * The parent node for the created svg element
@@ -450,7 +462,7 @@ function SVGContainerConfig()
 	 * @type {number}
 	 */
 	this.maxHt = 0;
-}
+};
 
 /* **************************************************************************
  * SVGContainer                                                        */ /**
@@ -467,7 +479,7 @@ function SVGContainerConfig()
  * @param {number}        config.maxHt -The maximum width of the svg container (in pixels)
  *
  ****************************************************************************/
-function SVGContainer(config)
+pearson.brix.SVGContainer = function (config)
 {
 	/**
 	 * The parent node of the created svg element
@@ -512,7 +524,7 @@ function SVGContainer(config)
 																	//  https://bugs.webkit.org/show_bug.cgi?id=82489
 																	//  A horrible Jquery workaround is documented at
 																	//  http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
-}
+};
 
 /* **************************************************************************
  * SVGContainer.append                                                 */ /**
@@ -536,7 +548,7 @@ function SVGContainer(config)
  *									-Fraction of container width for the widget width.
  *
  ****************************************************************************/
-SVGContainer.prototype.append = function(svgWidgets, location)
+pearson.brix.SVGContainer.prototype.append = function (svgWidgets, location)
 {
 	if (!Array.isArray(svgWidgets))
 	{
@@ -581,7 +593,7 @@ SVGContainer.prototype.append = function(svgWidgets, location)
  * @private
  *
  ****************************************************************************/
-SVGContainer.prototype.append_one_ = function(svgWidget, location)
+pearson.brix.SVGContainer.prototype.append_one_ = function (svgWidget, location)
 {
 	if (location === undefined)
 	{
@@ -607,7 +619,7 @@ SVGContainer.prototype.append_one_ = function(svgWidget, location)
  * objects w/ these fields are arguments to the Axes contructor.
  * @constructor
  */
-function AxisFormat()
+pearson.brix.AxisFormat = function ()
 {
 	/**
 	 * The type of axis defines its scale.
@@ -673,7 +685,7 @@ function AxisFormat()
 	 * @type {string|undefined}
 	 */
 	this.label = "Labels can have extended chars (&mu;m)";
-} // end of AxisFormat
+}; // end of AxisFormat
 
 /* **************************************************************************
  * Axes                                                                */ /**
@@ -696,7 +708,7 @@ function AxisFormat()
  * @param {AxisFormat}	config.yAxisFormat	-The formatting options for the vertical (y) axis.
  *
  ****************************************************************************/
-function Axes(container, config)
+pearson.brix.Axes = function (container, config)
 {
 	this.id = config.id;
 	this.container = container;
@@ -738,7 +750,7 @@ function Axes(container, config)
 		if (xOrient == 'top')
 		{
 			this.margin.top = this.margin.top + 40;
-			console.log("top margin increased for top label");
+			window.console.log("top margin increased for top label");
 			//catches the case where the whole graph renders to fit within the available SVG,
 			//but cuts off at the top because it doesn't get pushed down far enough
 		}
@@ -753,14 +765,14 @@ function Axes(container, config)
 		if (yOrient === 'left')
 		{
 			this.margin.left = this.margin.left + 50;
-			console.log("left margin increased for y label");
+			window.console.log("left margin increased for y label");
 			//catches the case where the whole graph renders to fit within the available SVG,
 			//but cuts off at the right because it gets pushed over too far
 		}
 		else // yOrient === "right" (only other valid value)
 		{
 			this.margin.right= this.margin.right + 40;
-			console.log("right margin increased for y label");
+			window.console.log("right margin increased for y label");
 		}
 	}
 
@@ -850,7 +862,7 @@ function Axes(container, config)
 			var negTicks = [];
 			var posTicks = [];
            //store all the negative ticks separately
-			if ($.isArray(xTicks))
+			if (Array.isArray(xTicks))
 			{
 				xTicks.forEach(function(o)
 							   {
@@ -896,12 +908,8 @@ function Axes(container, config)
 		// if the type is a time axis and ticks are explicit, turn the ticks into Date objects
 		if (this.xFmt.type == "time")
 		{
-			if (Array.isArray(xTicks)) { 
-
-				function xTicksFun() {
-					return xTicks.map(identity);
-				}
-
+			if (Array.isArray(xTicks))
+			{ 
 				// this is broken at the moment, so it's hard set to the d3 years function
 				// it needs to be made into a function that spits out the string of explicit
 				// values to set the tick positions and labels, but I can't tell how that should
@@ -915,7 +923,7 @@ function Axes(container, config)
 		}
 		else if (this.xFmt.type == "log")
 		{
-			this.xAxis.tickFormat(logFormat);
+			this.xAxis.tickFormat(pearson.brix.utils.logFormat);
 			//this prevents too many tick labels on log graphs, making
 			//them unreadable
 			Array.isArray(xTicks) ? this.xAxis.tickValues(xTicks) : (this.xAxis.ticks(xTicks));
@@ -1079,7 +1087,7 @@ function Axes(container, config)
 		}
 
 		this.xAxis.scale(this.xScale);
-		console.log("x margins increased, new inner width is ", dataAreaWidth, " margin ", this.margin.left, this.margin.right);
+		window.console.log("x margins increased, new inner width is ", dataAreaWidth, " margin ", this.margin.left, this.margin.right);
 		this.xaxis.call(this.xAxis);
 		if (this.yaxis)
 		{
@@ -1119,7 +1127,7 @@ function Axes(container, config)
 		}
 
 		this.yAxis.scale(this.yScale);
-		console.log("y margins increased, new inner height is ", dataAreaHeight, " margin: ", this.margin.top, this.margin.bottom);
+		window.console.log("y margins increased, new inner height is ", dataAreaHeight, " margin: ", this.margin.top, this.margin.bottom);
 		this.yaxis.call(this.yAxis);
 		if (this.xaxis)
 		{
@@ -1141,4 +1149,4 @@ function Axes(container, config)
 	//and finally, with the margins all settled, move the group down to accomodate the
 	//top and left margins and position
 	this.group.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-} // end Axes constructor
+}; // end Axes constructor

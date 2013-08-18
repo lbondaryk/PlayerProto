@@ -75,7 +75,7 @@ pearson.brix.Image = function (config, eventManager)
 	 * A unique id for this instance of the image widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, pearson.brix.Image);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Image);
 
 	/**
 	 * The URI where the image resource is located.
@@ -452,7 +452,7 @@ pearson.brix.CaptionedImage = function (config, eventManager)
 	 * A unique id for this instance of the captioned image widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, pearson.brix.CaptionedImage);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CaptionedImage);
 
 	// call the base class constructor
 	config.id = config.id + '_base';
@@ -508,6 +508,9 @@ pearson.brix.CaptionedImage.prototype.draw = function(container, size)
 	this.captioned_lastdrawn.size = size;
 	this.captioned_lastdrawn.URI = this.URI;
 	this.captioned_lastdrawn.caption = this.caption;
+
+	// aliases of utility functions for readability
+	var attrFnVal = pearson.brix.utils.attrFnVal;
 
 	// make a group to hold the image
 	var widgetGroup = container.append("g")

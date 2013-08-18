@@ -74,7 +74,7 @@ pearson.brix.Carousel = function (config, eventManager)
 	 * A unique id for this instance of the carousel widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, pearson.brix.Carousel);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Carousel);
 
 	/**
 	 * The list of widgets presented by the Carousel.
@@ -165,6 +165,9 @@ pearson.brix.Carousel.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
+
+	// aliases of utility functions for readability
+	var attrFnVal = pearson.brix.utils.attrFnVal;
 
 	var that = this;
 	

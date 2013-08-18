@@ -58,7 +58,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	 * A unique id for this instance of the image viewer widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, pearson.brix.ImageViewer);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.ImageViewer);
 
 	/**
 	 * The list of widgets presented by the Carousel in this ImageViewer.
@@ -173,6 +173,9 @@ pearson.brix.ImageViewer.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
+
+	// aliases of utility functions for readability
+	var attrFnVal = pearson.brix.utils.attrFnVal;
 
 	var that = this;
 	
