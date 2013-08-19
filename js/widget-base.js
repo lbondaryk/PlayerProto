@@ -138,6 +138,7 @@ pearson.brix.utils.getIdFromConfigOrAuto.autoPrefixCount = 0;
  * randomizeArray                                                      */ /**
  *
  * Randomize the order of the elements of the given array.
+ * @export
  *
  * @param {Array}	a		-The array whose elements are to be randomized
  *
@@ -168,6 +169,7 @@ pearson.utils.randomizeArray = function (a)
  * to the right.
  * It has a top, bottom, left, right, width and height.
  * @constructor
+ * @export
  *
  * @param {number}	x		-The x-coordinate location of the left side of the rectangle.
  * @param {number}	y		-The y-coordinate location of the top side of the rectangle.
@@ -194,6 +196,7 @@ pearson.utils.Rect = function (x, y, width, height)
  * Rect.getSize                                                        */ /**
  *
  * Get the size of this rect in a Size object.
+ * @export
  *
  * @return {Size}
  ****************************************************************************/
@@ -209,6 +212,7 @@ pearson.utils.Rect = function (x, y, width, height)
  * any 2 horizontal values (l,r,w). If 3 values are specified, the height
  * and width are the values that will be ignored (not checked that they match
  * the other 2 values).
+ * @export
  *
  * @param {Object} definedBy	-object that must have 2 vertical values (t,b,h)
  *								 and 2 horizontal values (l,r,w).
@@ -299,6 +303,7 @@ pearson.utils.Rect.makeRect = function (definedBy)
  * common unit such as pixels.
  *
  * @constructor
+ * @export
  *
  * @param {number}	height	-The vertical dimension in the common units
  * @param {number}	width	-The horizontal dimension in the common units
@@ -323,6 +328,7 @@ pearson.utils.Size = function (height, width)
  *
  * Return a Size with the specified height whose aspect ratio is the same as
  * that of the given size.
+ * @export
  *
  * @param {number}	desiredHeight	-The vertical dimension of the Size to be returned.
  * @param {Size}	desiredRatio	-A Size whose ratio should be preserved in the returned Size.
@@ -339,6 +345,7 @@ pearson.utils.Size.matchRatioWithHeight = function (desiredHeight, desiredRatio)
  *
  * Return a Size with the specified width whose aspect ratio is the same as
  * that of the given size.
+ * @export
  *
  * @param {number}	desiredWidth	-The horizontal dimension of the Size to be returned.
  * @param {Size}	desiredRatio	-A Size whose ratio should be preserved in the returned Size.
@@ -472,6 +479,7 @@ pearson.brix.SVGContainerConfig = function ()
  * the given configuration values.
  *
  * @constructor
+ * @export
  *
  * @param {Object}			config			-The settings to configure this SVGContainer
  * @param {!d3.selection}	config.node		-The parent node for the created svg element
@@ -532,6 +540,7 @@ pearson.brix.SVGContainer = function (config)
  * Append the given widgets to the container at the specified location
  * within it. If multiple widgets are passed in, the x and y scale of
  * the 1st widget will be set on the other widgets before calling draw.
+ * @export
  *
  * @param {Object}	svgWidgets		-The widget or array of widgets to draw in the container
  * @param {Object|undefined}
@@ -696,6 +705,7 @@ pearson.brix.AxisFormat = function ()
  * the data extents defined in that axis' AxisFormat.
  *
  * @constructor
+ * @export
  *
  * @param {!d3.selection}
  *						container			-The container svg element to append the axes element tree to.

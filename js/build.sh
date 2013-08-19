@@ -13,6 +13,7 @@ declare -a COMPILER_ARGS=(\
 	"--warning_level=VERBOSE"\
 	"--extra_annotation_name=note"\
 	"--externs=d3.v3-externs.js"\
+	"--generate_exports"\
 	)
 
 BRIX_ARGS=$(cat <<EOF

@@ -52,6 +52,7 @@ goog.provide('pearson.brix.CaptionedImage');
  *
  * @constructor
  * @implements {IWidget}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this Image
  * @param {string|undefined}
@@ -169,6 +170,7 @@ pearson.brix.Image.autoIdPrefix = "img_auto_";
  * Image.draw                                                          */ /**
  *
  * Draw this Image in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the labels element tree to.
@@ -232,6 +234,7 @@ pearson.brix.Image.prototype.draw = function(container, size)
  *
  * Redraw the image as it may have been changed (new URI or caption). It will be
  * redrawn into the same container area as it was last drawn.
+ * @export
  *
  ****************************************************************************/
 pearson.brix.Image.prototype.redraw = function ()
@@ -287,6 +290,7 @@ pearson.brix.Image.prototype.redrawWidget_ = function (widget)
  *
  * Change the URI of this Image and/or the caption. After changing the
  * image it should be redrawn.
+ * @export
  *
  * @param	{?string}	URI			-The new URI for the image. If null, the URI
  *									 will not be changed.
@@ -334,6 +338,7 @@ pearson.brix.Image.prototype.setScale = function (xScale, yScale)
  * of the image and any widgets appended earlier. If append
  * is called before draw has been called, then the appended widget(s) will be
  * drawn when draw is called.
+ * @export
  *
  * @param {!IWidget|Array.<IWidget>}
  * 						svgWidgets	-The widget or array of widgets to be drawn in
@@ -377,6 +382,7 @@ pearson.brix.Image.prototype.append_one_ = function(widget)
  * Image.lite                                                          */ /**
  *
  * Highlight the image if it is identified by the given liteKey.
+ * @export
  *
  * @param {string}	liteKey	-The key associated with this image if it is to be highlighted.
  *
@@ -429,6 +435,7 @@ pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function 
  * @constructor
  * @extends {pearson.brix.Image}
  * @implements {pearson.brix.IWidget}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this CaptionedImage
  * @param {string|undefined}
@@ -500,6 +507,7 @@ pearson.brix.CaptionedImage.autoIdPrefix = "cimg_auto_";
  * CaptionedImage.draw                                                 */ /**
  *
  * Draw this CaptionedImage in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the captioned image element tree to.
@@ -562,6 +570,7 @@ pearson.brix.CaptionedImage.prototype.draw = function(container, size)
  *
  * Redraw the image as it may have been changed (new URI or caption). It will be
  * redrawn into the same container area as it was last drawn.
+ * @export
  *
  ****************************************************************************/
 pearson.brix.CaptionedImage.prototype.redraw = function ()
@@ -582,6 +591,7 @@ pearson.brix.CaptionedImage.prototype.redraw = function ()
  *
  * Change the URI of this Image and/or the caption. After changing the
  * image it should be redrawn.
+ * @export
  *
  * @param	{?string}	URI			-The new URI for the image. If null, the URI
  *									 will not be changed.
@@ -620,6 +630,7 @@ pearson.brix.CaptionedImage.prototype.setScale = function (xScale, yScale)
  * CaptionedImage.append                                               */ /**
  *
  * Append the widget or widgets to the encapsulated image.
+ * @export
  *
  * @param {!IWidget|Array.<IWidget>}
  * 						svgWidgets	-The widget or array of widgets to be drawn in

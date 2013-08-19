@@ -66,6 +66,7 @@ pearson.utils.IEventManager.prototype.subscribe = function (eventId, handler) {}
  *
  * @constructor
  * @implements {pearson.utils.IEventManager}
+ * @export
  *
  * The event manager keeps track of subscribers of a particular topic (event)
  * so that when a publisher publishes that topic all of the subscribers can
@@ -119,6 +120,8 @@ pearson.utils.EventManager.ManagedEventInfo_;
  * Method to enable or disable publishing the message to the MessageBroker
  * in the parent window.
  *
+ * @export
+ *
  * @param {boolean} enable		True enables, false disables.
  *								
  ****************************************************************************/
@@ -131,6 +134,8 @@ pearson.utils.EventManager.prototype.enablePublishToBroker = function (enable)
  * EventManager.subscribe                                              */ /**
  *
  * EventManager class method to subscribe to an event that an object may fire.
+ *
+ * @export
  *
  * @param {string} eventId		The identifier of the event that when fired
  *								should invoke the given callback. aka topic.
@@ -191,6 +196,8 @@ pearson.utils.EventManager.prototype.publishLocal_ = function (eventId, eventDet
 /* **************************************************************************
  * EventManager.publish                                                */ /**
  *
+ * @export
+ *
  * Besides publishing the event to the local subscribers, it also sends 
  * to the MessageBroker which is an message listener at parent window.
  *
@@ -224,6 +231,8 @@ pearson.utils.EventManager.prototype.publish = function (eventId, eventDetails)
 /* **************************************************************************
  * EventManager.listenBroker                                           */ /**
  *
+ * @export
+ *
  * Start listening to the window's message event. 
  * Only required if the iframe contains bric that listens to events.
  * The iframe are supposed to invoke this method when all the objects are 
@@ -248,4 +257,5 @@ pearson.utils.EventManager.prototype.listenBroker = function ()
 				}
 			}
 	);
-}
+};
+
