@@ -22,7 +22,7 @@
  		#case bricevent, this is what actually sent at EventManager scope
 	 	message: {
 	 		sendTime: <time was sent in unix format>
-	 		topic: <the event manager's topic: objectId/event_name (changed, submitted, control, error, etc)>
+	 		topic: <the event manager's topic: objectId/event_name ("all-loaded" is reserved)>
 			eventData: <specific data, usually collection of key-value pairs> 
 	 	}
 
@@ -31,6 +31,7 @@
 		height:<h>
 
 		#case 'topic' 
+		topic:<the topic name to <un>subscribe>
 		action:<subscribe | unsubscribe>
 	 }
  }
