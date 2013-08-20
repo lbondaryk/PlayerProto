@@ -41,7 +41,7 @@
  *
  */
 
-//goog.require('brixworks.eventmanager');
+//goog.require('brixworks.eventmanager_ex');
 
 
 /**
