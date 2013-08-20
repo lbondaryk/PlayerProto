@@ -30,8 +30,7 @@
 		width:<w>,
 		height:<h>
 
-		#case 'topic' (implementation pending)
-		topic:<the topic name>,
+		#case 'topic' 
 		action:<subscribe | unsubscribe>
 	 }
  }
