@@ -236,10 +236,14 @@ RadioGroup.prototype.draw = function(container)
 /* **************************************************************************
  * RadioGroup.selectedItem                                             */ /**
  *
- * Return the selected choice in the radio group or null if nothing has been
- * selected.
+ * Return the selected choice in the radio group and it's data, 
+ * or null if nothing has been selected. Used in multiple choice questions.
+ * Note that this does not return the index of the checked item.
+ * @todo: implement lite for this and keys so it can be used as a regular
+ * ui selection widget for mutually exclusive selections.
  *
- * @return {Object} the radio group choice which is currently selected or null.
+ * @return {Object} the radio group data corresponding to the choice 
+ * which is currently selected or null.
  *
  ****************************************************************************/
 RadioGroup.prototype.selectedItem = function ()

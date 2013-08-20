@@ -33,7 +33,6 @@
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this Readou.
  * 										 if undefined a unique id will be assigned.
- * @param {number} 		config.node		-[DESCRIPTION of config parameter needed]
  * @param {number} 		config.startVal	-[DESCRIPTION of config parameter needed]
  * @param {htmlString} 	config.unit		-[DESCRIPTION of config parameter needed]
  * @param {htmlString}	config.label	-[DESCRIPTION of config parameter needed]
@@ -51,7 +50,7 @@
  ****************************************************************************/
 function Readout(config)
 {
-	this.id = config.id;
+	this.id = getIdFromConfigOrAuto(config, Readout);
 
 	this.node = config.node;
 	this.startVal = config.startVal;	
@@ -92,7 +91,13 @@ function Readout(config)
 	console.log("text is the startVal:", d3.select("#" + this.id).text() == this.startVal, d3.select("#" + this.id).text());
 
 } //end Readout widget
-	
+
+/**
+ * Prefix to use when generating ids 
+ * @const
+ * @type {string}
+ */
+Readout.autoIdPrefix = "readout_";
 /* **************************************************************************
  * Readout.setValue                                                    */ /**
  *

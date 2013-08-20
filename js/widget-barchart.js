@@ -23,6 +23,7 @@
 			Data: [barData1],
 			type: "grouped",
 			xAxisFormat: { type: "linear",
+						   mode: "reverse",
 						   ticks: 5,
 						   orientation: "bottom",
 						   label: "linear bar value (%)" },
@@ -267,19 +268,6 @@ BarChart.prototype.draw = function(container, size)
 	var graph = axesDrawn.group.append("g") //make a group to hold bars
 		.attr("class","widgetBarChart").attr("id", this.id);
 
-	// todo: see if there is maybe a better way to determine if something is already drawn other than by id. -mjl
-	/*if (d3.select("#"+barsId)[0][0] === null)
-	{
-
-	var graph = axesDrawn.group.append("g") //make a group to hold new bar chart
-		.attr("id", barsId) //name it so it can be manipulated or highlighted later
-		//TODO: determine if this is really useful
-		;
-	}
-	else
-	{
-		var graph = d3.select("#" + barsId);
-	} */
 	
 	this.lastdrawn.graph = graph;
 	this.lastdrawn.groupScale = groupScale;
@@ -426,23 +414,24 @@ BarChart.prototype.redrawWidget_ = function (widget)
 				  function(d)
 				  {
 				// move each group to the x=0 position horizontally if it's a
-				// positive bar, or start at it's negative x value if it's reversed.
-				// The x<0 logic allows us to draw pyramid charts, normally bar 
+				// positive bar, or start at it's negative x value if negative,
+				// or at it's positive value if reversedx.
+				// The negative value logic allows us to draw pyramid charts, normally bar 
 				// charts are bin counts and all positive. 
-				      var x = (d.x < 0) ? xScale(d.x) : xScale(0);
+				      var x = (d.x < 0 || that.lastdrawn.axes.xFmt.mode === "reverse") ? xScale(d.x) : xScale(0);
 					  var y = yScale(d.y);
 				      return "translate(" + x + "," + y + ")";
 				  });
 				  
 	// Update the height and width of the bar rects based on the data points bound above.
 	bars.select("rect")
-	//if grouped, each bar is only 1/# groups of the available width
+	//if grouped, each bar is only 1/(# groups) of the available height around 
+	// an ordinal tickmark
 		.attr("height", (this.type == "grouped") ? (bandsize / (this.data.length + 1)) : bandsize)
 		.attr("width",
 			  function(d)
 			  {
-				  return (d.x < 0) ? xScale(0) - xScale(d.x)
-								   : xScale(d.x) - xScale(0);
+				  return Math.abs(xScale(0) - xScale(d.x));
 			  });
 			  
 	

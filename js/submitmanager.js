@@ -119,6 +119,7 @@ SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 		{
 			sequenceNodeId: eventDetails.questionId,
 			answer: eventDetails.answerKey,
+			value: eventDetails.submissionValue,
 			responseCallback: eventDetails.responseCallback,
 			requestDetails: eventDetails,
 		};
@@ -160,7 +161,7 @@ SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 	// enhance this to have the "answerMan" give us an asynchronous
 	// response, probably via an eventManager event. -mjl
 	var submissionResponse = answerMan(submitDetails.sequenceNodeId,
-										submitDetails.answer);
+										submitDetails.answer, submitDetails.value);
 
 	// We handle the reply from the scoring engine (in the event handler eventually)
 	// by removing the request from the list of pending request

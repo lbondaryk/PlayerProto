@@ -1,14 +1,16 @@
 /* **************************************************************************
- * $Workfile:: widget-multiplechoicequestion.js                             $
+ * $Workfile:: widget-numericquestion.js                             $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the MultipleChoiceQuestion widget.
+ * @fileoverview Implementation of the numericquestion widget.
  *
- * The MultipleChoiceQuestion widget displays a question and a set of possible
- * answers one of which must be selected and submitted to be scored.
+ * The numericquestion widget displays a question and a control
+ * for entering a numeric answer (slider, text entry, data point) to be scored.
+ * It also has facility for allowing several correct answers, or an answer
+ * range.
  *
- * Created on		May 29, 2013
- * @author			Michael Jay Lippert
+ * Created on		August 9, 2013
+ * @author			Leslie Bondaryk
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -17,113 +19,67 @@
 // Sample configuration objects for classes defined here
 (function()
 {
-	var Q1Choices =
-	[
-		{
-			content: "Because as the population increases, the absolute number of births increases even though the growth rate stays constant.",
-			response: "Growth rate stays constant.",
-			answerKey: "correct"
-		},
-		{
-			content: "Because the growth rate increases as the population rises.",
-			response: "Does the growth rate change with population size?",
-			answerKey: "wrong1"
-		},
-		{
-			content: "Because the total fertility rate increases with population.",
-			response: "Does the fertility rate change with population size?",
-			answerKey: "wrong2"
 	
-		},
-		{
-			content: "Because social behaviors change and people decide to have more children.",
-			response: "This might happen but is it something is necessarily occurs?",
-			answerKey: "wrong3"
-		}
-	];
-	
-	// RadioButton widget config
-	var rbConfig =
-		{
-			id: "RG1",
-			choices: Q1Choices,
-			numberFormat: "latin-upper"
-		};
-	
-	// MultipleChoiceQuestion widget config
-	var mcqConfig =
+	// numericquestion widget config
+	var numqConfig =
 	{
-		id: "Q1",
+		//id: "Q1",
 		questionId: "SanVan003",
-		question: "Why?",
-		choices: Q1Choices,
-		order: "randomized", //default, even if not specified
-		widget: RadioGroup,
-		widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultipleChoiceQuestion
+		question: "How high does it go?",
+		widget: Slider,
+		widgetConfig: {
+			startVal: 12,
+			minVal: 12.0,
+			maxVal: 18.0,
+			stepVal: .1,
+			label: "Level:",
+			format: d3.format('5.1f'),
+			} // 
 	};
 });
 
-/**
- * Answers are presented to users by certain widgets that allow the user to
- * select one (or more of them).
- *
- * @typedef {Object} Answer
- * @property {string}	content		-The content of the answer, which presents the
- * 									 meaning of the answer.
- * @property {string}	answerKey	-This is the unique ID that will be returned
- * 									 to the scoring engine to identify that the
- * 									 user has chosen this answer.
- *
- * @todo: the content currently must be text (a string) however, we are likely
- * to want to make the content be any widget.
- */
-
 
 /* **************************************************************************
- * MultipleChoiceQuestion                                              */ /**
+ * numericquestion                                              */ /**
  *
- * Constructor function for MultipleChoiceQuestion brix.
+ * Constructor function for numericquestion brix.
  *
  * @constructor
  * @implements {IWidget}
  * @implements {IQuestion}
  *
- * @param {Object}		config			-The settings to configure this MultipleChoiceQuestion
+ * @param {Object}		config			-The settings to configure this numericquestion
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this MultipleChoiceQuestion.
+ * 						config.id		-String to uniquely identify this numericquestion.
  * 										 if undefined a unique id will be assigned.
  * @param {string}		config.questionId
  * 										-Scoring engine Id of this question
- * @param {string}		config.question	-The question being posed to the user which should
+ * @param {string}		config.question	-The HTML question being posed to the user which should
  * 										 be answered by choosing one of the presented choices.
- * @param {Array.<Answer>}
- *						config.choices	-The list of choices (answers) to be presented
- *										 by the MultipleChoiceQuestion.
- * @param {string|undefined}
- *						config.order	-The order in which the choices should be presented.
- *										 either "randomized" or "ordered". Default is
- *										 "randomized" if not specified.
- * @param {IWidget}		config.widget	-The constructor for a widget that presents choices.
+ * @param {Array|undefined}		
+ *						config.svgSize	-Two element array with the maxWidth and Height of the 
+ *										 svg container, if the widget is an SVG widget.
+ * @param {IWidget}		config.widget	-The constructor for a widget that enables a numeric input.
  * @param {!Object}		config.widgetConfig
  * 										-The configuration object for the specified widget
- * 										 constructor without the id or choices properties which
+ * 										 constructor without the id properties which
  * 										 will be added by this question constructor.
  * @param {EventManager}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
  * @classdesc
- * The MultipleChoiceQuestion widget displays a question and a set of possible
+ * The numericquestion widget displays a question and a set of possible
  * answers one of which must be selected and submitted to be scored.
  *
  ****************************************************************************/
-function MultipleChoiceQuestion(config, eventManager)
+function NumericQuestion(config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, MultipleChoiceQuestion);
+	this.id = getIdFromConfigOrAuto(config, NumericQuestion);
 
 	/**
 	 * The scoring engine id of this question.
@@ -137,34 +93,15 @@ function MultipleChoiceQuestion(config, eventManager)
 	 */
 	this.question = config.question;
 
-	/**
-	 * The configuration options for the widget that will display the choices that
-	 * answer this question.
-	 * Add an id and adjust the choices according to the question type and add them
-	 * to the config.
-	 * @type {Object}
-	 */
 	var widgetConfig = config.widgetConfig;
 
 	widgetConfig.id = this.id + "_wdgt";
 
-	var choices = config.choices;
-
 	this.svgSize = config.svgSize;
-	this.svgBaseBrix = config.svgBaseBrix;
 
-	if (config.order === undefined || config.order === "randomized")
-	{
-		// clone the array before we rearrange it so we don't modify the
-		// array passed in the config.
-		choices = choices.slice(0);
-		randomizeArray(choices);
-	}
-
-	widgetConfig.choices = choices;
 
 	/**
-	 * The widget used to present the choices that may be selected to answer
+	 * The widget used to present the numeric entry to answer
 	 * this question.
 	 * @type {IWidget}
 	 */
@@ -232,7 +169,7 @@ function MultipleChoiceQuestion(config, eventManager)
 	// subscribe to events of our 'child' widgets
 	var that = this;
 	eventManager.subscribe(this.submitButton.pressedEventId, function () {that.handleSubmitRequested_();});
-	eventManager.subscribe(this.choiceWidget.selectedEventId, function () {that.handleAnswerSelected_();});
+	eventManager.subscribe(this.choiceWidget.changedValueEventId, function () {that.handleAnswerSelected_();});
 
 	/**
 	 * Information about the last drawn instance of this widget (from the draw method)
@@ -243,31 +180,32 @@ function MultipleChoiceQuestion(config, eventManager)
 			container: null,
 			widgetGroup: null,
 		};
-} // end of MultipleChoiceQuestion constructor
+} // end of numericquestion constructor
 
 /**
- * Prefix to use when generating ids for instances of MultipleChoiceQuestion.
+ * Prefix to use when generating ids for instances of numericquestion.
  * @const
  * @type {string}
  */
-MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
+NumericQuestion.autoIdPrefix = "numQ_auto_";
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleSubmitRequested_                       */ /**
+ * numericquestion.handleSubmitRequested_                       */ /**
  *
  * Handle the pressed event from the submit button which means that we want
  * to fire the submit answer requested event.
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
+NumericQuestion.prototype.handleSubmitRequested_ = function()
 {
 	var that = this;
 	var submitAnsDetails =
 		{
 			question: this,
 			questionId: this.questionId,
-			answerKey: this.choiceWidget.selectedItem().answerKey,
+			answerKey: "001",
+			submissionValue: this.choiceWidget.selectedItem(),
 			responseCallback: function (responseDetails) { that.handleSubmitResponse_(responseDetails); }
 		};
 
@@ -275,21 +213,21 @@ MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleAnswerSelected_                        */ /**
+ * numericquestion.handleAnswerSelected_                        */ /**
  *
  * Handle the selected event from the choice widget which means that the
  * submit button can be enabled.
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
+NumericQuestion.prototype.handleAnswerSelected_ = function()
 {
 	this.submitButton.setText("Submit Answer");
 	this.submitButton.setEnabled(true);
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleSubmitResponse_                        */ /**
+ * numericquestion.handleSubmitResponse_                        */ /**
  *
  * Handle the response to submitting an answer.
  *
@@ -298,7 +236,7 @@ MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
+NumericQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
 {
 	this.responses.push(responseDetails);
 
@@ -309,31 +247,31 @@ MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetail
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.draw                                         */ /**
+ * numericquestion.draw                                         */ /**
  *
- * Draw this MultipleChoiceQuestion in the given container.
+ * Draw this numericquestion in the given container.
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the
  *								 question element tree to.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.draw = function(container)
+NumericQuestion.prototype.draw = function(container)
 {
 	this.lastdrawn.container = container;
 	
 	// make a div to hold the select one question
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetMultipleChoiceQuestion")
+		.attr("class", "widgetnumericquestion")
 		.attr("id", this.id);
 
 	var question = widgetGroup.append("p")
 		.attr("class", "question")
-		.text(this.question);
+		.html(this.question);
 	
 	var choiceWidgetCntr = widgetGroup.append("div")
 		.attr("class", "choices")
-		.attr("id", this.id + "_choice_id");
+		.attr("id", "choice_id");
 
 	// check if it's an SVG widget with a size, in which case
 	// create 
@@ -341,40 +279,31 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 	if (Array.isArray(this.svgSize)){
 
 		var mcSVG = new SVGContainer({
-			node: choiceWidgetCntr,
+			node: d3.select("#choice_id"),
 			maxWid: this.svgSize[0],
 			maxHt: this.svgSize[1]
 		});
 
-		if(this.svgBaseBrix) {
-		 	this.svgBaseBrix.append(this.choiceWidget);
-		 	mcSVG.append(this.svgBaseBrix);
-		}
-		
-		else {
-		mcSVG.append(this.choiceWidget)
-		}
+		mcSVG.append(this.choiceWidget);
 	}
 	
 	else {
 		this.choiceWidget.draw(choiceWidgetCntr);
 	}
 
-	// draw the submit button below
-	var submitButtonCntr = widgetGroup.append("div")
-		.attr("class", "submit");
+	// draw the submit button 
 
-	this.submitButton.draw(submitButtonCntr);
+	this.submitButton.draw(choiceWidgetCntr);
 
 	widgetGroup.append("div")
 		.attr("class", "responses");
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 
-}; // end of MultipleChoiceQuestion.draw()
+}; // end of numericquestion.draw()
 
 /* **************************************************************************
- * MultipleChoiceQuestion.selectedItem                                 */ /**
+ * numericquestion.selectedItem                                 */ /**
  *
  * Return the selected choice from the choice widget or null if nothing has been
  * selected.
@@ -382,13 +311,13 @@ MultipleChoiceQuestion.prototype.draw = function(container)
  * @return {Object} the choice which is currently selected or null.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.selectedItem = function ()
+NumericQuestion.prototype.selectedItem = function ()
 {
 	return this.choiceWidget.selectedItem();
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.selectItemAtIndex                            */ /**
+ * numericquestion.selectItemAtIndex                            */ /**
  *
  * Select the choice in the choice widget at the given index. If the choice is
  * already selected, do nothing. The index is the displayed choice index and
@@ -398,7 +327,7 @@ MultipleChoiceQuestion.prototype.selectedItem = function ()
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.selectItemAtIndex = function (index)
+NumericQuestion.prototype.selectItemAtIndex = function (index)
 {
 	this.choiceWidget.selectItemAtIndex(index);
 };

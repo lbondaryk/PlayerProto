@@ -32,6 +32,9 @@
 				<div id="Q1here">
 					<h2 class="setTitle">Test SubmitManager w/ a question widget</h2>
 				</div>
+				<div id="numeric">
+					<p>2. A slightly more real numeric question implementation</p>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -51,6 +54,7 @@
 	<script src="js/widget-numeric.js"></script>
 	<script src="js/widget-radiogroup.js"></script>
 	<script src="js/widget-multiplechoicequestion.js"></script>
+	<script src="js/widget-numericquestion.js"></script>
 	<script src="js/eventmanager.js"></script>
 	<script src="js/submitmanager.js"></script>
 	<script src="js/answerman.js"></script>
@@ -197,6 +201,26 @@
 	submitManager.handleRequestsFrom(Q1);
 
 	Q1.draw(d3.select("#Q1here"));
+
+
+// More real slider
+	var QDec = new NumericQuestion({
+			questionId: "louder",
+			question: "How high does it go?",
+			widget: Slider,
+			widgetConfig:  {
+			startVal: 15,
+			minVal: 10.0,
+			maxVal: 18.0,
+			stepVal: .1,
+			label: "Level:",
+			format: d3.format('5.1f'),
+			} ,
+		}, eventManager);
+
+	QDec.draw(d3.select("#numeric"));
+
+ 	submitManager.handleRequestsFrom(QDec);
 
 	</script>
 

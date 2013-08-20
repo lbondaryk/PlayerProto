@@ -70,10 +70,9 @@
 			</div>
 			<div class="span6 rightCol">    
 				<div id="graph2"></div>     
-              <p>What is the average decrease for these three years (high-low)? 15.6 ppm</p>
-				<p>What is the average increase in ppm from each of the 2 winters</p>
-					(change between the low in fall to the￼following high the next spring)? 17.3ppm</p>
-				<p>Based on 3&4, what is the yearly increase in ppm/yr?1.7 ppm/yr</p>
+              	<div id="avgDecrease"></div>
+				<div id="avgIncrease"></div>
+				<div id="avgYearly"></div>
 			</div>
 		</div>
 
@@ -114,6 +113,7 @@
     <script src="js/widget-selectgroup.js"></script>
     <script src="js/widget-button.js"></script>
     <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
 	<script src="js/eventmanager.js"></script>
 	<script src="js/submitmanager.js"></script>
 	<script src="js/answerman.js"></script>
@@ -122,9 +122,7 @@
 
 
 
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
+	//the eventManager and submitManager are created for every page for Brix on that page
 	var eventManager = new EventManager();
 	var submitManager = new SubmitManager(eventManager);
 
@@ -136,30 +134,30 @@
 	]; 
 	
 	var maunaLoa = [
-	{x:	"1958 3", y:	311.7},
-	{x:	"1958 4", y:	313	},
-	{x:	"1958 5", y:	314	},
-	{x:	"1958 7", y:	313	},
-	{x:	"1958 8", y:	312	},
-	{x:	"1958 9", y:	311	},
-	{x:	"1958 10", y:	310.5},
-	{x:	"1958 11", y:	310	},
-	{x:	"1958 12", y:	311	},
-	{x:	"1959 1", y:	312	},
-	{x:	"1959 2", y:	312.5	},
-	{x:	"1959 3", y:	313	},
-	{x:	"1959 4", y:	314.7	},
-	{x:	"1959 5", y:	315	},
-	{x:	"1959 6", y:	314.8	},
-	{x:	"1959 7", y:	313	},
-	{x:	"1959 8", y:	311	},
-	{x:	"1959 9", y:	310.5	},
-	{x:	"1959 10", y:	310	},
-	{x:	"1959 11", y:	311.5	},
-	{x:	"1959 12", y:	313.2	},
-	{x:	"1960 1", y:	313.8	},
-	{x:	"1960 2", y:	314.2	},
-	{x:	"1960 3", y:	315.7	},
+	{x:	"1958/3", y:	311.7},
+	{x:	"1958/4", y:	313	},
+	{x:	"1958/5", y:	314	},
+	{x:	"1958/7", y:	313	},
+	{x:	"1958/8", y:	312	},
+	{x:	"1958/9", y:	311	},
+	{x:	"1958/10", y:	310.5},
+	{x:	"1958/11", y:	310	},
+	{x:	"1958/12", y:	311	},
+	{x:	"1959/1", y:	312	},
+	{x:	"1959/2", y:	312.5	},
+	{x:	"1959/3", y:	313	},
+	{x:	"1959/4", y:	314.7	},
+	{x:	"1959/5", y:	315	},
+	{x:	"1959/6", y:	314.8	},
+	{x:	"1959/7", y:	313	},
+	{x:	"1959/8", y:	311	},
+	{x:	"1959/9", y:	310.5	},
+	{x:	"1959/10", y:	310	},
+	{x:	"1959/11", y:	311.5	},
+	{x:	"1959/12", y:	313.2	},
+	{x:	"1960/1", y:	313.8	},
+	{x:	"1960/2", y:	314.2	},
+	{x:	"1960/3", y:	315.7	},
 	]; 
 
 
@@ -1997,16 +1995,21 @@ var spo = [
 var Data = [iceFloe, maunaLoa, aircraftHigh, aircraftLow];
 
 
+function makeDate(dateString) 
+		{
+			var dateArr = dateString.split(/[- / :]/);
 
+    		return new Date(dateArr[0], dateArr[1]-1);
+		} 
 
 // draw the highlightable dates table
 	var clickDates = new Callouts({
 		show: "all",
 		headers: ["Date", "CO<sub>2</sub> Concentration (ppm)" ],
 		textBits: [
-		{cols: [d3.time.format("%b %Y")(new Date(maunaLoa[0].x)), maunaLoa[0].y]},
-		{cols: [d3.time.format("%b %Y")(new Date(maunaLoa[11].x)), maunaLoa[11].y]},
-		{cols: [d3.time.format("%b %Y")(new Date(maunaLoa[23].x)), maunaLoa[23].y]}
+		{cols: [d3.time.format("%b %Y")(makeDate(maunaLoa[0].x)), maunaLoa[0].y]},
+		{cols: [d3.time.format("%b %Y")(makeDate(maunaLoa[11].x)), maunaLoa[11].y]},
+		{cols: [d3.time.format("%b %Y")(makeDate(maunaLoa[23].x)), maunaLoa[23].y]}
 		]
 	}, eventManager);
 	
@@ -2061,8 +2064,33 @@ var Data = [iceFloe, maunaLoa, aircraftHigh, aircraftLow];
 	// graph is written to the bottom 80% of SVG area
 	lines.append([marks, legLines]);
 
+	// Handle changes in the legend click and highlighted lines
+	
+	eventManager.subscribe(legLines.selectedEventId,
+						   handleHighlight);
+	eventManager.subscribe(lines.selectedEventId,
+						   handleHighlight);
 
-	// Handle highlight clicks on the markers and table
+
+	
+/************************************************************************
+* handleHighlight                                            *//**
+*
+* handle the legend highlighting on the first graph
+*
+*************************************************************************/
+	function handleHighlight(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+	
+		lines.lite(eventDetails.selectKey);
+		legLines.lite(eventDetails.selectKey);
+		
+	}
+
+
+// Handle highlight clicks on the markers and table
 	eventManager.subscribe(clickDates.selectedEventId,
 						   handleSelectionChanged);
 	eventManager.subscribe(marks.selectedEventId,
@@ -2125,7 +2153,7 @@ var Data = [iceFloe, maunaLoa, aircraftHigh, aircraftLow];
 	// draw the highlightable dates table
 
 	var observatories = [
-			{content: "Barrow, AK 71.3&deg;N", xyPos:[.33, 0.89], width: 0, key: "bar"},
+			{content: "Barrow, AK (71.3&deg;N)", xyPos:[.33, 0.89], width: 0, key: "bar"},
 			{content: "Mauna Loa, HI (19.5&deg;N)", xyPos:[0.33, 0.63], width: 0, key: "mlo"},
 			{content: "American Samoa (14.2&deg;S)", xyPos:[0.3, 0.47], width: 0, key: "smo"},
 			{content: "South Pole, Antarctica (90&deg;S) ", xyPos:[0.5, 0.125], width: 0, key: "spo"},
@@ -2174,7 +2202,7 @@ var Data = [iceFloe, maunaLoa, aircraftHigh, aircraftLow];
 	eventManager.subscribe(observe.selectedEventId,
 						   handleStationChoice);
 
- 
+ handleStationChoice({selectKey: "bar"})
 //TEST: set the start highlight state of 0 index by calling the 
 //handler with a hard-set index of 0.  This should result in the
 //first label getting highlighted and the first callout being displayed.
@@ -2302,17 +2330,25 @@ var Data = [iceFloe, maunaLoa, aircraftHigh, aircraftLow];
 
 	
 	// add markers to the graph
-	var compmarks = new MarkerGroup(
+	var compmarks0 = new MarkerGroup(
 		{
 		type: "x",
-		marks: [barrow[350]]
+		marks: [{x: "1990"}],
+		mode: "drags"
+		}, eventManager);
+		
+	var compmarks1 = new MarkerGroup(
+		{
+		type: "x",
+		marks: [{x: "1990"}],
+		mode: "drags"
 		}, eventManager);
 		
 	// write the markers and legend onto the graph in the local coordinates, inside the 
 	// data area.  These are designed to slop over the top, that's why the
 	// graph is written to the bottom 80% of SVG area
-	comparisonGraph0.append(compmarks);
-	comparisonGraph1.append(compmarks);
+	comparisonGraph0.append(compmarks0);
+	comparisonGraph1.append(compmarks1);
 
 // Handle highlight clicks on the markers and table
 	eventManager.subscribe(comparisonGraph0.selectedEventId,
@@ -2372,7 +2408,8 @@ var Data = [iceFloe, maunaLoa, aircraftHigh, aircraftLow];
 	var qMark = new MarkerGroup(
 		{
 		type: "x",
-		marks: [{x: barrow[5].x}]
+		marks: [{x: barrow[5].x}],
+		mode: "drags"
 		}, eventManager);
 		
 	// write the markers onto the qGraph in the local coordinates, inside the 
@@ -2449,39 +2486,63 @@ var Data = [iceFloe, maunaLoa, aircraftHigh, aircraftLow];
  	submitManager.handleRequestsFrom(Q1);
 	submitManager.handleRequestsFrom(Q2);
 
+// numeric questions
+	var QDec = new NumericQuestion({
+			questionId: "co2Decrease",
+			question: "What is the average seasonal decrease in CO<sub>2</sub> concentration for these three years in ppm (high &minus; low)?",
+			widget: Slider,
+			widgetConfig:  {
+			startVal: 14,
+			minVal: 12.0,
+			maxVal: 18.0,
+			stepVal: .1,
+			unit: "ppm",
+			label: "Level:",
+			format: d3.format('5.1f'),
+			} ,
+		}, eventManager);
 
+	QDec.draw(d3.select("#avgDecrease"));
 
-	// Handle changes in the legend click and highlighted lines
-	
-	eventManager.subscribe(legLines.selectedEventId,
-						   handleHighlight);
-	eventManager.subscribe(lines.selectedEventId,
-						   handleHighlight);
+ 	submitManager.handleRequestsFrom(QDec);
 
+ 	var QInc = new NumericQuestion({
+			questionId: "co2Increase",
+			question: "What is the average seasonal increase in CO<sub>2</sub> concentration for these three years in ppm (change between the low in fall to the￼following high the next spring)?",
+			widget: Slider,
+			widgetConfig:  {
+			startVal: 14,
+			minVal: 12.0,
+			maxVal: 18.0,
+			stepVal: .1,
+			unit: "ppm",
+			label: "Level:",
+			format: d3.format('5.1f'),
+			} ,
+		}, eventManager);
 
-	
-/************************************************************************
-* handleHighlight                                            *//**
-*
-* handleInputValueChanged is called from the event handler for one of
-* the input widgets when the user changes its value. It updates the
-* given matching input widget's value to match the new value and then
-* updates the bar chart.
-*
-* @param eventDetails			These are the keyed values returned by 
-*								the event, in this case, a selection
-*								(click).
-*************************************************************************/
-	function handleHighlight(eventDetails)
-	{
-		//Handler needs to get written into each page, 
-		//each widget will have it's own way of responding  
-	
-		lines.lite(eventDetails.selectKey);
-		legLines.lite(eventDetails.selectKey);
-		
-	}
+	QInc.draw(d3.select("#avgDecrease"));
 
+ 	submitManager.handleRequestsFrom(QInc);
+
+ 	var QYr = new NumericQuestion({
+			questionId: "co2Yr",
+			question: "What is the average yearly increase in CO<sub>2</sub> concentration for these three years in ppm/yr?",
+			widget: Slider,
+			widgetConfig:  {
+			startVal: 3,
+			minVal: 0.0,
+			maxVal: 5.0,
+			stepVal: .1,
+			unit: "ppm/yr",
+			label: "Level:",
+			format: d3.format('5.1f'),
+			} ,
+		}, eventManager);
+
+	QYr.draw(d3.select("#avgDecrease"));
+
+ 	submitManager.handleRequestsFrom(QYr);
 
 	
 	</script>
