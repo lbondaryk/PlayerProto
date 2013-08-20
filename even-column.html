@@ -1,27 +1,37 @@
 <!DOCTYPE html>
 <html>
     <head>
+    <meta charset="UTF-8">
+    <meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
  	<title class="setTitle"></title>
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-	<meta content="eCourses Author, Title" name="description">
-    <!-- Bootstrap -->
-   
+	
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
     <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/graphics_and_svg.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
 	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
 	<link href="css/content_styles.css" rel="stylesheet" media="screen">
 
     </head>
 	<body>
 	
-	<div class="container-fluid">
-		<div class="row">
-			<div class="span12 lc_ec_page">
-				<section class="lc_ec_fiftyFifty lc_ec_pageInner">
-					<div class="lc_ec_content">
-						<h2 class="lc_ec_bHead">Level 1 Heading</h2>
-						<p class="lc_ec_leading">Aenean ut est quis est consequat rutrum quis sit amet metus. Donec vitae malesuada justo. Vivamus feugiat justo a sem bibendum, ac semper risus condimentum. Ut ullamcorper nunc lorem, a vestibulum sapien placerat eget. Cras eu faucibus justo. Duis accumsan quam fringilla ullamcorper tincidunt. Duis odio leo, accumsan et tellus non, egestas commodo urna.</p>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+				<div class="lc_ec_content">
+					<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+												<span class="setTitle"></span>
+						</h2>
+						<p class="lc_ec_leading">Your learning objective content goes here. This column is wrapped to even (1/2) width because of the lc_ec_fiftyFifty class on the section. Aenean ut est quis est consequat rutrum quis sit amet metus. Donec vitae malesuada justo. Vivamus feugiat justo a sem bibendum, ac semper risus condimentum. Ut ullamcorper nunc lorem, a vestibulum sapien placerat eget. Cras eu faucibus justo. Duis accumsan quam fringilla ullamcorper tincidunt. Duis odio leo, accumsan et tellus non, egestas commodo urna.</p>
 						<!-- use the HTML5 figure tag to handle the illustrations/interactives -->
 						<figure class="lc_ec_trailing">
 							<div style="
@@ -41,7 +51,6 @@
 					</div>
 				</section>
 			</div>
-		</div>
 	</div>
    <script src="js/jquery-latest.js"></script>
 	<script src="js/bootstrap.min.js"></script>

@@ -1,4 +1,19 @@
-.btn-link:disabled {
+.container-fluid {
+  margin-top: 42px;
+  padding: 0 40px; }
+  .container-fluid h2 {
+    font-size: 210%;
+    font-weight: normal; }
+  .container-fluid p {
+    line-height: 140%; }
+    .container-fluid p:last-child:after {
+      content: "\f06c";
+      display: block;
+      text-align: center;
+      font-family: "FontAwesome";
+      margin-top: 20px; }
+
+  .btn-link:disabled {
   cursor: default;
   color: #666; }
   .btn-link:disabled:hover, .btn-link:disabled:focus {
