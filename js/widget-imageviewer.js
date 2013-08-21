@@ -38,6 +38,7 @@ goog.require('pearson.brix.Carousel');
  * The ImageViewer widget draws the common widget configuration of a
  * Carousel widget presenting a collection of images with the selected
  * image displayed in an Image widget below the carousel.
+ * @export
  *
  * @constructor
  * @implements {IWidget}
@@ -163,6 +164,7 @@ pearson.brix.ImageViewer.autoIdPrefix = "imgvwr_auto_";
  * ImageViewer.draw                                                    */ /**
  *
  * Draw this ImageViewer in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the carousel element tree to.
@@ -217,6 +219,7 @@ pearson.brix.ImageViewer.prototype.draw = function(container, size)
  * ImageViewer.redraw                                                  */ /**
  *
  * Redrawing the ImageViewer currently does nothing.
+ * @export
  *
  ****************************************************************************/
 pearson.brix.ImageViewer.prototype.redraw = function ()
@@ -227,6 +230,7 @@ pearson.brix.ImageViewer.prototype.redraw = function ()
  * ImageViewer.selectedItem                                            */ /**
  *
  * Return the selected item in the carousel.
+ * @export
  *
  * @return {Object} the carousel item which is currently selected.
  *
@@ -240,6 +244,7 @@ pearson.brix.ImageViewer.prototype.selectedItem = function ()
  * ImageViewer.selectItemAtIndex                                       */ /**
  *
  * Select the item in the carousel at the given index.
+ * @export
  *
  * @param {number}	index	-the 0-based index of the item to flag as selected.
  *
@@ -254,6 +259,7 @@ pearson.brix.ImageViewer.prototype.selectItemAtIndex = function (index)
  *
  * Find the first item in the list of items in this ImageViewer which has the
  * specified key and return its index. If no item has that key return null.
+ * @export
  *
  * @param {Object}	key		-The key of the item to find
  *
@@ -292,6 +298,7 @@ pearson.brix.ImageViewer.prototype.assignMissingItemKeys_ = function ()
  *
  * Highlight the image(s) associated w/ the given liteKey (key) in the
  * carousel, and select the 1st highlighted image.
+ * @export
  *
  * @param {string|number}	liteKey	-The key associated with the image(s) to be highlighted.
  *

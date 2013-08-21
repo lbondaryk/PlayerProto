@@ -39,6 +39,7 @@ goog.provide('pearson.brix.Carousel');
  *
  * @constructor
  * @implements {IWidget}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this Carousel
  * @param {string|undefined}
@@ -153,6 +154,7 @@ pearson.brix.Carousel.autoIdPrefix = "crsl_auto_";
  * Carousel.draw                                                       */ /**
  *
  * Draw this Carousel in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the carousel element tree to.
@@ -244,6 +246,7 @@ pearson.brix.Carousel.prototype.draw = function(container, size)
  *
  * Redraw the image as it may have been changed (new URI or caption). It will be
  * redrawn into the same container area as it was last drawn.
+ * @export
  *
  ****************************************************************************/
 pearson.brix.Carousel.prototype.redraw = function ()
@@ -261,6 +264,7 @@ pearson.brix.Carousel.prototype.redraw = function ()
  * Carousel.selectedItem                                               */ /**
  *
  * Return the selected item in the carousel.
+ * @export
  *
  * @return {Object} the carousel item which is currently selected.
  *
@@ -275,6 +279,7 @@ pearson.brix.Carousel.prototype.selectedItem = function ()
  *
  * Select the item in the carousel at the given index. If the item is
  * already selected, do nothing.
+ * @export
  *
  * @param {number}	index	-the 0-based index of the item to flag as selected.
  *
@@ -299,6 +304,7 @@ pearson.brix.Carousel.prototype.selectItemAtIndex = function (index)
  *
  * Find the first item in the list of items in this Carousel which has the
  * specified key and return its index. If no item has that key return null.
+ * @export
  *
  * @param {Object}	key		-The key of the item to find
  *
@@ -324,6 +330,7 @@ pearson.brix.Carousel.prototype.itemKeyToIndex = function(key)
  *
  * Calculate the optimum height for this carousel laid out horizontally
  * to fit within the given width.
+ * @export
  *
  * @param {number}	width	-The width available to lay out the images in the carousel.
  *
@@ -376,6 +383,7 @@ pearson.brix.Carousel.prototype.assignMissingItemKeys_ = function ()
  *
  * Highlight the label(s) associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
+ * @export
  *
  * @param {string|number}	liteKey	-The key associated with the label(s) to be highlighted.
  *
