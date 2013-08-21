@@ -1,8 +1,31 @@
 #! /bin/bash
 
-BUILDER="/home/mjl/Projects/pearson/closure/closure-library/closure/bin/build/closurebuilder.py"
-COMPILER="/home/mjl/Projects/pearson/closure/closure-compiler/compiler.jar" 
-LIBRARYDIR="/home/mjl/Projects/pearson/closure/closure-library/" 
+# This is a simple build script meant to run the Google closure compiler over the
+# brix javascript source in this folder to produce a "brixlib-compiled.js" file.
+# This script is intended to be run from the source folder (as the current directory).
+#
+# You may want to read the [Using ClosureBuilder][] page for more information on the
+# tool being used here.
+#
+# To do this you will need the closure library and compiler.
+# 1. create a folder "closure" as a sibling of this repo's folder
+# 2. in that folder clone the closure library's git repository to closure-library
+#    see [Closure Library Documentation][] for more info.
+#     ```git clone https://code.google.com/p/closure-library/```
+# 3. download the [latest closure compiler](http://closure-compiler.googlecode.com/files/compiler-latest.zip)
+#    (The link to the latest compiler came from the [Closure Compiler][] page.
+# 4. unzip it into a subfolder of the closure folder you created above which should be
+#    named _closure-compiler_.
+#    (when I got it, the zip contained 3 files: compiler.jar, README and COPYING)
+#
+# [Using ClosureBuilder]: <https://developers.google.com/closure/library/docs/closurebuilder>
+# [Closure Library Documentation]: <https://developers.google.com/closure/library/docs/overview>
+# [Closure Compiler]: <https://developers.google.com/closure/compiler/>
+
+REPODIR=".."
+BUILDER="${REPODIR}/../closure/closure-library/closure/bin/build/closurebuilder.py"
+COMPILER="${REPODIR}/../closure/closure-compiler/compiler.jar" 
+LIBRARYDIR="${REPODIR}/../closure/closure-library/" 
 OUTFILE="brixlib-compiled.js"
 
 declare -a COMPILER_ARGS=(\
