@@ -2,6 +2,7 @@
  * @fileoverview Document Model Helper class
  * 
  * The DomHelper object 
+ * PENDING: "all-loaded" event trigger
  */
 
 

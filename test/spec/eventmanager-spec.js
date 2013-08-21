@@ -3,6 +3,9 @@
 (function () {
     var expect = chai.expect;
 
+    /**
+     * Subscribes to a topic with a a simple handler that counts the number of received messages 
+     */
     function subscribeCounter(eventManager, topic, counterTable) {
         eventManager.subscribe(topic, function() {
             if (counterTable[topic] == undefined)
@@ -12,6 +15,9 @@
         });
     }
 
+    /**
+     * Publishes messages n-number of times to a specific topic.
+     */
     function publishNTimes(eventManager, topic, times) {
         if (times == undefined)
             times = 1;
