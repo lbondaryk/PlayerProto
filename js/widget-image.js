@@ -494,7 +494,7 @@ pearson.brix.CaptionedImage = function (config, eventManager)
 			caption: null,
 		};
 }; // end of CaptionedImage constructor
-goog.inherits(pearson.brix.CaptionedImage, pearson.ecourses.brix.Image);
+goog.inherits(pearson.brix.CaptionedImage, pearson.brix.Image);
 
 /**
  * Prefix to use when generating ids for instances of CaptionedImage.

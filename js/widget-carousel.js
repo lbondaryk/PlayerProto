@@ -16,6 +16,8 @@
 
 goog.provide('pearson.brix.Carousel');
 
+goog.require('pearson.utils.IEventManager');
+
 // Sample configuration objects for classes defined here
 (function()
 {

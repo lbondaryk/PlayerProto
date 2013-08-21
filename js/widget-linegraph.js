@@ -63,7 +63,7 @@ function LineGraph(config,eventManager)
 	 * A unique id for this instance of the line graph widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, LineGraph);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, LineGraph);
 
 	/**
 	 * Array of traces to be graphed, where each trace is an array of points and each point is an
@@ -106,7 +106,7 @@ function LineGraph(config,eventManager)
 		{
 			container: null,
 			size: {height: 0, width: 0},
-			dataRect: new Rect(0, 0, 0, 0),
+			dataRect: new pearson.utils.Rect(0, 0, 0, 0),
 			linesId: this.id + '_lines',
 			axes: null,
 			xScale: null,
@@ -151,7 +151,7 @@ LineGraph.prototype.clearLastdrawn_ = function ()
 {
 	this.lastdrawn.container = null;
 	this.lastdrawn.size = {height: 0, width: 0};
-	this.lastdrawn.dataRect = new Rect(0, 0, 0, 0);
+	this.lastdrawn.dataRect = new pearson.utils.Rect(0, 0, 0, 0);
 	this.lastdrawn.linesId = this.id + '_lines';
 	this.lastdrawn.axes = null;
 	this.lastdrawn.xScale = null;
@@ -257,7 +257,7 @@ LineGraph.prototype.draw = function(container, size)
 
 	//make the axes for this graph - draw these first because these are the 
 	//pieces that need extra unknown space for ticks, ticklabels, axis label
-	this.lastdrawn.axes = new Axes(this.lastdrawn.container, axesConfig);
+	this.lastdrawn.axes = new pearson.brix.Axes(this.lastdrawn.container, axesConfig);
 
 	//inherit the dataRect from the axes container
 	this.lastdrawn.dataRect = this.lastdrawn.axes.dataRect;

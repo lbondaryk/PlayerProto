@@ -94,7 +94,7 @@ function Callouts(config, eventManager)
 	 * A unique id for this instance of the widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, Callouts);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, Callouts);
 
 	this.textBits = config.textBits;
 	this.headers = config.headers;

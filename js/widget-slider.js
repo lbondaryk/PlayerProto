@@ -67,7 +67,7 @@ function Slider(config, eventManager)
 	 * A unique id for this instance of the slider widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, Slider);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, Slider);
 
 	// TODO: These all need comments describing what they are. -mjl 5/16/2013
 	this.startVal = config.startVal;

@@ -38,17 +38,19 @@ goog.require('pearson.brix.Carousel');
  * The ImageViewer widget draws the common widget configuration of a
  * Carousel widget presenting a collection of images with the selected
  * image displayed in an Image widget below the carousel.
- * @export
  *
  * @constructor
  * @implements {IWidget}
+ * @export
  *
  * @param {Object}			config			-The settings to configure this ImageViewer
  * @param {string|undefined}
  * 							config.id		-String to uniquely identify this ImageViewer.
  * 											 if undefined a unique id will be assigned.
- * @param {Array.<Image>}	config.items	-The list of Image widgets to be presented by the ImageViewer.
- * @param {EventManager}	eventManager	-allows the widget to publish and subscribe to events
+ * @param {Array.<pearson.brix.Image>}
+ * 							config.items	-The list of Image widgets to be presented by the ImageViewer.
+ * @param {pearson.utils.IEventManager}
+ * 							eventManager	-allows the widget to publish and subscribe to events
  *
  ****************************************************************************/
 pearson.brix.ImageViewer = function (config, eventManager)
@@ -113,7 +115,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager;
 

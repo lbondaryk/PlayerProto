@@ -293,7 +293,7 @@ pearson.utils.Rect.makeRect = function (definedBy)
 		var left = right - width;
 	}
 	
-	return new Rect(left, top, width, height);
+	return new pearson.utils.Rect(left, top, width, height);
 }; // end Rect.makeRect
 
 /* **************************************************************************
@@ -1154,7 +1154,7 @@ pearson.brix.Axes = function (container, config)
 		}
 	}
 
-	this.dataRect = Rect.makeRect({t: this.margin.top, l: this.margin.left, h: dataAreaHeight, w: dataAreaWidth});
+	this.dataRect = pearson.utils.Rect.makeRect({t: this.margin.top, l: this.margin.left, h: dataAreaHeight, w: dataAreaWidth});
 	
 	//and finally, with the margins all settled, move the group down to accomodate the
 	//top and left margins and position

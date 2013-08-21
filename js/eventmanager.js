@@ -19,6 +19,7 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.utils.IEventManager');
 goog.provide('pearson.utils.EventManager');
 
 /* **************************************************************************
@@ -64,21 +65,29 @@ pearson.utils.IEventManager.prototype.subscribe = function (eventId, handler) {}
 /* **************************************************************************
  * EventManager                                                        */ /**
  *
+ * Constructor for the pearson EventManager which also contains
+ * capabilities to work in an iframe w/ a "Message Broker" in the parent
+ * to forward and receive events w/ EventManagers in other iframes.
+ *
  * @constructor
  * @implements {pearson.utils.IEventManager}
  * @export
  *
- * The event manager keeps track of subscribers of a particular topic (event)
- * so that when a publisher publishes that topic all of the subscribers can
- * be notified.
- *
- * The event manager should be used for all events. That will allow
- * one widget on a page to respond to an event published (fired) by another
- * widget on the page. It also will allow for multiple response to a single
- * event.
  * @param {boolean=} publishToBroker	Whether or not to send message to the 
  * 										MessageBroker in the parent window,
  * 										the default is true.
+ *
+ * @classdesc
+ * The event manager keeps track of subscribers of a particular topic (event)
+ * so that when a publisher publishes that topic all of the subscribers can
+ * be notified.
+ * It also can work in an iframe w/ a "Message Broker" in the parent
+ * to forward and receive events w/ EventManagers that live in other iframes.
+ *
+ * A single EventManager should be used for all events (in the page, or iframe).
+ * This will allow one widget on a page to respond to an event published (fired)
+ * by another widget on the page. It also will allow for multiple responses to
+ * a single event.
  *
  ****************************************************************************/
 pearson.utils.EventManager = function (publishToBroker)
@@ -119,7 +128,6 @@ pearson.utils.EventManager.ManagedEventInfo_;
  *
  * Method to enable or disable publishing the message to the MessageBroker
  * in the parent window.
- *
  * @export
  *
  * @param {boolean} enable		True enables, false disables.
@@ -134,7 +142,6 @@ pearson.utils.EventManager.prototype.enablePublishToBroker = function (enable)
  * EventManager.subscribe                                              */ /**
  *
  * EventManager class method to subscribe to an event that an object may fire.
- *
  * @export
  *
  * @param {string} eventId		The identifier of the event that when fired
@@ -167,7 +174,6 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
  * EventManager class method to publish (fire) an event calling the
  * notification function of all subscribers of that event.
  * This method does not send message to the MessageBroker.
- *
  * @private
  *
  * @param {string} eventId		The identifier of the event being fired.
@@ -196,10 +202,9 @@ pearson.utils.EventManager.prototype.publishLocal_ = function (eventId, eventDet
 /* **************************************************************************
  * EventManager.publish                                                */ /**
  *
- * @export
- *
  * Besides publishing the event to the local subscribers, it also sends 
  * to the MessageBroker which is an message listener at parent window.
+ * @export
  *
  * @param {string} eventId		The identifier of the event being fired.
  *								aka topic.
@@ -231,12 +236,11 @@ pearson.utils.EventManager.prototype.publish = function (eventId, eventDetails)
 /* **************************************************************************
  * EventManager.listenBroker                                           */ /**
  *
- * @export
- *
  * Start listening to the window's message event. 
  * Only required if the iframe contains bric that listens to events.
  * The iframe are supposed to invoke this method when all the objects are 
  * ready to handle events. 
+ * @export
  *
  ****************************************************************************/
 pearson.utils.EventManager.prototype.listenBroker = function ()
