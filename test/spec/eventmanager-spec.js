@@ -3,19 +3,6 @@
 (function () {
     var expect = chai.expect;
 
-    /**
-     * Wrapper function to do delayed check
-     * @see http://stackoverflow.com/questions/11235815/is-there-a-way-to-get-chai-working-with-asynchronous-mocha-tests
-     */
-    function asyncCheck( done, func ) {
-        try {
-            func();
-            done();
-        } catch( e ) {
-            done( e )
-        }
-    }
-
     function subscribeCounter(eventManager, topic, counterTable) {
         eventManager.subscribe(topic, function() {
             if (counterTable[topic] == undefined)
@@ -55,6 +42,7 @@
                 subscribeCounter(eventManager, 'TRES', topicRcvCounter);
                 publishNTimes(eventManager, 'UNO', 1);
                 publishNTimes(eventManager, 'TRES', 3);
+
             });
 
             it('Topic [UNO] should have received 1 message', function () {
@@ -71,8 +59,12 @@
 
         /**
          * Test the functionality of EventManager with MessageBroker.
-         * There are 2 iframes which use iframe_brickmock.html as source.
-         * Whenever the iframes are loaded, they trigger
+         * There are 3 iframes which use iframe_brickmock.html as source.
+         * Each iframe subscribes to a topic of same name in lowercase.
+         * iframe ALPHA publishes to alpha.
+         * iframe BETA publishes to alpha as well.
+         * iframe GAMMA publishes to beta.
+         * THerefore ALPHA should receive 2 messages, BETA one, and GAMMA none.
          */
         describe('EventManager with MessageBroker', function () {
 
@@ -81,7 +73,7 @@
 
             var iframeRcvCounter = {};
 
-            before(function () {
+            before(function (done) {
                 console.log("## TEST/EventManager/before:");
                 // Message Listener to collect number of bric messages received by iframes
                 window.addEventListener('message', function(evt){
@@ -91,11 +83,20 @@
                 });
  
                 containerDiv = helper.createNewDiv();
-                var objNode1 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=ALPHA");
-                var objNode2 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=BETA");
+                var objNode1 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=ALPHA&sub=alpha&pub=alpha");
+                var objNode2 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=BETA&sub=beta&pub=alpha");
+                var objNode2 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=GAMMA&sub=GAMMA&pub=beta");
 
                 messageBroker = new MessageBroker();
-                messageBroker.initialize({logLevel:4});
+                messageBroker.initialize({logLevel:5});
+
+                // Wait for some time for message being passed around
+                setTimeout(function(){
+                    console.log("## Waiting for a while until all messages being sent.");
+                    done();
+                    console.log("## Finished waiting for all messages being sent.");
+             
+                }, 1000);
             });
 
             after(function () {
@@ -106,22 +107,15 @@
                 messageBroker.dispose();
             });
 
-            it('iframe ALPHA should have received 1 message', function (done) {
-                // Wait 1 second until test assertion
-                setTimeout(function(){
-                    asyncCheck(done, function(){
-                        expect(iframeRcvCounter['ALPHA?']).to.equal(1);
-                    } )
-                },200)
+            it('iframe ALPHA should have received 2 message', function () {
+                expect(iframeRcvCounter['ALPHA']).to.equal(2);
             });
 
-            it('iframe BETA should have received 1 message', function (done) {
-                // Wait 1 second until test assertion
-                setTimeout(function(){
-                    asyncCheck(done, function(){
-                        expect(iframeRcvCounter['BETA?']).to.equal(1);
-                    } )                    
-                },200)
+            it('iframe BETA should have received 1 message', function () {
+                expect(iframeRcvCounter['BETA']).to.equal(1);
+            });
+            it('iframe GAMMA should not have received any message', function () {
+                expect(iframeRcvCounter['GAMMA']).to.equal(undefined);
             });
         });
     });

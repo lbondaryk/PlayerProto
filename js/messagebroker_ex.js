@@ -18,21 +18,25 @@
  Event = {
  	source: <source>,
  	data: {
- 		channel: <bricevent, resize, topic>
- 		#case bricevent, this is what actually sent at EventManager scope
-	 	message: {
+ 		type: (view | message | data | link),
+ 		method: (specific to type)
+ 		data: (Object)
+
+
+ 		#case message, this is what actually sent at EventManager scope
+		method: (subscribe | unsubscribe | publish ),
+	 	data:{
 	 		sendTime: <time was sent in unix format>
 	 		topic: <the event manager's topic: objectId/event_name ("all-loaded" is reserved)>
-			eventData: <specific data, usually collection of key-value pairs> 
+			message: <specific data, usually collection of key-value pairs> 
 	 	}
 
 	 	#case 'resize'
-		width:<w>,
-		height:<h>
-
-		#case 'topic' 
-		topic:<the topic name to <un>subscribe>
-		action:<subscribe | unsubscribe>
+	 	method: "set",
+	 	data:{
+			width:<w>,
+			height:<h>
+		}
 	 }
  }
 
@@ -73,7 +77,7 @@ var MessageBroker = function(options, optDomHelper) {
 	this.channelHandlers['bricevent'] = function(evt) {
 		_self.bricMessageCounter++;
 		var message = evt.data.message;
-		_self.publish(message.topic, message);
+		_self.publish(evt.data.message.topic, evt);
 	}
 
 	this.channelHandlers['topic'] = function(evt) {
@@ -240,7 +244,7 @@ MessageBroker.prototype.dispose = function () {
 MessageBroker.prototype.subscribe = function (topic, windowsObj) {
 
 		//var frameEntry = this.bricIframeMap[windowsObj];
-		var frameEntry = this.domHelper.cachedFrameMap[windowsObj];
+		var frameEntry = this.domHelper.getCacheFrame(windowsObj);
 
 		if (frameEntry === undefined) {
 			return false;
@@ -248,12 +252,22 @@ MessageBroker.prototype.subscribe = function (topic, windowsObj) {
 
 		var _self = this;
 		var subscribeHandler = function(evt) {
+			if ( frameEntry.node.contentWindow === evt.source) {
+				_self.log(5, "Skipping the iframe where the message was originated.");
+				return;
+			}
+			delete evt._source_; // remove the metadata which is no longer needed
 			_self.log(5, "posting message to an iframe");
-			frameEntry.node.contentWindow.postMessage(evt, '*');
+			frameEntry.node.contentWindow.postMessage(
+				{
+					channel:"bricevent",
+					message:evt.data.message
+				}
+				, '*');
 		}
 		frameEntry['subscribeHandler'] = subscribeHandler;
 		this.pubSub.subscribe(topic, subscribeHandler);
-		this.log(2, "Frame subscribed to topic: [" + topic + "]");
+		this.log(2, "Frame '"+ frameEntry.node.src +"' subscribed to topic: [" + topic + "]");
 
 		return true;
 	};
@@ -267,10 +281,10 @@ MessageBroker.prototype.subscribe = function (topic, windowsObj) {
  * @param {Object} message		The message to be published.
  * 
  */
-MessageBroker.prototype.publish = function (topic, message) {
+MessageBroker.prototype.publish = function (topic, evt) {
 
-		this.log(4, "Publishing message: " + JSON.stringify(message));
-		this.pubSub.publish(message.topic, message);
+		this.log(4, "Publishing message: " + JSON.stringify(evt.data.message));
+		this.pubSub.publish(topic, evt);
 	};
 
 

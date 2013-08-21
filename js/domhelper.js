@@ -21,7 +21,13 @@ var DomHelper = function(options) {
  * Map of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
  * @type {Object[]}
  */
-DomHelper.prototype.cachedFrameMap = {};
+DomHelper.prototype.framesList = null;
+
+/**
+ * Map of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
+ * @type {Object[]}
+ */
+DomHelper.prototype.cachedFrameMap = new Array();
 
 /**
  * MessageBroker.dispose
@@ -44,15 +50,36 @@ DomHelper.prototype.dispose = function () {
  */
 DomHelper.prototype.cacheFrames = function(classAttr) {
 
-		var selectedFrames = document.querySelectorAll("iframe." + classAttr); // 
+		this.framesList = document.querySelectorAll("iframe." + classAttr); // 
 		//this.bricIframes = $("iframe.bric");  // Alternatively can use jQuery 
 
 		var _self = this;
 		// Converting list into map. THe map entry contains node and subscribeHandler
-		[].forEach.call(selectedFrames, function(selectedFrame) {
-			_self.cachedFrameMap[selectedFrame.contentWindow] = {node: selectedFrame};
-		});
+		//[].forEach.call(this.framesList, function(selectedFrame) {
+		for (var i = 0; i < this.framesList.length; i++){
+			_self.setCacheFrame(i,  {node: this.framesList[i]});
+		};
 	};
+
+DomHelper.prototype.setCacheFrame = function(index, value) {
+		this.cachedFrameMap[index] = value;
+	}
+
+DomHelper.prototype.getCacheFrame = function(windowObj) {
+		var index = -1;
+		for (var i = 0; i < this.framesList.length; i++){
+			if (windowObj === this.framesList[i].contentWindow) {
+				index = i;
+				break;
+			}
+		}
+		if (index > -1)
+			return this.cachedFrameMap[index];
+	}
+
+DomHelper.prototype.getFrameEntry = function(index) {
+		return this.cachedFrameMap[index];
+	}
 
 /**
  * DomHelper.resize
@@ -67,7 +94,7 @@ DomHelper.prototype.cacheFrames = function(classAttr) {
  */
 DomHelper.prototype.resize = function (window, dimension) {
 		
-		var frameEntry =  this.cachedFrameMap[window];
+		var frameEntry =  this.getCacheFrame(window);
 
 		if (frameEntry) {
 			var frameObject = frameEntry.node;
@@ -121,7 +148,9 @@ DomHelper.prototype.convertObjectToIframeElement = function (classAttr) {
 			});
 
 			var queryString = buildQueryStringFromParams(objectNode);
-			var url = objectNode.getAttribute('data') + '?' + queryString;
+			if (queryString.length > 0)
+				queryString = '?' + queryString;
+			var url = objectNode.getAttribute('data') + queryString;
 			iframeNode.setAttribute('src', url);
 			// Swap the <object> for the <iframe> node.
 			objectNode.parentNode.replaceChild(iframeNode, objectNode);

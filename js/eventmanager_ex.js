@@ -191,12 +191,12 @@ EventManager.prototype.listenBroker = function()
 {
 	var _this = this;
 	window.addEventListener('message', function(e){
-	var data = e.data;
-	var here = location.href;
-	if (data.channel === 'bricevent'){
+		var data = e.data;
+		var here = location.href;
+		if (data.channel === 'bricevent'){
 console.log("["+location.href+"] EventManager: Handling bricevent:" + JSON.stringify(data));
-			// Publish in the local iframe 
-			_this.publishLocal(data.message.topic, data.message.eventData, true);
-		}
+				// Publish in the local iframe 
+				_this.publishLocal(data.message.topic, data.message.eventData, true);
+			}
 	});
 }

@@ -8,13 +8,23 @@
 
 			var iframeID = getParameterByName("id");
 
+			var subscribeTopic = getParameterByName("sub");
+			if (!subscribeTopic) {
+				subscribeTopic = "topicTest";
+			}
+
+			var publishTopic = getParameterByName("pub");
+			if (!publishTopic) {
+				publishTopic = "topicTest";
+			}
+			
 			var rxMessageCtr = 0;
 
             var eventManager = new EventManager();
 
 
 			window.onload = function(){
-				eventManager.subscribe("topicTest", function(content) {
+				eventManager.subscribe(subscribeTopic, function(content) {
 	            	rxMessageCtr++;
 
 	            	/* Sending message to the master page to assert unit test */
@@ -24,12 +34,17 @@
 			            rcvCounter:rxMessageCtr
 			        }, '*');
 
-	            	console.log("[" + iframeID + "] Rx: " + rxMessageCtr);
+	            	console.log("[" + iframeID + "] Rx: " + rxMessageCtr + ", data=" + content.value);
 	            });
 
 		        eventManager.listenBroker();
 
-		        eventManager.publish("topicTest", {value:'testval'});
+		        setTimeout(function(){
+		        	var dataVal = 'testval' + iframeID;
+		        	console.log("[" + iframeID + "] Publishing");
+	                eventManager.publish(publishTopic, {value:dataVal});
+	         
+	            }, 200);
 
 		        /*
 				window.parent.postMessage({
