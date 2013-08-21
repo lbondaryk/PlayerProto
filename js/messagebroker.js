@@ -1,6 +1,9 @@
-/**
+/* **************************************************************************
+ * $Workfile:: name-of-file.js                                              $
+ * *********************************************************************/ /**
+ *
  * @fileoverview Implementation of the MessageBroker
-
+ *
  * MessageBroker is the component that lives in the master document (html) and 
  * serves as a middleware that relays messages between iframes.
  *
@@ -10,52 +13,58 @@
  * 2. The 'resize' channel will handle resizing.
  * 3. The 'topic' channel will handle subscription and unsubscription.
  *
- * NOTE: The current implementation does not handle topic.
+ * Created on		July 11, 2013
+ * @author			Young Suk Ahn Park
+ *
+ * @copyright (c) 2013 Pearson, All rights reserved.
+ *
+ * @note: The current implementation does not handle topic.
  *
  * The message format is as follows (the inner structure 'data' is the actual payload').
  * Notice that the message contains the topic.
-
- Event = {
- 	source: <source>,
- 	data: {
- 		messageType: <bricevent, resize, topic>
- 		#case bricevent, this is what actually sent at EventManager scope
-	 	message: {
-	 		sendTime: <time was sent in unix format>
-	 		topic: <the event manager's topic: objectId/event_name (changed, submitted, control, error, etc)>
-			eventData: <specific data, usually collection of key-value pairs> 
-	 	}
-
-	 	#case 'resize'
-		width:<w>,
-		height:<h>
-
-		#case 'topic' (implementation pending)
-		topic:<the topic name>,
-		action:<subscribe | unsubscribe>
-	 }
- }
-
+ * @example
+ *   Event = {
+ *   	source: <source>,
+ *   	data: {
+ *   		messageType: <bricevent, resize, topic>
+ *   		#case bricevent, this is what actually sent at EventManager scope
+ *  	 	message: {
+ *  	 		sendTime: <time was sent in unix format>
+ *  	 		topic: <the event manager's topic: objectId/event_name (changed, submitted, control, error, etc)>
+ *  			eventData: <specific data, usually collection of key-value pairs> 
+ *  	 	}
+ *  
+ *  	 	#case 'resize'
+ *  		width:<w>,
+ *  		height:<h>
+ *  
+ *  		#case 'topic' (implementation pending)
+ *  		topic:<the topic name>,
+ *  		action:<subscribe | unsubscribe>
+ *  	 }
+ *   }
  *
- * Created on		March 18, 2013
- * @author			Young Suk Ahn Park
- */
+ * **************************************************************************/
 
 /**
- * MessageBroker 
- * @constructor
+ * 
+/* **************************************************************************
+ * MessageBroker                                                       */ /**
  *
  * The MessageBroker all bric iframes for the message relaying.
  * To make it simpler to migrate to object literal style, the constructor's 
  * logic was placed in the initialize() function.
  * 
+ * @constructor
+ *
+ * @param {Object=}	options		-Unused. For possible future options.
  */
-var MessageBroker = function(options) {
-
+var MessageBroker = function (options)
+{
 	// Auto call to the initialization method disabled 
 	// favoring the use of MessageBroker as singleton.
 	//this.initialize.apply(this, arguments);
-}
+};
 
 /**
  * List of iframes that contains brics
@@ -108,52 +117,54 @@ MessageBroker.prototype.log = function (level, message) {
  * @param {Object} options		Options (traceLevel: 0 - no logging, 1 - some logging .. 5=detailed logging ) .
  * 
  */
-MessageBroker.prototype.initialize = function (options) {
-		if (options !== undefined) {
-			if (options.logLevel !== undefined)
-				this.logLevel = options.logLevel;
+MessageBroker.prototype.initialize = function (options)
+{
+	if (options !== undefined) {
+		if (options.logLevel !== undefined)
+			this.logLevel = options.logLevel;
+	}
+
+	this.convertObjectTagToIframeTag();
+
+	this.bricIframes = document.querySelectorAll('iframe.bric'); // 
+	//this.bricIframes = $("iframe.bric");  // Alternatively can use jQuery 
+
+	var _self = this;
+
+	// Function defined here so we can access the this pointer
+	// (aliased as _self)
+	var _messageHandler = function(evt) {
+			_self.log(1, "Message Received: " + evt.data);
+			if (evt.data.messageType === 'bricevent') {
+				_self.bricMessageCounter++;
+				_self.relay(evt);
+			}
+			else if (evt.data.messageType === 'resize') {
+				_self.resizeMessageCounter++;
+				_self.resize(_self, evt);	
+			} 
+			// @todo: implement 'topic' channel
 		}
 
-		this.convertObjectTagToIframeTag();
+	// We'd like to keep the pointer to the handler function 
+	// to be able to unregister later.
+	this.messageHandler = _messageHandler;
 
-		this.bricIframes = document.querySelectorAll('iframe.bric'); // 
-		//this.bricIframes = $("iframe.bric");  // Alternatively can use jQuery 
-
-		var _self = this;
-
-		// Function defined here so we can access the this pointer
-		// (aliased as _self)
-		var _messageHandler = function(evt){
-				_self.log(1, "Message Received: " + evt.data);
-				if (evt.data.messageType === 'bricevent') {
-					_self.bricMessageCounter++;
-					_self.relay(evt);
-				}
-				else if (evt.data.messageType === 'resize') {
-					_self.resizeMessageCounter++;
-					_self.resize(_self, evt);	
-				} 
-				// @todo: implement 'topic' channel
-			}
-
-		// We'd like to keep the pointer to the handler function 
-		// to be able to unregister later.
-		this.messageHandler = _messageHandler;
-
-		// Listen to messages events
-		window.addEventListener('message', this.messageHandler);
-	};
+	// Listen to messages events
+	window.addEventListener('message', this.messageHandler);
+};
 
 /**
  * MessageBroker.dispose
  *
  * Releases used references (the list of iframes), and unregister the message event listener.
  */
-MessageBroker.prototype.dispose = function () {
-		this.bricIframes = null;
-		window.removeEventListener('message', this.messageHandler);
-		this.log(1, "MessageBroker disposed (listeners removed).");
-	};
+MessageBroker.prototype.dispose = function ()
+{
+	this.bricIframes = null;
+	window.removeEventListener('message', this.messageHandler);
+	this.log(1, "MessageBroker disposed (listeners removed).");
+};
 
 /**
  * MessageBroker.initialize
@@ -166,24 +177,24 @@ MessageBroker.prototype.dispose = function () {
  * @param {Object} evt		The event object as sent by the postMessage().
  * 
  */
-MessageBroker.prototype.relay = function (evt) {
+MessageBroker.prototype.relay = function (evt)
+{
+	var _self = this;
+	[].forEach.call(_self.bricIframes, function(bricIframe) {
+		// Skip over the iframe that sent the message.
+		if (evt.source === bricIframe.contentWindow) return;
 
-		var _self = this;
-		[].forEach.call(_self.bricIframes, function(bricIframe){
-			// Skip over the iframe that sent the message.
-			if (evt.source === bricIframe.contentWindow) return;
-
-			var message = {
-				messageType: evt.data.messageType,
-				message: evt.data.message
-			}
-			_self.log(1, "Sending message: " + message);
-			if (bricIframe) {
-				bricIframe.contentWindow.postMessage(message, '*');	
-			}
-			
-		});
-	};
+		var message = {
+			messageType: evt.data.messageType,
+			message: evt.data.message
+		};
+		_self.log(1, "Sending message: " + message);
+		if (bricIframe) {
+			bricIframe.contentWindow.postMessage(message, '*');	
+		}
+		
+	});
+};
 
 /**
  * MessageBroker.resize
@@ -218,11 +229,12 @@ MessageBroker.prototype.resize = function (that, evt) {
  *
  * @param {Object} evt		The event object as sent by the postMessage().
  */
-MessageBroker.prototype.findIFrameWithWindow = function (win){
-		for (var i = 0; i < this.bricIframes.length; i++){
-			if (win === this.bricIframes[i].contentWindow) return this.bricIframes[i];
-		}
-	};
+MessageBroker.prototype.findIFrameWithWindow = function (win)
+{
+	for (var i = 0; i < this.bricIframes.length; i++) {
+		if (win === this.bricIframes[i].contentWindow) return this.bricIframes[i];
+	}
+};
 
 /**
  * MessageBroker.findIFrameWithWindow
@@ -231,45 +243,47 @@ MessageBroker.prototype.findIFrameWithWindow = function (win){
  *
  * @param {Node} objectNode		The object node that will be changed to iframe, and contains the params.
  */
-function buildQueryStringFromParams(objectNode){
-		var params = objectNode.querySelectorAll('param');
-		var queryString = [].reduce.call(params, function(acc, paramNode){
-			var name = paramNode.getAttribute('name');
-			var value = paramNode.getAttribute('value');
+function buildQueryStringFromParams(objectNode)
+{
+	var params = objectNode.querySelectorAll('param');
+	var queryString = [].reduce.call(params, function(acc, paramNode){
+		var name = paramNode.getAttribute('name');
+		var value = paramNode.getAttribute('value');
 
-			if (acc) acc += '&';
-			return acc + encodeURIComponent(name) + '=' + encodeURIComponent(value);
-		}, '');
-		return queryString;
-	};
+		if (acc) acc += '&';
+		return acc + encodeURIComponent(name) + '=' + encodeURIComponent(value);
+	}, '');
+	return queryString;
+};
 
 /**
  * MessageBroker.convertObjectTagToIframeTag
  *
- * COnverts the object tag to iframe tag.(Yes, as the function name implies) 
+ * Converts the object tag to iframe tag.(Yes, as the function name implies) 
  *
  * @param {Node} objectNode		The object node that will be changed to iframe, and contains the params.
  */
-MessageBroker.prototype.convertObjectTagToIframeTag = function () {
-		// Turn the <object> tags into <iframe> tags to work around webkit bug https://bugs.webkit.org/show_bug.cgi?id=75395.
-		// Also append parameters to iframe url so they're accessible to the iframe implementation.
-		// To prevent the flicker when loading, you might want to do this transformation work before rendering the HTML in your player.
-		var objectNodes = document.querySelectorAll('object.bric');
-		[].forEach.call(objectNodes, function(objectNode){
-			var iframeNode = document.createElement('iframe');
-			iframeNode.setAttribute('sandbox', 'allow-scripts');
+MessageBroker.prototype.convertObjectTagToIframeTag = function ()
+{
+	// Turn the <object> tags into <iframe> tags to work around webkit bug https://bugs.webkit.org/show_bug.cgi?id=75395.
+	// Also append parameters to iframe url so they're accessible to the iframe implementation.
+	// To prevent the flicker when loading, you might want to do this transformation work before rendering the HTML in your player.
+	var objectNodes = document.querySelectorAll('object.bric');
+	[].forEach.call(objectNodes, function(objectNode) {
+		var iframeNode = document.createElement('iframe');
+		iframeNode.setAttribute('sandbox', 'allow-scripts');
 
-			// Copy over whitelisted attributes from the <object> to the <iframe>.
-			['height','width','class','style'].forEach(function(attrName){
-				var attrValue = objectNode.getAttribute(attrName);
-				if (attrValue !== null) iframeNode.setAttribute(attrName, attrValue);
-			});
-
-			var queryString = buildQueryStringFromParams(objectNode);
-			var url = objectNode.getAttribute('data') + '?' + queryString;
-			iframeNode.setAttribute('src', url);
-			// Swap the <object> for the <iframe> node.
-			objectNode.parentNode.replaceChild(iframeNode, objectNode);
+		// Copy over whitelisted attributes from the <object> to the <iframe>.
+		['height','width','class','style'].forEach(function(attrName) {
+			var attrValue = objectNode.getAttribute(attrName);
+			if (attrValue !== null) iframeNode.setAttribute(attrName, attrValue);
 		});
-	};
+
+		var queryString = buildQueryStringFromParams(objectNode);
+		var url = objectNode.getAttribute('data') + '?' + queryString;
+		iframeNode.setAttribute('src', url);
+		// Swap the <object> for the <iframe> node.
+		objectNode.parentNode.replaceChild(iframeNode, objectNode);
+	});
+};
 
