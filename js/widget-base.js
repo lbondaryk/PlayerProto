@@ -198,7 +198,7 @@ pearson.utils.Rect = function (x, y, width, height)
  * Get the size of this rect in a Size object.
  * @export
  *
- * @return {Size}
+ * @return {pearson.utils.ISize}
  ****************************************************************************/
  pearson.utils.Rect.prototype.getSize = function ()
  {
@@ -216,7 +216,7 @@ pearson.utils.Rect = function (x, y, width, height)
  *
  * @param {Object} definedBy	-object that must have 2 vertical values (t,b,h)
  *								 and 2 horizontal values (l,r,w).
- * @return {Rect}
+ * @return {pearson.utils.Rect}
  ****************************************************************************/
 pearson.utils.Rect.makeRect = function (definedBy)
 {
@@ -296,6 +296,19 @@ pearson.utils.Rect.makeRect = function (definedBy)
 	return new pearson.utils.Rect(left, top, width, height);
 }; // end Rect.makeRect
 
+/**
+ * Pseudo interface for Size, which just requires height and width properties.
+ * It is frequently easier to just create an object w/ those 2 properties
+ * rather than ```new Size(h,w)```.
+ * @note a real interface seems to also require calling a class constructor.
+ *
+ * @typedef {Object} pearson.utils.ISize
+ * @property {number}	height	-The vertical dimension of the ISize in the common units
+ * @property {number}	width	-The horizontal dimension of the ISize in the common units
+ */
+pearson.utils.ISize;
+
+
 /* **************************************************************************
  * Size                                                                */ /**
  *
@@ -331,8 +344,9 @@ pearson.utils.Size = function (height, width)
  * @export
  *
  * @param {number}	desiredHeight	-The vertical dimension of the Size to be returned.
- * @param {Size}	desiredRatio	-A Size whose ratio should be preserved in the returned Size.
- * @return {Size}
+ * @param {pearson.utils.ISize}
+ * 					desiredRatio	-A Size whose ratio should be preserved in the returned Size.
+ * @return {pearson.utils.ISize}
  ****************************************************************************/
 pearson.utils.Size.matchRatioWithHeight = function (desiredHeight, desiredRatio)
 {
@@ -348,8 +362,9 @@ pearson.utils.Size.matchRatioWithHeight = function (desiredHeight, desiredRatio)
  * @export
  *
  * @param {number}	desiredWidth	-The horizontal dimension of the Size to be returned.
- * @param {Size}	desiredRatio	-A Size whose ratio should be preserved in the returned Size.
- * @return {Size}
+ * @param {pearson.utils.ISize}
+ * 					desiredRatio	-A Size whose ratio should be preserved in the returned Size.
+ * @return {pearson.utils.ISize}
  ****************************************************************************/
 pearson.utils.Size.matchRatioWithWidth = function (desiredWidth, desiredRatio)
 {
@@ -378,9 +393,8 @@ pearson.brix.IWidget = function () {};
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the widget element tree to.
- * @param {Object}	size		-The size in pixels for the widget
- * @param {number}	size.height	-The height for the widget.
- * @param {number}	size.width	-The width for the widget.
+ * @param {pearson.utils.ISize}
+ * 					size		-The size in pixels for the widget
  *
  ****************************************************************************/
 pearson.brix.IWidget.prototype.draw = function (container, size) {};

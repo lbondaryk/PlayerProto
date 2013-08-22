@@ -36,7 +36,11 @@ goog.provide('pearson.brix.CaptionedImage');
 	var cimgConfig =
 		{
 			id: "cimg1",
-			image: new Image(imageConfig),
+			URI: 'img/ch4_1.jpg',
+			caption: "The Whitewater-Baldy Complex wildfire.",
+			preserveAspectRatio: "xMinYMin meet",
+			actualSize: {height: 960, width: 1280},
+			key: "fire",
 			captionPosition: "below"
 		};
 

@@ -85,7 +85,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 
 	/**
 	 * The carousel widget used by this ImageViewer to present the images.
-	 * @type {Carousel}
+	 * @type {pearson.utils.Carousel}
 	 */
 	this.carousel = new pearson.brix.Carousel(crslConfig, eventManager);
 
@@ -109,7 +109,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	/**
 	 * The captioned image widget which displays the image selected
 	 * in the carousel.
-	 * @type {CaptionedImage}
+	 * @type {pearson.utils.CaptionedImage}
 	 */
 	this.image = new pearson.brix.CaptionedImage(cimgConfig);
 
@@ -170,7 +170,8 @@ pearson.brix.ImageViewer.autoIdPrefix = "imgvwr_auto_";
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the carousel element tree to.
- * @param {Size}	size		-The height and width in pixels for the carousel
+ * @param {pearson.utils.ISize}
+ * 					size		-The height and width in pixels for the carousel
  *
  ****************************************************************************/
 pearson.brix.ImageViewer.prototype.draw = function(container, size)
@@ -263,7 +264,7 @@ pearson.brix.ImageViewer.prototype.selectItemAtIndex = function (index)
  * specified key and return its index. If no item has that key return null.
  * @export
  *
- * @param {Object}	key		-The key of the item to find
+ * @param {string}	key		-The key of the item to find
  *
  * @return {?number} the index of the item in the list of items with the
  * 			specified key.

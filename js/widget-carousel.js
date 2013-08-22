@@ -308,7 +308,7 @@ pearson.brix.Carousel.prototype.selectItemAtIndex = function (index)
  * specified key and return its index. If no item has that key return null.
  * @export
  *
- * @param {Object}	key		-The key of the item to find
+ * @param {string}	key		-The key of the item to find
  *
  * @return {?number} the index of the item in the list of items with the
  * 			specified key.
