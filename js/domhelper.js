@@ -2,7 +2,9 @@
  * @fileoverview Document Model Helper class
  * 
  * The DomHelper object 
- * PENDING: "all-loaded" event trigger
+ * PENDING: 
+ * - "all-loaded" event trigger
+ * - scanning to get data attributes as array of objects
  */
 
 
@@ -58,15 +60,15 @@ DomHelper.prototype.cacheFrames = function(classAttr) {
 		// Converting list into map. THe map entry contains node and subscribeHandler
 		//[].forEach.call(this.framesList, function(selectedFrame) {
 		for (var i = 0; i < this.framesList.length; i++){
-			_self.setCacheFrame(i,  {node: this.framesList[i]});
+			_self.setFrameCustomParams(i,  {node: this.framesList[i]});
 		};
 	};
 
-DomHelper.prototype.setCacheFrame = function(index, value) {
+DomHelper.prototype.setFrameCustomParams = function(index, value) {
 		this.frameCustomParams[index] = value;
 	}
 
-DomHelper.prototype.getCacheFrame = function(windowObj) {
+DomHelper.prototype.getFrameCustomParams = function(windowObj) {
 		var index = -1;
 		for (var i = 0; i < this.framesList.length; i++){
 			if (windowObj === this.framesList[i].contentWindow) {
@@ -78,7 +80,7 @@ DomHelper.prototype.getCacheFrame = function(windowObj) {
 			return this.frameCustomParams[index];
 	}
 
-DomHelper.prototype.getFrameEntry = function(index) {
+DomHelper.prototype.getFrameCustomParamsByIndex = function(index) {
 		return this.frameCustomParams[index];
 	}
 
@@ -95,7 +97,7 @@ DomHelper.prototype.getFrameEntry = function(index) {
  */
 DomHelper.prototype.resize = function (window, dimension) {
 		
-		var frameEntry =  this.getCacheFrame(window);
+		var frameEntry =  this.getFrameCustomParams(window);
 
 		if (frameEntry) {
 			var frameObject = frameEntry.node;

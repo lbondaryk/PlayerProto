@@ -14,6 +14,8 @@
  *
  * The message format is as follows (the inner structure 'data' is the actual payload sent by cements).
  * Notice that the message contains the topic.
+ 
+ PENDING: Change the message format as agreed with Inkling:
 
  Event = {
  	source: <source>,
@@ -244,7 +246,7 @@ MessageBroker.prototype.dispose = function () {
 MessageBroker.prototype.subscribe = function (topic, windowsObj) {
 
 		//var frameEntry = this.bricIframeMap[windowsObj];
-		var frameEntry = this.domHelper.getCacheFrame(windowsObj);
+		var frameEntry = this.domHelper.getFrameCustomParams(windowsObj);
 
 		if (frameEntry === undefined) {
 			return false;
