@@ -5,7 +5,10 @@
  * @fileoverview Implementation of the CheckGroup widget.
  *
  * The CheckGroup widget draws a list of choices and allows the user to
- * select one of the choices.
+ * select one or more choices.
+ * It is analogous to radio group, with the difference of using checkbox
+ * and allowing multiple selects. Also it is possible to set max number
+ * selects.
  *
  * Created on		July 29, 2013
  * @author			Young-Suk Ahn 
@@ -91,6 +94,9 @@
  * 										 if undefined a unique id will be assigned.
  * @param {Array.<Answer>}
  *						config.choices	-The list of choices (answers) to be presented by the CheckGroup.
+ * @param {int}
+ *						config.maxSelects -The maximum number of items that can be selected
+ *
  * @param {string|undefined}
  *						config.numberFormat
  *										-The format for numbering the choices. default is "none"
@@ -112,6 +118,13 @@ function CheckGroup(config, eventManager)
 	 * @type {string}
 	 */
 	this.id = getIdFromConfigOrAuto(config, CheckGroup);
+
+
+	/**
+	 * The maximum number of allowed selects.
+	 * @type {int}
+	 */
+	this.maxSelects = config.maxSelects;
 
 	/**
 	 * The list of choices presented by the CheckGroup.
@@ -138,6 +151,8 @@ function CheckGroup(config, eventManager)
 	 * @type {string}
 	 */
 	this.selectedEventId = this.id + '_itemSelected';
+
+	this.exceedSelectionEventId = this.id + '_exceedSelection';
 	
 	/**
 	 * The event details for this.selectedEventId events
@@ -223,6 +238,19 @@ CheckGroup.prototype.draw = function(container)
 			.text(function (d) {return d.content;});
 	
 	var choiceInputs = widgetGroup.selectAll("div.widgetCheckGroup input[name='" + this.id + "']");
+
+	// Guard against exceeding max number of selects
+	choiceInputs
+		.on("click", function (d)
+				{
+					var selInputs = that.selectedInputs()[0];
+					// if 
+					if (selInputs && selInputs.length > that.maxSelects) {
+						that.eventManager.publish(that.exceedSelectionEventId, {max: that.maxSelects});
+						d3.event.preventDefault();
+					}
+				});
+
 	choiceInputs
 		.on("change", function (d)
 				{
@@ -234,19 +262,33 @@ CheckGroup.prototype.draw = function(container)
 }; // end of CheckGroup.draw()
 
 /* **************************************************************************
- * CheckGroup.selectedItem                                             */ /**
+ * CheckGroup.selectedInputs                                            */ /**
  *
- * Return the selected choice in the Check group or null if nothing has been
+ * Return the selected choice input nodes in the Check group.
+ *
+ * @return {Object} the list of selected input nodes.
+ *
+ ****************************************************************************/
+CheckGroup.prototype.selectedInputs = function ()
+{
+	var selectedInputsSelector = "div.widgetCheckGroup input[name='" + this.id + "']:checked";
+	return this.lastdrawn.widgetGroup.selectAll(selectedInputsSelector);
+};
+
+/* **************************************************************************
+ * CheckGroup.selectedItems                                            */ /**
+ *
+ * Return the selected choice(s) in the Check group or null if nothing has been
  * selected.
  *
- * @return {Object} the Check group choice which is currently selected or null.
+ * @return {Object} the Check group choice(s) which is/are currently selected 
+ *                  or null.
  *
  ****************************************************************************/
 CheckGroup.prototype.selectedItems = function ()
 {
-	var selectedInputSelector = "div.widgetCheckGroup input[name='" + this.id + "']:checked";
-	var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
-	return !selectedInput.empty() ? selectedInput.datum() : null;
+	var selectedInputs = this.selectedInputs();
+	return !selectedInputs.empty() ? selectedInputs.data() : null;
 };
 
 /* **************************************************************************
@@ -260,6 +302,7 @@ CheckGroup.prototype.selectedItems = function ()
  ****************************************************************************/
 CheckGroup.prototype.selectItemAtIndex = function (index)
 {
+	// @todo: check that the number of selected does not exceed the max allowed
 	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetCheckGroup input");
 	var selectedInput = choiceInputs[0][index];
 
@@ -271,6 +314,7 @@ CheckGroup.prototype.selectItemAtIndex = function (index)
 	// choice at index is not selected, so select it and publish selected event
 	selectedInput.checked = true;
 
+	// @todo: serialize all selected keys and send as array
 	this.eventManager.publish(this.selectedEventId, {selectKey: d3.select(selectedInput).datum().answerKey});
 };
 

@@ -5,9 +5,11 @@
  * @fileoverview Implementation of the MultiSelectMultipleChoiceQuestion widget.
  *
  * The MultiSelectMultipleChoiceQuestion widget displays a question and a set of possible
- * answers one of which must be selected and submitted to be scored.
+ * answers. 
+ * This is analogous to MultipleChoiceQuestion with the difference that many 
+ * selections (max configurable) is possible.
  *
- * Created on		May 29, 2013
+ * Created on		July 29, 2013
  * @author			Young-Suk Ahn
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
@@ -57,6 +59,7 @@
 		questionId: "SanVan003",
 		question: "Why?",
 		choices: Q1Choices,
+		maxSelects: 2,
 		order: "randomized", //default, even if not specified
 		widget: CheckGroup,
 		widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultiSelectMultipleChoiceQuestion
@@ -99,6 +102,9 @@
  * @param {Array.<Answer>}
  *						config.choices	-The list of choices (answers) to be presented
  *										 by the MultiSelectMultipleChoiceQuestion.
+ * @param {int}
+ *						config.maxSelects -The maximum number of items that can be selected
+ *
  * @param {string|undefined}
  *						config.order	-The order in which the choices should be presented.
  *										 either "randomized" or "ordered". Default is
@@ -138,6 +144,13 @@ function MultiSelectMultipleChoiceQuestion(config, eventManager)
 	this.question = config.question;
 
 	/**
+	 * The maximum number of allowed selects.
+	 * @type {int}
+	 */
+	this.maxSelects = config.maxSelects;
+
+
+	/**
 	 * The configuration options for the widget that will display the choices that
 	 * answer this question.
 	 * Add an id and adjust the choices according to the question type and add them
@@ -159,6 +172,8 @@ function MultiSelectMultipleChoiceQuestion(config, eventManager)
 	}
 
 	widgetConfig.choices = choices;
+
+	widgetConfig.maxSelects = this.maxSelects;
 
 	/**
 	 * The widget used to present the choices that may be selected to answer
@@ -230,6 +245,7 @@ function MultiSelectMultipleChoiceQuestion(config, eventManager)
 	var that = this;
 	eventManager.subscribe(this.submitButton.pressedEventId, function () {that.handleSubmitRequested_();});
 	eventManager.subscribe(this.choiceWidget.selectedEventId, function () {that.handleAnswerSelected_();});
+	eventManager.subscribe(this.choiceWidget.exceedSelectionEventId, function () {that.handleExceedSelection_();});
 
 	/**
 	 * Information about the last drawn instance of this widget (from the draw method)
@@ -260,9 +276,10 @@ MultiSelectMultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
 MultiSelectMultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
 {
 	var that = this;
-	var answerKeys = 3-[].map.call(this.choiceWidget.selectedItems(), function(item){
-		item.answerKey;
+	var answerKeys = [].map.call(this.choiceWidget.selectedItems(), function(item){
+		return item.answerKey;
 	});
+	// NOTICE: the value of answerKey attribute is an array of keys
 	var submitAnsDetails =
 		{
 			question: this,
@@ -275,7 +292,7 @@ MultiSelectMultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
 };
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion.handleAnswerSelected_                        */ /**
+ * MultiSelectMultipleChoiceQuestion.handleAnswerSelected_             */ /**
  *
  * Handle the selected event from the choice widget which means that the
  * submit button can be enabled.
@@ -287,6 +304,23 @@ MultiSelectMultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
 	this.submitButton.setText("Submit Answer");
 	this.submitButton.setEnabled(true);
 };
+
+/* **************************************************************************
+ * MultiSelectMultipleChoiceQuestion.handleExceedSelection_             */ /**
+ *
+ * Handle the exceedSelection event from the choice widget which means that the
+ * user tried to select beyond the max number of selects.
+ * @private
+ *
+ ****************************************************************************/
+MultiSelectMultipleChoiceQuestion.prototype.handleExceedSelection_ = function()
+{
+	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
+
+	responseDiv.append("div")
+		.html("Maximum number of options have been selected.");
+};
+
 
 /* **************************************************************************
  * MultiSelectMultipleChoiceQuestion.handleSubmitResponse_                        */ /**
@@ -309,7 +343,8 @@ MultiSelectMultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(res
 	// YSAP - Instead of the SubmitManager (who's agnostic of the rendering mechanism)
 	//        its the MCQ that renders the answer feedback.
 	responseDiv.append("div")
-		.html(responseDetails.feedback);};
+		.html(responseDetails.feedback);
+};
 
 /* **************************************************************************
  * MultiSelectMultipleChoiceQuestion.draw                                         */ /**
@@ -360,9 +395,9 @@ MultiSelectMultipleChoiceQuestion.prototype.draw = function(container)
  * @return {Object} the choice which is currently selected or null.
  *
  ****************************************************************************/
-MultiSelectMultipleChoiceQuestion.prototype.selectedItem = function ()
+MultiSelectMultipleChoiceQuestion.prototype.selectedItems = function ()
 {
-	return this.choiceWidget.selectedItem();
+	return this.choiceWidget.selectedItems();
 };
 
 /* **************************************************************************
