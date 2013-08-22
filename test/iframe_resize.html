@@ -11,9 +11,9 @@
 			*/
 			window.onload = function(){
 				window.parent.postMessage({
-		            messageType: 'resize',
-		            width:100,
-		            height:200
+		            channel: 'resize',
+		            width:150,
+		            height:250
 		        }, '*');
 	       	}
 		</script>

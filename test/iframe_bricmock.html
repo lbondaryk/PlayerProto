@@ -8,50 +8,56 @@
 
 			var iframeID = getParameterByName("id");
 
+			var subscribeTopic = getParameterByName("sub");
+			if (!subscribeTopic) {
+				subscribeTopic = "topicTest";
+			}
+
+			var publishTopic = getParameterByName("pub");
+			if (!publishTopic) {
+				publishTopic = "topicTest";
+			}
+			
 			var rxMessageCtr = 0;
 
             var eventManager = new EventManager();
 
-            eventManager.subscribe("topicTest", function(content) {
-            	rxMessageCtr++;
-
-            	/* Sending message to the master page to assert unit test */
-				window.parent.postMessage({
-		            messageType:"unittest",
-		            originId:iframeID,
-		            rcvCounter:rxMessageCtr
-		        }, '*');
-
-            	console.log("[" + iframeID + "] Rx: " + rxMessageCtr);
-            });
-	        eventManager.listenBroker();
 
 			window.onload = function(){
+				eventManager.subscribe(subscribeTopic, function(content) {
+	            	rxMessageCtr++;
+
+	            	/* Sending message to the master page to assert unit test */
+					window.parent.postMessage({
+			            channel:"unittest",
+			            originId:iframeID,
+			            rcvCounter:rxMessageCtr
+			        }, '*');
+
+	            	console.log("[" + iframeID + "] Rx: " + rxMessageCtr + ", data=" + content.value);
+	            });
+
+		        eventManager.listenBroker();
+
+		        setTimeout(function(){
+		        	var dataVal = 'testval' + iframeID;
+		        	console.log("[" + iframeID + "] Publishing");
+	                eventManager.publish(publishTopic, {value:dataVal});
+	         
+	            }, 200);
+
+		        /*
 				window.parent.postMessage({
-		            messageType:"bricevent",
+		            channel:"bricevent",
 		            message: {
 				 		sendTime:"2013-05-27T12:00:01",
 				 		topic:"topicTest",
-						eventData: {value:25}
+						eventData: {value:'testval'}
 				 	}
-		        }, '*');
+		        }, '*');*/
 				
-		        //listenBroker(iframeID);
 		    }
 
-
-	        /**
-	         * Start listening to the broker messages
-	         */
-	        function listenBroker(iframeID)
-			{
-				window.addEventListener('message', function(e){
-					var data = e.data;
-					if (data.messageType === 'bricevent'){
-console.log("["+iframeID+"] EventManager: Handling bricevent:" + JSON.stringify(data));
-					}
-				});
-			}
 
 			/**
 			 * Get parameter from the url
