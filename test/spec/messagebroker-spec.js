@@ -43,7 +43,7 @@ var iframeMessageCounter = {};
 
         it('should initialize the list of bricIframes with 3 iframes', function () {
             // @todo: find out what's the correct method for bricIframeMap
-            expect(Object.keys(messageBroker.domHelper.cachedFrameMap).length).to.equal(3);
+            expect(Object.keys(messageBroker.domHelper.frameCustomParams).length).to.equal(3);
         });
 
         it('should have received 2 bric messages', function () {

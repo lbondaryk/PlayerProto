@@ -257,7 +257,7 @@ MessageBroker.prototype.subscribe = function (topic, windowsObj) {
 				return;
 			}
 			delete evt._source_; // remove the metadata which is no longer needed
-			_self.log(5, "posting message to an iframe");
+			_self.log(5, "Posting message to an iframe");
 			frameEntry.node.contentWindow.postMessage(
 				{
 					channel:"bricevent",

@@ -19,16 +19,16 @@ var DomHelper = function(options) {
 
 
 /**
- * Map of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
+ * List of (i)frames as obtained by the querySelectorAll(). 
  * @type {Object[]}
  */
 DomHelper.prototype.framesList = null;
 
 /**
- * Map of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
+ * Array of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
  * @type {Object[]}
  */
-DomHelper.prototype.cachedFrameMap = new Array();
+DomHelper.prototype.frameCustomParams = new Array();
 
 /**
  * MessageBroker.dispose
@@ -36,7 +36,7 @@ DomHelper.prototype.cachedFrameMap = new Array();
  * Releases used references (the list of iframes)
  */
 DomHelper.prototype.dispose = function () {
-		this.cachedFrameMap = null;
+		this.frameCustomParams = null;
 	};
 
 /**
@@ -63,7 +63,7 @@ DomHelper.prototype.cacheFrames = function(classAttr) {
 	};
 
 DomHelper.prototype.setCacheFrame = function(index, value) {
-		this.cachedFrameMap[index] = value;
+		this.frameCustomParams[index] = value;
 	}
 
 DomHelper.prototype.getCacheFrame = function(windowObj) {
@@ -75,11 +75,11 @@ DomHelper.prototype.getCacheFrame = function(windowObj) {
 			}
 		}
 		if (index > -1)
-			return this.cachedFrameMap[index];
+			return this.frameCustomParams[index];
 	}
 
 DomHelper.prototype.getFrameEntry = function(index) {
-		return this.cachedFrameMap[index];
+		return this.frameCustomParams[index];
 	}
 
 /**
