@@ -1,15 +1,14 @@
 /* **************************************************************************
- * $Workfile:: widget-barchart.js                                          $
+ * $Workfile:: widget-piechart.js                                          $
  * **********************************************************************//**
  *
- * @fileoverview Implementation of the Barchart widget.
+ * @fileoverview Implementation of the PieChart widget.
  *
- * The Barchart widget provides a line (or scatter) graph visualization
+ * The PieChart widget provides a line (or scatter) graph visualization
  * of sets of data points.
  *
- * Created on		April 11, 2013
+ * Created on		August 20, 2013
  * @author			Leslie Bondaryk
- * @author			Michael Jay Lippert
  *
  * Copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -18,58 +17,48 @@
 // Sample BarChart constructor configuration
 (function()
 {
-	var bc1Config = {
-			id: "bc1",
-			Data: [barData1],
-			type: "grouped",
-			xAxisFormat: { type: "linear",
-						   ticks: 5,
-						   orientation: "bottom",
-						   label: "linear bar value (%)" },
-			yAxisFormat: { type: "ordinal",
-						   ticks: 5,
-						   orientation: "left",
-						   label: "Bar category labels" },
+	var pc1Config = {
+			id: "pc1",
+			Data: [
+			// y is used as key for the label to keep it consistent with Bar Chart data.  Bar Charts
+			// and pie charts are two representations of the same kind of data.
+				{x: 50, y: "brie"},
+			  	{x: 30, y: "roquefort"},
+			  	{x: 20, y: "venezuelan beaver cheese"}],
 		};
 });
 	
 /* **************************************************************************
- * BarChart                                                             *//**
+ * PieChart                                                             *//**
  *
  * @constructor
  *
- * The BarChart widget provides single or multiple series bar chart
+ * The PieChart widget provides single or multiple series bar chart
  * visualization of sets of data points. Can create pyramid chart (two sided)
  *or grouped bar chart (several bars on the same label from different series - multivariate)
  *
- * @param {Object}		config			-The settings to configure this BarChart
- * @param {string}		config.id		-String to uniquely identify this BarChart.
+ * @param {Object}		config			-The settings to configure this PieChart
+ * @param {string}		config.id		-String to uniquely identify this PieChart.
  * @param {Array.<Array.<{x: number, y: label}>}
  *						config.Data		-An array of series;
- *										 each series is an array of one or more bars with names.
+ *										 each series is an array of one or more percentages with names.
  * @param {Array.<Array.<{key: "string">}
- *						config.Data  	Either bars or series can have a key label for highlighting.
- * @param {string		config.type		-String specifying "grouped", or anything else (ignored)
- * @param {AxisFormat}	config.xAxisFormat -Format of the x axis of the graph.
- * @param {AxisFormat}	config.yAxisFormat -Format of the y axis of the graph.
+ *						config.Data  	Either wedges or series can have a key label for highlighting.
  * @param {eventManager} eventManager	- allows the object to emit events
  *
- * NOTES: One of the two axes must be ordinal for a bar graph. Only y is accomodated
- * for now.
- * There's a lot of logic in here to make sure that both positive and
- * negative values are accomodated.  Negative values have to count right to x=0
- * and positive must always count right from x=0. Currently all bar graphs are
- * assumed to layout horizontally.  TODO: vertical bar graphs (thermometers)
- * TODO: emit events when edges of bars are dragged to set a new value
+ * NOTES: Pie Charts could have a type: specifying donut charts instead.
+ * For now, pie charts will always be drawn with a legend that shows the 
+ * percentages of each wedge. Note that pie x values don't have to add up to
+ * 100.  If they don't, d3 will calculate portions of 100%. 
  **************************************************************************/
 
-function BarChart(config, eventManager)
+function PieChart(config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the bar chart widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, BarChart);
+	this.id = getIdFromConfigOrAuto(config, PieChart);
 
 	/**
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
@@ -81,21 +70,24 @@ function BarChart(config, eventManager)
 	 * bar objects may also include an optional key: string in which case they will be given an ID that 
 	 * associates them with other widget events in the page, such as clicks on the legend.
 	 */
+
 	this.data = config.Data;
 
 	/**
-	 * The render type is one of:
-	 * <ul>
-	 *  <li> "grouped" for bars from multiple series with the same label, 
-	 *		 plotted side by side instead of on top of one another
-	 *  <li> <null> for regular bars
-	 * </ul>
-	 * @type {string}
+	 * The scale functions set explicitly for this Image using setScale.
+	 * Image doesn't use scale functions, but they may get used in a widget chain.
+	 * Otherwise a data extent of [0,1] will be mapped to the given
+	 * container area.
+	 * @type Object
+	 * @property {function(number): number}
+	 *						xScale	-function to convert a horizontal data offset
+	 *								 to the pixel offset into the data area.
+	 * @property {function(number): number}
+	 *						yScale	-function to convert a vertical data offset
+	 *								 to the pixel offset into the data area.
+	 * @private
 	 */
-	this.type = config.type;
-
-	this.xAxisFormat = config.xAxisFormat;
-	this.yAxisFormat = config.yAxisFormat;
+	this.explicitScales_ = {xScale: null, yScale: null};
 
 	/**
 	 * List of child widgets which are to be drawn before and after this
@@ -107,7 +99,8 @@ function BarChart(config, eventManager)
 	
 	
 	/**
-	 * Information about the last drawn instance of this line graph (from the draw method)
+	 * Information about the last drawn instance of this pie chart 
+	 * (values set during the draw method)
 	 * @type {Object}
 	 */
 	this.lastdrawn =
@@ -115,42 +108,45 @@ function BarChart(config, eventManager)
 			container: null,
 			size: {height: 0, width: 0},
 			dataRect: new Rect(0, 0, 0, 0),
-			barsId: 'bars',
-			axes: null,
+			wedgeId: 'wedge',
+			widgetGroup: null,
+			axesR: null,
+			axes: {
+				// need to figure out how to give pie charts "axes" that allow things like
+				// markers to be appended to them.  They don't get run through the normal 
+				// Axes object. -lb
+				group: null, 
+				dataRect: new Rect(0, 0, 0, 0),
+			},
 			xScale: null,
 			yScale: null,
-			groupScale: null,
-			bandsize: null,
-			bars: null,
+			wedges: null,
 			graph: null,
 		};
 		
-	//these aren't hooked up yet, but I expect bar graphs to eventually need
-	//to fire drag events that let users change the data for the bar length
-	//and drag events that let users sort the data differently, reordering the bars -lb
 	this.eventManager = eventManager;
 	/**
-	 * The event id published when a row in this group is selected.
+	 * The event id published when a wedge in the pie is selected.
 	 * @const
 	 * @type {string}
 	 */
 
-	this.selectedEventId = this.id + '_barSelected';
-	this.sortedEventId = this.id + 'barSortChanged';
-} // end of barChart constructor
+	this.selectedEventId = this.id + '_wedgeSelected';
+	 
+} // end of PieChart constructor
 /**
- * Prefix to use when generating ids for instances of LineGraph.
+ * Prefix to use when generating ids.
  * @const
  * @type {string}
  */
-BarChart.autoIdPrefix = "auto_";
+	PieChart.autoIdPrefix = "pie_";
 
 
 /* **************************************************************************
- * BarChart.draw                                                       *//**
+ * PieChart.draw                                                       *//**
  *
- * The LineGraph widget provides a line (or scatter) graph visualization
- * of sets of data points.
+ * The PieChart widget provides a circle of wedges visualization
+ * of sets of data percentages.
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the graph element tree to.
@@ -159,137 +155,67 @@ BarChart.autoIdPrefix = "auto_";
  * @param {number}	size.width	-The width for the graph.
  *
  ****************************************************************************/
-BarChart.prototype.draw = function(container, size)
+PieChart.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
 	
-	// Create the axes (svg canvas) in the container
-	var axesConfig = {
-			id: this.id + '_axes',
-			size: this.lastdrawn.size,
-			xAxisFormat: this.xAxisFormat,
-			yAxisFormat: this.yAxisFormat,
-		};
-		
-	var dataPts = d3.merge(this.data);
-	
-	//all the data in each dimension is merged to use for the domain  
-	//on the axis (autoranging)
-	axesConfig.xAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.x;});
-	axesConfig.yAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.y;});
+	this.setLastdrawnScaleFns2ExplicitOrDefault_(size);
 
-	//Check to see whether ordinal or other scales will be generated
-	// and whether explicit ticks are set, which overrides the autoranging
-	if (axesConfig.xAxisFormat.type == 'ordinal' && !Array.isArray(axesConfig.xAxisFormat.ticks))
-	{
-		var ordinalValueMap = d3.set(dataPts.map(function (pt) {return pt.x;}));
-		axesConfig.xAxisFormat.ticks = ordinalValueMap.values();
-	}
+	// size of the pie will be half of the smaller dimension of the available 
+	// rectangle
+	var padding = 20;
+	var r = size.height > size.width ? (size.width/2 - padding) : (size.height/2 - padding);
 	
-	if (axesConfig.yAxisFormat.type == 'ordinal' && !Array.isArray(axesConfig.yAxisFormat.ticks))
-	{
-		var ordinalValueMap = d3.set(dataPts.map(function (pt) {return pt.y;}));
-		axesConfig.yAxisFormat.ticks = ordinalValueMap.values();
-		
-	} 
-	
-	
-	//make the axes for this graph - draw these first because these are the 
-	//pieces that need extra unknown space for ticks, ticklabels, axis label
-	this.lastdrawn.axes = new Axes(this.lastdrawn.container, axesConfig);
-	//only draw axes if there aren't any yet
-	/*
-	if(!d3.select("#"+ axesConfig.id)[0][0]){
-		this.lastdrawn.axes = new Axes(this.lastdrawn.container, axesConfig);
-	}*/
-	
-	
-	//inherit the dataRect from the axes container
+	// pie should start 20 pixels from the left edge of box
+
+	var offset = padding + r; //padding from the axes
+
+	//set the dataRect to be the container
+	this.lastdrawn.axes.dataRect = new Rect(0, 0, size.width, size.height);
 	this.lastdrawn.dataRect = this.lastdrawn.axes.dataRect;
 	
-	// alias for axes once they've been rendered
-	var axesDrawn = this.lastdrawn.axes;
+	this.lastdrawn.axesR = r;
 
-	//inherit the x and y scales from the axes 
-	this.lastdrawn.xScale = axesDrawn.xScale;
-	this.lastdrawn.yScale = axesDrawn.yScale;
-	this.lastdrawn.barsId = this.id + '_bars';
-	var barsId = this.lastdrawn.barsId;
-	
-	
+	// make a group to hold the image
+	var pieGroup = container.append("g")
+		.attr("class", "bricPie")
+		.attr("id", this.id)
+		.attr("transform", "translate(" + offset + "," + offset + ")");;
 
-	//get the size of the bars and spacing produced by ordinal scale
-	//TODO: would need to be xScale if the bars are vertical
-	this.lastdrawn.bandsize = axesDrawn.yScale.rangeBand();
-	var bandsize = this.lastdrawn.bandsize;
-	
-	if (this.type == "grouped")
-	{
-		//grouped bar charts find the common labels in each data set and draw non-overlapping
-		//bars in a group, one bar in each series for that label.
-		//The effect of the following code is to calculate a "subspacing" that fans
-		//the individual bars in each label/group out around the central point for the data
-		//label on the axis.
-		var indices = [];
+	// draw a circle defining 100% of pie, for case where it's not 
+	// all filled - this is the pie's "axes"
+	this.lastdrawn.axes.group = pieGroup.append("g")
+		.attr("class", "axis")
+		.append("circle")
+		.attr("cx",0)
+		.attr("cy",0)
+		.attr("r",r);
 
-		for (i = 0; i < this.data.length; i++)
-		{
-			indices.push(i); //needed to space out grouped barcharts
-		}
-
-		var groupScale = d3.scale.ordinal()
-			.domain(indices) //creates an extra ordinal set that encloses the data label,
-			//one for each group (element in data array)
-			.rangeRoundBands([bandsize, 0]);
-			
-			//TEST: The last index  should produce the topmost bar
-			//appearing at y = 0
-		console.log("Grouped barChart last bar mapped to 0 offset: ",
-			groupScale(this.data.length - 1) == 0);
-	};
-
+	this.lastdrawn.widgetGroup = pieGroup;
 
 	// Draw any 'before' child widgets that got appended before draw was called
 	this.childWidgets.beforeData.forEach(this.drawWidget_, this);
-
-	var graph = axesDrawn.group.append("g") //make a group to hold bars
-		.attr("class","widgetBarChart").attr("id", this.id);
-
-	// todo: see if there is maybe a better way to determine if something is already drawn other than by id. -mjl
-	/*if (d3.select("#"+barsId)[0][0] === null)
-	{
-
-	var graph = axesDrawn.group.append("g") //make a group to hold new bar chart
-		.attr("id", barsId) //name it so it can be manipulated or highlighted later
-		//TODO: determine if this is really useful
-		;
-	}
-	else
-	{
-		var graph = d3.select("#" + barsId);
-	} */
-	
-	this.lastdrawn.graph = graph;
-	this.lastdrawn.groupScale = groupScale;
 	
 	// Draw the data (traces and/or points as specified by the graph type)
 	this.drawData_();
 
 	// Draw any 'after' child widgets that got appended after draw was called
 	this.childWidgets.afterData.forEach(this.drawWidget_, this);
+
+	
 	
 }; // end of barChart.draw()
 
 
 /* **************************************************************************
- * BarChart.redraw                                                     *//**
+ * PieChart.redraw                                                     *//**
  *
  * Redraw the line graph data as it may have been modified. It will be
  * redrawn into the same container area as it was last drawn.
  *
  ****************************************************************************/
-BarChart.prototype.redraw = function ()
+PieChart.prototype.redraw = function ()
 {
 	// TODO: We may want to create new axes if the changed data would cause their
 	//       min/max to have changed, but for now we're going to keep them.
@@ -302,7 +228,7 @@ BarChart.prototype.redraw = function ()
 };
 
 /* **************************************************************************
- * BarChart.drawWidget_                                                *//**
+ * PieChart.drawWidget_                                                *//**
  *
  * Draw the given child widget in this charts's data area.
  * This chart must have been drawn BEFORE this method is called or
@@ -313,7 +239,7 @@ BarChart.prototype.redraw = function ()
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-BarChart.prototype.drawWidget_ = function (widget)
+PieChart.prototype.drawWidget_ = function (widget)
 {
 	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
 	widget.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
@@ -321,7 +247,7 @@ BarChart.prototype.drawWidget_ = function (widget)
 
 
 /* **************************************************************************
- * BarChart.redrawWidget_                                              *//**
+ * PieChart.redrawWidget_                                              *//**
  *
  * Redraw the given child widget.
  * This bar chart and this child widget must have been drawn BEFORE this
@@ -332,13 +258,33 @@ BarChart.prototype.drawWidget_ = function (widget)
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-BarChart.prototype.redrawWidget_ = function (widget)
+PieChart.prototype.redrawWidget_ = function (widget)
 {
 	widget.redraw();
 };
 
 /* **************************************************************************
- * BarChart.drawData_                                                  *//**
+ * PieChart.setScale                                                      */ /**
+ *
+ * Called to preempt the normal scale definition which is done when the
+ * widget is drawn. This is usually called in order to force one widget
+ * to use the scaling/data area calculated by another widget.
+ *
+ * @param {function(number): number}
+ *						xScale	-function to convert a horizontal data offset
+ *								 to the pixel offset into the data area.
+ * @param {function(number): number}
+ *						yScale	-function to convert a vertical data offset
+ *								 to the pixel offset into the data area.
+ *
+ ****************************************************************************/
+PieChart.prototype.setScale = function (xScale, yScale)
+{
+	this.explicitScales_.xScale = xScale;
+	this.explicitScales_.yScale = yScale;
+};
+/* **************************************************************************
+ * PieChart.drawData_                                                  *//**
  *
  * Draw the chart data (overwriting any existing data).
  *
@@ -346,108 +292,114 @@ BarChart.prototype.redrawWidget_ = function (widget)
  *
  ****************************************************************************/
  
- BarChart.prototype.drawData_ = function ()
+ PieChart.prototype.drawData_ = function ()
 {
 	// local var names are easier to read (shorter)
-	var barId = this.lastdrawn.barId;
 	var xScale = this.lastdrawn.xScale;
 	var yScale = this.lastdrawn.yScale;
-	var bandsize = this.lastdrawn.bandsize;
-	var groupScale = this.lastdrawn.groupScale;
+	var size = this.lastdrawn.size;
+
 	var that = this;
 	
 	// get the group that contains the graph lines
-	var graph = this.lastdrawn.graph;
+	var graph = this.lastdrawn.widgetGroup;
 	
-	//draw the series
-	// bind all the series data to a group element w/ a series class
-	// creating or removing group elements so that each series has its own group.
-	var barSeries = graph.selectAll("g.series")
-		.data(this.data);
+	// This section conditions the data 
+	var sumData = 0, last = this.data.length;
 
-	barSeries.enter()
-		.append("g")
-			.attr("class", function(d, i) {
-					//give each series it's own color
-					return "series fill" + i;
-				});
-	//on redraw, get rid of any series which now have no data
-	barSeries.exit().remove();  
+	// take the opportunity to make the legend labels while we're cycling through the data
+	var legLabels = [];
+
+	this.data.forEach(
+			function(o, i) {
+				sumData = sumData + Math.abs(o.x);
+				legLabels[i] = {content: o.y + " " + o.x + "%"};
+			});
+
+	if(sumData<100){
+	// if the sum of all the data points does not add up to 100%, then
+	// append a new data point to bring the total up to 100.
+	// When this is drawn, the "last" point will be detected as
+	// having extended the data range, and we'll color it white (blank).
+	// This allows us to draw wedges instead of the whole pie. - lb
+		this.data.push({x: 100-sumData});
+	}
+	
+	
+	// if there is a negative data point (rotational angle chart), 
+	// make it positive but draw it last instead of first, after the white part
+	if(this.data[0].x < 0)
+	{
+		this.data[0].x = - this.data[0].x;
+		//this only works if we assume that for angles, which can be 
+		//negative, that there is only one in the data series.
+		this.data.reverse();	
+		last = 0;
+	}
+
+	//draw the series
+	
+	// create <path> arc elements using "axes" radius as a function
+	var arc = d3.svg.arc()  
+	        .outerRadius(this.lastdrawn.axesR);
+
+	// d3 pie function creates arc data for us given a list of values
+	var pieArcs = d3.layout.pie()           
+		    .value(function(d) { return d.x; })
+		    //null sort maintains order of input - critical for single value angles
+			.sort(null);
+
+	// bind all the series data to a group element w/ a wedge class
+	// creating or removing group elements so that each wedge has its own group.
+	var wedges = this.lastdrawn.widgetGroup.selectAll("g.wedges") 
+	        .data(pieArcs(this.data));           
+	//associate the generated pie data (an array of arcs w/startAngle, endAngle and value props)
+	wedges.enter()
+	    .append("g")
+	    .attr("class", function(d, i) {
+				return "slice fill" + ((i == last) ? "White" : i);
+			});    //color with predefined sequential colors
+
+	//this creates the path using the associated data with the arc drawing function
+	wedges.append("path")
+	   .attr("d", arc);      
+
+	//on redraw, get rid of any wedges which now have no data
+	wedges.exit().remove();  
 
 	// autokey entries which have no key with the data index for highlighting
 	// can't use the y label because it might contain spaces. 
-	barSeries.each(function (d, i) { 
+	wedges.each(function (d, i) { 
 					// if there is no key assigned, make one from the index
 					d.key = 'key' in d ? d.key : i.toString();
 					});
-	//If it's a grouped barchart, shimmie out the bars by group
-	//Bars will be thinner and the group will be centered around
-	//the ordinal label. The whole series can be shifted up or down 
-	//according to it's order.  TODO: make these sortable by max or
-	//min value for any group label
-	if (this.type == "grouped")
-	{
-		barSeries.attr("transform", function(d, i) {
-				return "translate(0," + (groupScale(i)) + ")";
-				});
-	}
 	
-
-	// The series data is an array of values for each bar of the series
-	// bind each series data element (bar length) to a child group element, 
-	// one for each bar in the series. - mjl
-	//	Enclose the bars in individual groups 
-	// so you could choose to label the ends with data or label
-	//  and have it stick to the bar by putting it in the same group -lb
-	var bars = barSeries.selectAll("g.bar")
-		.data(function(d) {return d;}); 	//drill down into the nested data
-
-	bars.exit().remove();
- 
-	bars.enter()
-		.append("g")
-			.attr("class", "bar")
-			.append("rect");
-			
-	// TODO: figure out a strategy for highlighting and selecting individual bars -lb 
-
-	bars.attr("transform",
-				  function(d)
-				  {
-				// move each group to the x=0 position horizontally if it's a
-				// positive bar, or start at it's negative x value if it's reversed.
-				// The x<0 logic allows us to draw pyramid charts, normally bar 
-				// charts are bin counts and all positive. 
-				      var x = (d.x < 0) ? xScale(d.x) : xScale(0);
-					  var y = yScale(d.y);
-				      return "translate(" + x + "," + y + ")";
-				  });
-				  
-	// Update the height and width of the bar rects based on the data points bound above.
-	bars.select("rect")
-	//if grouped, each bar is only 1/# groups of the available width
-		.attr("height", (this.type == "grouped") ? (bandsize / (this.data.length + 1)) : bandsize)
-		.attr("width",
-			  function(d)
-			  {
-				  return (d.x < 0) ? xScale(0) - xScale(d.x)
-								   : xScale(d.x) - xScale(0);
-			  });
-			  
-	
-	bars.on('click',
+	wedges.on('click',
 				function (d, i)
 				{
 					that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
 				});
 				
 	//do a clean selection of the drawn data to store for the object properties
-	this.lastdrawn.bars = graph.selectAll("g.series");
+	this.lastdrawn.wedges = graph.selectAll("g.wedges");
+
+	// we gotta redraw the legend for any data updates because it contains the values of
+	// the wedge angles.
+
+	var legend = new Legend({
+					xPos: "right", yPos: "top",
+					labels: legLabels,
+					type: "box"
+					},
+				this.eventManager);
+
+	// Mike - uncomment this line of code to see the error.
+	//this.lastdrawn.container.append(legend);
 
 }
 
 /* **************************************************************************
- * BarChart.append                                                     *//**
+ * PieChart.append                                                     *//**
  *
  * Append the widget or widgets to this bar chart and draw it/them on top
  * of the data area and any widgets appended earlier. If append
@@ -465,7 +417,7 @@ BarChart.prototype.redrawWidget_ = function (widget)
  * 									 to "after".
  *
  ****************************************************************************/
-BarChart.prototype.append = function(svgWidgets, zOrder)
+PieChart.prototype.append = function(svgWidgets, zOrder)
 {
 	if (!Array.isArray(svgWidgets))
 	{
@@ -491,7 +443,7 @@ BarChart.prototype.append = function(svgWidgets, zOrder)
 }; // end of BarChart.append()
 
 /* **************************************************************************
- * BarChart.append_one_                                                *//**
+ * PieChart.append_one_                                                *//**
  *
  * Helper for append that does the work needed to append a single widget.
  * This can handle drawing the widget after the data even after the data
@@ -510,7 +462,7 @@ BarChart.prototype.append = function(svgWidgets, zOrder)
  * @private
  *
  ****************************************************************************/
-BarChart.prototype.append_one_ = function(widget, zOrder)
+PieChart.prototype.append_one_ = function(widget, zOrder)
 {
 	if (zOrder === "before")
 	{
@@ -526,9 +478,47 @@ BarChart.prototype.append_one_ = function(widget, zOrder)
 		
 } // end of BarChart.append_one_()
 
+/* **************************************************************************
+ * PieChart.setLastdrawnScaleFns2ExplicitOrDefault_                       */ /**
+ *
+ * Set this.lastdrawn.xScale and yScale to those stored in explicitScales
+ * or to the default scale functions w/ a data domain of [0,1].
+ *
+ * @param {Size}	cntrSize	-The pixel size of the container given to draw().
+ * @private
+ *
+ ****************************************************************************/
+PieChart.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
+{
+	if (this.explicitScales_.xScale !== null)
+	{
+		this.lastdrawn.xScale = this.explicitScales_.xScale;
+	}
+	else
+	{
+		// map the default x data domain [0,1] to the width of the pie, starting
+		// from the padding edge - this is in lieu of real pie axes.  We'll have
+		// to ponder this more carefully when solidifying pie charts.  Probably
+		// it's useful to correlate the center of the pie to 0,0 on an x-y set of
+		// over/underlaid cartesian axes. -lb
+
+		this.lastdrawn.xScale = d3.scale.linear().rangeRound([20, 2*this.axesR]);
+	}
+	
+	if (this.explicitScales_.yScale !== null)
+	{
+		this.lastdrawn.yScale = this.explicitScales_.yScale;
+	}
+	else
+	{
+		// map the default y data domain [0,1] to the width of the pie, starting
+		// from the padding edge - this is in lieu of real pie axes
+		this.lastdrawn.yScale = d3.scale.linear().rangeRound([2*this.axesR, 20]);
+	}
+}; // end of PieChart.setLastdrawnScaleFns2ExplicitOrDefault_()
 
 /* **************************************************************************
- * BarChart.lite                                                      *//**
+ * PieChart.lite                                                      *//**
  *
  * Highlight the members of the collection associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
@@ -536,33 +526,30 @@ BarChart.prototype.append_one_ = function(widget, zOrder)
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-BarChart.prototype.lite = function(liteKey)
+PieChart.prototype.lite = function(liteKey)
 {
 	
-	console.log("TODO: log fired BarChart highlite " + liteKey);
+	console.log("TODO: log fired PieChart highlite " + liteKey);
 	
 	// Turn off all current highlights
-	var allBars = this.lastdrawn.bars;
-	allBars
+	var allWedges = this.lastdrawn.wedges;
+	allWedges
 		.classed("lit", false);
 		
-	//var allSeries = this.lastdrawn.series;
-	//allSeries
-		//.classed("lit", false);
 
 	// create a filter function that will match all instances of the liteKey
 	// then find the set that matches
 	var matchesKey = function (d, i) { return d.key === liteKey; };
 	
-	var barsToLite = allBars.filter(matchesKey);
+	var wedgesToLite = allWedges.filter(matchesKey);
 
 	// Highlight the labels w/ the matching key
-	barsToLite
+	wedgesToLite
 		.classed("lit", true);
 
-	if (barsToLite.empty())
+	if (wedgesToLite.empty())
 	{
-		console.log("No key '" + liteKey + "' in bar chart " + this.id );
+		console.log("No key '" + liteKey + "' in pie chart " + this.id );
 	}
 
 };

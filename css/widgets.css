@@ -372,14 +372,18 @@ svg g.widgetSketch .shape>text {
 	
 /* Axes
 ================================================== */
-.axis path,
-.axis line {
+.widget .axis path,
+.widget .axis line,
+.widget .axis circle {
   fill: none;
-  stroke: #aaaaaa; }
+  stroke: #bbbbbb; 
+  stroke-width: ;
+}
 
-.axis text {
+.widget .axis text {
   font: bold .7em/1.5em;
-  color: #008496; }
+  color: #008496; 
+}
 
 
 .widget .axis .descLabel {
@@ -401,17 +405,6 @@ svg g.widgetSketch .shape>text {
   color: #000;
   word-wrap: break-word;
   text-align: center; 
-}
-
-.callOut {
-  font: 0.8em Helvetica, sans;
-  position:static;
-  text-align: left;
-  color: #1d456e;
-  border: 2px solid #bce8f1;
-  background-color: #E3EFFE;
-  padding: .5em  .3em;
-  margin: .2em;
 }
 
 .graphLabel {
@@ -498,14 +491,20 @@ svg g .stroke10 {
 svg g .stroke11 {
   stroke: #8063c7; }
   
-/* bars, lines and points
+/* bars, pie wedges and points
 ================================================== */
 svg g.widgetBarChart rect,
-svg g.widgetLegend rect {
-  opacity: 0.8; }
+svg g.widgetLegend rect 
+svg g.bricPieChart path {
+  opacity: 0.8; 
+  }
 
-svg g.widgetBarChart rect .lit {
+svg g.widgetBarChart rect .lit
+svg g.widgetLegend rect .lit
+svg g.bricPieChart path .lit  {
   opacity: 1;
+  stroke-width: 1;
+  stroke: #8063c7;
   }
 
 

@@ -8,50 +8,53 @@
 	<meta name="Owner" content="Pearson" />
 	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
 	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-	<meta content="eCourses Author, Title" name="description" />
-
-    <!-- Bootstrap -->
-    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/widgets.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
- 
-
+	<meta content="Carmen Santiago, Demo Book" name="description" />
 	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
 </head>
 
 <body>
-	<div class="titler">
-		<span class='number setId'></span>
-		<span class="setTitle">Bar Chart Length Updater</span>
-	</div>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-            <h2 class="setTitle"></h2>
-            	<p>Mathematically, the percentage of each enantiomer can be expressed as follows:</p>
-				<img src="img/Kequation1.png" />
-				<p>and</p>
-				<img src="img/Kequation2.png"/>
-				<p>For both equations, the numerator of the term in parentheses relates to the optically inactive 		portion of the sample. Halving this value provides the percentage of the enantiomer present in lesser amount. This same value needs to be added to the %ee to provide the percentage of the dominant enantiomer.
-				</p>
-				<p>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+            		<p>Mathematically, the percentage of each enantiomer can be expressed as follows:</p>
+					<img src="img/Kequation1.png" />
+					<p>and</p>
+					<img src="img/Kequation2.png"/>
+					<p>For both equations, the numerator of the term in parentheses relates to the optically inactive 		portion of the sample. Halving this value provides the percentage of the enantiomer present in lesser amount. This same value needs to be added to the %ee to provide the percentage of the dominant enantiomer.
+					</p>
+					<p>
 					The % ee can also be calculated if the composition of the mixture is known. The enantiomer present in smaller number is subtracted from the dominant enantiomer. Consider a sample that contains
 					<div id="Dextro"></div><div id="Levo"></div>
                 	
-                  The % ee is given by the absolute difference between the components, or 
-                  <span id="ee" class="math"></span>.
-          
-				</p>
-			</div>
-			<div class="span6 rightCol">
-            	<div id="roto">
-                	<p> <span id="alpha"></span> 
-                	</p>
-                </div>
-				<div id="barChart0"></div>
-				<div id="barChart"></div>
-			</div>
+                 	The % ee is given by the absolute difference between the components, or 
+                 	 <span id="ee" class="math"></span>.</p>
+					</div>
+					<div class="lc_ec_trailing">
+            			<div id="roto">
+                		<p> <span id="alpha"></span> </p>
+                		</div>
+						<div id="barChart0"></div>
+						<div id="barChart"></div>
+					</div>
+				</div>
+			</section>
 		</div>
 	</div>
 
@@ -63,13 +66,13 @@
 	<script src="js/eCourse-master.js"></script>    
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/widgets.js"></script>    
-
 	<script src="js/widget-base.js"></script>
 	<script src="js/widget-barchart.js"></script>
     <script src="js/widget-slider.js"></script>
     <script src="js/widget-numeric.js"></script>
     <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-legend.js"></script>
 	<script src="js/eventmanager.js"></script>
 
 	<script>
@@ -81,24 +84,13 @@
 	//that must talk to it.
 	var eventManager = new EventManager();
 	
+	//data to start the graph and the sliders
 	var levoData =   [ { x: 35, y: "Levo" } ];
 	var dextroData = [ { x: 65, y: "Dextro" } ];
-
-/* Create the Levo numeric input widget
-	var inputLevo = new NumericInput({
-			node: d3.select("#Levo"),
-			id: 'levo',
-			startVal: 35,
-			minVal:0,
-			maxVal: 100,
-			unit: "%",
-			label: "Levo"
-		}, eventManager);*/
-		
 		
 	var inputLevo = new Slider ({
 			id: "levo",
-			startVal: 35,
+			startVal: levoData[0].x,
 			minVal: 0,
 			maxVal: 100,
 			stepVal: 1,
@@ -106,23 +98,13 @@
 			label: "Levorotary ",
 			format: d3.format('.0f')
 		}, eventManager);
-	inputLevo.draw(d3.select("#Levo"));
 
-/* Create the Dextro numeric input widget
-	var inputDextro = new NumericInput({
-			node: d3.select("#Dextro"),
-			id: 'dextro',
-			startVal: 65,
-			minVal:0,
-			maxVal: 100,
-			unit: "%",
-			label: "Dextro"
-		}, eventManager); */
+	inputLevo.draw(d3.select("#Levo"));
 
 	
 	var inputDextro = new Slider ({
 			id: "dextro",
-			startVal: 65,
+			startVal: dextroData[0].x,
 			minVal: 0,
 			maxVal: 100,
 			stepVal: 1,
@@ -131,7 +113,7 @@
 			format: d3.format('.0f')
 		}, eventManager);
 	
-	inputDextro.draw(d3.select("#Levo"));
+	inputDextro.draw(d3.select("#Dextro"));
 	
 	
 	var cont1 = new SVGContainer({
@@ -179,18 +161,7 @@
 		unit: "%", 
 		label: "ee ="
 	}, eventManager);
-	
-	/*	// Create the alpha numeric input widget
-	var inputAlpha = new NumericInput({
-			node: d3.select("#alpha"),
-			id: 'alphaSR',
-			startVal: 80,
-			minVal:0,
-			maxVal: 100,
-			unit: "%",
-			label: "Specific rotation (&alpha;)"
-		}, eventManager);
-*/
+
 
 	var sl1 = new Slider ({
 			id: "slider1",
@@ -204,50 +175,37 @@
 		}, eventManager);
 		
 	sl1.draw(d3.select("#alpha"));
-	
-	/* Create the rotation readout widget
-	var rot = new Readout({
-			node: d3.select("#Rotate"),
-			id: 'rotate',
-			startVal: sl1.getValue() * diff/10,
-			readOnly: true,
-			size: 4,
-			unit:"&deg;", 
-			label: "Rotation"
-		}, eventManager);
-	*/
 
 
-	var pieDish = new MakeSVGContainer(
+	var pieDish = new SVGContainer(
 		{
 			node: d3.select("#roto"),
-			maxWid: 200,
+			maxWid: 470,
 			maxHt: 200
 		});
 
-	pieDish.Axes( 
-		{
-			
-			xPosPerc: 0, yPosPerc:0,
-			xPerc: 1, yPerc: 1,
-			xaxisType: "linear",  yaxisType: "linear",
-			xTicks: 0, yTicks: 0,
-			xOrient: "top", yOrient: "right",
-			xLabel: "Rotation (&deg;)"
+	
+	var anglePie = new PieChart({
+		Data: [{x:sl1.startVal * diff/360}],
 		});
+	
+	pieDish.append(anglePie, {topPercentOffset: 0.3, leftPercentOffset: .08, heightPercent: .8, 		
+	widthPercent: 1});
 
-	
-	pieDish.Pie({
-		Data: [{x:80 * diff/360}],
-		xYPos: [.5,.5]
-	});
-	
+
 	//This is the marker that shows the 0/180 rotation line
-	pieDish.LineMarkers({
-		xMarks: [{
-			x:(1/2), label: d3.format("+0r2")(sl1.getValue() * diff/100) + "&deg;"
-			}] 
-	});
+	var angleMark = new MarkerGroup({
+								marks: [{
+									x: 0.5, 
+									label: d3.format("+0r2")(sl1.getValue() * diff/100) + "&deg;"
+									}] 
+									});
+
+	// the marker should really be appended to the pie chart, so it stays on center, but 
+	// for right now that's producing nans so this is a stopgap. -lb 
+	
+	pieDish.append(angleMark, {topPercentOffset: 0.3, leftPercentOffset: 0, heightPercent: 1, 		
+	widthPercent: 0.5});
 
 	// Modify the value of the data for the bar graph when the
 	//numerical input changes.  So, subscribe to the event emitted by inputLevo,
@@ -336,14 +294,12 @@
 	function updatePieChart(diff)
 	{
 		console.log("TODO: fired updatePieChart log");
-		pieDish.Pie({
-			Data: [{x: sl1.getValue() * diff/360}],
-			xYPos: [0.5,0.5]
-			});
+		anglePie.data = [{x: sl1.getValue() * diff/360}];
+		
 		var newMark = {x:(1/2), label: d3.format("+0r2")(sl1.getValue() * diff/100) + "&deg;"};
-		pieDish.LineMarkers( {
-			xMarks: [newMark]
-			});
+		angleMark.marks = [newMark];
+		anglePie.redraw();
+		angleMark.redraw();
 		
 	}
 		
