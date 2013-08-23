@@ -17,6 +17,7 @@
 # 4. unzip it into a subfolder of the closure folder you created above which should be
 #    named _closure-compiler_.
 #    (when I got it, the zip contained 3 files: compiler.jar, README and COPYING)
+# 5. flag this file and the closurebuilder.py file as executable
 #
 # [Using ClosureBuilder]: <https://developers.google.com/closure/library/docs/closurebuilder>
 # [Closure Library Documentation]: <https://developers.google.com/closure/library/docs/overview>
@@ -46,6 +47,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-carousel.js
 	--input=widget-imageviewer.js
 	--input=widget-labelgroup.js
+	--input=widget-callouts.js
 	--root=.
 	--root=$LIBRARYDIR
 	--output_mode=compiled
