@@ -40,9 +40,10 @@ goog.provide('pearson.brix.LabelGroup');
  * @typedef {Object} pearson.brix.LabelConfig
  * @property {htmlString}
  * 						content	-string with HTML markup to be displayed by the label
- * @property {Array.<nummber, number>}
- *						xyPos	-An array containing the x,y data coordinates for the
- *								 top left corner of the label
+ * @property {Array.<nummber>}
+ *						xyPos	-An 2 element array containing the x,y data coordinates
+ *								 as elements 0 and 1 respectively for the top left
+ *								 corner of the label
  * @property {number}	width	-The pixel width of the label
  *								 @todo we need a better way to deal w/ the width, 
  *									than hard-coding it here. -lb

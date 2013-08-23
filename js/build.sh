@@ -48,6 +48,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-imageviewer.js
 	--input=widget-labelgroup.js
 	--input=widget-callouts.js
+	--input=widget-markergroup.js
 	--root=.
 	--root=$LIBRARYDIR
 	--output_mode=compiled

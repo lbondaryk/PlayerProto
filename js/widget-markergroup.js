@@ -2,10 +2,10 @@
  * $Workfile:: widget-MarkerGroup.js                                        $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the {@link MarkerGroup} bric.
+ * @fileoverview Implementation of the {@link pearson.brix.MarkerGroup} bric.
  *
  * The MarkerGroup bric draws a group of labels at specified locations
- * in an {@link SVGContainer}.
+ * in an {@link pearson.brix.SVGContainer}.
  *
  * Created on		June 26, 2013
  * @author			Leslie Bondaryk
@@ -13,6 +13,8 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+goog.provide('pearson.brix.MarkerGroup');
 
 // Sample Label constructor configuration
 (function()
@@ -31,57 +33,69 @@
 /**
  * Information needed to process a label in a MarkerGroup.
  *
- * @typedef {Object} LabelConfig
- * @property {string|undefined}	id	- string with ID, optional
- * @property {Array.<nummber, number|undefined, string|undefined>}
- *						xMarks	- An array containing objects with x,y 
- * 								coordinates for each marker, a label,
- * 								if desired, and a key, if desired
- * @property {string|undefined}	type - string with orientation "x" (default) or "y"
- * @todo we need a better way to deal w/ the width, 
- *									than hard-coding it. -lb
+ * @typedef {Object} pearson.brix.MarkerConfig
+ * @property {number}	x		-The logical x coordinate for the left edge of this marker
+ * @property {number}	y		-The logical y coordinate for the top edge of this marker
+ * @property {string=}	label	-Optional label to display in the marker, otherwise
+ * 								 the x or y coordinate value will be displayed depending
+ * 								 on the type of MarkerGroup this marker is a part of.
+ * @property {string|undefined}
+ * 						key		-Optional highlight key for this marker.
+ *
+ * @todo A MarkerConfig is very similar to a LabelConfig used for labels
+ * in a LabelGroup, perhaps we should merge them? -mjl
  */
+pearson.brix.MarkerConfig;
 	
 /* **************************************************************************
  * MarkerGroup                                                         */ /**
  *
- * The MarkerGroup widget draws a group of markers at specified locations
+ * Constructor for a MarkerGroup bric.
+ * If the scale functions are not set before this bric is drawn, it will
+ * assume the data extents are 0 - 1.
+ *
+ * @constructor
+ * @implements {IWidget}
+ * @export
+ *
+ * @param {Object}		config			-The settings to configure this MarkerGroup
+ * @param {string|undefined}
+ * 						config.id		-String to uniquely identify this MarkerGroup.
+ * 										 if undefined a unique id will be assigned.
+ * @param {Array.<!pearson.brix.MarkerConfig>}
+ *						config.marks	-An array describing each marker in the group.
+ *										 
+ * @param {string}		config.type		-orientation of the markers on the x-axis('x')
+ * 										 or the y-axis ('y')
+ * @param {string=}		config.mode		-whether the markers may be dragged ('drags') or
+ * 										 not (undefined).
+ * @param {!pearson.utils.EventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
+ *
+ * @classdesc
+ * A MarkerGroup draws a group of markers at specified locations
  * in an SVGContainer.
  * The MarkerGroup is usually used on top of another bric which provides the
  * data extents and scale functions to convert data points to pixel positions
  * in the container. If the scale functions are not set before this bric is
  * drawn, it assumes the data extents are 0 - 1.
  *
- * @constructor
- * @implements {IWidget}
- *
- * @param {Object}		config			-The settings to configure this MarkerGroup
- * @param {string|undefined}
- * 						config.id		-String to uniquely identify this MarkerGroup.
- * 										 if undefined a unique id will be assigned.
- * @param {Array.<LabelConfig>}
- *						config.markers	-An array describing each marker in the group.
- *										 
- * @param {string}		config.type		-string specifying orientation, x or y
- * @param {EventManager=}
- * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them.
- *
  * @todo: role: a string which is one of "label", "distractor".
  * @todo: we need some sort of autowidth intelligence on these, but I don't
  * know how to reconcile that with giving user control over wrapping
  ****************************************************************************/
-function MarkerGroup(config, eventManager)
+pearson.brix.MarkerGroup = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the MarkerGroup widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, MarkerGroup);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.MarkerGroup);
 
 	/**
 	 * Array of markers to be graphed, where each marker is an object in an array
-	 * @type {Array.<Array.<{x: number, y: number, label: string, key: string}>>}
+	 * @type {Array.<!pearson.brix.MarkerConfig>}
 	 * @example
 	 *   // 2 markers, first numerical, second shows string label:
 	 *   [{x: -1.2, y: 2.0}, {x: 5, y: 5, label: "big data"}]
@@ -109,7 +123,7 @@ function MarkerGroup(config, eventManager)
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.EventManager|undefined}
 	 */
 	this.eventManager = eventManager;
 
@@ -157,14 +171,14 @@ function MarkerGroup(config, eventManager)
 			axisType: null,
 			markerCollection: null,
 		};
-} // end of Label constructor
+}; // end of Label constructor
 
 /**
  * Prefix to use when generating ids for instances of MarkerGroup.
  * @const
  * @type {string}
  */
-MarkerGroup.autoIdPrefix = "marker_";
+pearson.brix.MarkerGroup.autoIdPrefix = "marker_";
 
 /* **************************************************************************
  * MarkerGroup.draw                                                    */ /**
@@ -174,10 +188,11 @@ MarkerGroup.autoIdPrefix = "marker_";
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the labels element tree to.
- * @param {Size}	size		-The height and width in pixels for the label
+ * @param {pearson.utils.ISize}
+ * 					size		-The height and width in pixels for the label
  *
  ****************************************************************************/
-MarkerGroup.prototype.draw = function(container, size)
+pearson.brix.MarkerGroup.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -208,10 +223,7 @@ MarkerGroup.prototype.draw = function(container, size)
 
 	// Draw the data (each marker line and label)
 	this.drawData_();
-
-	
-}
-
+};
 
 /* **************************************************************************
  * MarkerGroup.redraw                                                  */ /**
@@ -220,9 +232,8 @@ MarkerGroup.prototype.draw = function(container, size)
  * redrawn into the same container area as it was last drawn.
  *
  ****************************************************************************/
-MarkerGroup.prototype.redraw = function ()
+pearson.brix.MarkerGroup.prototype.redraw = function ()
 {
-	
 	this.drawData_();
 };
 
@@ -238,7 +249,7 @@ MarkerGroup.prototype.redraw = function ()
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-MarkerGroup.prototype.drawWidget_ = function (widget)
+pearson.brix.MarkerGroup.prototype.drawWidget_ = function (widget)
 {
 	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
 	widget.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
@@ -256,11 +267,10 @@ MarkerGroup.prototype.drawWidget_ = function (widget)
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-MarkerGroup.prototype.redrawWidget_ = function (widget)
+pearson.brix.MarkerGroup.prototype.redrawWidget_ = function (widget)
 {
 	widget.redraw();
 };
-
 
 /* **************************************************************************
  * markerGroup.drawData_                                               */ /**
@@ -270,8 +280,7 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
  * @private
  *
  ****************************************************************************/
- 
- MarkerGroup.prototype.drawData_ = function ()
+pearson.brix.MarkerGroup.prototype.drawData_ = function ()
 {
 	// local var names are easier to read (shorter)
 
@@ -306,32 +315,33 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 	//on redraw, get rid of any series which now have no data
 	markerCollection.exit().remove();  
 
-	markerCollection.attr("transform", function(d) {
-		
-		// check orientation on the markers, and move the 
-		// group accordingly.  The numbers are used within the local brix scale.
-		// If the markers are horizontal from the y axis, move the group to the 
-		// y data value vertically, but stay at zero horizontally.  Otherwise, 
-		// move the group to the x data value horizontally, but stay at 0 vertically.
-		// TODO: logic here is a little flawed, it assumes that the axes is on the 
-		// bottom and left of the graph - lb
+	markerCollection
+		.attr("transform",
+			function (d)
+			{
+				// check orientation on the markers, and move the 
+				// group accordingly.  The numbers are used within the local brix scale.
+				// If the markers are horizontal from the y axis, move the group to the 
+				// y data value vertically, but stay at zero horizontally.  Otherwise, 
+				// move the group to the x data value horizontally, but stay at 0 vertically.
+				// TODO: logic here is a little flawed, it assumes that the axes is on the 
+				// bottom and left of the graph - lb
 
-		//Date formats apparently differ across platforms, so it's necessary to parse them out,
-		//something like this.  We'll need to do this properly everywhere.
-		// http://stackoverflow.com/questions/5324178/javascript-date-parsing-on-iphone
-		function makeDate(dateString) 
-		{
-			var dateArr = dateString.split(/[- / :]/);
-    		return new Date(dateArr[0], dateArr[1]-1);
+				//Date formats apparently differ across platforms, so it's necessary to parse them out,
+				//something like this.  We'll need to do this properly everywhere.
+				// http://stackoverflow.com/questions/5324178/javascript-date-parsing-on-iphone
+				var makeDate = function makeDate(dateString) 
+				{
+					var dateArr = dateString.split(/[- / :]/);
+					return new Date(dateArr[0], dateArr[1]-1);
+				};
 
-		} 
+				var xVal = d3.round(that.lastdrawn.xScale(that.type === "y" ? 0 : (that.axisType == "time" ? new Date(d.x): d.x)));
+				var yVal = d3.round(that.type === "y" ? that.lastdrawn.yScale(d.y) : 0);
 
-		var xVal = d3.round(that.lastdrawn.xScale(that.type === "y" ? 0 : (that.axisType == "time" ? new Date(d.x): d.x)));
-		var yVal = d3.round(that.type === "y" ? that.lastdrawn.yScale(d.y) : 0);
-
-		return attrFnVal("translate", xVal, yVal);
-		//move each group to the data point specified for the marker
-	});
+				return pearson.brix.utils.attrFnVal("translate", xVal, yVal);
+				//move each group to the data point specified for the marker
+			});
 
 	//draw the horizontal or vertical marker line
 	markerCollection.append("line") 
@@ -351,20 +361,26 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 		
 		//if a full data point crossing is specified, put a dot there.
 	markerCollection.append("circle")
-		.attr("cx", function (d){	
-			return d.x ? d3.round(that.lastdrawn.xScale(that.type === "y" ? (that.axisType == "time" ? new Date(d.x): d.x) : 0)) : -size.width;
-		})
-		.attr("cy", function (d){	
-			// if a y value is specified, and the markers are horizontal, put the dot at 0, which
-			// will be on the edge of the correctly located marker group.  If the markers are vertical
-			// put the dot on the y value vertically.  If no value is specified, draw them at the top
-			// of the graph under the marker label.
-			return d.y ? d3.round(that.lastdrawn.yScale(that.type === "y" ? 0 : d.y )) : -size.height;
-		})
+		.attr("cx",
+			function (d)
+			{	
+				// @todo this needs to be turned into a nested if statement that would hopefully be
+				//       easier to understand. and I'm not sure the 1st condition is correct anyway. -mjl
+				return d.x ? d3.round(that.lastdrawn.xScale(that.type === "y" ? (that.axisType == "time" ? new Date(d.x): d.x) : 0)) : -size.width;
+			})
+		.attr("cy",
+			function (d)
+			{	
+				// if a y value is specified, and the markers are horizontal, put the dot at 0, which
+				// will be on the edge of the correctly located marker group.  If the markers are vertical
+				// put the dot on the y value vertically.  If no value is specified, draw them at the top
+				// of the graph under the marker label.
+				return d.y ? d3.round(that.lastdrawn.yScale(that.type === "y" ? 0 : d.y )) : -size.height;
+			})
 		.attr("r", 6);
 
 	//draw the marker arrows (triangles)
-		markerCollection.append("polygon") 
+	markerCollection.append("polygon") 
 		.attr("points", 
 			//if the markers are horizontal from the y axis, then the 
 			//arrows point to the left on the right side.  Otherwise 
@@ -375,7 +391,7 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
 			 						"-8, " +  -markerHeight + " 8, " +  -markerHeight + " 0,6");
 
 	//draw the marker boxes (rectangles)
-		markerCollection.append("rect") 
+	markerCollection.append("rect") 
 		.attr("width", labelWid)
 		.attr("height", labelHt)
 		//we need to move this above the graph.  The 25% assumes
@@ -394,76 +410,82 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
   
 	//draw data labels on the markers
 	markerCollection.append("foreignObject")
-	// if y markers, x value is all the way on the right side, otherwise, 
-	// back up to the start of the down arrow
+		// if y markers, x value is all the way on the right side, otherwise, 
+		// back up to the start of the down arrow
 		.attr("x", this.type === "y" ? size.width : -8)
-	// if y markers, y value is at the very top of the marker group, at 0, 
-	// otherwise, move the label up to start at the top of the box, above
-	// the line, plus some (-5)
+		// if y markers, y value is at the very top of the marker group, at 0, 
+		// otherwise, move the label up to start at the top of the box, above
+		// the line, plus some (-5)
 		.attr("y", this.type === "y" ? 0 : (-labelHt - 5))
 		.attr("width", labelWid)
 		.attr("height", labelHt)
 		.append("xhtml:body")
-		//this interior body shouldn't inherit margins from page body
+			//this interior body shouldn't inherit margins from page body
 			.style("margin", "2px") 
 			.append("div").attr("class", "markerLabel")
-			.html(function(d, i) {
-				// make the label from value, or, if a label is 
-				// specified, use just that
-				var xInfo = ('x' in d) ? ("x: " + (that.axisType == "time" ? d3.time.format("%b %Y")(new Date(d.x)): d.x) + "<br>") : "";
-				var yInfo = ('y' in d) ? ("y: " + d.y + "<br>") : "";
-				var labelInfo = ('label' in d) ? d.label : "";
-				return xInfo + yInfo + labelInfo;
-			}); 
+			.html(function (d, i)
+				{
+					// make the label from value, or, if a label is 
+					// specified, use just that
+					var xInfo = ('x' in d) ? ("x: " + (that.axisType == "time" ? d3.time.format("%b %Y")(new Date(d.x)): d.x) + "<br>") : "";
+					var yInfo = ('y' in d) ? ("y: " + d.y + "<br>") : "";
+					var labelInfo = ('label' in d) ? d.label : "";
+					return xInfo + yInfo + labelInfo;
+				}); 
 		
 	// autokey entries which have no key with the data index
-	markerCollection.each(function (d, i) { 
-					// if there is no key assigned, make one from the index
-					d.key = 'key' in d ? d.key : i.toString();
-					});
+	markerCollection.each(
+			function (d, i)
+			{ 
+				// if there is no key assigned, make one from the index
+				d.key = 'key' in d ? d.key : i.toString();
+			});
 	
-	if (this.mode == "drags") {
-	var dragBehavior = d3.behavior.drag()
-		// todo: learn how to use d3 origin control on drags
-    	//.origin(function(d) { return d; })
-    	.on("drag", function(d, i) {
-    		
-    		//calculate new position in pixels, and convert back to local coordinates
-    		var xVal = xScale.invert(d3.event.x);
+	if (this.mode == "drags")
+	{
+		var dragBehavior = d3.behavior.drag()
+			// todo: learn how to use d3 origin control on drags
+			//.origin(function(d) { return d; })
+			.on("drag",
+				function (d, i)
+				{
+					//calculate new position in pixels, and convert back to local coordinates
+					var xVal = xScale.invert(d3.event.x);
 
-    		/*
-    		@todo: it might be desirable to snap to data points when dragging 
-    		markers, but this requires the data from the graph to be fed to the marker object
-    		and I don't have a good strategy for that yet. This also allows you to update
-    		the y value on the marker.  There are issues here with multiple traces. It's kind of 
-    		a mess. But here's how! -lb
-    		xVal = that.snapTo(xData, size.width)(d3.event.x);
-			xindex = xData.indexOf(xVal);
-			d.y = yData[xindex];
-			*/
+					/*
+					@todo: it might be desirable to snap to data points when dragging 
+					markers, but this requires the data from the graph to be fed to the marker object
+					and I don't have a good strategy for that yet. This also allows you to update
+					the y value on the marker.  There are issues here with multiple traces. It's kind of 
+					a mess. But here's how! -lb
+					xVal = that.snapTo(xData, size.width)(d3.event.x);
+					xindex = xData.indexOf(xVal);
+					d.y = yData[xindex];
+					*/
 
-    		//if this is a time axis, then data is specified as a string, not the Date 
-    		//object returned by xScale.invert, so fix that up
-			d.x = that.axisType == "time" ? xVal.toString() : d3.round(xVal,2);
-			
-			//and redraw with the new data
-  			that.redraw();
-		})
-		.on("dragend", function(d, i) {
-			console.log("TODO: log fired marker " + d.key + " to position " + d.x);
-		});
+					//if this is a time axis, then data is specified as a string, not the Date 
+					//object returned by xScale.invert, so fix that up
+					d.x = that.axisType == "time" ? xVal.toString() : d3.round(xVal,2);
+					
+					//and redraw with the new data
+					that.redraw();
+				})
+			.on("dragend",
+				function (d, i)
+				{
+					window.console.log("TODO: log fired marker " + d.key + " to position " + d.x);
+				});
 
-		markerCollection.call(dragBehavior);
+			markerCollection.call(dragBehavior);
 	}
 
 	markerCollection
 		.on('click',
-				function (d, i)
-				{
-					that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
-					that.lite(d.key);
-				});
-
+			function (d, i)
+			{
+				that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+				that.lite(d.key);
+			});
 
 	this.lastdrawn.markerCollection = markerGroup.selectAll("g.marker");
 
@@ -484,7 +506,7 @@ MarkerGroup.prototype.redrawWidget_ = function (widget)
  *								 to the pixel offset into the data area.
  *
  ****************************************************************************/
-MarkerGroup.prototype.setScale = function (xScale, yScale)
+pearson.brix.MarkerGroup.prototype.setScale = function (xScale, yScale)
 {
 	this.explicitScales_.xScale = xScale;
 	this.axisType = (xScale.domain()[0] instanceof Date) ? "time" : "linear";
@@ -500,9 +522,9 @@ MarkerGroup.prototype.setScale = function (xScale, yScale)
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-MarkerGroup.prototype.lite = function (liteKey)
+pearson.brix.MarkerGroup.prototype.lite = function (liteKey)
 {
-	console.log("TODO: log fired marker highlite " + liteKey);
+	window.console.log("TODO: log fired marker highlite " + liteKey);
 	
 	// Turn off all current highlights
 	var allMarkers = this.lastdrawn.markerCollection;
@@ -521,7 +543,7 @@ MarkerGroup.prototype.lite = function (liteKey)
 
 	if (markersToLite.empty())
 	{
-		console.log("No key '" + liteKey + "' in MarkerGroup " + this.id );
+		window.console.log("No key '" + liteKey + "' in MarkerGroup " + this.id );
 	}
 }; // end of MarkerGroup.lite()
 
@@ -536,7 +558,7 @@ MarkerGroup.prototype.lite = function (liteKey)
  * @private
  *
  ****************************************************************************/
-MarkerGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
+pearson.brix.MarkerGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
 {
 	if (this.explicitScales_.xScale !== null)
 	{
@@ -571,7 +593,7 @@ MarkerGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSi
  * @param {number}		delay		- the delay before the transition starts in milliseconds
  *
  ****************************************************************************/
-MarkerGroup.prototype.setOpacity = function (opacity, duration, delay)
+pearson.brix.MarkerGroup.prototype.setOpacity = function (opacity, duration, delay)
 {
 
 	var allMarkers = this.lastdrawn.markerCollection;
@@ -579,28 +601,24 @@ MarkerGroup.prototype.setOpacity = function (opacity, duration, delay)
 	allMarkers.transition()
 		.style('opacity', opacity)
 		.duration(duration).delay(delay);
-
-
 };
 
 /* **************************************************************************
- * MarkerGroup.snapTo                                             */ /**
+ * MarkerGroup.snapTo                                                  */ /**
  *
  * Snap to a data value in the series, rather than open-ended drag positioning.
  *
- * @param {array}		data		- the data values to snap to as {x: val, y: val}
- * @param {array}		range 		- two element array with the start and end point of the canvas
+ * @param {Array}		data		-the data values to snap to as {x: val, y: val}
+ * @param {Array}		range 		-two element array with the start and end point of the canvas
 *
  ****************************************************************************/
-MarkerGroup.prototype.snapTo = function (data, range) 
+pearson.brix.MarkerGroup.prototype.snapTo = function (data, range) 
 {
-	
 	//relies on the cardinality of (number of points) of data 
 	// uses the quantized scale in reverse to assign only points
 	// in the data as values in the pixel coordinate domain 
 	// accessible by mouse/touch moves across a container
-	return d3.scale.quantize().domain(range) 
-	.range(data); 
-}
+	return d3.scale.quantize().domain(range).range(data); 
+};
 
 
