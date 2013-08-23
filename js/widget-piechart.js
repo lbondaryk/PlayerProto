@@ -92,7 +92,7 @@ function PieChart(config, eventManager)
 	var legendConfig =
 		{
 			type: "box",
-			xPos: "right",
+			xPos: "left",
 			yPos: "top",
 			labels: this.getLegendLabels_()
 		};
@@ -187,7 +187,7 @@ PieChart.prototype.draw = function(container, size)
 	var offset = padding + r; //padding from the axes
 
 	//set the dataRect to be the container
-	this.lastdrawn.axes.dataRect = new Rect(0, 0, size.width, size.height);
+	this.lastdrawn.axes.dataRect = new Rect(0, 0, 2*offset, 2*offset);
 	this.lastdrawn.dataRect = this.lastdrawn.axes.dataRect;
 	
 	this.lastdrawn.axesR = r;
@@ -196,13 +196,16 @@ PieChart.prototype.draw = function(container, size)
 	var pieGroup = container.append("g")
 		.attr("class", "bricPie")
 		.attr("id", this.id)
-		.attr("transform", "translate(" + offset + "," + offset + ")");;
+		.attr("transform", "translate(" + 2*offset + "," + 0 + ")");
 
 	// draw a circle defining 100% of pie, for case where it's not 
 	// all filled - this is the pie's "axes"
 	this.lastdrawn.axes.group = pieGroup.append("g")
+		.attr("transform", "translate(" + (-offset) + "," + offset + ")");
+
+	// draw the axis circle
+	this.lastdrawn.axes.group.append("circle")
 		.attr("class", "axis")
-		.append("circle")
 		.attr("cx",0)
 		.attr("cy",0)
 		.attr("r",r);
@@ -346,7 +349,7 @@ PieChart.prototype.setScale = function (xScale, yScale)
 	var that = this;
 	
 	// get the group that contains the graph lines
-	var graph = this.lastdrawn.widgetGroup;
+	var graph = this.lastdrawn.axes.group;
 	
 	// This section conditions the data 
 	var sumData = 0,
@@ -390,7 +393,7 @@ PieChart.prototype.setScale = function (xScale, yScale)
 
 	// bind all the series data to a group element w/ a wedge class
 	// creating or removing group elements so that each wedge has its own group.
-	var wedges = this.lastdrawn.widgetGroup.selectAll("g.wedges") 
+	var wedges = graph.selectAll("g.wedge") 
 	        .data(pieArcs(this.data));           
 	//associate the generated pie data (an array of arcs w/startAngle, endAngle and value props)
 	wedges.enter()

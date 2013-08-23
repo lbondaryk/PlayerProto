@@ -63,11 +63,12 @@
  
  	var eventManager = new EventManager();
 
-	var cheeses = [{x: 50, y: "brie"},
-			  {x: 30, y: "roquefort"},
-			  {x: 20, y: "venezuelan beaver cheese"}];
+	var cheeses = [{x: 65, y: "Cheddar"},
+			  {x: 10, y: "roquefort"},
+			  {x: 20, y: "brie"},
+			  {x: 5, y: "venezuelan beaver cheese"}];
 	
-	// <div id="widgetTarget0"><p>0. Single bar graph</p></div>
+	// <div id="widgetTarget0"><p>0. Single pie chart</p></div>
 	
 	var svg0 = new SVGContainer(
 		{node: d3.select("#pie0"),
@@ -82,21 +83,11 @@
 		
 	svg0.append(pie0);
 
-	var legend = new Legend({
-					xPos: "right", yPos: "top",
-					labels: [
-					{content: cheeses[0].y},
-					{content: cheeses[1].y},
-					],
-					type: "box"
-					},
-				this.eventManager);
-	svg0.append(legend);
 	
 //	<div id="pie1"><p>1.pie chart one wedge 100%</p></div>
 	var svg1 = new SVGContainer(
 		{node: d3.select("#pie1"),
-		maxWid: 470,
+		maxWid: 570,
 		maxHt: 120
 		}
 	);
@@ -112,7 +103,7 @@
 	
 	var svg2 = new SVGContainer(
 		{node: d3.select("#pie2"),
-		maxWid: 300,
+		maxWid:  570,
 		maxHt: 200
 		});
 	
@@ -129,7 +120,7 @@
 
 	var svg70 = new SVGContainer(
 		{node: d3.select("#pie10"),
-		maxWid: 470,
+		maxWid:  570,
 		maxHt: 300
 		}
 	);
@@ -153,11 +144,11 @@
 		});
 	
 
-	svg70.append(bar0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.8});
+	svg70.append(bar0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.7});
 
 	svg70.append(new PieChart({
 		Data: ordinalData,
-	}), {topPercentOffset: 0, leftPercentOffset: 0.6, heightPercent: 0.5, widthPercent: 0.5});
+	}), {topPercentOffset: 0, leftPercentOffset: 0.5, heightPercent: 0.5, widthPercent: 0.5});
 		
 	//	<div id="pie11"><p>5. Pie with values <100 20/10</p></div>
 	var svg5 = new SVGContainer(
@@ -177,7 +168,7 @@
 //	<div id="pie11"><p>6. Pie with values <100 10</p></div>
 	var svg6 = new SVGContainer(
 		{node: d3.select("#pie12"),
-		maxWid: 200,
+		maxWid:  570,
 		maxHt:150
 		}
 	);
@@ -191,7 +182,7 @@
 //	<div id="pie13"><p>7. Pie with values <100 80</p></div>
 	var svg7 = new SVGContainer(
 		{node: d3.select("#pie13"),
-		maxWid: 200,
+		maxWid: 370,
 		maxHt:150
 		}
 	);

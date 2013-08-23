@@ -186,7 +186,7 @@
 
 	
 	var anglePie = new PieChart({
-		Data: [{x:sl1.startVal * diff/360}],
+		Data: [{x: d3.format("4.2f")(sl1.startVal * diff/360), y: "Rotation"}],
 		});
 	
 	pieDish.append(anglePie, {topPercentOffset: 0.3, leftPercentOffset: .08, heightPercent: .8, 		
@@ -294,7 +294,7 @@
 	function updatePieChart(diff)
 	{
 		console.log("TODO: fired updatePieChart log");
-		anglePie.data = [{x: sl1.getValue() * diff/360}];
+		anglePie.data = [{x: d3.format("4.2f")(sl1.startVal * diff/360), y: "Rotation"}];
 		
 		var newMark = {x:(1/2), label: d3.format("+0r2")(sl1.getValue() * diff/100) + "&deg;"};
 		angleMark.marks = [newMark];

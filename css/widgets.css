@@ -377,7 +377,8 @@ svg g.widgetSketch .shape>text {
 .widget .axis circle {
   fill: none;
   stroke: #bbbbbb; 
-  stroke-width: ;
+  shapeRendering: crisp-edges;
+  stroke-width: 1;
 }
 
 .widget .axis text {
