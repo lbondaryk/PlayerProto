@@ -70,7 +70,6 @@ function PieChart(config, eventManager)
 	 * bar objects may also include an optional key: string in which case they will be given an ID that 
 	 * associates them with other widget events in the page, such as clicks on the legend.
 	 */
-
 	this.data = config.Data;
 
 	/**
@@ -88,6 +87,22 @@ function PieChart(config, eventManager)
 	 * @private
 	 */
 	this.explicitScales_ = {xScale: null, yScale: null};
+
+	// The config for the legend for this piechart
+	var legendConfig =
+		{
+			type: "box",
+			xPos: "right",
+			yPos: "top",
+			labels: this.getLegendLabels_()
+		};
+
+	/**
+	 * The piechart always has a legend which will display the values of the
+	 * wedge angles.
+	 * @type {Legend}
+	 */
+	this.legend = new Legend(legendConfig, this.eventManager);
 
 	/**
 	 * List of child widgets which are to be drawn before and after this
@@ -194,6 +209,9 @@ PieChart.prototype.draw = function(container, size)
 
 	this.lastdrawn.widgetGroup = pieGroup;
 
+	// Draw the legend on top of the piechart for now
+	this.legend.draw(this.lastdrawn.widgetGroup, size);
+	
 	// Draw any 'before' child widgets that got appended before draw was called
 	this.childWidgets.beforeData.forEach(this.drawWidget_, this);
 	
@@ -203,13 +221,11 @@ PieChart.prototype.draw = function(container, size)
 	// Draw any 'after' child widgets that got appended after draw was called
 	this.childWidgets.afterData.forEach(this.drawWidget_, this);
 
-	
-	
 }; // end of barChart.draw()
 
 
 /* **************************************************************************
- * PieChart.redraw                                                     *//**
+ * PieChart.redraw                                                      *//**
  *
  * Redraw the line graph data as it may have been modified. It will be
  * redrawn into the same container area as it was last drawn.
@@ -223,12 +239,18 @@ PieChart.prototype.redraw = function ()
 	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
 	//       by doing nothing? -mjl
 	this.childWidgets.beforeData.forEach(this.redrawWidget_, this);
+	
 	this.drawData_();
+	//
+	// Update the legend labels and redraw it.
+	this.legend.labels = this.getLegendLabels_();
+	this.legend.redraw();
+
 	this.childWidgets.afterData.forEach(this.redrawWidget_, this);
 };
 
 /* **************************************************************************
- * PieChart.drawWidget_                                                *//**
+ * PieChart.drawWidget_                                                 *//**
  *
  * Draw the given child widget in this charts's data area.
  * This chart must have been drawn BEFORE this method is called or
@@ -264,6 +286,28 @@ PieChart.prototype.redrawWidget_ = function (widget)
 };
 
 /* **************************************************************************
+ * PieChart.getLegendLabels_                                           */ /**
+ *
+ * Create an array of legend labels for the current data of this PieChart.
+ *
+ * @private
+ *
+ * @returns {Array} Labels for a legend for this piechart matching the current
+ * 					data.
+ *
+ ****************************************************************************/
+PieChart.prototype.getLegendLabels_ = function()
+{
+	// take the opportunity to make the legend labels while we're cycling through the data
+	var legLabels = [];
+
+	this.data.forEach(
+			function(o, i) { legLabels[i] = {content: o.y + " " + o.x + "%"}; });
+
+	return legLabels;
+};
+
+/* **************************************************************************
  * PieChart.setScale                                                      */ /**
  *
  * Called to preempt the normal scale definition which is done when the
@@ -283,15 +327,15 @@ PieChart.prototype.setScale = function (xScale, yScale)
 	this.explicitScales_.xScale = xScale;
 	this.explicitScales_.yScale = yScale;
 };
+
 /* **************************************************************************
- * PieChart.drawData_                                                  *//**
+ * PieChart.drawData_                                                   *//**
  *
  * Draw the chart data (overwriting any existing data).
  *
  * @private
  *
  ****************************************************************************/
- 
  PieChart.prototype.drawData_ = function ()
 {
 	// local var names are easier to read (shorter)
@@ -305,30 +349,25 @@ PieChart.prototype.setScale = function (xScale, yScale)
 	var graph = this.lastdrawn.widgetGroup;
 	
 	// This section conditions the data 
-	var sumData = 0, last = this.data.length;
-
-	// take the opportunity to make the legend labels while we're cycling through the data
-	var legLabels = [];
+	var sumData = 0,
+		last = this.data.length;
 
 	this.data.forEach(
-			function(o, i) {
-				sumData = sumData + Math.abs(o.x);
-				legLabels[i] = {content: o.y + " " + o.x + "%"};
-			});
+			function (o, i) { sumData = sumData + Math.abs(o.x); });
 
-	if(sumData<100){
+	if (sumData<100){
 	// if the sum of all the data points does not add up to 100%, then
 	// append a new data point to bring the total up to 100.
 	// When this is drawn, the "last" point will be detected as
 	// having extended the data range, and we'll color it white (blank).
 	// This allows us to draw wedges instead of the whole pie. - lb
-		this.data.push({x: 100-sumData});
+		this.data.push({x: 100 - sumData});
 	}
 	
 	
 	// if there is a negative data point (rotational angle chart), 
 	// make it positive but draw it last instead of first, after the white part
-	if(this.data[0].x < 0)
+	if (this.data[0].x < 0)
 	{
 		this.data[0].x = - this.data[0].x;
 		//this only works if we assume that for angles, which can be 
@@ -345,7 +384,7 @@ PieChart.prototype.setScale = function (xScale, yScale)
 
 	// d3 pie function creates arc data for us given a list of values
 	var pieArcs = d3.layout.pie()           
-		    .value(function(d) { return d.x; })
+		    .value(function (d) { return d.x; })
 		    //null sort maintains order of input - critical for single value angles
 			.sort(null);
 
@@ -356,7 +395,7 @@ PieChart.prototype.setScale = function (xScale, yScale)
 	//associate the generated pie data (an array of arcs w/startAngle, endAngle and value props)
 	wedges.enter()
 	    .append("g")
-	    .attr("class", function(d, i) {
+	    .attr("class", function (d, i) {
 				return "slice fill" + ((i == last) ? "White" : i);
 			});    //color with predefined sequential colors
 
@@ -382,24 +421,10 @@ PieChart.prototype.setScale = function (xScale, yScale)
 				
 	//do a clean selection of the drawn data to store for the object properties
 	this.lastdrawn.wedges = graph.selectAll("g.wedges");
-
-	// we gotta redraw the legend for any data updates because it contains the values of
-	// the wedge angles.
-
-	var legend = new Legend({
-					xPos: "right", yPos: "top",
-					labels: legLabels,
-					type: "box"
-					},
-				this.eventManager);
-
-	// Mike - uncomment this line of code to see the error.
-	//this.lastdrawn.container.append(legend);
-
-}
+};
 
 /* **************************************************************************
- * PieChart.append                                                     *//**
+ * PieChart.append                                                      *//**
  *
  * Append the widget or widgets to this bar chart and draw it/them on top
  * of the data area and any widgets appended earlier. If append
@@ -443,7 +468,7 @@ PieChart.prototype.append = function(svgWidgets, zOrder)
 }; // end of BarChart.append()
 
 /* **************************************************************************
- * PieChart.append_one_                                                *//**
+ * PieChart.append_one_                                                 *//**
  *
  * Helper for append that does the work needed to append a single widget.
  * This can handle drawing the widget after the data even after the data
@@ -479,7 +504,7 @@ PieChart.prototype.append_one_ = function(widget, zOrder)
 } // end of BarChart.append_one_()
 
 /* **************************************************************************
- * PieChart.setLastdrawnScaleFns2ExplicitOrDefault_                       */ /**
+ * PieChart.setLastdrawnScaleFns2ExplicitOrDefault_                    */ /**
  *
  * Set this.lastdrawn.xScale and yScale to those stored in explicitScales
  * or to the default scale functions w/ a data domain of [0,1].
@@ -518,7 +543,7 @@ PieChart.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
 }; // end of PieChart.setLastdrawnScaleFns2ExplicitOrDefault_()
 
 /* **************************************************************************
- * PieChart.lite                                                      *//**
+ * PieChart.lite                                                        *//**
  *
  * Highlight the members of the collection associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
@@ -551,5 +576,5 @@ PieChart.prototype.lite = function(liteKey)
 	{
 		console.log("No key '" + liteKey + "' in pie chart " + this.id );
 	}
-
 };
+
