@@ -146,7 +146,7 @@
 		sequenceNodeID: 'SanVan003',
 		container: t1Button.lastdrawn.container
 	};
-	var submitManager = new SubmitManager(eventManager);
+	var submitManager = new SubmitManager(eventManager, new AnswerMan());
 
 	// Get the submit manager to handle scoring requests from the dummy slider question
 	submitManager.handleRequestsFrom(dummyQ);

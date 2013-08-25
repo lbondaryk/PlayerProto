@@ -17,9 +17,7 @@
 (function () {
     var expect = chai.expect;
 
-	// Set the seed for future uses of Math.random so the results are
-	// deterministic and we can test them.
-	Math.seedrandom("MultipleChoiceQuestion");
+	
 
     describe('MultipleChoiceQuestions: choose one and only one', function () {
 		var eventManager = null;
@@ -72,6 +70,10 @@
 				};
 
 			before(function () {
+				// Set the seed for future uses of Math.random so the results are
+				// deterministic and we can test them.
+				Math.seedrandom("MultipleChoiceQuestion");
+	
 				eventManager = new EventManager();
 				selectEventCount = 0;
 				lastSelectEventDetails = null;

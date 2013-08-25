@@ -52,13 +52,11 @@
 	<script src="../js/fakeactivitydb.js"></script>
 
 	<!-- New library -->
-	<script src="js/underscore.js"></script>
-	<script src="js/bric-base.js"></script>
-	<script src="../js/widget-multiselectmultiplechoicequestion.js"></script>
-	<script src="js/submitmanager.js"></script>
-	<script src="js/bric-answerprovider.js"></script>
+	<script src="../js/widget-multiselectquestion.js"></script>
+	<script src="../js/submitmanager.js"></script>
+	<script src="../js/answermanpolling.js"></script>
 
-<a id="test_button" type="button" >Test Submit</a>
+	<a id="test_button" type="button" >Test Submit</a>
 	<script>
 
 	// create event manager
@@ -86,7 +84,7 @@
 
 	// Test a select one question using a radio group widget
 	// Additional attribute: maxSelects - limit the number of selections
-	var Q1 = new MultiSelectMultipleChoiceQuestion({
+	var Q1 = new MultiSelectQuestion({
 			id: "Q1",
 			questionId: "SanVan004",
 			question: "How do you feel when I say 'Hello' (can be mixed feelings)?",
@@ -98,18 +96,8 @@
 		}, eventManager);
 
 
-	// YSAP: Instantiate a mock answer provider
-	var answerProvider = new MockAnswerProvider({
-		attributes: {sequenceNode: Q1.questionId}
-	});
-
-	var pollingAnswerProvider = new PollingAnswerProvider();
-
 	// create submit manager
-	var submitManagerConfig = {
-		answerProvider: pollingAnswerProvider
-	};
-	var submitManager = new SubmitManager(submitManagerConfig, eventManager);
+	var submitManager = new SubmitManager(eventManager, new AnswerManPolling());
 	
 	submitManager.handleRequestsFrom(Q1);
 

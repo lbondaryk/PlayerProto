@@ -22,7 +22,16 @@
  * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
  * @param {string} 		studAnswer		-The student's answer.
  ****************************************************************************/
-var answerMan = function (sequenceNode, studAnswerKey, studAnswerValue)
+
+// YSAP - Changed from function to class with method.
+// Proposal: change from AnswerMan to EvalProvider
+
+var AnswerMan = function()
+{
+
+} 
+
+AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
 { 
 	 
 	//lookup the student answer in the answer key in fakeactivitydb.js, which

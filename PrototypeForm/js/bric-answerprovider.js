@@ -1,6 +1,6 @@
 /* **************************************************************************
  * $Workfile:: bric-answerprovider.js                                             $
- * **********************************************************************//**
+ * *********************************************************************/ /**
  *
  * @fileoverview Implementation of a AnswerProvider.
  *               
@@ -16,7 +16,7 @@
 
 
 /* **************************************************************************
- * _AnswerProvider                                                      *//**
+ * _AnswerProvider                                                     */ /**
  *
  * @abstractclass
  *
@@ -41,7 +41,7 @@ var _AnswerProvider = _BricBase.extend({
 
 
 /* **************************************************************************
- * PollingAnswerProvider                                                 *//**
+ * PollingAnswerProvider                                                */ /**
  *
  * @class
  *
@@ -89,7 +89,7 @@ var PollingAnswerProvider = _AnswerProvider.extend({
 });
 
 /* **************************************************************************
- * MockAnswerProvider                                                      *//**
+ * MockAnswerProvider                                                  */ /**
  *
  * @class
  *

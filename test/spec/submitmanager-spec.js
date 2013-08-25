@@ -33,7 +33,7 @@
     describe('SubmitManager tests', function () {
 		describe('.handleRequestsFrom()', function () {
 			var eventManager = createMockEventManager();
-			var submitManager = new SubmitManager(null, eventManager);
+			var submitManager = new SubmitManager(eventManager, new AnswerMan());
 			var mockQWidget = {submitScoreRequestEventId: "foo"};
 			submitManager.handleRequestsFrom(mockQWidget);
 
