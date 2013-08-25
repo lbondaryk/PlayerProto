@@ -33,7 +33,7 @@ var _AnswerProvider = _BricBase.extend({
 	 * The operation that processes the student answer.
 
 	 */
-	submitAnswer: function(studAnswer) {
+	submitAnswer: function(sequenceNode, studAnswerKey, studAnswerValue) {
 		// @todo
 	}
 
@@ -62,26 +62,26 @@ var PollingAnswerProvider = _AnswerProvider.extend({
 	/**
 	 * Process the answer.
 	 *
-	 * @param {string}	studAnswer	- The student's answer key
+	 * @param {string}	studAnswerKey	- The student's answer key
 	 * @return {object} - The object literal 
-	 * 			{submission:<the studAnswer>,
+	 * 			{submission:<the studAnswerKey>,
 	 *			feedback: <what will be displayed back to the student>,
 	 *			score: <the numeric score>}
 	 */
-	submitAnswer: function(studAnswer) {
-		if (studAnswer in this.statData) {
-			this.statData[studAnswer] = this.statData[studAnswer] + 1;
+	submitAnswer: function(sequenceNode, studAnswerKey, studAnswerValue) {
+		if (studAnswerKey in this.statData) {
+			this.statData[studAnswerKey] = this.statData[studAnswerKey] + 1;
 		} else {
-			this.statData[studAnswer] = 1;		
+			this.statData[studAnswerKey] = 1;		
 		}
 
 		var responseHtml = "<div class='alert alert-success'><i class='icon-ok-sign'></i> " +
-			"OK " + studAnswer + " selected " + this.statData[studAnswer] + " times. </div>";
+			"OK " + studAnswerKey + " selected " + this.statData[studAnswerKey] + " times. </div>";
 
 		var scored = {
 					// YSAP - No references 
 					//container: config.container,
-					submission: studAnswer,
+					submission: studAnswerKey,
 					feedback: responseHtml
 					};
 		return scored;
@@ -100,7 +100,7 @@ var PollingAnswerProvider = _AnswerProvider.extend({
  ****************************************************************************/
 var MockAnswerProvider = _AnswerProvider.extend({
 
-	submitAnswer: function(studAnswer) {
+	submitAnswer: function(sequenceNode, studAnswerKey, studAnswerValue) {
 		
 		//set the sequence node. This will be used to look up the activity
 		var sequenceNode = this.attributes.sequenceNode;
@@ -109,7 +109,7 @@ var MockAnswerProvider = _AnswerProvider.extend({
 		//lookup the student answer in the answer key in fakeactivitydb.js, which
 		//got loaded with the page
 		var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
-		var solution = (studAnswer in activity) ? activity[studAnswer] : "solution key not found";
+		var solution = (studAnswerKey in activity) ? activity[studAnswer] : "solution key not found";
 
 		// stash the answer score and response in some variables
 		//var ansKey = ('score' in solution) ? activity.score : "answer key not found";

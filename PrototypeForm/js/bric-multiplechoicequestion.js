@@ -259,7 +259,6 @@ MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
 			question: this,
 			questionId: this.questionId,
 			answerKey: this.choiceWidget.selectedItem().answerKey, 
-			// YSAP - @todo no callbacks
 			responseCallback: function (responseDetails) { that.handleSubmitResponse_(responseDetails); }
 		};
 
