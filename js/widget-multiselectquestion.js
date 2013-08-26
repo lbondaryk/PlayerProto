@@ -1,16 +1,18 @@
 /* **************************************************************************
- * $Workfile:: widget-multiplechoicequestion.js                             $
- * **********************************************************************//**
+ * $Workfile:: widget-MultiSelectQuestion.js                             $
+ * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the MultipleChoiceQuestion widget.
+ * @fileoverview Implementation of the MultiSelectQuestion widget.
  *
- * The MultipleChoiceQuestion widget displays a question and a set of possible
- * answers one of which must be selected and submitted to be scored.
+ * The MultiSelectQuestion widget displays a question and a set of possible
+ * answers. 
+ * This is analogous to MultipleChoiceQuestion with the difference that many 
+ * selections (max configurable) is possible.
  *
- * Created on		May 29, 2013
- * @author			Michael Jay Lippert
+ * Created on		July 29, 2013
+ * @author			Young-Suk Ahn
  *
- * Copyright (c) 2013 Pearson, All rights reserved.
+ * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
@@ -42,7 +44,7 @@
 		}
 	];
 	
-	// RadioButton widget config
+	// CheckButton widget config
 	var rbConfig =
 		{
 			id: "RG1",
@@ -50,16 +52,17 @@
 			numberFormat: "latin-upper"
 		};
 	
-	// MultipleChoiceQuestion widget config
+	// MultiSelectQuestion widget config
 	var mcqConfig =
 	{
 		id: "Q1",
 		questionId: "SanVan003",
 		question: "Why?",
 		choices: Q1Choices,
+		maxSelects: 2,
 		order: "randomized", //default, even if not specified
-		widget: RadioGroup,
-		widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultipleChoiceQuestion
+		widget: CheckGroup,
+		widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultiSelectQuestion
 	};
 });
 
@@ -80,18 +83,17 @@
 
 
 /* **************************************************************************
- * MultipleChoiceQuestion                                               *//**
+ * MultiSelectQuestion                                              */ /**
  *
- * The MultipleChoiceQuestion widget displays a question and a set of possible
- * answers one of which must be selected and submitted to be scored.
+ * Constructor function for MultiSelectQuestion brix.
  *
  * @constructor
  * @implements {IWidget}
  * @implements {IQuestion}
  *
- * @param {Object}		config			-The settings to configure this MultipleChoiceQuestion
+ * @param {Object}		config			-The settings to configure this MultiSelectQuestion
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this MultipleChoiceQuestion.
+ * 						config.id		-String to uniquely identify this MultiSelectQuestion.
  * 										 if undefined a unique id will be assigned.
  * @param {string}		config.questionId
  * 										-Scoring engine Id of this question
@@ -99,7 +101,10 @@
  * 										 be answered by choosing one of the presented choices.
  * @param {Array.<Answer>}
  *						config.choices	-The list of choices (answers) to be presented
- *										 by the MultipleChoiceQuestion.
+ *										 by the MultiSelectQuestion.
+ * @param {int}
+ *						config.maxSelects -The maximum number of items that can be selected
+ *
  * @param {string|undefined}
  *						config.order	-The order in which the choices should be presented.
  *										 either "randomized" or "ordered". Default is
@@ -113,14 +118,18 @@
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
+ * @classdesc
+ * The MultiSelectQuestion widget displays a question and a set of possible
+ * answers one of which must be selected and submitted to be scored.
+ *
  ****************************************************************************/
-function MultipleChoiceQuestion(config, eventManager)
+function MultiSelectQuestion(config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, MultipleChoiceQuestion);
+	this.id = getIdFromConfigOrAuto(config, MultiSelectQuestion);
 
 	/**
 	 * The scoring engine id of this question.
@@ -133,6 +142,13 @@ function MultipleChoiceQuestion(config, eventManager)
 	 * @type {string}
 	 */
 	this.question = config.question;
+
+	/**
+	 * The maximum number of allowed selects.
+	 * @type {int}
+	 */
+	this.maxSelects = config.maxSelects;
+
 
 	/**
 	 * The configuration options for the widget that will display the choices that
@@ -157,6 +173,8 @@ function MultipleChoiceQuestion(config, eventManager)
 
 	widgetConfig.choices = choices;
 
+	widgetConfig.maxSelects = this.maxSelects;
+
 	/**
 	 * The widget used to present the choices that may be selected to answer
 	 * this question.
@@ -164,11 +182,14 @@ function MultipleChoiceQuestion(config, eventManager)
 	 */
 	this.choiceWidget = new config.widget(widgetConfig, eventManager);
 
+	this.buttonPromptText = "Select an answer above";
+	this.buttonSubmitText = "Submit Answer";
+
 	// The configuration options for the submit button
 	var submitBtnConfig =
 	{
 		id: this.id + "_sbmtBtn",
-		text: "Select an answer above",
+		text: this.buttonPromptText,
 		enabled: false
 	};
 
@@ -218,12 +239,16 @@ function MultipleChoiceQuestion(config, eventManager)
 	 * @property {SelecOneQuestion} question	-This question widget
 	 * @property {string} 			questionId	-The id which identifies this question to the scoring engine.
 	 * @property {string} 			answerKey	-The answerKey associated with the selected answer.
+	 * @property {function(Object)}	responseCallback
+	 * 											-[optional] function to call with the response when it is
+	 * 											 returned by the scoring engine.
 	 */
 
 	// subscribe to events of our 'child' widgets
 	var that = this;
 	eventManager.subscribe(this.submitButton.pressedEventId, function () {that.handleSubmitRequested_();});
-	eventManager.subscribe(this.choiceWidget.selectedEventId, function () {that.handleAnswerSelected_();});
+	eventManager.subscribe(this.choiceWidget.selectedEventId, function (evt) {that.handleAnswerSelected_(evt);});
+	eventManager.subscribe(this.choiceWidget.exceedSelectionEventId, function () {that.handleExceedSelection_();});
 
 	/**
 	 * Information about the last drawn instance of this widget (from the draw method)
@@ -234,31 +259,35 @@ function MultipleChoiceQuestion(config, eventManager)
 			container: null,
 			widgetGroup: null,
 		};
-} // end of MultipleChoiceQuestion constructor
+} // end of MultiSelectQuestion constructor
 
 /**
- * Prefix to use when generating ids for instances of MultipleChoiceQuestion.
+ * Prefix to use when generating ids for instances of MultiSelectQuestion.
  * @const
  * @type {string}
  */
-MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
+MultiSelectQuestion.autoIdPrefix = "mcQ_auto_";
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleSubmitRequested_                        *//**
+ * MultiSelectQuestion.handleSubmitRequested_                       */ /**
  *
  * Handle the pressed event from the submit button which means that we want
  * to fire the submit answer requested event.
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
+MultiSelectQuestion.prototype.handleSubmitRequested_ = function()
 {
 	var that = this;
+	var answerKeys = [].map.call(this.choiceWidget.selectedItems(), function(item){
+		return item.answerKey;
+	});
+	// NOTICE: the value of answerKey attribute is an array of keys
 	var submitAnsDetails =
 		{
 			question: this,
 			questionId: this.questionId,
-			answerKey: this.choiceWidget.selectedItem().answerKey, 
+			answerKey: answerKeys,
 			responseCallback: function (responseDetails) { that.handleSubmitResponse_(responseDetails); }
 		};
 
@@ -266,21 +295,45 @@ MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleAnswerSelected_                         *//**
+ * MultiSelectQuestion.handleAnswerSelected_             */ /**
  *
  * Handle the selected event from the choice widget which means that the
  * submit button can be enabled.
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
+MultiSelectQuestion.prototype.handleAnswerSelected_ = function(evt)
 {
-	this.submitButton.setText("Submit Answer");
-	this.submitButton.setEnabled(true);
+	if (evt.numSelected > 0) {
+	 	this.submitButton.setText(this.buttonSubmitText);
+		this.submitButton.setEnabled(true);
+	}  
+	else 
+	{
+		this.submitButton.setText(this.buttonPromptText);
+		this.submitButton.setEnabled(false);
+	} 
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.handleSubmitResponse_                         *//**
+ * MultiSelectQuestion.handleExceedSelection_             */ /**
+ *
+ * Handle the exceedSelection event from the choice widget which means that the
+ * user tried to select beyond the max number of selects.
+ * @private
+ *
+ ****************************************************************************/
+MultiSelectQuestion.prototype.handleExceedSelection_ = function()
+{
+	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
+
+	responseDiv.append("div")
+		.html("Maximum number of options have been selected.");
+};
+
+
+/* **************************************************************************
+ * MultiSelectQuestion.handleSubmitResponse_                        */ /**
  *
  * Handle the response to submitting an answer.
  *
@@ -289,7 +342,7 @@ MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
+MultiSelectQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
 {
 	this.responses.push(responseDetails);
 
@@ -297,7 +350,6 @@ MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetail
 
 	// For now just use the helper function to write the response.
 	//SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
-
 	// YSAP - Instead of the SubmitManager (who's agnostic of the rendering mechanism)
 	//        its the MCQ that renders the answer feedback.
 	responseDiv.append("div")
@@ -305,22 +357,23 @@ MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetail
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.draw                                          *//**
+ * MultiSelectQuestion.draw                                         */ /**
  *
- * Draw this MultipleChoiceQuestion in the given container.
+ * Draw this MultiSelectQuestion in the given container.
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the
  *								 question element tree to.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.draw = function(container)
+MultiSelectQuestion.prototype.draw = function(container)
 {
 	this.lastdrawn.container = container;
 	
 	// make a div to hold the select one question
+	// YSAP - Let's make a catalog of all classes for styling.
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetMultipleChoiceQuestion")
+		.attr("class", "widgetMultiSelectQuestion")
 		.attr("id", this.id);
 
 	var question = widgetGroup.append("p")
@@ -342,10 +395,10 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 
-}; // end of MultipleChoiceQuestion.draw()
+}; // end of MultiSelectQuestion.draw()
 
 /* **************************************************************************
- * MultipleChoiceQuestion.selectedItem                                  *//**
+ * MultiSelectQuestion.selectedItem                                 */ /**
  *
  * Return the selected choice from the choice widget or null if nothing has been
  * selected.
@@ -353,13 +406,13 @@ MultipleChoiceQuestion.prototype.draw = function(container)
  * @return {Object} the choice which is currently selected or null.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.selectedItem = function ()
+MultiSelectQuestion.prototype.selectedItems = function ()
 {
-	return this.choiceWidget.selectedItem();
+	return this.choiceWidget.selectedItems();
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.selectItemAtIndex                             *//**
+ * MultiSelectQuestion.selectItemAtIndex                            */ /**
  *
  * Select the choice in the choice widget at the given index. If the choice is
  * already selected, do nothing. The index is the displayed choice index and
@@ -369,8 +422,12 @@ MultipleChoiceQuestion.prototype.selectedItem = function ()
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.selectItemAtIndex = function (index)
+MultiSelectQuestion.prototype.selectItemAtIndex = function (index)
 {
 	this.choiceWidget.selectItemAtIndex(index);
 };
 
+MultiSelectQuestion.prototype.unselectItemAtIndex = function (index)
+{
+	this.choiceWidget.unselectItemAtIndex(index);
+};

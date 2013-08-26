@@ -89,7 +89,6 @@ var helper = (function () {
 	 *
 	 ****************************************************************************/
 	var removeAllChildren = function(node) {
-		//var myNode = document.getElementById(id);
 		var myNode = node;
 		while (myNode.firstChild) {
 		    myNode.removeChild(myNode.firstChild);

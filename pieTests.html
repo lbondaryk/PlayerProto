@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html>
  	<head>
- 		<title class="setTitle"></title>
-		<meta content="width=device-width, initial-scale=1.0" name="viewport">
-		<meta content="eCourses Author, Title" name="description">
-       <!-- Bootstrap -->
-    	<link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-		<link href="css/widgets.css" rel="stylesheet">
-		<link href="css/learning-objective.css" rel="stylesheet">
-		<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+ 	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
 	</head>
 <body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-                <h2 class="setTitle"></h2>
-				<div id="pie0"><p>0. Pie chart 50/30/20 </p></div>
-				<div id="pie1"><p>1. Pie chart one wedge 100%</p></div>
-				<div id="pie2"><p>2. Pie with legend highlights 90/50/5</p></div>
-				
-			</div>
-			<div class="span6 rightCol">
-				<div id="pie10"><p>3. Pie and Bar</p></div>
-				<div id="pie11"><p>4. Pie with values < 100 20/10</p></div>
-                <div id="pie12"><p>5. Pie with values < 100 10</p></div>
-                <div id="pie13"><p>6. Pie with values < 100 80</p></div>
-			</div>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+					<div id="pie0"><p>0. Pie chart 50/30/20 </p></div>
+					<div id="pie1"><p>1. Pie chart one wedge 100%</p></div>
+					<div id="pie2"><p>2. Pie with legend highlights 90/50/5</p></div>
+					</div>
+					<div class="lc_ec_trailing">
+					<div id="pie10"><p>3. Pie and Bar <style color="red">BUG: arcs drawing NANs when appended with scaling</style></p></div>
+					<div id="pie11"><p>4. Pie with values < 100 20/10</p></div>
+               		<div id="pie12"><p>5. Pie with values < 100 10</p></div>
+                	<div id="pie13"><p>6. Pie with values < 100 80</p></div>
+					</div>
+				</div>
+			</section>
 		</div>
 	</div>
 
@@ -36,231 +52,148 @@
 	<script src="js/toc-structure.js"></script>    
 	<script src="js/eCourse-master.js"></script>    
 
-	<script src="js/d3.v2.min.js"></script>
-	<script src="js/widgets.js"></script>
+	<script src="js/d3.v3.min.js"></script>
+	<script src="js/widget-base.js"></script>
+	<script src="js/widget-piechart.js"></script>
+	<script src="js/widget-legend.js"></script>
+	<script src="js/widget-barchart.js"></script>
+	<script src="js/eventmanager.js"></script>
 
 <script>
  
-var cheeses = [{x: 50, y: "brie"},
-			  {x: 30, y: "roquefort"},
-			  {x: 20, y: "venezuelan beaver cheese"}];
+ 	var eventManager = new EventManager();
+
+	var cheeses = [{x: 65, y: "Cheddar"},
+			  {x: 10, y: "roquefort"},
+			  {x: 20, y: "brie"},
+			  {x: 5, y: "venezuelan beaver cheese"}];
 	
-	//<div id="widgetTarget0"><p>0. Single bar graph</p></div>
+	// <div id="widgetTarget0"><p>0. Single pie chart</p></div>
 	
-	var svg0 = new MakeSVGContainer(
+	var svg0 = new SVGContainer(
 		{node: d3.select("#pie0"),
-		maxWid: 200,
+		maxWid: 470,
 		maxHt: 200
 		}
 	);
 	
-	svg0.Axes({
-		xPosPerc: 0, yPosPerc:0, //top, left corner
-		xPerc: 1, yPerc: 1,//full height and width
-		xaxisType: "linear",
-		xOrient: "bottom",
-		xLabel: "percentage of stuff",
-		yaxisType: "linear",
-		yOrient: "left",
-	});
-	
-	svg0.Pie({
-		Data:cheeses,
-		xYPos: [.5,.5]
-		}
-		);
+	var pie0 = new PieChart ({
+			Data:cheeses,
+		});
 		
-	
+	svg0.append(pie0);
+
 	
 //	<div id="pie1"><p>1.pie chart one wedge 100%</p></div>
-	var svg1 = new MakeSVGContainer(
+	var svg1 = new SVGContainer(
 		{node: d3.select("#pie1"),
-		maxWid: 200,
+		maxWid: 570,
 		maxHt: 120
 		}
 	);
-	svg1.Axes({
-		xPosPerc: 0, yPosPerc:0, //top, left corner
-		xPerc: 1, yPerc: 1,//full height and width
-		xaxisType: "linear",
-		xTicks: 0,
-		xOrient: "bottom",
-		yaxisType: "linear",
-		yTicks: 0,
-		yOrient: "left",
-	});
 		
-	svg1.Pie({
-		Data:[{x:100}],
-		xYPos: [.5,.5]
+	var pie1 = new PieChart({
+		Data:[{x:100, y: "the whole pie"}],
 	}
 		);
 		
-	
+	svg1.append(pie1);
+
 	//	<div id="widgetTarget2"><p>Pie with legend (events)</p></div>
 	
-	var svg2 = new MakeSVGContainer(
+	var svg2 = new SVGContainer(
 		{node: d3.select("#pie2"),
-		maxWid: 300,
+		maxWid:  570,
 		maxHt: 200
-		}
-	);
-	svg2.Axes({
-		xPosPerc: 0, yPosPerc:0, //top, left corner
-		xPerc: 1, yPerc: 1,//full height and width
-		xaxisType: "linear",
-		xOrient: "bottom",
-		xLabel: "",
-		yaxisType: "linear",
-		yOrient: "left",
-		yLabel: "legend and pie"
-	});
-	svg2.Pie({
+		});
+	
+	var pie2 = new PieChart({
 		Data:[{x: 5, y: "pork"},
 			  {x: 50, y: "banana"},
 			  {x: 90, y: "chocolate"}],
-		xYPos: [1/3,.5]
-			  
-		}
-		);
+		});
 
-	svg2.Legend({
-		labels:["pork","banana","chocolate"],
-		type: "box",
-		xPos: "right",
-		yPos: "top"
-	}
-		);
-	//	<div id="pie10"><p>pie and bar and labels</p></div>
+	
+	svg2.append(pie2);
 
+	//	<div id="pie10"><p>pie and bar and legend</p></div>
 
-	var svg70 = new MakeSVGContainer(
+	var svg70 = new SVGContainer(
 		{node: d3.select("#pie10"),
-		maxWid: 500,
+		maxWid:  570,
 		maxHt: 300
 		}
 	);
 	
 	var ordinalData = [
-			{	x: 30,
-				y: "Levo"
-			}], 
-		ordinalData1=[
-			{	x: 70,
-				y: "Dextro"}
-				];
+				{x: 45, y: "Levo"},
+				{x: 55, y: "Dextro"}];
 				
-	svg70.Axes({
-		xPosPerc: 0, yPosPerc:0,
-		xPerc: .6, yPerc: 1,
-		xaxisType: "linear", yaxisType: "ordinal",
-		Data:[ordinalData, ordinalData1],
-		xTicks: [0,10,20,30,40,50,60,70,80,90,100],
-		xOrient: "bottom",
-		yOrient: "left",
-		xLabel: "% enantiomers"
-	});
-	
-	svg70.BarChart({
-		Data: [ordinalData, ordinalData1],
-		type: "linear" //ignored for anything but grouped
-	});
 
-	svg70.Axes({
-		xPosPerc: .6, yPosPerc:0, //top, left corner
-		xPerc: .4, yPerc: .4,//full height and width
-		xaxisType: "linear",
-		xOrient: "bottom",
-		xLabel: "alpha (&alpha;)",
-		yaxisType: "linear",
-		yOrient: "left",
-	});
+	var bar0 = new BarChart({
+			Data: [[ordinalData[0]], [ordinalData[1]]],
+			xAxisFormat: { type: "linear",
+						   ticks: [0,10,20,30,40,50,60,70,80,90,100],
+						   orientation: "bottom",
+						   //mode: "reverse",
+						   label: "% enantiomers" },
+			yAxisFormat: { type: "ordinal",
+						   orientation: "left",
+
+						   },
+		});
 	
-	svg70.Pie({
-		Data:ordinalData.concat(ordinalData1),
-		xYPos: [.5,.5]
-	}
-		);
+
+	svg70.append(bar0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.7});
+
+	svg70.append(new PieChart({
+		Data: ordinalData,
+	}), {topPercentOffset: 0, leftPercentOffset: 0.5, heightPercent: 0.5, widthPercent: 0.5});
 		
 	//	<div id="pie11"><p>5. Pie with values <100 20/10</p></div>
-	var svg5 = new MakeSVGContainer(
+	var svg5 = new SVGContainer(
 		{node: d3.select("#pie11"),
-		maxWid: 300,
+		maxWid: 370,
 		maxHt:200
 		}
 	);
-	svg5.Axes({
-		xPosPerc: 0, yPosPerc:0, //top, left corner
-		xPerc: 1, yPerc: 1,//full height and width
-		xaxisType: "linear",
-		xOrient: "bottom",
-		yaxisType: "linear",
-		yOrient: "left",
-	});
-	
 
 	
-	svg5.Pie({
-		Data: [{x: 20},{x: 10}],
-		xYPos: [2/3,.5]
+	var pie5 = new PieChart({
+		Data: [{x: 20, y: "only20"},{x: 10, y: "only10"}],
 	});
+
+	svg5.append(pie5);
 
 //	<div id="pie11"><p>6. Pie with values <100 10</p></div>
-	var svg6 = new MakeSVGContainer(
+	var svg6 = new SVGContainer(
 		{node: d3.select("#pie12"),
-		maxWid: 200,
+		maxWid:  570,
 		maxHt:150
 		}
 	);
-	svg6.Axes({
-		xPosPerc: 0, yPosPerc:0, //top, left corner
-		xPerc: 1, yPerc: 1,//full height and width
-		xaxisType: "linear",
-		xOrient: "bottom",
-		yaxisType: "linear",
-		yOrient: "left",
+	
+	var pie6 = new PieChart({
+		Data: [{x: 10, y: "little wedge"}],
 	});
 	
-	svg6.Pie({
-		Data: [{x: 10}],
-		xYPos: [.5,.5]
-	});
-	
+	svg6.append(pie6);
 	
 //	<div id="pie13"><p>7. Pie with values <100 80</p></div>
-	var svg7 = new MakeSVGContainer(
+	var svg7 = new SVGContainer(
 		{node: d3.select("#pie13"),
-		maxWid: 200,
+		maxWid: 370,
 		maxHt:150
 		}
 	);
-	svg7.Axes({
-		xPosPerc: 0, yPosPerc:0, //top, left corner
-		xPerc: 1, yPerc: 1,//full height and width
-		xaxisType: "linear",
-		xOrient: "bottom",
-		yaxisType: "linear",
-		yOrient: "left",
+	
+	
+	var pie7 = new PieChart({
+		Data: [{x: 80, y: "big wedge"}],
 	});
-	
-	svg7.Pie({
-		Data: [{x: 80}],
-		xYPos: [.5,.5]
-	});
-	//var IDList = [images5, axes5];
-	
-	//var startState = 0, start2 = 51;
-	
-	//images5.setState(startState);
-	//axes5.setState(startState);
-//	axes1.setLabelLite(20);
-//images5.setState(startState);
-////	legend5.setState(start2);
-		
-	 d3.selectAll('.liteable')
-	 	.on("click", function(d,i){ 
-		console.log("TODO: Log click and time on ", this.id);
-		return stateCycle(this,IDList);});
+
+	svg7.append(pie7);
+
 	
 </script>
 </body>

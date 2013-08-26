@@ -26,7 +26,7 @@
  *   Event = {
  *   	source: <source>,
  *   	data: {
- *   		messageType: <bricevent, resize, topic>
+ 		channel: <bricevent, resize, topic>
  *   		#case bricevent, this is what actually sent at EventManager scope
  *  	 	message: {
  *  	 		sendTime: <time was sent in unix format>
@@ -45,9 +45,14 @@
  *   }
  *
  * **************************************************************************/
+/*
+ * Change Log:
+ * - Working on the topic functionality (messageType changed to channel)
+ */
 
-/**
- * 
+//goog.require('brixworks.eventmanager');
+
+
 /* **************************************************************************
  * MessageBroker                                                       */ /**
  *
@@ -91,10 +96,18 @@ MessageBroker.prototype.bricMessageCounter = 0;
 MessageBroker.prototype.resizeMessageCounter = 0;
 
 /**
- * The Number of resize messages receved.
- * @type {int}
+ * The messageHandler function. This is assigned at initialize() method and 
+ * is used to use the reference (e.g. when removing the listener).
+ * @type {function}
  */
 MessageBroker.prototype.messageHandler = null;
+
+/**
+ * The internal PubSub (an instance of EventManager to handle topics)
+ * The pubSub object must have publish, subscribe an unsubscribe methods.
+ * @type {Object[]}
+ */
+MessageBroker.prototype.pubSub = new EventManager(false);
 
 /**
  * Logs messages to the console.

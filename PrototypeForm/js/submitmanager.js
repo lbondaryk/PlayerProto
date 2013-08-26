@@ -1,6 +1,6 @@
 /* **************************************************************************
  * $Workfile:: submitmanager.js                                             $
- * **********************************************************************//**
+ * *********************************************************************/ /**
  *
  * @fileoverview Implementation of a SubmitManager object.
  *
@@ -9,7 +9,7 @@
  * Created on		June 04, 2013
  * @author			Seann
  *
- * Copyright (c) 2013 Pearson, All rights reserved.
+ * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
@@ -18,39 +18,38 @@
  ****************************************************************************/
 
 // Sample SubmitManager constructor configuration
-(function()
-{
-	var submit1Config = {
-		};
-});
+// NA - information about the container to return to and the question ID is
+// passed from the question type, e.g. multiple choice. No config.
 
 /* **************************************************************************
- * SubmitManager                                                        *//**
+ * SubmitManager                                                       */ /**
+ *
+ * Constructor function for the SubmitManager class
  *
  * @constructor
  *
+ * @param {!EventManager}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
+ * @param {Function}
+ * 						answerProvider	-The answer providing function.
+ *
+ * @classdesc
  * The submit manager handles your submissions, yo.
+ *
  * It listens (subscribes) for scoring requests from registered widgets,
  * handles getting the request to the scoring engine and processes the
  * response, returning that response to the requesting widget if there
  * is a callback associated w/ the request.
  *
- * @constructor
- *
- * @param {Object}		config			-The settings to configure this SubmitManager
- * 										 of which there are currently none.
- * @param {!EventManager}
- * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them.
- *
  ****************************************************************************/
-function SubmitManager(config, eventManager)
+function SubmitManager(eventManager, answerProvider)
 {
 	/**
 	 * YSAP - The answer provider is an object.
 	 * The answer provider
 	 */
-	this.answerProvider = config.answerProvider;
+	this.answerProvider = answerProvider;
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
@@ -90,7 +89,7 @@ function SubmitManager(config, eventManager)
 }
 
 /* **************************************************************************
- * SubmitManager.handleRequestsFrom                                     *//**
+ * SubmitManager.handleRequestsFrom                                    */ /**
  *
  * Register the given question widget w/ this SubmitManager to handle any
  * submitScoreRequest events the widget may publish.
@@ -104,13 +103,12 @@ SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
 {
 	var that = this;
 
-	this.submitScoreRequestEventId = questionWidget.submitScoreRequestEventId;
 	this.eventManager.subscribe(questionWidget.submitScoreRequestEventId,
 								function (eventDetails) {that.handleScoreRequest_(eventDetails);});
 };
 
 /* **************************************************************************
- * SubmitManager.handleScoreRequest_                                    *//**
+ * SubmitManager.handleScoreRequest_                                   */ /**
  *
  * The event handler of this SubmitManager for submitScoreRequest events
  * from registered question widgets.
@@ -128,6 +126,7 @@ SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 		{
 			sequenceNodeId: eventDetails.questionId,
 			answer: eventDetails.answerKey,
+			value: eventDetails.submissionValue,
 			responseCallback: eventDetails.responseCallback,
 			requestDetails: eventDetails,
 		};
@@ -143,7 +142,7 @@ SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 };
 
 /* **************************************************************************
- * SubmitManager.submitForScoring_                                      *//**
+ * SubmitManager.submitForScoring_                                     */ /**
  *
  * Send the score request to the scoring engine using whatever means required
  * to access that scoring engine.
@@ -168,7 +167,8 @@ SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 	// todo: Although we're getting a synchronous response here, we should
 	// enhance this to have the "answerMan" give us an asynchronous
 	// response, probably via an eventManager event. -mjl
-	var submissionResponse = this.answerProvider.submitAnswer(submitDetails.answer);
+	var submissionResponse = this.answerProvider.submitAnswer(submitDetails.sequenceNodeId,
+										submitDetails.answer, submitDetails.value);
 
 	// We handle the reply from the scoring engine (in the event handler eventually)
 	// by removing the request from the list of pending request
@@ -189,7 +189,7 @@ SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 };
 
 /* **************************************************************************
- * SubmitManager.submit                                                 *//**
+ * SubmitManager.submit                                                */ /**
  *
  * Submit the student's submission to the answer engine.  Publish the result.
  *
@@ -219,7 +219,7 @@ SubmitManager.prototype.submit = function (submission)
 
 
 /* **************************************************************************
- * fancyAnswerEngine                                                    *//**
+ * fancyAnswerEngine                                                   */ /**
  *
  * I'm just a stub
  * Yes, I'm only a stub

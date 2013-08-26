@@ -166,6 +166,20 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
 	
 	// Add the handler to the list of handlers of the eventId
 	event.handlers.push(handler);
+
+	// YSAP - Send to the parent window as well.
+	// For the message structure see messagebroker.js
+	if (this.publishToBroker_)
+	{
+		window.parent.postMessage({ channel: "topic",
+									topic: eventId,
+									action: "subscribe"
+								  }, '*');	
+
+		window.console.log("[" + location.href +
+						   "] EventManager: published to MessageBroker with topic '" +
+						   eventId + "'");
+	}
 };
 
 /* **************************************************************************
@@ -224,7 +238,7 @@ pearson.utils.EventManager.prototype.publish = function (eventId, eventDetails)
 	{
 		window.parent.postMessage(
 			{
-				messageType: "bricevent",
+				channel: "bricevent",
 				message: {
 					topic: eventId,
 					eventData: eventDetails
@@ -247,14 +261,15 @@ pearson.utils.EventManager.prototype.listenBroker = function ()
 {
 	var that = this;
 	window.addEventListener('message',
-			function(e)
+			function (e)
 			{
 				var data = e.data;
 				var here = location.href;
-				if (data.messageType === 'bricevent')
+				if (data.channel === 'bricevent')
 				{
-					window.console.log("[" + here + "] EventManager: Handling bricevent:" +
-								JSON.stringify(data));
+					window.console.log("[" + here +
+									   "] EventManager: Handling bricevent:" +
+									   JSON.stringify(data));
 
 					// Publish the remote event to any local subscribers
 					that.publishLocal_(data.message.topic, data.message.eventData);

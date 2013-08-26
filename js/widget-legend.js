@@ -124,7 +124,6 @@ Legend.prototype.draw = function (container, size)
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
 	
-	var that = this;
 	
 	this.lastdrawn.legendId = this.id + '_legend';
 	var legendId = this.lastdrawn.legendId;
@@ -148,7 +147,7 @@ Legend.prototype.draw = function (container, size)
 	var longBox = container.append("g");
 	longBox.append("text").text(longest);
 	 
-	this.boxWid = longBox.node().getBBox().width + inset/2 + boxLength + 4;
+	this.boxWid = longBox.node().getBBox().width + inset/2 + boxLength + 10;
 
 	//the box around the legend should be the width of the
 	//longest piece of text + inset + the marker length
@@ -165,30 +164,54 @@ Legend.prototype.draw = function (container, size)
 	//otherwise just space it down from the top.
 		
 	//make a new group to hold the legend
-	var legendBox = container.append("g")
+	this.legendBox = container.append("g")
 	.attr("class","widgetLegend")
 	.attr('id', this.id)
 	//move it to left/right/top/bottom position
 	.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')');
 
-	
-	//make a filter definition for highlighting
-	var filter = legendBox.append("defs").append("filter").attr("id","drop-shadow");
-	filter.append("feGaussianBlur").attr("in","SourceAlpha").attr("stdDeviation",2).attr("result","blur");
-	filter.append("feOffset").attr("in","blur").attr("dx",2).attr("dy",2).attr("result","offsetBlur");
- 	var merge = filter.append("feMerge");
-	merge.append("feMergeNode").attr("in","offsetBlur");
-	merge.append("feMergeNode").attr("in","SourceGraphic");
-
-
 	//draw a white box for the legend to sit on
-	legendBox.append("rect").attr("x", -5).attr("y", -5)
+	this.legendBox.append("rect").attr("x", -5).attr("y", -5)
 	//create small padding around the contents at leading edge
 	.attr("width", this.boxWid).attr("height", boxHeight) //lineheight+padding x rows
 	.attr("class", "legendBox");
 	
+	
+
+	// Draw the data (each marker line and label)
+	this.drawData_();
+
+}; //end of Legend.draw
+
+/* **************************************************************************
+ * Legend.redraw                                                         */ /**
+ *
+ * Redraws in the event of a change or data update.
+ *
+ *
+ ****************************************************************************/
+Legend.prototype.redraw = function ()
+{
+	this.drawData_();
+} //end of Legend.redraw
+/* **************************************************************************
+ * Legend.redraw                                                         */ /**
+ *
+ * Redraws in the event of a change or data update.
+ *
+ *
+ ****************************************************************************/
+Legend.prototype.drawData_ = function ()
+{
+	var boxLength = 15, //attractive length for the colored lines or boxes
+		inset = 10;//attractive spacing from edge of axes boxes (innerWid/Ht)
+	
+	var that = this;
+
+	//take the number of rows from the number of labels
+	var rowCt = this.labels.length;
 	//this selects all <g> elements with class legend  
-	var legendRows = legendBox.selectAll("g.legend")
+	var legendRows = this.legendBox.selectAll("g.legend")
 	.data(this.labels); //associate the data to create stacked slices
 	
 	// get rid of any rows without data
@@ -196,7 +219,7 @@ Legend.prototype.draw = function (container, size)
 	
 	legendRows.enter() //this will create <g> elements for every data element
 	.append("g") //create groups
-		.attr("class","legend")
+		.attr("class","legends")
 	//each row contains a colored marker and a label.  They are spaced according to the
 	//vertical size of the markers plus a little padding, 4px in this case
 	//counting up from the bottom, make a group for each series and move to stacked position
@@ -247,9 +270,10 @@ Legend.prototype.draw = function (container, size)
 					that.eventManager.publish(that.selectedEventId, {selectKey:d.key});
 				});
 
-	this.lastdrawn.legendRows = legendBox.selectAll("g.legend");
-	
-}; //end of Legend.draw
+	this.lastdrawn.legendRows = this.legendBox.selectAll("g.legend");
+
+
+} //end of Legend.redraw
 
 /* **************************************************************************
  * Legend.setScale                                                     */ /**

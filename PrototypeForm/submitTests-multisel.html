@@ -44,7 +44,7 @@
 	<script src="../js/widget-slider.js"></script>
 	<!-- widget-numeric is required with widget-slider, even if you don't want a readout, as you'll get an "Uncaught ReferenceError: Readout is not defined" error without it -->
 	<script src="../js/widget-numeric.js"></script>
-	<script src="../js/widget-radiogroup.js"></script>
+	<script src="../js/widget-checkgroup.js"></script>
 	<!--<script src="../js/widget-multiplechoicequestion.js"></script>-->
 	<script src="../js/eventmanager.js"></script>
 	<!--<script src="../js/submitmanager.js"></script>-->
@@ -52,12 +52,11 @@
 	<script src="../js/fakeactivitydb.js"></script>
 
 	<!-- New library -->
-	<script src="js/underscore.js"></script>
-	<script src="js/bric-base.js"></script>
-	<script src="js/bric-multiplechoicequestion.js"></script>
-	<script src="js/submitmanager.js"></script>
-	<script src="js/bric-answerprovider.js"></script>
+	<script src="../js/widget-multiselectquestion.js"></script>
+	<script src="../js/submitmanager.js"></script>
+	<script src="../js/answermanpolling.js"></script>
 
+	<a id="test_button" type="button" >Test Submit</a>
 	<script>
 
 	// create event manager
@@ -65,21 +64,6 @@
 	
 	///////////////////////////////////////////
 	
-	
-	/* wish I could use the d3 method to read JSON but cross origin requests error prevents it
-	
-	d3.json("js/fakeactivitydb.js", function(error, json) {
-  		if (error) return console.warn(error);
-  		data = json;
-  		console.log(data);
-	});
-	*/
-	/* 
-	TODO:
-	- Leslie's example: https://dl.dropboxusercontent.com/u/89342193/NeffLiveDemo/assess_12.1.html
-	- extract as much of this configuration stuff into a dynamic js "builder" script with config
-	*/
-
 	
 	//------------------- Q1 Test --------------------
 
@@ -99,32 +83,34 @@
 		];
 
 	// Test a select one question using a radio group widget
-	var Q1 = new MultipleChoiceQuestion({
+	// Additional attribute: maxSelects - limit the number of selections
+	var Q1 = new MultiSelectQuestion({
 			id: "Q1",
 			questionId: "SanVan004",
-			question: "How do you feel when I say 'Hello'?",
+			question: "How do you feel when I say 'Hello' (can be mixed feelings)?",
 			choices: Q1Choices,
+			maxSelects: 2,
 			order: "randomized",
-			widget: RadioGroup,
+			widget: CheckGroup,
 			widgetConfig: { numberFormat: "latin-upper" },
 		}, eventManager);
 
 
-	// YSAP: Instantiate a mock answer provider
-	var answerProvider = new MockAnswerProvider({
-		attributes: {sequenceNode: Q1.questionId}
-	});
-
-	var pollingAnswerProvider = new PollingAnswerProvider();
-
 	// create submit manager
-	var submitManager = new SubmitManager(eventManager, pollingAnswerProvider);
+	var submitManager = new SubmitManager(eventManager, new AnswerManPolling());
 	
 	submitManager.handleRequestsFrom(Q1);
 
 	Q1.draw(d3.select("#Q1here"));
 
+
+	$("#test_button").on("click", function(evt) {
+		alert(JSON.stringify(Q1.selectedItems()));
+	});
+
 	</script>
+
+	
 
 </body>
 </html>
