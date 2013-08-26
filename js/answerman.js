@@ -28,8 +28,6 @@ goog.require('pearson.brix.test');
  * @constructor
  * @export
  *
- * @todo: firefox doesn't support HTML5 buttons, they degrade to numeric input
- * fields.
  **************************************************************************/
 pearson.brix.AnswerMan = function()
 {
@@ -38,7 +36,7 @@ pearson.brix.AnswerMan = function()
 
 
 /* **************************************************************************
- * answerMan                                                           */ /**
+ * AnswerMan.submitAnswer                                              */ /**
  *
  * Mock scoring engine.
  * @export
