@@ -58,7 +58,7 @@ function PieChart(config, eventManager)
 	 * A unique id for this instance of the bar chart widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, PieChart);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, PieChart);
 
 	/**
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
@@ -122,7 +122,7 @@ function PieChart(config, eventManager)
 		{
 			container: null,
 			size: {height: 0, width: 0},
-			dataRect: new Rect(0, 0, 0, 0),
+			dataRect: new pearson.utils.Rect(0, 0, 0, 0),
 			wedgeId: 'wedge',
 			widgetGroup: null,
 			axesR: null,
@@ -131,7 +131,7 @@ function PieChart(config, eventManager)
 				// markers to be appended to them.  They don't get run through the normal 
 				// Axes object. -lb
 				group: null, 
-				dataRect: new Rect(0, 0, 0, 0),
+				dataRect: new pearson.utils.Rect(0, 0, 0, 0),
 			},
 			xScale: null,
 			yScale: null,
@@ -187,7 +187,7 @@ PieChart.prototype.draw = function(container, size)
 	var offset = padding + r; //padding from the axes
 
 	//set the dataRect to be the container
-	this.lastdrawn.axes.dataRect = new Rect(0, 0, 2*offset, 2*offset);
+	this.lastdrawn.axes.dataRect = new pearson.utils.Rect(0, 0, 2*offset, 2*offset);
 	this.lastdrawn.dataRect = this.lastdrawn.axes.dataRect;
 	
 	this.lastdrawn.axesR = r;

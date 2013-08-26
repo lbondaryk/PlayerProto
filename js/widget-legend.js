@@ -55,14 +55,13 @@
  * axes to make room for this, but for now position it in one corner of axes.
  * @todo: need to add symbols for scatter plots, including custom images
  **************************************************************************/
-
 function Legend(config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, Legend);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, Legend);
 
 	/**
 	 * Array of strings for the labels, one per row 
@@ -176,15 +175,13 @@ Legend.prototype.draw = function (container, size)
 	.attr("width", this.boxWid).attr("height", boxHeight) //lineheight+padding x rows
 	.attr("class", "legendBox");
 	
-	
-
 	// Draw the data (each marker line and label)
 	this.drawData_();
 
 }; //end of Legend.draw
 
 /* **************************************************************************
- * Legend.redraw                                                         */ /**
+ * Legend.redraw                                                       */ /**
  *
  * Redraws in the event of a change or data update.
  *
@@ -193,12 +190,14 @@ Legend.prototype.draw = function (container, size)
 Legend.prototype.redraw = function ()
 {
 	this.drawData_();
-} //end of Legend.redraw
+}; //end of Legend.redraw
+
 /* **************************************************************************
- * Legend.redraw                                                         */ /**
+ * Legend.drawData_                                                    */ /**
  *
  * Redraws in the event of a change or data update.
  *
+ * @private
  *
  ****************************************************************************/
 Legend.prototype.drawData_ = function ()
@@ -210,59 +209,66 @@ Legend.prototype.drawData_ = function ()
 
 	//take the number of rows from the number of labels
 	var rowCt = this.labels.length;
+
 	//this selects all <g> elements with class legend  
 	var legendRows = this.legendBox.selectAll("g.legend")
-	.data(this.labels); //associate the data to create stacked slices
+		.data(this.labels); //associate the data to create stacked slices
 	
 	// get rid of any rows without data
 	legendRows.exit().remove();
 	
 	legendRows.enter() //this will create <g> elements for every data element
-	.append("g") //create groups
-		.attr("class","legends")
-	//each row contains a colored marker and a label.  They are spaced according to the
-	//vertical size of the markers plus a little padding, 4px in this case
-	//counting up from the bottom, make a group for each series and move to stacked position
-		.attr("transform", function(d, i) {
-			return "translate(0," + (rowCt - i - 1) * (boxLength+4) + ")";
-	});
-	
+		.append("g") //create groups
+			.attr("class","legends")
+			//each row contains a colored marker and a label.  They are spaced according to the
+			//vertical size of the markers plus a little padding, 4px in this case
+			//counting up from the bottom, make a group for each series and move to stacked position
+			.attr("transform", function(d, i) {
+					return "translate(0," + (rowCt - i - 1) * (boxLength+4) + ")";
+				});
 	
 	// autokey entries which have no key with the data index
 	legendRows.each(function (d, i) { 
-					//if there is no key assigned, make one from the index
-					d.key = 'key' in d ? d.key : i.toString();
+						//if there is no key assigned, make one from the index
+						d.key = 'key' in d ? d.key : i.toString();
 					});
 
-	if (this.type == "box") {
+	if (this.type == "box")
+	{
 		legendRows.append("rect")
-		.attr("x", 0).attr("y", 0)
-		//make the rectangle a square with width and height set to boxLength
-		.attr("width", boxLength)
-		.attr("height", boxLength)
-		.attr("class", function(d, i) {
-			return "fill" + i;
-		});
-	} else {
+			.attr("x", 0)
+			.attr("y", 0)
+			//make the rectangle a square with width and height set to boxLength
+			.attr("width", boxLength)
+			.attr("height", boxLength)
+			.attr("class", function(d, i) {
+					return "fill" + i;
+				});
+	}
+	else
+	{
 		legendRows.append("line") //add a line to each slice
-		.attr("class", function(d, i) {
-			return "traces stroke" + i;
-		}).attr("x1", 0) //start at the left edge of box
-		.attr("x2", boxLength) //set line width
-		.attr("y1", boxLength / 2).attr("y2", boxLength / 2);
+			.attr("class", function(d, i) {
+					return "traces stroke" + i;
+				})
+			.attr("x1", 0) //start at the left edge of box
+			.attr("x2", boxLength) //set line width
+			.attr("y1", boxLength / 2)
+			.attr("y2", boxLength / 2);
 	}
 
 	legendRows.append("text") //this is native svg text, it doesn't wrap
-	.attr("text-anchor", "start") //left align text
-	.attr("class", "legendLabel").attr("dx", boxLength + 4)
-	//offset text to the right beyond marker by 4 px
-	.attr("dy", boxLength/2 ) 
-	//offset text down so it winds up in the middle of the marker
-	.attr("alignment-baseline","central")
-	//and put the vertical center of the text on that midline
-	.text(function(d, i) {
-		return d.content; //get the label from legend array
-	});
+		.attr("text-anchor", "start") //left align text
+		.attr("class", "legendLabel")
+		.attr("dx", boxLength + 4)
+		//offset text to the right beyond marker by 4 px
+		.attr("dy", boxLength/2 ) 
+		//offset text down so it winds up in the middle of the marker
+		.attr("alignment-baseline", "central")
+		//and put the vertical center of the text on that midline
+		.text(function(d, i) {
+				return d.content; //get the label from legend array
+			});
 	
 	legendRows.on('click',
 				function (d, i)
@@ -272,8 +278,7 @@ Legend.prototype.drawData_ = function ()
 
 	this.lastdrawn.legendRows = this.legendBox.selectAll("g.legend");
 
-
-} //end of Legend.redraw
+} //end of Legend.drawData_
 
 /* **************************************************************************
  * Legend.setScale                                                     */ /**
@@ -305,7 +310,7 @@ Legend.prototype.setScale = function (xScale, yScale)
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-Legend.prototype.lite = function(liteKey)
+Legend.prototype.lite = function (liteKey)
 {
 	
 	console.log("TODO: log fired Legend highlite " + liteKey);
@@ -333,6 +338,5 @@ Legend.prototype.lite = function(liteKey)
 	{
 		console.log("No key '" + liteKey + "' in legend " + this.id );
 	}
-
 };
 

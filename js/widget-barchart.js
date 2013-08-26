@@ -74,7 +74,7 @@ function BarChart(config, eventManager)
 	 * A unique id for this instance of the bar chart widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, BarChart);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, BarChart);
 
 	/**
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
@@ -126,7 +126,7 @@ function BarChart(config, eventManager)
 		{
 			container: null,
 			size: {height: 0, width: 0},
-			dataRect: new Rect(0, 0, 0, 0),
+			dataRect: new pearson.utils.Rect(0, 0, 0, 0),
 			barsId: 'bars',
 			axes: null,
 			xScale: null,
@@ -209,7 +209,7 @@ BarChart.prototype.draw = function(container, size)
 	
 	//make the axes for this graph - draw these first because these are the 
 	//pieces that need extra unknown space for ticks, ticklabels, axis label
-	this.lastdrawn.axes = new Axes(this.lastdrawn.container, axesConfig);
+	this.lastdrawn.axes = new pearson.brix.Axes(this.lastdrawn.container, axesConfig);
 	//only draw axes if there aren't any yet
 	/*
 	if(!d3.select("#"+ axesConfig.id)[0][0]){

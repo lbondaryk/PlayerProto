@@ -50,7 +50,7 @@
  ****************************************************************************/
 function Readout(config)
 {
-	this.id = getIdFromConfigOrAuto(config, Readout);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, Readout);
 
 	this.node = config.node;
 	this.startVal = config.startVal;	
