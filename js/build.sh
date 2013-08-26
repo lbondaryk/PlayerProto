@@ -22,6 +22,8 @@
 # [Using ClosureBuilder]: <https://developers.google.com/closure/library/docs/closurebuilder>
 # [Closure Library Documentation]: <https://developers.google.com/closure/library/docs/overview>
 # [Closure Compiler]: <https://developers.google.com/closure/compiler/>
+#
+# NOTE: Remember to remove the  fakeactivitydb.js in the real release.
 
 REPODIR=".."
 BUILDER="${REPODIR}/../closure/closure-library/closure/bin/build/closurebuilder.py"
@@ -40,6 +42,7 @@ declare -a COMPILER_ARGS=(\
 	"--generate_exports"\
 	)
 
+#
 BRIX_ARGS=$(cat <<EOF
 	--input=eventmanager.js
 	--input=widget-base.js
@@ -50,11 +53,14 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-callouts.js
 	--input=widget-markergroup.js
 	--input=widget-barchart.js
+	--input=fakeactivitydb.js
 	--input=answerman.js
 	--input=submitmanager.js
 	--input=widget-button.js
 	--input=widget-radiogroup.js
 	--input=widget-multiplechoicequestion.js
+	--input=widget-checkgroup.js
+	--input=widget-multiselectquestion.js
 	--root=.
 	--root=$LIBRARYDIR
 	--output_mode=compiled

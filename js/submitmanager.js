@@ -65,7 +65,7 @@ pearson.brix.SubmitManager = function(eventManager, answerMan)
 	 * @type {EventManager}
 	 */
 	if (answerMan === undefined) {
-		this.answerMan = new AnswerMan();
+		this.answerMan = new pearson.brix.AnswerMan();
 	}
 	else 
 	{
@@ -325,6 +325,7 @@ pearson.brix.SubmitManager.appendResponseWithDefaultFormatting = function (conta
  * @param {string}	submission	-The student's submission
  *
  ****************************************************************************/
+/* Not being used anywhere in the project. Commented out
 fancyAnswerEngine = function (sequenceNodeID, submission)
 {
 	// You're always WRONG!  HAHAHHAHAHA.
@@ -334,3 +335,4 @@ fancyAnswerEngine = function (sequenceNodeID, submission)
 	};
 	return submissionResponse;
 };
+*/

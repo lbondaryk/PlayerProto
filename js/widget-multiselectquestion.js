@@ -63,7 +63,7 @@ goog.provide('pearson.brix.MultiSelectQuestion');
 		choices: Q1Choices,
 		maxSelects: 2,
 		order: "randomized", //default, even if not specified
-		widget: CheckGroup,
+		widget: pearson.brix.CheckGroup,
 		widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultiSelectQuestion
 	};
 });
@@ -92,6 +92,7 @@ goog.provide('pearson.brix.MultiSelectQuestion');
  * @constructor
  * @implements {IWidget}
  * @implements {IQuestion}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this MultiSelectQuestion
  * @param {string|undefined}
@@ -131,7 +132,7 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, MultiSelectQuestion);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.MultiSelectQuestion);
 
 	/**
 	 * The scoring engine id of this question.
@@ -170,7 +171,7 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 		// clone the array before we rearrange it so we don't modify the
 		// array passed in the config.
 		choices = choices.slice(0);
-		randomizeArray(choices);
+		pearson.utils.randomizeArray(choices);
 	}
 
 	widgetConfig.choices = choices;
@@ -200,7 +201,7 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 	 * for scoring.
 	 * @type {IWidget}
 	 */
-	this.submitButton = new Button(submitBtnConfig, eventManager);
+	this.submitButton = new pearson.brix.Button(submitBtnConfig, eventManager);
 
 	/**
 	 * List of responses that have been received for all submitted
@@ -278,7 +279,7 @@ pearson.brix.MultiSelectQuestion.autoIdPrefix = "mcQ_auto_";
  * @private
  *
  ****************************************************************************/
-MultiSelectQuestion.prototype.handleSubmitRequested_ = function()
+pearson.brix.MultiSelectQuestion.prototype.handleSubmitRequested_ = function()
 {
 	var that = this;
 	var answerKeys = [].map.call(this.choiceWidget.selectedItems(), function(item){
@@ -362,6 +363,7 @@ pearson.brix.MultiSelectQuestion.prototype.handleSubmitResponse_ = function(resp
  * MultiSelectQuestion.draw                                         */ /**
  *
  * Draw this MultiSelectQuestion in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the
@@ -404,6 +406,7 @@ pearson.brix.MultiSelectQuestion.prototype.draw = function(container)
  *
  * Return the selected choice from the choice widget or null if nothing has been
  * selected.
+ * @export
  *
  * @return {Object} the choice which is currently selected or null.
  *
@@ -420,6 +423,7 @@ pearson.brix.MultiSelectQuestion.prototype.selectedItems = function ()
  * already selected, do nothing. The index is the displayed choice index and
  * not the config choice index (in other words if the choices have been randomized
  * then the configuration index is NOT the displayed index).
+ * @export
  *
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
@@ -429,6 +433,18 @@ pearson.brix.MultiSelectQuestion.prototype.selectItemAtIndex = function (index)
 	this.choiceWidget.selectItemAtIndex(index);
 };
 
+/* **************************************************************************
+ * MultiSelectQuestion.unselectItemAtIndex                            */ /**
+ *
+ * Unselects the choice in the choice widget at the given index. If the choice is
+ * already unselected, do nothing. The index is the displayed choice index and
+ * not the config choice index (in other words if the choices have been randomized
+ * then the configuration index is NOT the displayed index).
+ * @export
+ *
+ * @param {number}	index	-the 0-based index of the choice to mark as selected.
+ *
+ ****************************************************************************/
 pearson.brix.MultiSelectQuestion.prototype.unselectItemAtIndex = function (index)
 {
 	this.choiceWidget.unselectItemAtIndex(index);

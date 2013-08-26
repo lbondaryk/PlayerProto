@@ -22,7 +22,10 @@
  * the mock scoring engine {@link answerMan}.
  * @type {Object}
  * */
-var activities = {		
+
+goog.provide('pearson.brix.test');
+
+pearson.brix.test.activities = {		
 	"louder": { 
 		question: "How high does it go?",
 		"001": {

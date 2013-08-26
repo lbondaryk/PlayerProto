@@ -186,7 +186,7 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 	 * for scoring.
 	 * @type {IWidget}
 	 */
-	this.submitButton = new Button(submitBtnConfig, eventManager);
+	this.submitButton = new pearson.brix.Button(submitBtnConfig, eventManager);
 
 	/**
 	 * List of responses that have been received for all submitted

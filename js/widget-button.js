@@ -50,7 +50,7 @@ goog.provide('pearson.brix.Button');
  * @todo: firefox doesn't support HTML5 buttons, they degrade to numeric input
  * fields.
  **************************************************************************/
-function Button(config, eventManager)
+pearson.brix.Button = function(config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the button widget

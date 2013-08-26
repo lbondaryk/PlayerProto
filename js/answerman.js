@@ -14,31 +14,45 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.utils.AnswerMan');
+goog.provide('pearson.brix.AnswerMan');
+goog.require('pearson.brix.test');
+
+// YSAP - Changed from function to class with method.
+// Proposal: change from AnswerMan to EvalProvider
+
+/* **************************************************************************
+ * AnswerMan                                                              */ /**
+ *
+ * The AnswerMan widget creates a clickable html button that publishes events.
+ *
+ * @constructor
+ * @export
+ *
+ * @todo: firefox doesn't support HTML5 buttons, they degrade to numeric input
+ * fields.
+ **************************************************************************/
+pearson.brix.AnswerMan = function()
+{
+
+} 
+
 
 /* **************************************************************************
  * answerMan                                                           */ /**
  *
  * Mock scoring engine.
+ * @export
  *
  * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
- * @param {string} 		studAnswer		-The student's answer.
+ * @param {string} 		studAnswerKey		-The student's answer key.
+ * @param {string} 		studAnswerValue		-The student's answer value.
  ****************************************************************************/
-
-// YSAP - Changed from function to class with method.
-// Proposal: change from AnswerMan to EvalProvider
-
-pearson.utils.AnswerMan = function()
-{
-
-} 
-
-pearson.utils.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
+pearson.brix.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
 { 
 	 
 	//lookup the student answer in the answer key in fakeactivitydb.js, which
 	//got loaded with the page
-	
+	var activities = pearson.brix.test.activities.activities;
 	var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
 	var solution = (studAnswerKey in activity) ? activity[studAnswerKey] : "solution key not found";
 
