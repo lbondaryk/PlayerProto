@@ -149,16 +149,15 @@ var newLabels = new LabelGroup(
 		type: "numbered",
 		labels: 	
 		  [	
-			{content: "1", xyPos: [.025,.25], width: 0},
-			{content: "2", xyPos: [.08,.45], width: 0},
-			{content: "3" , xyPos: [.325,.7], width: 0},
-			{content: "4" , xyPos: [.645,.64], width: 0},
-			{content: "5" , xyPos: [.69,.2], width: 0}
+			{content: "1", xyPos: [0, 0.31], width: 0},
+			{content: "2", xyPos: [0.05, 0.5], width: 0},
+			{content: "3", xyPos: [0.3, 0.74], width: 0},
+			{content: "4", xyPos: [0.62, 0.68], width: 0},
+			{content: "5", xyPos: [0.66, 0.25], width: 0}
 	  ]
 		}, eventManager);
 		
 cntr0.append(newLabels, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 1});
-//cimg0.append(newLabels);
 		
 var callEm = new Callouts({
 	id: "callme",
@@ -206,15 +205,15 @@ var imgContBodyCfg =
 		{id: "secrete",
 		labels: 	
 		  [
-		{content: "Hypothalamus", xyPos: [0,1], width: 100	},
-		{key: "Pituitary", content: "Pituitary gland" , xyPos: [0,.8], width: 80	},
+		{content: "Hypothalamus", xyPos: [0,1], width: 120	},
+		{key: "Pituitary", content: "Pituitary gland" , xyPos: [0,.8], width: 100	},
 		{key: "Pineal", content: "Pineal gland (epiphysis)", xyPos: [.15,.75], width: 100	},
 		{key: "Thyroid", content: "Thyroid gland", xyPos: [.5,.98], width: 100},
-		{key: "Parathyroid", content: "Parathyroid gland", xyPos: [.8,.9], width: 80},
-		{key: "Adrenal", content: "Adrenal (surparenal)", xyPos: [.78,.8], width: 80},
+		{key: "Parathyroid", content: "Parathyroid gland", xyPos: [.8,.9], width: 90},
+		{key: "Adrenal", content: "Adrenal (surparenal)", xyPos: [.78,.8], width: 90},
 		{key: "Pancreas", content: "Pancreas", xyPos: [.82,.6], width: 100},
 		{key: "Ovaries", content: "Ovaries", xyPos: [.65,.45], width: 70},
-		{key: "Testes", content: "Testicles", xyPos: [.7,.1], width: 70}
+		{key: "Testes", content: "Testicles", xyPos: [.7,.1], width: 80}
 		]
 	}, eventManager);
 	
