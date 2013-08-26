@@ -15,6 +15,8 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.Button');
+
 // Sample Button constructor configuration
 (function()
 {
@@ -32,6 +34,7 @@
  *
  * @constructor
  * @implements {IHtmlWidget}
+ * @export
  *
  * @param {!Object}		config			-The settings to configure this button
  * @param {string|undefined}
@@ -53,7 +56,7 @@ function Button(config, eventManager)
 	 * A unique id for this instance of the button widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, Button);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Button);
 
 	/**
 	 * The text displayed on the button. May be accessed using
@@ -100,13 +103,14 @@ function Button(config, eventManager)
  * Button.draw                                                         */ /**
  *
  * Draw this Button in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the button
  *								 element tree to.
  *
  ****************************************************************************/
-Button.prototype.draw = function (container)
+pearson.brix.Button.prototype.draw = function (container)
 {
 	this.lastdrawn.container = container;
 
@@ -136,9 +140,10 @@ Button.prototype.draw = function (container)
  *
  * Redraw the button using the current property values (such as text,
  * and enabled).
+ * @export
  *
  ****************************************************************************/
-Button.prototype.redraw = function ()
+pearson.brix.Button.prototype.redraw = function ()
 {
 	var button = this.lastdrawn.container.select("button");
 
@@ -151,11 +156,12 @@ Button.prototype.redraw = function ()
  * Button.setText                                                      */ /**
  *
  * This method sets the text displayed on the button to the given string
+ * @export
  *
  * @param {string}		text	- the text to be displayed on the button
  *
  **************************************************************************/
-Button.prototype.setText = function (text)
+pearson.brix.Button.prototype.setText = function (text)
 {
 	var textChanged = this.text_ !== text;
 	this.text_ = text;
@@ -170,9 +176,10 @@ Button.prototype.setText = function (text)
  * Button.getText                                                      */ /**
  *
  * This method retrieves the text currently displayed on the button,
+ * @export
  *
  **************************************************************************/
-Button.prototype.getText = function ()
+pearson.brix.Button.prototype.getText = function ()
 {
 	return this.text_;
 };
@@ -181,11 +188,12 @@ Button.prototype.getText = function ()
  * Button.setEnabled                                                   */ /**
  *
  * This method sets the current enable state of the button.
+ * @export
  *
  * @param {bool}	newEnableState	- true to enable the button, false to disable it.
  *
  **************************************************************************/
-Button.prototype.setEnabled = function (newEnableState)
+pearson.brix.Button.prototype.setEnabled = function (newEnableState)
 {
 	// coerce newEnableState to be a bool
 	newEnableState = newEnableState === true;
@@ -202,9 +210,10 @@ Button.prototype.setEnabled = function (newEnableState)
  * Button.getEnabled                                                   */ /**
  *
  * This method retrieves the current enable state of the button.
+ * @export
  *
  **************************************************************************/
-Button.prototype.getEnabled = function ()
+pearson.brix.Button.prototype.getEnabled = function ()
 {
 	return this.enabled_;
 };

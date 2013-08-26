@@ -16,6 +16,8 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.MultiSelectQuestion');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -123,13 +125,13 @@
  * answers one of which must be selected and submitted to be scored.
  *
  ****************************************************************************/
-function MultiSelectQuestion(config, eventManager)
+pearson.brix.MultiSelectQuestion = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, MultiSelectQuestion);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, MultiSelectQuestion);
 
 	/**
 	 * The scoring engine id of this question.
@@ -266,7 +268,7 @@ function MultiSelectQuestion(config, eventManager)
  * @const
  * @type {string}
  */
-MultiSelectQuestion.autoIdPrefix = "mcQ_auto_";
+pearson.brix.MultiSelectQuestion.autoIdPrefix = "mcQ_auto_";
 
 /* **************************************************************************
  * MultiSelectQuestion.handleSubmitRequested_                       */ /**
@@ -302,7 +304,7 @@ MultiSelectQuestion.prototype.handleSubmitRequested_ = function()
  * @private
  *
  ****************************************************************************/
-MultiSelectQuestion.prototype.handleAnswerSelected_ = function(evt)
+pearson.brix.MultiSelectQuestion.prototype.handleAnswerSelected_ = function(evt)
 {
 	if (evt.numSelected > 0) {
 	 	this.submitButton.setText(this.buttonSubmitText);
@@ -323,7 +325,7 @@ MultiSelectQuestion.prototype.handleAnswerSelected_ = function(evt)
  * @private
  *
  ****************************************************************************/
-MultiSelectQuestion.prototype.handleExceedSelection_ = function()
+pearson.brix.MultiSelectQuestion.prototype.handleExceedSelection_ = function()
 {
 	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
 
@@ -342,7 +344,7 @@ MultiSelectQuestion.prototype.handleExceedSelection_ = function()
  * @private
  *
  ****************************************************************************/
-MultiSelectQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
+pearson.brix.MultiSelectQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
 {
 	this.responses.push(responseDetails);
 
@@ -366,7 +368,7 @@ MultiSelectQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
  *								 question element tree to.
  *
  ****************************************************************************/
-MultiSelectQuestion.prototype.draw = function(container)
+pearson.brix.MultiSelectQuestion.prototype.draw = function(container)
 {
 	this.lastdrawn.container = container;
 	
@@ -406,7 +408,7 @@ MultiSelectQuestion.prototype.draw = function(container)
  * @return {Object} the choice which is currently selected or null.
  *
  ****************************************************************************/
-MultiSelectQuestion.prototype.selectedItems = function ()
+pearson.brix.MultiSelectQuestion.prototype.selectedItems = function ()
 {
 	return this.choiceWidget.selectedItems();
 };
@@ -422,12 +424,12 @@ MultiSelectQuestion.prototype.selectedItems = function ()
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-MultiSelectQuestion.prototype.selectItemAtIndex = function (index)
+pearson.brix.MultiSelectQuestion.prototype.selectItemAtIndex = function (index)
 {
 	this.choiceWidget.selectItemAtIndex(index);
 };
 
-MultiSelectQuestion.prototype.unselectItemAtIndex = function (index)
+pearson.brix.MultiSelectQuestion.prototype.unselectItemAtIndex = function (index)
 {
 	this.choiceWidget.unselectItemAtIndex(index);
 };

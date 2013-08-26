@@ -43,7 +43,21 @@
  * is a callback associated w/ the request.
  *
  ****************************************************************************/
-function SubmitManager(eventManager, answerMan)
+
+goog.provide('pearson.brix.SubmitManager');
+
+/* **************************************************************************
+ * SubmitManager                                                              */ /**
+ *
+ * The SubmitManager manages the submission.
+ *
+ * @constructor
+ * @export
+ *
+ * @param {!EventManager}	eventManager		-The reference to the EventManager
+ * @param {!Object}		answerMan			-The reference to the AnserManager
+ */
+pearson.brix.SubmitManager = function(eventManager, answerMan)
 {
 
 	/**
@@ -100,13 +114,14 @@ function SubmitManager(eventManager, answerMan)
  *
  * Register the given question widget w/ this SubmitManager to handle any
  * submitScoreRequest events the widget may publish.
+ * @export
  *
  * @param {Object}	questionWidget		-The question widget that may submit a
  * 										 request for an answer to an activity to
  * 										 be scored.
  *
  ****************************************************************************/
-SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
+pearson.brix.SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
 {
 	var that = this;
 	this.eventManager.subscribe(questionWidget.submitScoreRequestEventId,
@@ -126,7 +141,7 @@ SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
  * @private
  *
  ****************************************************************************/
-SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
+pearson.brix.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 {
 	var pendingDetails =
 		{
@@ -166,7 +181,7 @@ SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
  * moved to this new method. -mjl
  *
  ****************************************************************************/
-SubmitManager.prototype.submitForScoring_ = function(submitDetails)
+pearson.brix.SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 {
 	// pass the submission on to the scoring engine. This will probably be
 	// via the ActivityManager I'd think
@@ -200,15 +215,17 @@ SubmitManager.prototype.submitForScoring_ = function(submitDetails)
  * Activity Manager which will know where the answer engine is, either 
  * a server-side thing (The Player Backend), a client-side thing (probably also
  * related to the Player), or the PAF Hub.
+ * @export
  *
  * @param {string}	submission	-The student's submission
  *
  ****************************************************************************/
-SubmitManager.prototype.submit = function (submission)
+pearson.brix.SubmitManager.prototype.submit = function (submission)
 {
 	// pass the submission on to the answer engine.  This will probably be
 	// via the ActivityManager I'd think
-	var submissionResponse = answerMan(
+	// @todo: probably this will have to be fixed with new number of arguments for submitAnswer
+	var submissionResponse = this.answerMan.submitAnswer(
 			{	sequenceNode: this.sequenceNodeID,
 				container: this.container,
 			}, submission);
@@ -227,6 +244,7 @@ SubmitManager.prototype.submit = function (submission)
  * place for widgets to access it while the actual details of the response
  * are worked out. It might otherwise be a utility function or a static class
  * method on the base class of question widgets.
+ * @export
  *
  * @param {!d3.selection}
  * 					container		-The html element to write the formatted
@@ -243,7 +261,7 @@ SubmitManager.prototype.submit = function (submission)
  * a whole number that could be used as an index w/o manipulation. -mjl
  *
  ****************************************************************************/
-SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
+pearson.brix.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
 {
 	var responseFormat = {
 			correct: {

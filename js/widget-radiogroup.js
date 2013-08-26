@@ -14,6 +14,8 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.RadioGroup');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -84,6 +86,7 @@
  *
  * @constructor
  * @implements {IWidget}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this RadioGroup
  * @param {string|undefined}
@@ -103,7 +106,7 @@
  * select one of the choices by selecting a radio button next to the choice.
  *
  ****************************************************************************/
-function RadioGroup(config, eventManager)
+pearson.brix.RadioGroup = function(config, eventManager)
 {
 	var that = this;
 	
@@ -111,7 +114,7 @@ function RadioGroup(config, eventManager)
 	 * A unique id for this instance of the radio group widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, RadioGroup);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.RadioGroup);
 
 	/**
 	 * The list of choices presented by the RadioGroup.
@@ -162,19 +165,20 @@ function RadioGroup(config, eventManager)
  * @const
  * @type {string}
  */
-RadioGroup.autoIdPrefix = "rg_auto_";
+pearson.brix.RadioGroup.autoIdPrefix = "rg_auto_";
 
 /* **************************************************************************
  * RadioGroup.draw                                                     */ /**
  *
  * Draw this RadioGroup in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the radio
  *								 group element tree to.
  *
  ****************************************************************************/
-RadioGroup.prototype.draw = function(container)
+pearson.brix.RadioGroup.prototype.draw = function(container)
 {
 	this.lastdrawn.container = container;
 
@@ -241,12 +245,13 @@ RadioGroup.prototype.draw = function(container)
  * Note that this does not return the index of the checked item.
  * @todo: implement lite for this and keys so it can be used as a regular
  * ui selection widget for mutually exclusive selections.
+ * @export
  *
  * @return {Object} the radio group data corresponding to the choice 
  * which is currently selected or null.
  *
  ****************************************************************************/
-RadioGroup.prototype.selectedItem = function ()
+pearson.brix.RadioGroup.prototype.selectedItem = function ()
 {
 	var selectedInputSelector = "div.widgetRadioGroup input[name='" + this.id + "']:checked";
 	var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
@@ -258,11 +263,12 @@ RadioGroup.prototype.selectedItem = function ()
  *
  * Select the choice in the radio group at the given index. If the choice is
  * already selected, do nothing.
+ * @export
  *
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-RadioGroup.prototype.selectItemAtIndex = function (index)
+pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 {
 	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetRadioGroup input");
 	var selectedInput = choiceInputs[0][index];
@@ -283,11 +289,12 @@ RadioGroup.prototype.selectItemAtIndex = function (index)
  *
  * Get a function which returns the string that should be prefixed to the
  * choice at a given index
+ * @export
  *
  * @private
  *
  ****************************************************************************/
-RadioGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
+pearson.brix.RadioGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 {
 	var formatIndexUsing =
 	{
