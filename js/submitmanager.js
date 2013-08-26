@@ -43,8 +43,21 @@
  * is a callback associated w/ the request.
  *
  ****************************************************************************/
-function SubmitManager(eventManager)
+function SubmitManager(eventManager, answerMan)
 {
+
+	/**
+	 * The answerMan provides feedback to submissions 
+	 * @type {EventManager}
+	 */
+	if (answerMan === undefined) {
+		this.answerMan = new AnswerMan();
+	}
+	else 
+	{
+		this.answerMan = answerMan;
+	}
+	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
 	 * @type {EventManager}
@@ -160,7 +173,7 @@ SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 	// todo: Although we're getting a synchronous response here, we should
 	// enhance this to have the "answerMan" give us an asynchronous
 	// response, probably via an eventManager event. -mjl
-	var submissionResponse = answerMan(submitDetails.sequenceNodeId,
+	var submissionResponse = this.answerMan.submitAnswer(submitDetails.sequenceNodeId,
 										submitDetails.answer, submitDetails.value);
 
 	// We handle the reply from the scoring engine (in the event handler eventually)

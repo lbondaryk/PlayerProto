@@ -118,10 +118,7 @@
 	var pollingAnswerProvider = new PollingAnswerProvider();
 
 	// create submit manager
-	var submitManagerConfig = {
-		answerProvider: pollingAnswerProvider
-	};
-	var submitManager = new SubmitManager(submitManagerConfig, eventManager);
+	var submitManager = new SubmitManager(eventManager, pollingAnswerProvider);
 	
 	submitManager.handleRequestsFrom(Q1);
 

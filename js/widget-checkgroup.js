@@ -239,24 +239,43 @@ CheckGroup.prototype.draw = function(container)
 	
 	var choiceInputs = widgetGroup.selectAll("div.widgetCheckGroup input[name='" + this.id + "']");
 
-	// Guard against exceeding max number of selects
+	// The reason I am using 'click' instead of 'chance' event is because preventDefault() work 
+	// on 'change' event and not on 'change'
+	// * interestingly 'change' is triggered prior to 'click'  
 	choiceInputs
 		.on("click", function (d)
 				{
 					var selInputs = that.selectedInputs()[0];
-					// if 
+					var numSelected = (selInputs) ? selInputs.length : 0;
+					// Guard against exceeding max number of selects
 					if (selInputs && selInputs.length > that.maxSelects) {
 						that.eventManager.publish(that.exceedSelectionEventId, {max: that.maxSelects});
+						// Unselect if select exceeded
 						d3.event.preventDefault();
+					} else {
+						// Notice that depending on checked value, the attribute name is selectedKey or unselected 
+						if (d3.event.target.checked) {
+							that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey, numSelected:numSelected});
+						}
+						else 
+						{
+							that.eventManager.publish(that.selectedEventId, {unselectKey: d.answerKey, numSelected:numSelected});
+						}
 					}
 				});
 
+	/*
 	choiceInputs
 		.on("change", function (d)
 				{
-					that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey});
+					var selInputs = that.selectedInputs()[0];
+					var numSelected = (selInputs) ? selInputs.length : 0;
+					if (numSelected <= that.maxSelects) {
+						that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey, numSelected:numSelected});
+					}
 				});
-	
+	*/
+
 	this.lastdrawn.widgetGroup = widgetGroup;
 
 }; // end of CheckGroup.draw()
@@ -302,7 +321,14 @@ CheckGroup.prototype.selectedItems = function ()
  ****************************************************************************/
 CheckGroup.prototype.selectItemAtIndex = function (index)
 {
-	// @todo: check that the number of selected does not exceed the max allowed
+	// Guard against exceeding max number of selects
+	var selInputs = this.selectedInputs()[0];
+	var numSelected = (selInputs) ? selInputs.length : 0;
+	if (numSelected >= this.maxSelects) {
+		this.eventManager.publish(this.exceedSelectionEventId, {max: this.maxSelects});
+		return;
+	}
+
 	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetCheckGroup input");
 	var selectedInput = choiceInputs[0][index];
 
@@ -315,8 +341,30 @@ CheckGroup.prototype.selectItemAtIndex = function (index)
 	selectedInput.checked = true;
 
 	// @todo: serialize all selected keys and send as array
-	this.eventManager.publish(this.selectedEventId, {selectKey: d3.select(selectedInput).datum().answerKey});
+	this.eventManager.publish(this.selectedEventId, 
+		{selectKey: d3.select(selectedInput).datum().answerKey, numSelected: numSelected});
 };
+
+ /*
+  *
+  ****************************************************************************/
+CheckGroup.prototype.unselectItemAtIndex = function (index)
+{
+	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetCheckGroup input");
+	var selectedInput = choiceInputs[0][index];
+
+	if (!selectedInput.checked)
+	{
+		return;
+	}
+
+	// choice at index is not selected, so select it and publish selected event
+	selectedInput.checked = false;
+
+	// @todo: Maybe changing to 'changedEventId' to keep consistent with HTML and also 
+	//        the semantics supports checked as well as unchecked
+	this.eventManager.publish(this.selectedEventId, {unselectKey: d3.select(selectedInput).datum().answerKey});
+}
 
 /* **************************************************************************
  * CheckGroup.getChoiceNumberToDisplayFn_                              */ /**

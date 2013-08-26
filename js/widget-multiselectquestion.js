@@ -1,10 +1,10 @@
 /* **************************************************************************
- * $Workfile:: widget-MultiSelectMultipleChoiceQuestion.js                             $
+ * $Workfile:: widget-MultiSelectQuestion.js                             $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the MultiSelectMultipleChoiceQuestion widget.
+ * @fileoverview Implementation of the MultiSelectQuestion widget.
  *
- * The MultiSelectMultipleChoiceQuestion widget displays a question and a set of possible
+ * The MultiSelectQuestion widget displays a question and a set of possible
  * answers. 
  * This is analogous to MultipleChoiceQuestion with the difference that many 
  * selections (max configurable) is possible.
@@ -52,7 +52,7 @@
 			numberFormat: "latin-upper"
 		};
 	
-	// MultiSelectMultipleChoiceQuestion widget config
+	// MultiSelectQuestion widget config
 	var mcqConfig =
 	{
 		id: "Q1",
@@ -62,7 +62,7 @@
 		maxSelects: 2,
 		order: "randomized", //default, even if not specified
 		widget: CheckGroup,
-		widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultiSelectMultipleChoiceQuestion
+		widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultiSelectQuestion
 	};
 });
 
@@ -83,17 +83,17 @@
 
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion                                              */ /**
+ * MultiSelectQuestion                                              */ /**
  *
- * Constructor function for MultiSelectMultipleChoiceQuestion brix.
+ * Constructor function for MultiSelectQuestion brix.
  *
  * @constructor
  * @implements {IWidget}
  * @implements {IQuestion}
  *
- * @param {Object}		config			-The settings to configure this MultiSelectMultipleChoiceQuestion
+ * @param {Object}		config			-The settings to configure this MultiSelectQuestion
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this MultiSelectMultipleChoiceQuestion.
+ * 						config.id		-String to uniquely identify this MultiSelectQuestion.
  * 										 if undefined a unique id will be assigned.
  * @param {string}		config.questionId
  * 										-Scoring engine Id of this question
@@ -101,7 +101,7 @@
  * 										 be answered by choosing one of the presented choices.
  * @param {Array.<Answer>}
  *						config.choices	-The list of choices (answers) to be presented
- *										 by the MultiSelectMultipleChoiceQuestion.
+ *										 by the MultiSelectQuestion.
  * @param {int}
  *						config.maxSelects -The maximum number of items that can be selected
  *
@@ -119,17 +119,17 @@
  * 										 and subscribing to them.
  *
  * @classdesc
- * The MultiSelectMultipleChoiceQuestion widget displays a question and a set of possible
+ * The MultiSelectQuestion widget displays a question and a set of possible
  * answers one of which must be selected and submitted to be scored.
  *
  ****************************************************************************/
-function MultiSelectMultipleChoiceQuestion(config, eventManager)
+function MultiSelectQuestion(config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, MultiSelectMultipleChoiceQuestion);
+	this.id = getIdFromConfigOrAuto(config, MultiSelectQuestion);
 
 	/**
 	 * The scoring engine id of this question.
@@ -182,11 +182,14 @@ function MultiSelectMultipleChoiceQuestion(config, eventManager)
 	 */
 	this.choiceWidget = new config.widget(widgetConfig, eventManager);
 
+	this.buttonPromptText = "Select an answer above";
+	this.buttonSubmitText = "Submit Answer";
+
 	// The configuration options for the submit button
 	var submitBtnConfig =
 	{
 		id: this.id + "_sbmtBtn",
-		text: "Select an answer above",
+		text: this.buttonPromptText,
 		enabled: false
 	};
 
@@ -244,7 +247,7 @@ function MultiSelectMultipleChoiceQuestion(config, eventManager)
 	// subscribe to events of our 'child' widgets
 	var that = this;
 	eventManager.subscribe(this.submitButton.pressedEventId, function () {that.handleSubmitRequested_();});
-	eventManager.subscribe(this.choiceWidget.selectedEventId, function () {that.handleAnswerSelected_();});
+	eventManager.subscribe(this.choiceWidget.selectedEventId, function (evt) {that.handleAnswerSelected_(evt);});
 	eventManager.subscribe(this.choiceWidget.exceedSelectionEventId, function () {that.handleExceedSelection_();});
 
 	/**
@@ -256,24 +259,24 @@ function MultiSelectMultipleChoiceQuestion(config, eventManager)
 			container: null,
 			widgetGroup: null,
 		};
-} // end of MultiSelectMultipleChoiceQuestion constructor
+} // end of MultiSelectQuestion constructor
 
 /**
- * Prefix to use when generating ids for instances of MultiSelectMultipleChoiceQuestion.
+ * Prefix to use when generating ids for instances of MultiSelectQuestion.
  * @const
  * @type {string}
  */
-MultiSelectMultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
+MultiSelectQuestion.autoIdPrefix = "mcQ_auto_";
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion.handleSubmitRequested_                       */ /**
+ * MultiSelectQuestion.handleSubmitRequested_                       */ /**
  *
  * Handle the pressed event from the submit button which means that we want
  * to fire the submit answer requested event.
  * @private
  *
  ****************************************************************************/
-MultiSelectMultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
+MultiSelectQuestion.prototype.handleSubmitRequested_ = function()
 {
 	var that = this;
 	var answerKeys = [].map.call(this.choiceWidget.selectedItems(), function(item){
@@ -292,28 +295,35 @@ MultiSelectMultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
 };
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion.handleAnswerSelected_             */ /**
+ * MultiSelectQuestion.handleAnswerSelected_             */ /**
  *
  * Handle the selected event from the choice widget which means that the
  * submit button can be enabled.
  * @private
  *
  ****************************************************************************/
-MultiSelectMultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
+MultiSelectQuestion.prototype.handleAnswerSelected_ = function(evt)
 {
-	this.submitButton.setText("Submit Answer");
-	this.submitButton.setEnabled(true);
+	if (evt.numSelected > 0) {
+	 	this.submitButton.setText(this.buttonSubmitText);
+		this.submitButton.setEnabled(true);
+	}  
+	else 
+	{
+		this.submitButton.setText(this.buttonPromptText);
+		this.submitButton.setEnabled(false);
+	} 
 };
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion.handleExceedSelection_             */ /**
+ * MultiSelectQuestion.handleExceedSelection_             */ /**
  *
  * Handle the exceedSelection event from the choice widget which means that the
  * user tried to select beyond the max number of selects.
  * @private
  *
  ****************************************************************************/
-MultiSelectMultipleChoiceQuestion.prototype.handleExceedSelection_ = function()
+MultiSelectQuestion.prototype.handleExceedSelection_ = function()
 {
 	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
 
@@ -323,7 +333,7 @@ MultiSelectMultipleChoiceQuestion.prototype.handleExceedSelection_ = function()
 
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion.handleSubmitResponse_                        */ /**
+ * MultiSelectQuestion.handleSubmitResponse_                        */ /**
  *
  * Handle the response to submitting an answer.
  *
@@ -332,7 +342,7 @@ MultiSelectMultipleChoiceQuestion.prototype.handleExceedSelection_ = function()
  * @private
  *
  ****************************************************************************/
-MultiSelectMultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
+MultiSelectQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
 {
 	this.responses.push(responseDetails);
 
@@ -347,23 +357,23 @@ MultiSelectMultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(res
 };
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion.draw                                         */ /**
+ * MultiSelectQuestion.draw                                         */ /**
  *
- * Draw this MultiSelectMultipleChoiceQuestion in the given container.
+ * Draw this MultiSelectQuestion in the given container.
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the
  *								 question element tree to.
  *
  ****************************************************************************/
-MultiSelectMultipleChoiceQuestion.prototype.draw = function(container)
+MultiSelectQuestion.prototype.draw = function(container)
 {
 	this.lastdrawn.container = container;
 	
 	// make a div to hold the select one question
 	// YSAP - Let's make a catalog of all classes for styling.
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetMultipleChoiceQuestion")
+		.attr("class", "widgetMultiSelectQuestion")
 		.attr("id", this.id);
 
 	var question = widgetGroup.append("p")
@@ -385,10 +395,10 @@ MultiSelectMultipleChoiceQuestion.prototype.draw = function(container)
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 
-}; // end of MultiSelectMultipleChoiceQuestion.draw()
+}; // end of MultiSelectQuestion.draw()
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion.selectedItem                                 */ /**
+ * MultiSelectQuestion.selectedItem                                 */ /**
  *
  * Return the selected choice from the choice widget or null if nothing has been
  * selected.
@@ -396,13 +406,13 @@ MultiSelectMultipleChoiceQuestion.prototype.draw = function(container)
  * @return {Object} the choice which is currently selected or null.
  *
  ****************************************************************************/
-MultiSelectMultipleChoiceQuestion.prototype.selectedItems = function ()
+MultiSelectQuestion.prototype.selectedItems = function ()
 {
 	return this.choiceWidget.selectedItems();
 };
 
 /* **************************************************************************
- * MultiSelectMultipleChoiceQuestion.selectItemAtIndex                            */ /**
+ * MultiSelectQuestion.selectItemAtIndex                            */ /**
  *
  * Select the choice in the choice widget at the given index. If the choice is
  * already selected, do nothing. The index is the displayed choice index and
@@ -412,8 +422,12 @@ MultiSelectMultipleChoiceQuestion.prototype.selectedItems = function ()
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-MultiSelectMultipleChoiceQuestion.prototype.selectItemAtIndex = function (index)
+MultiSelectQuestion.prototype.selectItemAtIndex = function (index)
 {
 	this.choiceWidget.selectItemAtIndex(index);
 };
 
+MultiSelectQuestion.prototype.unselectItemAtIndex = function (index)
+{
+	this.choiceWidget.unselectItemAtIndex(index);
+};
