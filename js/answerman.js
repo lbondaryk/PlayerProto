@@ -14,6 +14,8 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.utils.AnswerMan');
+
 /* **************************************************************************
  * answerMan                                                           */ /**
  *
@@ -26,12 +28,12 @@
 // YSAP - Changed from function to class with method.
 // Proposal: change from AnswerMan to EvalProvider
 
-var AnswerMan = function()
+pearson.utils.AnswerMan = function()
 {
 
 } 
 
-AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
+pearson.utils.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
 { 
 	 
 	//lookup the student answer in the answer key in fakeactivitydb.js, which

@@ -15,12 +15,14 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.BarChart');
+
 // Sample BarChart constructor configuration
 (function()
 {
 	var bc1Config = {
 			id: "bc1",
-			Data: [barData1],
+			Data: [],
 			type: "grouped",
 			xAxisFormat: { type: "linear",
 						   mode: "reverse",
@@ -40,6 +42,7 @@
  * Constructor function for a BarChart bric.
  *
  * @constructor
+ * @export
  *
  * @param {Object}		config			-The settings to configure this BarChart
  * @param {string}		config.id		-String to uniquely identify this BarChart.
@@ -68,13 +71,14 @@
  *
  **************************************************************************/
 
-function BarChart(config, eventManager)
+
+pearson.brix.BarChart = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the bar chart widget
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, BarChart);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.BarChart);
 
 	/**
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
@@ -155,7 +159,7 @@ function BarChart(config, eventManager)
  * @const
  * @type {string}
  */
-BarChart.autoIdPrefix = "auto_";
+pearson.brix.BarChart.autoIdPrefix = "auto_";
 
 
 /* **************************************************************************
@@ -163,6 +167,7 @@ BarChart.autoIdPrefix = "auto_";
  *
  * The LineGraph widget provides a line (or scatter) graph visualization
  * of sets of data points.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container svg element to append the graph element tree to.
@@ -171,7 +176,7 @@ BarChart.autoIdPrefix = "auto_";
  * @param {number}	size.width	-The width for the graph.
  *
  ****************************************************************************/
-BarChart.prototype.draw = function(container, size)
+pearson.brix.BarChart.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -245,7 +250,7 @@ BarChart.prototype.draw = function(container, size)
 		//label on the axis.
 		var indices = [];
 
-		for (i = 0; i < this.data.length; i++)
+		for (var i = 0; i < this.data.length; i++)
 		{
 			indices.push(i); //needed to space out grouped barcharts
 		}
@@ -257,7 +262,7 @@ BarChart.prototype.draw = function(container, size)
 			
 			//TEST: The last index  should produce the topmost bar
 			//appearing at y = 0
-		console.log("Grouped barChart last bar mapped to 0 offset: ",
+		window.console.log("Grouped barChart last bar mapped to 0 offset: ",
 			groupScale(this.data.length - 1) == 0);
 	};
 
@@ -278,7 +283,7 @@ BarChart.prototype.draw = function(container, size)
 	// Draw any 'after' child widgets that got appended after draw was called
 	this.childWidgets.afterData.forEach(this.drawWidget_, this);
 	
-}; // end of barChart.draw()
+}; // end of pearson.brix.BarChart.draw()
 
 
 /* **************************************************************************
@@ -286,9 +291,10 @@ BarChart.prototype.draw = function(container, size)
  *
  * Redraw the line graph data as it may have been modified. It will be
  * redrawn into the same container area as it was last drawn.
+ * @export
  *
  ****************************************************************************/
-BarChart.prototype.redraw = function ()
+pearson.brix.BarChart.prototype.redraw = function ()
 {
 	// TODO: We may want to create new axes if the changed data would cause their
 	//       min/max to have changed, but for now we're going to keep them.
@@ -312,7 +318,7 @@ BarChart.prototype.redraw = function ()
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-BarChart.prototype.drawWidget_ = function (widget)
+pearson.brix.BarChart.prototype.drawWidget_ = function (widget)
 {
 	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
 	widget.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
@@ -331,7 +337,7 @@ BarChart.prototype.drawWidget_ = function (widget)
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-BarChart.prototype.redrawWidget_ = function (widget)
+pearson.brix.BarChart.prototype.redrawWidget_ = function (widget)
 {
 	widget.redraw();
 };
@@ -345,7 +351,7 @@ BarChart.prototype.redrawWidget_ = function (widget)
  *
  ****************************************************************************/
  
- BarChart.prototype.drawData_ = function ()
+ pearson.brix.BarChart.prototype.drawData_ = function ()
 {
 	// local var names are easier to read (shorter)
 	var barId = this.lastdrawn.barId;
@@ -453,6 +459,7 @@ BarChart.prototype.redrawWidget_ = function (widget)
  * of the data area and any widgets appended earlier. If append
  * is called before draw has been called, then the appended widget(s) will be
  * drawn when draw is called.
+ * @export
  *
  * @param {!IWidget|Array.<IWidget>}
  * 						svgWidgets	-The widget or array of widgets to be drawn in
@@ -465,7 +472,7 @@ BarChart.prototype.redrawWidget_ = function (widget)
  * 									 to "after".
  *
  ****************************************************************************/
-BarChart.prototype.append = function(svgWidgets, zOrder)
+pearson.brix.BarChart.prototype.append = function(svgWidgets, zOrder)
 {
 	if (!Array.isArray(svgWidgets))
 	{
@@ -488,7 +495,7 @@ BarChart.prototype.append = function(svgWidgets, zOrder)
 		this.draw(container, size);
 	}
 		
-}; // end of BarChart.append()
+}; // end of pearson.brix.BarChart.append()
 
 /* **************************************************************************
  * BarChart.append_one_                                                */ /**
@@ -497,6 +504,7 @@ BarChart.prototype.append = function(svgWidgets, zOrder)
  * This can handle drawing the widget after the data even after the data
  * has been drawn, but it does not handle drawning the widget before when
  * the data has already been drawn, so the caller must deal with that situation.
+ * @export
  *
  * @param {!IWidget}	widget	-The widget which is to be drawn in this line
  *								 graph's data area.
@@ -510,7 +518,7 @@ BarChart.prototype.append = function(svgWidgets, zOrder)
  * @private
  *
  ****************************************************************************/
-BarChart.prototype.append_one_ = function(widget, zOrder)
+pearson.brix.BarChart.prototype.append_one_ = function(widget, zOrder)
 {
 	if (zOrder === "before")
 	{
@@ -524,7 +532,7 @@ BarChart.prototype.append_one_ = function(widget, zOrder)
 			this.drawWidget_(widget);
 	}
 		
-} // end of BarChart.append_one_()
+} // end of pearson.brix.BarChart.append_one_()
 
 
 /* **************************************************************************
@@ -532,14 +540,15 @@ BarChart.prototype.append_one_ = function(widget, zOrder)
  *
  * Highlight the members of the collection associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
+ * @export
  *
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-BarChart.prototype.lite = function(liteKey)
+pearson.brix.BarChart.prototype.lite = function(liteKey)
 {
 	
-	console.log("TODO: log fired BarChart highlite " + liteKey);
+	window.console.log("TODO: log fired BarChart highlite " + liteKey);
 	
 	// Turn off all current highlights
 	var allBars = this.lastdrawn.bars;
@@ -562,7 +571,7 @@ BarChart.prototype.lite = function(liteKey)
 
 	if (barsToLite.empty())
 	{
-		console.log("No key '" + liteKey + "' in bar chart " + this.id );
+		window.console.log("No key '" + liteKey + "' in bar chart " + this.id );
 	}
 
 };
