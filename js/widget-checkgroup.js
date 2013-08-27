@@ -17,6 +17,8 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.CheckGroup');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -87,6 +89,7 @@
  *
  * @constructor
  * @implements {IWidget}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this CheckGroup
  * @param {string|undefined}
@@ -109,7 +112,7 @@
  * select one of the choices by selecting a Check button next to the choice.
  *
  ****************************************************************************/
-function CheckGroup(config, eventManager)
+pearson.brix.CheckGroup = function(config, eventManager)
 {
 	var that = this;
 	
@@ -117,7 +120,7 @@ function CheckGroup(config, eventManager)
 	 * A unique id for this instance of the Check group widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, CheckGroup);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CheckGroup);
 
 
 	/**
@@ -177,7 +180,7 @@ function CheckGroup(config, eventManager)
  * @const
  * @type {string}
  */
-CheckGroup.autoIdPrefix = "cg_auto_";
+pearson.brix.CheckGroup.autoIdPrefix = "cg_auto_";
 
 /* **************************************************************************
  * CheckGroup.draw                                                     */ /**
@@ -189,7 +192,7 @@ CheckGroup.autoIdPrefix = "cg_auto_";
  *								 group element tree to.
  *
  ****************************************************************************/
-CheckGroup.prototype.draw = function(container)
+pearson.brix.CheckGroup.prototype.draw = function(container)
 {
 	this.lastdrawn.container = container;
 
@@ -288,7 +291,7 @@ CheckGroup.prototype.draw = function(container)
  * @return {Object} the list of selected input nodes.
  *
  ****************************************************************************/
-CheckGroup.prototype.selectedInputs = function ()
+pearson.brix.CheckGroup.prototype.selectedInputs = function ()
 {
 	var selectedInputsSelector = "div.widgetCheckGroup input[name='" + this.id + "']:checked";
 	return this.lastdrawn.widgetGroup.selectAll(selectedInputsSelector);
@@ -304,7 +307,7 @@ CheckGroup.prototype.selectedInputs = function ()
  *                  or null.
  *
  ****************************************************************************/
-CheckGroup.prototype.selectedItems = function ()
+pearson.brix.CheckGroup.prototype.selectedItems = function ()
 {
 	var selectedInputs = this.selectedInputs();
 	return !selectedInputs.empty() ? selectedInputs.data() : null;
@@ -319,7 +322,7 @@ CheckGroup.prototype.selectedItems = function ()
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-CheckGroup.prototype.selectItemAtIndex = function (index)
+pearson.brix.CheckGroup.prototype.selectItemAtIndex = function (index)
 {
 	// Guard against exceeding max number of selects
 	var selInputs = this.selectedInputs()[0];
@@ -348,7 +351,7 @@ CheckGroup.prototype.selectItemAtIndex = function (index)
  /*
   *
   ****************************************************************************/
-CheckGroup.prototype.unselectItemAtIndex = function (index)
+pearson.brix.CheckGroup.prototype.unselectItemAtIndex = function (index)
 {
 	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetCheckGroup input");
 	var selectedInput = choiceInputs[0][index];
@@ -375,7 +378,7 @@ CheckGroup.prototype.unselectItemAtIndex = function (index)
  * @private
  *
  ****************************************************************************/
-CheckGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
+pearson.brix.CheckGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 {
 	var formatIndexUsing =
 	{

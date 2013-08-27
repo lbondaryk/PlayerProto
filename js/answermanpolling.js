@@ -14,24 +14,39 @@
  *
  * **************************************************************************/
 
-/**
- * Constructor
- */
-var AnswerManPolling = function()
+goog.provide('pearson.brix.AnswerManPolling');
+
+
+/* **************************************************************************
+ * AnswerMan                                                              */ /**
+ *
+ * The AnswerMan widget creates a clickable html button that publishes events.
+ *
+ * @constructor
+ * @export
+ *
+ **************************************************************************/
+pearson.brix.AnswerManPolling = function()
 {
 
 }
 
-/**
- * Process the answer.
+/* **************************************************************************
+ * AnswerMan.submitAnswer                                              */ /**
  *
- * @param {string}	studAnswerKey	- The student's answer key
+ * Mock scoring engine.
+ * @export
+ *
+ * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
+ * @param {string} 		studAnswerKey		-The student's answer key.
+ * @param {string} 		studAnswerValue		-The student's answer value.
+ *
  * @return {object} - The object literal 
  * 			{submission:<the studAnswerKey>,
  *			feedback: <what will be displayed back to the student>,
  *			score: <the numeric score>}
- */
-AnswerManPolling.prototype.submitAnswer = function(sequenceNode, studAnswerKey, studAnswerValue) 
+ ****************************************************************************/
+pearson.brix.AnswerManPolling.prototype.submitAnswer = function(sequenceNode, studAnswerKey, studAnswerValue) 
 {
 	if (studAnswerKey in this.statData) {
 		this.statData[studAnswerKey] = this.statData[studAnswerKey] + 1;
@@ -51,4 +66,4 @@ AnswerManPolling.prototype.submitAnswer = function(sequenceNode, studAnswerKey, 
 	return scored;
 }
 
-AnswerManPolling.prototype.statData = {};
+pearson.brix.AnswerManPolling.prototype.statData = {};

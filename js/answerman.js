@@ -14,31 +14,43 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.utils.AnswerMan');
-
-/* **************************************************************************
- * answerMan                                                           */ /**
- *
- * Mock scoring engine.
- *
- * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
- * @param {string} 		studAnswer		-The student's answer.
- ****************************************************************************/
+goog.provide('pearson.brix.AnswerMan');
+goog.require('pearson.brix.test');
 
 // YSAP - Changed from function to class with method.
 // Proposal: change from AnswerMan to EvalProvider
 
-pearson.utils.AnswerMan = function()
+/* **************************************************************************
+ * AnswerMan                                                              */ /**
+ *
+ * The AnswerMan widget creates a clickable html button that publishes events.
+ *
+ * @constructor
+ * @export
+ *
+ **************************************************************************/
+pearson.brix.AnswerMan = function()
 {
 
 } 
 
-pearson.utils.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
+
+/* **************************************************************************
+ * AnswerMan.submitAnswer                                              */ /**
+ *
+ * Mock scoring engine.
+ * @export
+ *
+ * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
+ * @param {string} 		studAnswerKey		-The student's answer key.
+ * @param {string} 		studAnswerValue		-The student's answer value.
+ ****************************************************************************/
+pearson.brix.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
 { 
 	 
 	//lookup the student answer in the answer key in fakeactivitydb.js, which
 	//got loaded with the page
-	
+	var activities = pearson.brix.test.activities;
 	var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
 	var solution = (studAnswerKey in activity) ? activity[studAnswerKey] : "solution key not found";
 

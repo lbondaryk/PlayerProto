@@ -81,21 +81,28 @@
     <script src="js/widget-markergroup.js"></script>
 	<script src="js/widget-barchart.js"></script>
 
-	<script src="js/widget-multiplechoicequestion.js"></script>
-	-->
 	<script src="js/widget-radiogroup.js"></script>
-	<script src="js/widget-selectgroup.js"></script>
 	<script src="js/widget-button.js"></script>
-	<script src="js/widget-linegraph.js"></script>
-	<script src="js/widget-labelgroup.js"></script>
-	<script src="js/submitmanager.js"></script>
+	<script src="js/widget-multiplechoicequestion.js"></script>
 	<script src="js/answerman.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/submitmanager.js"></script>
+	-->
+	<script src="js/widget-selectgroup.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
 
 <script>
 
 	var eventManager = new pearson.utils.EventManager();
-	var submitManager = new SubmitManager(eventManager, new AnswerMan());
+
+	var Button = pearson.brix.Button;
+	var RadioGroup = pearson.brix.RadioGroup;
+	var AnswerMan = pearson.brix.AnswerMan;
+	var SubmitManager = pearson.brix.SubmitManager;
+	
+
+	var submitManager = new pearson.brix.SubmitManager(eventManager, new AnswerMan());
 
 	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
 

@@ -205,6 +205,12 @@ var bookConfig = {
             },
             {
                 type: "objective",
+                url: "multiSelectTests.html",
+                id: "n.4.1b",
+                title: "Multiple Select Tests"
+            },
+            {
+                type: "objective",
                 url: "labelScoreTests.html",
                 id: "n.4.2",
                 title: "Labeling Assessment Tests"
