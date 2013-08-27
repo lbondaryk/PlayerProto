@@ -9,9 +9,6 @@
  * A javascript implementation of this pattern is available at:
  * https://github.com/mroderick/PubSubJS
  *
- * @todo: See whether changing to object literal (singleton) makes more sense.
- *        Make it requirejs friendly
- *        Do we need regexp or subtopic matching? 
  *
  * Created on		March 18, 2013
  * @author			Michael Jay Lippert
@@ -164,6 +161,13 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
 	
 	var event = this.events_[eventId];
 	
+	// Guard against duplicate subscription
+	for(var i = 0, length = event.handlers.length; i < length; i++) 
+	{
+		if (event.handlers[i] === handler)
+			return;
+	}
+
 	// Add the handler to the list of handlers of the eventId
 	event.handlers.push(handler);
 
@@ -177,8 +181,62 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
 								  }, '*');	
 
 		window.console.log("[" + location.href +
-						   "] EventManager: published to MessageBroker with topic '" +
-						   eventId + "'");
+						   "] EventManager: subscription of topic '" 
+						   + eventId + "' propagated to MessageBroker");
+	}
+};
+
+/* **************************************************************************
+ * EventManager.unsubscribe                                            */ /**
+ *
+ * EventManager class method to unsubscribe from an event that an object may fire.
+ * @export
+ *
+ * @param {string} eventId		The identifier of the event (aka topic) to unsubstribe from.
+ * @param {Function} handler	The callback function to unsubscribe.  
+ *
+ * Notes:
+ * - We'll need to create some unique token if we want to allow unsubscribe.
+ * - If you subscribe to the same callback multiple times, when the event is
+ *   fired it will be called once for each subscription.
+ ****************************************************************************/
+pearson.utils.EventManager.prototype.unsubscribe = function (eventId, handler)
+{
+	var event = this.events_[eventId];
+
+	if (!event) {
+		return;
+	}
+	
+	// Iterate over the array of handlers and remove the matching one
+	for( var i = 0, length = event.handlers.length; i < length; i++) 
+	{
+		if (event.handlers[i] === handler) {
+			event.handlers.splice( i, 1 );
+					
+			// Reduce the counter and length accordingly
+			i--;
+			length--;
+		}
+	}
+
+	// YSAP - Send to the parent window as well.
+	// For the message structure see messagebroker.js
+	if (this.publishToBroker_)
+	{
+		// If the topic has zero subscribers (handlers)
+		// then remove from the MessageBroker as well.
+		if (event.length == 0) {
+			window.parent.postMessage({ channel: "topic",
+										topic: eventId,
+										action: "unsubscribe"
+									  }, '*');	
+
+			window.console.log("[" + location.href +
+							   "] EventManager: unsubscription of topic '" 
+							   + eventId + "' propagated to MessageBroker");
+		}
+
 	}
 };
 

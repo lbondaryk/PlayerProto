@@ -7,12 +7,16 @@
      * Subscribes to a topic with a a simple handler that counts the number of received messages 
      */
     function subscribeCounter(eventManager, topic, counterTable) {
-        eventManager.subscribe(topic, function() {
+        var handler = function() {
             if (counterTable[topic] == undefined)
                 counterTable[topic] = 1;
             else
                 counterTable[topic] = counterTable[topic] + 1;
-        });
+        }
+
+        eventManager.subscribe(topic, handler);
+
+        return handler;
     }
 
     /**
@@ -42,11 +46,20 @@
             var eventManager = null;
             var topicRcvCounter = {};
             before(function () {
-                eventManager = new EventManager(false); // false to disable communication to MessageBro
+                eventManager = new pearson.utils.EventManager(false); // false to disable communication to MessageBro
 
                 subscribeCounter(eventManager, 'UNO', topicRcvCounter);
+                var dosHandler = subscribeCounter(eventManager, 'DOS', topicRcvCounter);
                 subscribeCounter(eventManager, 'TRES', topicRcvCounter);
+
+                // Double subscribe should result in one single subscription
+                // I.e. Do not receive duplicate events
+                eventManager.subscribe('DOS', dosHandler);
+
                 publishNTimes(eventManager, 'UNO', 1);
+                publishNTimes(eventManager, 'DOS', 2);
+                eventManager.unsubscribe('DOS', dosHandler);
+                publishNTimes(eventManager, 'DOS', 2);
                 publishNTimes(eventManager, 'TRES', 3);
 
             });
@@ -56,9 +69,15 @@
                 expect(topicRcvCounter['UNO']).to.equal(1);
             });
 
+            it('Topic [DOS] should have received 2 messages (2 messages after ununsuscribe are dropped)', function () {
+                // Wait 1 second until test assertion
+                expect(topicRcvCounter['DOS']).to.equal(2);
+            });
+
             it('topic [TRES] should have received 3 messages', function () {
                 expect(topicRcvCounter['TRES']).to.equal(3);
             });
+
         });
         
          

@@ -48,7 +48,8 @@
  *
  */
 
-//goog.require('brixworks.eventmanager_ex');
+goog.require('pearson.utils.EventManager');
+//goog.provide('pearson.brix.MessageBroker');
 
 
 /**
@@ -149,7 +150,7 @@ MessageBroker.prototype.channelHandlers = {};
  * Currently is an instance of EventManager to handle topics.
  * @type {Object}
  */
-MessageBroker.prototype.pubSub = new EventManager(false);
+MessageBroker.prototype.pubSub = new pearson.utils.EventManager(false);
 
 /**
  * MessageBroker.log
@@ -253,21 +254,29 @@ MessageBroker.prototype.subscribe = function (topic, windowsObj) {
 		} 
 
 		var _self = this;
-		var subscribeHandler = function(evt) {
-			if ( frameEntry.node.contentWindow === evt.source) {
-				_self.log(5, "Skipping the iframe where the message was originated.");
-				return;
-			}
-			delete evt._source_; // remove the metadata which is no longer needed
-			_self.log(5, "Posting message to an iframe");
-			frameEntry.node.contentWindow.postMessage(
-				{
-					channel:"bricevent",
-					message:evt.data.message
+
+		// Reuse the same handle for an iframe
+		var subscribeHandler = frameEntry['subscribeHandler'];
+
+		if(!subscribeHandler)
+		{
+			subscribeHandler = function(evt) {
+				if ( frameEntry.node.contentWindow === evt.source) {
+					_self.log(5, "Skipping the iframe where the message was originated.");
+					return;
 				}
-				, '*');
+				delete evt._source_; // remove the metadata which is no longer needed
+				_self.log(5, "Posting message to an iframe");
+				frameEntry.node.contentWindow.postMessage(
+					{
+						channel:"bricevent",
+						message:evt.data.message
+					}
+					, '*');
+			}
+			frameEntry['subscribeHandler'] = subscribeHandler;
 		}
-		frameEntry['subscribeHandler'] = subscribeHandler;
+
 		this.pubSub.subscribe(topic, subscribeHandler);
 		this.log(2, "Frame '"+ frameEntry.node.src +"' subscribed to topic: [" + topic + "]");
 

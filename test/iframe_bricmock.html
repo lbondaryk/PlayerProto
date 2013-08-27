@@ -1,7 +1,9 @@
 <html>
 	<head>
 		<title>IFrame</title>
-		<script src="../js/eventmanager_ex.js"></script>
+		<script src="../../closure/closure-library/closure/goog/base.js"></script>
+    	<script src="../../closure/closure-library/closure/goog/deps.js"></script>
+		<script src="../js/eventmanager.js"></script>
 	</head>
 	<body>
 		<script >
@@ -20,7 +22,7 @@
 			
 			var rxMessageCtr = 0;
 
-            var eventManager = new EventManager();
+            var eventManager = new pearson.utils.EventManager();
 
 
 			window.onload = function(){
