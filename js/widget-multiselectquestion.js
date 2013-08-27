@@ -375,9 +375,9 @@ pearson.brix.MultiSelectQuestion.prototype.draw = function(container)
 	this.lastdrawn.container = container;
 	
 	// make a div to hold the select one question
-	// YSAP - Let's make a catalog of all classes for styling.
+	// @todo [YSAP] - Let's make a catalog of all classes for styling.
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetMultiSelectQuestion")
+		.attr("class", "widgetMultiSelectQuestion widgetMultipleChoiceQuestion")
 		.attr("id", this.id);
 
 	var question = widgetGroup.append("p")

@@ -50,7 +50,7 @@ pearson.brix.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnsw
 	 
 	//lookup the student answer in the answer key in fakeactivitydb.js, which
 	//got loaded with the page
-	var activities = pearson.brix.test.activities.activities;
+	var activities = pearson.brix.test.activities;
 	var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
 	var solution = (studAnswerKey in activity) ? activity[studAnswerKey] : "solution key not found";
 
