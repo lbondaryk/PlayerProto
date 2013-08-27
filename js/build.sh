@@ -60,6 +60,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-radiogroup.js
 	--input=widget-multiplechoicequestion.js
 	--input=widget-checkgroup.js
+	--input=answermanpolling.js
 	--input=widget-multiselectquestion.js
 	--root=.
 	--root=$LIBRARYDIR
