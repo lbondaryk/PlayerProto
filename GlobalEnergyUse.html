@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+
+</head>
+
+<body>
+<div class="container">
+	<div class="span12 lc_ec_page">
+		<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 	<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 		<div class="lc_ec_leading">
+                		<p>Global energy use is blah blah and it blah blah and it's changed and you should zoom the graph to see how it's changed.</p>
+                		<div id="labelTable"></div>
+				</div>
+				<div class="lc_ec_trailing">         
+               			<div id="graph0"></div> 
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+	
+	
+    <script src="js/jquery-latest.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<!-- script src="js/jquery.touchSwipe.min.js"></script-->
+	<script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>    
+	<script src="js/eCourse-master.js"></script>    
+	<script src="js/d3.v3.min.js"></script>
+
+	<script src="js/widget-base.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+    <script src="js/widget-slider.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+	<script src="js/eventmanager.js"></script>
+
+	<script>
+	//the eventManager is an object that is specific to this page.  A new one
+	//is created for every page, and then passed to the widgets in that page
+	//that must talk to it.
+	var eventManager = new EventManager();
+
+	// Create the labeltable, which will be used to drive the various graph views.  
+	var callEm = new Callouts({
+		show: "all",
+		headers: ["Phase (Era)", "Energy use profile"],
+		textBits: [
+		{cols: ["Recorded Use (1800-present)", "Observe how different fuel sources become more or less prominent depending on historical societal pressures."]},
+		{cols: ["Phase 1 (1850-1920)", "Coal replaces wood as the primary fuel for home heating, industry, and steam-powered transportation."]},
+		{cols:[ "Phase 2 (1920-1950)", "Liquid fuels made from oil become the foundation of transportation systems."]},
+		{cols:[ "Phase 3 (after 1950)", "A new series of power plants fueled by coal, natural gas, and nuclear energy generate electricity that is distributed to homes and businesses through the electric power grid."]}
+		]
+	},eventManager);
+	
+	callEm.draw(d3.select("#labelTable"));
+	
+ 
+	 
+var bioMass = [
+{x: 	1800	, y: 	20.09664	},
+{x:	1825	, y:	22.60872	},
+{x:	1850	, y:	25.53948	},
+{x:	1875	, y:	28.47024	},
+{x:	1900	, y:	30.14496	},
+{x:	1910	, y:	31.4240631798406	},
+{x:	1920	, y:	32.8139778635256	},
+{x:	1925	, y:	33.70374	},
+{x:	1930	, y:	34.4919486650026	},
+{x:	1940	, y:	36.2637867609944	},
+{x:	1950	, y:	38.51856	},
+{x:	1960	, y:	36.3127308129	},
+{x:	1970	, y:	26.23970084265	},
+{x:	1975	, y:	27.909402104556	},
+{x:	1980	, y:	31.830128536212	},
+{x:	1985	, y:	35.7256425135825	},
+{x:	1990	, y:	38.686032	},
+{x:	1995	, y:	41.43131676	},
+{x:	2000	, y:	39.56819076	},
+{x:	2010	, y:	47	},
+	]; // array of data  
+	
+	var coal = [
+{x: 	1800	, y: 	0.4061196	},
+{x:	1825	, y:	0.7452504	},
+{x:	1850	, y:	1.88406	},
+{x:	1875	, y:	7.243164	},
+{x:	1900	, y:	19.46862	},
+{x:	1910	, y:	23.3934779320242	},
+{x:	1920	, y:	28.2402103491318	},
+{x:	1925	, y:	33.4944	},
+{x:	1930	, y:	34.2159600540513	},
+{x:	1940	, y:	36.6061381038544	},
+{x:	1950	, y:	41.868	},
+{x:	1960	, y:	58.740804	},
+{x:	1970	, y:	65.20941	},
+{x:	1975	, y:	67.8387204	},
+{x:	1980	, y:	76.430034	},
+{x:	1985	, y:	87.4706256	},
+{x:	1990	, y:	93.972726	},
+{x:	1995	, y:	92.3901156	},
+{x:	2000	, y:	96.222335508	},
+{x:	2010	, y:	123.469194312796	},
+	]; // array of data  
+
+	var petroleum = [
+{x: 	1800	, y: 	0	},
+{x:	1825	, y:	0	},
+{x:	1850	, y:	0	},
+{x:	1875	, y:	0.041868	},
+{x:	1900	, y:	0.753624	},
+{x:	1910	, y:	1.17012472422689	},
+{x:	1920	, y:	2.71453151271089	},
+{x:	1925	, y:	5.610312	},
+{x:	1930	, y:	7.2241187127665	},
+{x:	1940	, y:	12.0346864743234	},
+{x:	1950	, y:	21.268944	},
+{x:	1960	, y:	44.087004	},
+{x:	1970	, y:	94.223934	},
+{x:	1975	, y:	112.0220208	},
+{x:	1980	, y:	124.5824208	},
+{x:	1985	, y:	117.3518172	},
+{x:	1990	, y:	131.235246	},
+{x:	1995	, y:	135.4304196	},
+{x:	2000	, y:	156.469424544	},
+{x:	2010	, y:	174.691943127962	},
+	]; // array of data  
+
+	var gas= [
+{x: 	1800	, y: 	0	},
+{x:	1825	, y:	0	},
+{x:	1850	, y:	0	},
+{x:	1875	, y:	0	},
+{x:	1900	, y:	0.251208	},
+{x:	1910	, y:	0.460292679528439	},
+{x:	1920	, y:	0.892482925941058	},
+{x:	1925	, y:	1.381644	},
+{x:	1930	, y:	1.91343821461581	},
+{x:	1940	, y:	3.70500110134886	},
+{x:	1950	, y:	7.829316	},
+{x:	1960	, y:	17.710164	},
+{x:	1970	, y:	38.6944056	},
+{x:	1975	, y:	44.9997264	},
+{x:	1980	, y:	54.574938	},
+{x:	1985	, y:	62.446122	},
+{x:	1990	, y:	74.127294	},
+{x:	1995	, y:	80.0390556	},
+{x:	2000	, y:	87.823740312	},
+{x:	2010	, y:	111.184834123223	},
+	]; // array of data  
+
+		var hydro = [
+{x: 	1800	, y: 	0	},
+{x:	1825	, y:	0	},
+{x:	1850	, y:	0	},
+{x:	1875	, y:	0	},
+{x:	1900	, y:	0.20934	},
+{x:	1910	, y:	0.44777396042693	},
+{x:	1920	, y:	0.966072399625572	},
+{x:	1925	, y:	1.590984	},
+{x:	1930	, y:	1.88602165712845	},
+{x:	1940	, y:	2.72594185621264	},
+{x:	1950	, y:	4.438008	},
+{x:	1960	, y:	7.159428	},
+{x:	1970	, y:	11.204570984456	},
+{x:	1975	, y:	13.3088176165803	},
+{x:	1980	, y:	16.07	},
+{x:	1985	, y:	18.76	},
+{x:	1990	, y:	20.48	},
+{x:	1995	, y:	23.52	},
+{x:	2000	, y:	25.12	},
+{x:	2010	, y:	30.99	},
+	]; // array of data  
+
+	var nuclear = [
+{x: 	1800	, y: 	0	},
+{x:	1825	, y:	0	},
+{x:	1850	, y:	0	},
+{x:	1875	, y:	0	},
+{x:	1900	, y:	0	},
+{x:	1910	, y:	0	},
+{x:	1920	, y:	0	},
+{x:	1925	, y:	0	},
+{x:	1930	, y:	0	},
+{x:	1940	, y:	0	},
+{x:	1950	, y:	0	},
+{x:	1960	, y:	0	},
+{x:	1970	, y:	0.979457454545454	},
+{x:	1975	, y:	4.51529886545454	},
+{x:	1980	, y:	8.70247948363636	},
+{x:	1985	, y:	18.2032167927273	},
+{x:	1990	, y:	19.3364928909953	},
+{x:	1995	, y:	22.085308056872	},
+{x:	2000	, y:	24.3601895734597	},
+{x:	2010	, y:	26.1990521327014	},
+	]; // array of data  
+
+var other = [
+{x: 	1800	, y: 	0	},
+{x:	1825	, y:	0	},
+{x:	1850	, y:	0	},
+{x:	1875	, y:	0	},
+{x:	1900	, y:	0	},
+{x:	1910	, y:	0	},
+{x:	1920	, y:	0	},
+{x:	1925	, y:	0	},
+{x:	1930	, y:	0	},
+{x:	1940	, y:	0	},
+{x:	1950	, y:	0	},
+{x:	1960	, y:	0	},
+{x:	1970	, y:	0.1},
+{x:	1975	, y:	0.17},
+{x:	1980	, y:	0.28},
+{x:	1985	, y:	0.51},
+{x:	1990	, y:	1.19},
+{x:	1995	, y:	1.54},
+{x:	2000	, y:	2.15},
+{x:	2010	, y:	7.05},
+	]; // array of data  
+
+	
+var Data = [bioMass, coal, petroleum, gas, hydro, nuclear, other];
+	
+// configure and draw the SVG container and the graph
+
+	var cont1 = new SVGContainer({
+			node: d3.select("#graph0"),
+			maxWid: 500,
+			maxHt: 500
+		});
+		
+	var lines = new LineGraph({
+			id: "lg0",
+			Data: Data, 
+			type: "lines",
+			xAxisFormat: { type: "linear",
+						   ticks: 5,
+						   orientation: "bottom",
+						   label: "Year" },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: "Global energy use (EJ)",
+						    ticks: 7,
+						    },
+		},eventManager);	
+			
+	cont1.append(lines);
+	
+// configure and append the legend to the graph
+
+	var legLines = new Legend({
+		xPos: "left", yPos: "top",
+		labels: [{content: "Traditional biomass"},
+				{content: "Coal"},
+				{content: "Oil" },
+				{content: "Natural gas" },
+				{content: "Nuclear" },
+				{content: "Hydro" },
+				],
+		type: "line"
+	},eventManager);
+	
+	lines.append(legLines);
+	
+
+	// Listen to clicks on the table to determine which range of data
+	// to draw on the axis
+	eventManager.subscribe(callEm.selectedEventId,
+						   handleRange);
+
+	
+/************************************************************************
+* handleRange                                            *//**
+*
+* @param eventDetails			These are the keyed values returned by 
+*								the event, in this case, a selection
+*								(click).
+*************************************************************************/
+	function handleRange(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+	
+		var rangeKey = eventDetails.selectKey;
+		
+		callEm.lite(rangeKey);
+
+		var range = [1800, 1850, 1920, 1950, 1980, 2010];
+
+		switch(rangeKey)
+		{
+		case "1":
+  		// Phase 1
+			range = [1850, 1870, 1890, 1910, 1920];
+ 			break;
+			
+		case "2":
+		// You're always WRONG!  HAHAHHAHAHA.
+			range = [1920, 1930, 1940, 1950];
+  			break;
+			
+		case "3": 
+			range = [1950, 1970, 1990, 2010];
+			break;
+			
+		//fallthrough case 
+		default:
+  			break;
+		}
+
+		lines.xAxisFormat.ticks = range;
+		d3.select(".widget").remove();
+		cont1.append(lines);
+	
+		
+	}
+
+	// Listen to and handle selections on the graph legend to 
+	// show which line is described by which legend
+	
+	eventManager.subscribe(legLines.selectedEventId,
+						   handleHighlight);
+	eventManager.subscribe(lines.selectedEventId,
+						   handleHighlight);
+
+	
+/************************************************************************
+* handleHighlight                                            *//**
+*
+* handleInputValueChanged is called from the event handler for one of
+* the input widgets when the user changes its value. It updates the
+* given matching input widget's value to match the new value and then
+* updates the bar chart.
+*
+* @param eventDetails			These are the keyed values returned by 
+*								the event, in this case, a selection
+*								(click).
+*************************************************************************/
+	function handleHighlight(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+	
+		lines.lite(eventDetails.selectKey);
+		legLines.lite(eventDetails.selectKey);
+		
+	}
+
+
+	
+	
+	</script>
+</body>
+</html>
