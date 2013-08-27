@@ -20,14 +20,14 @@
  Event = {
  	source: <source>,
  	data: {
- 		type: (view | message | data | link),
+ 		type: (view | message), 
  		method: (specific to type)
- 		data: (Object)
+ 		payload: (Object)
 
 
  		#case message, this is what actually sent at EventManager scope
 		method: (subscribe | unsubscribe | publish ),
-	 	data:{
+	 	payload:{
 	 		sendTime: <time was sent in unix format>
 	 		topic: <the event manager's topic: objectId/event_name ("all-loaded" is reserved)>
 			message: <specific data, usually collection of key-value pairs> 
@@ -35,7 +35,7 @@
 
 	 	#case 'resize'
 	 	method: "set",
-	 	data:{
+	 	payload:{
 			width:<w>,
 			height:<h>
 		}
@@ -61,7 +61,8 @@ goog.require('pearson.utils.EventManager');
  *
  * The constructor registers the three default channel handlers
  */
-var MessageBroker = function(options, optDomHelper) {
+var MessageBroker = function(options, optDomHelper) 
+{
 
 	// Auto call to the initialization method disabled 
 	// favoring the use of MessageBroker as singleton.
@@ -75,25 +76,27 @@ var MessageBroker = function(options, optDomHelper) {
 		this.domHelper = optDomHelper;
 	}
 
-	// Register the three default Channel Handlers
+	// Register the two default Channel Handlers
 	var _self = this;
-	this.channelHandlers['bricevent'] = function(evt) {
-		_self.bricMessageCounter++;
-		var message = evt.data.message;
-		_self.publish(evt.data.message.topic, evt);
-	}
+	this.channelHandlers['message'] = function(evt) {
 
-	this.channelHandlers['topic'] = function(evt) {
-		if (evt.data.action === 'subscribe') {
-			_self.subscribe(evt.data.topic, evt.source);
-		} else if (evt.data.action === 'unsubscribe') {
-			//_self.subscribe(evt.data.topic, evt.source);
+		if (evt.data.method === 'publish') {
+			_self.bricMessageCounter++;
+			_self.publish(evt.data.payload.topic, evt);
+		}
+		else if (evt.data.method === 'subscribe') 
+		{
+			_self.subscribe(evt.data.payload.topic, evt.source);
+		}
+		else if (evt.data.method === 'unsubscribe') 
+		{
+			_self.unsubscribe(evt.data.payload.topic, evt.source);
 		}
 	}
 
-	this.channelHandlers['resize'] = function(evt) {
+	this.channelHandlers['view'] = function(evt) {
 		_self.resizeMessageCounter++;
-		_self.domHelper.resize(evt.source, evt.data);	
+		_self.domHelper.resize(evt.source, evt.data.payload);	
 	}
 }
 
@@ -161,7 +164,8 @@ MessageBroker.prototype.pubSub = new pearson.utils.EventManager(false);
  * @param {int} level		The level of the current message 
  * @param {String} message	The actual message.
  */
-MessageBroker.prototype.log = function (level, message) {
+MessageBroker.prototype.log = function (level, message) 
+{
 	if (this.logLevel >= level) {
 			console.log("[MB] " + message);
 		}
@@ -178,42 +182,42 @@ MessageBroker.prototype.log = function (level, message) {
  * @param {Object} options		Options (logLevel: {int}) .
  * 
  */
-MessageBroker.prototype.initialize = function (options) {
-		
-		if (options !== undefined) {
-			if (options.logLevel !== undefined)
-				this.logLevel = options.logLevel;
+MessageBroker.prototype.initialize = function (options) 
+{
+	if (options !== undefined) {
+		if (options.logLevel !== undefined)
+			this.logLevel = options.logLevel;
+	}
+
+
+	var _self = this;
+	// Function defined here so we can access the this pointer
+	// (aliased as _self)
+	var _channelDispatcher = function(evt) {
+			_self.log(5, "Message Received: " + evt.data);
+			var chanHandler = _self.channelHandlers[evt.data.type];
+			if (chanHandler) {
+				chanHandler(event);
+			} else {
+				_self.log(3, "Channel Handler for '" + evt.data.type +"' not found, ignoring!");
+			}
 		}
 
+	// We'd like to keep the pointer to the handler function 
+	// to be able to unregister later.
+	this.channelDispatcher = _channelDispatcher;
 
-		var _self = this;
-		// Function defined here so we can access the this pointer
-		// (aliased as _self)
-		var _channelDispatcher = function(evt) {
-				_self.log(5, "Message Received: " + evt.data);
-				var chanHandler = _self.channelHandlers[evt.data.channel];
-				if (chanHandler) {
-					chanHandler(event);
-				} else {
-					_self.log(3, "Channel Handler for '" + evt.data.channel +"' not found, ignoring!");
-				}
-			}
+	// Listen to messages events
+	window.addEventListener('message', this.channelDispatcher);
 
-		// We'd like to keep the pointer to the handler function 
-		// to be able to unregister later.
-		this.channelDispatcher = _channelDispatcher;
+	// Shall the host application do this manually??
+	// Conversion of the Object to Iframe must come after the addEventListener.
+	this.domHelper.convertObjectToIframeElement('bric');
 
-		// Listen to messages events
-		window.addEventListener('message', this.channelDispatcher);
-
-		// Shall the host application do this manually??
-		// Conversion of the Object to Iframe must come after the addEventListener.
-		this.domHelper.convertObjectToIframeElement('bric');
-
-		// Cache the iframes
-		this.domHelper.cacheFrames('bric');
-		this.log(1, "MessageBroker initialized.");
-	};
+	// Cache the iframes
+	this.domHelper.cacheFrames('bric');
+	this.log(1, "MessageBroker initialized.");
+};
 
 /**
  * MessageBroker.dispose
@@ -221,17 +225,17 @@ MessageBroker.prototype.initialize = function (options) {
  * Unregister the message event listener, and
  * releases used references (the list of iframes), and 
  */
-MessageBroker.prototype.dispose = function () {
-		// Disable Channel Dispatcher
-		window.removeEventListener('message', this.channelDispatcher);
+MessageBroker.prototype.dispose = function () 
+{
+	// Disable Channel Dispatcher
+	window.removeEventListener('message', this.channelDispatcher);
 
-		// Disable each of the subscribers
-		this.pubSub = null;
+	this.pubSub = null;
 
-		this.domHelper.dispose();
-		//this.domHelper = null;
-		this.log(1, "MessageBroker disposed (listeners removed).");
-	};
+	this.domHelper.dispose();
+	//this.domHelper = null;
+	this.log(1, "MessageBroker disposed (listeners removed).");
+};
 
 /**
  * MessageBroker.subscribe
@@ -244,44 +248,71 @@ MessageBroker.prototype.dispose = function () {
  *							(May not be subscribed if is not part of the item)
  * 
  */
-MessageBroker.prototype.subscribe = function (topic, windowsObj) {
+MessageBroker.prototype.subscribe = function (topic, windowsObj) 
+{
 
-		//var frameEntry = this.bricIframeMap[windowsObj];
-		var frameEntry = this.domHelper.getFrameCustomParams(windowsObj);
+	var frameEntry = this.domHelper.getFrameCustomParams(windowsObj);
 
-		if (frameEntry === undefined) {
-			return false;
-		} 
+	if (frameEntry === undefined) {
+		return false;
+	} 
 
-		var _self = this;
+	var _self = this;
 
-		// Reuse the same handle for an iframe
-		var subscribeHandler = frameEntry['subscribeHandler'];
+	// Reuse the same handle for an iframe
+	var subscribeHandler = frameEntry['subscribeHandler'];
 
-		if(!subscribeHandler)
-		{
-			subscribeHandler = function(evt) {
-				if ( frameEntry.node.contentWindow === evt.source) {
-					_self.log(5, "Skipping the iframe where the message was originated.");
-					return;
-				}
-				delete evt._source_; // remove the metadata which is no longer needed
-				_self.log(5, "Posting message to an iframe");
-				frameEntry.node.contentWindow.postMessage(
-					{
-						channel:"bricevent",
-						message:evt.data.message
-					}
-					, '*');
+	if(!subscribeHandler)
+	{
+		subscribeHandler = function(evt) {
+			if ( frameEntry.node.contentWindow === evt.source) {
+				_self.log(5, "Skipping the iframe where the message was originated.");
+				return;
 			}
-			frameEntry['subscribeHandler'] = subscribeHandler;
+			_self.log(5, "Posting message to an iframe");
+			// Sending the entire message as is
+			frameEntry.node.contentWindow.postMessage(evt.data, '*');
 		}
+		frameEntry['subscribeHandler'] = subscribeHandler;
+	}
 
-		this.pubSub.subscribe(topic, subscribeHandler);
-		this.log(2, "Frame '"+ frameEntry.node.src +"' subscribed to topic: [" + topic + "]");
+	this.pubSub.subscribe(topic, subscribeHandler);
+	this.log(2, "Frame '"+ frameEntry.node.src +"' subscribed to topic: [" + topic + "]");
 
-		return true;
-	};
+	return true;
+};
+
+/**
+ * MessageBroker.unsubscribe
+ *
+ * Subscribes a window to a specific topic.
+ *
+ * @param {String} topic	The topic to subscribe to.
+ * @param {Windows} evt		The windows object to subscribe.
+ * @return {boolean}		True if subscribed, false otherwise 
+ *							(May not be subscribed if is not part of the item)
+ * 
+ */
+MessageBroker.prototype.unsubscribe = function (topic, windowsObj) 
+{
+	var frameEntry = this.domHelper.getFrameCustomParams(windowsObj);
+
+	if (frameEntry === undefined) {
+		return false;
+	} 
+
+	var subscribeHandler = frameEntry['subscribeHandler'];
+
+	if(!subscribeHandler)
+	{
+		return false;
+	}
+
+	this.pubSub.unsubscribe(topic, subscribeHandler);
+	this.log(2, "Frame '"+ frameEntry.node.src +"' unsubscribed from topic: [" + topic + "]");
+
+	return true;
+};
 
 /**
  * MessageBroker.publish
@@ -292,11 +323,12 @@ MessageBroker.prototype.subscribe = function (topic, windowsObj) {
  * @param {Object} message		The message to be published.
  * 
  */
-MessageBroker.prototype.publish = function (topic, evt) {
+MessageBroker.prototype.publish = function (topic, evt) 
+{
 
-		this.log(4, "Publishing message: " + JSON.stringify(evt.data.message));
-		this.pubSub.publish(topic, evt);
-	};
+	this.log(4, "Publishing message: " + JSON.stringify(evt.data.payload));
+	this.pubSub.publish(topic, evt);
+};
 
 
 

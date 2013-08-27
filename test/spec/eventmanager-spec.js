@@ -102,7 +102,7 @@
                 console.log("## TEST/EventManager/before:");
                 // Message Listener to collect number of bric messages received by iframes
                 window.addEventListener('message', function(evt){
-                    if (evt.data.channel === 'unittest') {
+                    if (evt.data.type === 'unittest') {
                         iframeRcvCounter[evt.data.originId] = evt.data.rcvCounter;
                     } 
                 });

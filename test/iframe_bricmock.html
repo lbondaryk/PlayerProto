@@ -31,7 +31,7 @@
 
 	            	/* Sending message to the master page to assert unit test */
 					window.parent.postMessage({
-			            channel:"unittest",
+			            type:"unittest",
 			            originId:iframeID,
 			            rcvCounter:rxMessageCtr
 			        }, '*');
@@ -50,11 +50,12 @@
 
 		        /*
 				window.parent.postMessage({
-		            channel:"bricevent",
-		            message: {
+		            type:"message",
+		            method: "publish",
+		            payload: {
 				 		sendTime:"2013-05-27T12:00:01",
 				 		topic:"topicTest",
-						eventData: {value:'testval'}
+						message: {value:'testval'}
 				 	}
 		        }, '*');*/
 				

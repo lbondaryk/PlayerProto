@@ -175,9 +175,11 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
 	// For the message structure see messagebroker.js
 	if (this.publishToBroker_)
 	{
-		window.parent.postMessage({ channel: "topic",
-									topic: eventId,
-									action: "subscribe"
+		window.parent.postMessage({ type: "message",
+									method: "subscribe",
+									payload: {
+										topic: eventId
+									}
 								  }, '*');	
 
 		window.console.log("[" + location.href +
@@ -227,9 +229,11 @@ pearson.utils.EventManager.prototype.unsubscribe = function (eventId, handler)
 		// If the topic has zero subscribers (handlers)
 		// then remove from the MessageBroker as well.
 		if (event.length == 0) {
-			window.parent.postMessage({ channel: "topic",
-										topic: eventId,
-										action: "unsubscribe"
+			window.parent.postMessage({ type: "message",
+										method: "unsubscribe",
+										payload: {
+											topic: eventId
+										}
 									  }, '*');	
 
 			window.console.log("[" + location.href +
@@ -296,10 +300,11 @@ pearson.utils.EventManager.prototype.publish = function (eventId, eventDetails)
 	{
 		window.parent.postMessage(
 			{
-				channel: "bricevent",
-				message: {
+				type: "message",
+				method: "publish",
+				payload: {
 					topic: eventId,
-					eventData: eventDetails
+					message: eventDetails
 				}
 			}, '*');	
 	}
@@ -319,18 +324,20 @@ pearson.utils.EventManager.prototype.listenBroker = function ()
 {
 	var that = this;
 	window.addEventListener('message',
-			function (e)
+			function (evt)
 			{
-				var data = e.data;
+				var data = evt.data;
 				var here = location.href;
-				if (data.channel === 'bricevent')
+				if (data.type === 'message')
 				{
-					window.console.log("[" + here +
-									   "] EventManager: Handling bricevent:" +
-									   JSON.stringify(data));
+					if (data.method === 'publish') {
+						window.console.log("[" + here +
+										   "] EventManager: Handling " +data.type + " message:" +
+										   JSON.stringify(data));
 
-					// Publish the remote event to any local subscribers
-					that.publishLocal_(data.message.topic, data.message.eventData);
+						// Publish the remote event to any local subscribers
+						that.publishLocal_(data.payload.topic, data.payload.message);
+					}
 				}
 			}
 	);
