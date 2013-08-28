@@ -1,4 +1,13 @@
-// sample test for widget-base
+/*****************************************************************************
+ * Unit test for EventManager.
+ *
+ * The unit test includes two cases:
+ * 1. Using EventManager alone (without the MessageBroker). this is the case 
+ *    of embedded (dev) mode
+ * 2. Using EventManager with MessageBroker. This is the case for iframe mode.
+ *
+ * @author Young-Suk Ahn Park 
+ */
 'use strict';
 (function () {
     var expect = chai.expect;
@@ -26,7 +35,7 @@
         if (times == undefined)
             times = 1;
         for (var i=0; i < times; i++) {
-            eventManager.publish(topic, "dummy-data");    
+            eventManager.publish(topic, "unit-test-data");
         }
     }
 
@@ -46,13 +55,13 @@
             var eventManager = null;
             var topicRcvCounter = {};
             before(function () {
-                eventManager = new pearson.utils.EventManager(false); // false to disable communication to MessageBro
+                eventManager = new pearson.utils.EventManager(false); // false to disable communication to MessageBroker
 
                 subscribeCounter(eventManager, 'UNO', topicRcvCounter);
                 var dosHandler = subscribeCounter(eventManager, 'DOS', topicRcvCounter);
                 subscribeCounter(eventManager, 'TRES', topicRcvCounter);
 
-                // Double subscribe should result in one single subscription
+                // Subscribing multiple times the same handler to the same topic should result in one single subscription
                 // I.e. Do not receive duplicate events
                 eventManager.subscribe('DOS', dosHandler);
 
@@ -112,7 +121,7 @@
                 var objNode2 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=BETA&sub=beta&pub=alpha");
                 var objNode2 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=GAMMA&sub=GAMMA&pub=beta");
 
-                messageBroker = new MessageBroker();
+                messageBroker = new pearson.utils.MessageBroker();
                 messageBroker.initialize({logLevel:5});
 
                 // Wait for some time for message being passed around
@@ -132,15 +141,18 @@
                 messageBroker.dispose();
             });
 
-            it('iframe ALPHA should have received 2 message', function () {
+            it('Handler ALPHA should have received 2 message', function () {
                 expect(iframeRcvCounter['ALPHA']).to.equal(2);
             });
 
-            it('iframe BETA should have received 1 message', function () {
+            it('Handler BETA should have received 1 message', function () {
                 expect(iframeRcvCounter['BETA']).to.equal(1);
             });
-            it('iframe GAMMA should not have received any message', function () {
+            it('Handler GAMMA should not have received any message', function () {
                 expect(iframeRcvCounter['GAMMA']).to.equal(undefined);
+            });
+            it('Handler NoRx should not have received any message (it was unsubscribed)', function () {
+                expect(iframeRcvCounter['NoRx']).to.equal(undefined);
             });
         });
     });

@@ -49,7 +49,7 @@
  */
 
 goog.require('pearson.utils.EventManager');
-//goog.provide('pearson.brix.MessageBroker');
+goog.provide('pearson.utils.MessageBroker');
 
 
 /**
@@ -61,7 +61,7 @@ goog.require('pearson.utils.EventManager');
  *
  * The constructor registers the three default channel handlers
  */
-var MessageBroker = function(options, optDomHelper) 
+pearson.utils.MessageBroker = function(options, optDomHelper) 
 {
 
 	// Auto call to the initialization method disabled 
@@ -105,7 +105,7 @@ var MessageBroker = function(options, optDomHelper)
  * THe DOM helper. This object is used for the cache of frames.
  * @type {DomHelper}
  */
-MessageBroker.prototype.domHelper = null;
+pearson.utils.MessageBroker.prototype.domHelper = null;
 
 
 /**
@@ -113,26 +113,26 @@ MessageBroker.prototype.domHelper = null;
  * 0=no logging, 1=ERROR 2=WARN, 3=INFO. 4=DEBUG, 5=TRACE
  * @type {int}
  */
-MessageBroker.prototype.logLevel = 0; // by default, no logging
+pearson.utils.MessageBroker.prototype.logLevel = 0; // by default, no logging
 
 /**
  * The Number of bric messages received. Primarily for testing purpose.
  * @type {int}
  */
-MessageBroker.prototype.bricMessageCounter = 0;
+pearson.utils.MessageBroker.prototype.bricMessageCounter = 0;
 
 /**
  * The Number of resize messages received. Primarily for testing purpose.
  * @type {int}
  */
-MessageBroker.prototype.resizeMessageCounter = 0;
+pearson.utils.MessageBroker.prototype.resizeMessageCounter = 0;
 
 /**
  * The function attached to the windows event. Dispatches the incoming messages
  * into appropriate channels.
  * @type {function}
  */
-MessageBroker.prototype.channelDispatcher = null;
+pearson.utils.MessageBroker.prototype.channelDispatcher = null;
 
 
 /**
@@ -144,7 +144,7 @@ MessageBroker.prototype.channelDispatcher = null;
  * It can later be extended by adding new function pointers that process channel messages.
  * @type {function[]}
  */
-MessageBroker.prototype.channelHandlers = {};
+pearson.utils.MessageBroker.prototype.channelHandlers = {};
 
 
 /**
@@ -153,7 +153,7 @@ MessageBroker.prototype.channelHandlers = {};
  * Currently is an instance of EventManager to handle topics.
  * @type {Object}
  */
-MessageBroker.prototype.pubSub = new pearson.utils.EventManager(false);
+pearson.utils.MessageBroker.prototype.pubSub = new pearson.utils.EventManager(false);
 
 /**
  * MessageBroker.log
@@ -164,7 +164,7 @@ MessageBroker.prototype.pubSub = new pearson.utils.EventManager(false);
  * @param {int} level		The level of the current message 
  * @param {String} message	The actual message.
  */
-MessageBroker.prototype.log = function (level, message) 
+pearson.utils.MessageBroker.prototype.log = function (level, message) 
 {
 	if (this.logLevel >= level) {
 			console.log("[MB] " + message);
@@ -182,7 +182,7 @@ MessageBroker.prototype.log = function (level, message)
  * @param {Object} options		Options (logLevel: {int}) .
  * 
  */
-MessageBroker.prototype.initialize = function (options) 
+pearson.utils.MessageBroker.prototype.initialize = function (options) 
 {
 	if (options !== undefined) {
 		if (options.logLevel !== undefined)
@@ -225,7 +225,7 @@ MessageBroker.prototype.initialize = function (options)
  * Unregister the message event listener, and
  * releases used references (the list of iframes), and 
  */
-MessageBroker.prototype.dispose = function () 
+pearson.utils.MessageBroker.prototype.dispose = function () 
 {
 	// Disable Channel Dispatcher
 	window.removeEventListener('message', this.channelDispatcher);
@@ -248,7 +248,7 @@ MessageBroker.prototype.dispose = function ()
  *							(May not be subscribed if is not part of the item)
  * 
  */
-MessageBroker.prototype.subscribe = function (topic, windowsObj) 
+pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj) 
 {
 
 	var frameEntry = this.domHelper.getFrameCustomParams(windowsObj);
@@ -293,7 +293,7 @@ MessageBroker.prototype.subscribe = function (topic, windowsObj)
  *							(May not be subscribed if is not part of the item)
  * 
  */
-MessageBroker.prototype.unsubscribe = function (topic, windowsObj) 
+pearson.utils.MessageBroker.prototype.unsubscribe = function (topic, windowsObj) 
 {
 	var frameEntry = this.domHelper.getFrameCustomParams(windowsObj);
 
@@ -323,9 +323,8 @@ MessageBroker.prototype.unsubscribe = function (topic, windowsObj)
  * @param {Object} message		The message to be published.
  * 
  */
-MessageBroker.prototype.publish = function (topic, evt) 
+pearson.utils.MessageBroker.prototype.publish = function (topic, evt) 
 {
-
 	this.log(4, "Publishing message: " + JSON.stringify(evt.data.payload));
 	this.pubSub.publish(topic, evt);
 };

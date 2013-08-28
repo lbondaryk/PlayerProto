@@ -228,7 +228,7 @@ pearson.utils.EventManager.prototype.unsubscribe = function (eventId, handler)
 	{
 		// If the topic has zero subscribers (handlers)
 		// then remove from the MessageBroker as well.
-		if (event.length == 0) {
+		if (event.handlers.length == 0) {
 			window.parent.postMessage({ type: "message",
 										method: "unsubscribe",
 										payload: {

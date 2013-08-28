@@ -29,11 +29,15 @@
 
     <script src="../js/jquery-latest.js"></script>
 	<script src="../js/d3.v3.min.js"></script>
+
+	<script src="../../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../../closure/closure-library/closure/goog/deps.js"></script>
+	<script src="../js/eventmanager.js"></script>
+
     <script src="../js/widget-numeric.js"></script>
-  	<script src="../js/eventmanager_ex.js"></script>
 
 	<script>
-var eventManager = new EventManager();
+var eventManager = new pearson.utils.EventManager();
 
 // We either need to cache the values when we hear they've changed
 // or we need a protocol to query values from brix in other objects.

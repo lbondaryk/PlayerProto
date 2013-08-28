@@ -20,10 +20,14 @@
     <script src="../js/jquery-latest.js"></script>
     <script src="../js/jquery-ui-1.10.2.custom.js"></script>
 	<script src="../js/d3.v3.min.js"></script>
+
+	<script src="../../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../../closure/closure-library/closure/goog/deps.js"></script>
+	<script src="../js/eventmanager.js"></script>
+
 	<script src="../js/widget-base.js"></script>
     <script src="../js/widget-slider.js"></script>
     <script src="../js/widget-numeric.js"></script>
-  	<script src="../js/eventmanager_ex.js"></script>
 
 </head>
 
@@ -31,7 +35,7 @@
 	 <div id="Levo"/>
 
 <script>
-var eventManager = new EventManager();
+var eventManager = new pearson.utils.EventManager();
 
 var levoData =   [ { x: 35, y: "Levo" } ];
 
