@@ -364,7 +364,7 @@ PieChart.prototype.setScale = function (xScale, yScale)
 	// When this is drawn, the "last" point will be detected as
 	// having extended the data range, and we'll color it white (blank).
 	// This allows us to draw wedges instead of the whole pie. - lb
-		this.data.push({x: 100 - sumData});
+		this.data.push({x: 100 - sumData, y: "white"});
 	}
 	
 	

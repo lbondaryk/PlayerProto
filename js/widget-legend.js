@@ -210,6 +210,9 @@ Legend.prototype.drawData_ = function ()
 	//take the number of rows from the number of labels
 	var rowCt = this.labels.length;
 
+	// determine the element name needed based on the type of legend
+	var typeMarkerElementName = this.type == "box" ? "rect" : "line";
+
 	//this selects all <g> elements with class legend  
 	var legendRows = this.legendBox.selectAll("g.legend")
 		.data(this.labels); //associate the data to create stacked slices
@@ -217,25 +220,40 @@ Legend.prototype.drawData_ = function ()
 	// get rid of any rows without data
 	legendRows.exit().remove();
 	
-	legendRows.enter() //this will create <g> elements for every data element
+	// Create new rows with the correct element structure
+	var enterRows = legendRows.enter() //this will create <g> elements for every data element
 		.append("g") //create groups
-			.attr("class","legends")
-			//each row contains a colored marker and a label.  They are spaced according to the
-			//vertical size of the markers plus a little padding, 4px in this case
-			//counting up from the bottom, make a group for each series and move to stacked position
-			.attr("transform", function(d, i) {
-					return "translate(0," + (rowCt - i - 1) * (boxLength+4) + ")";
+			.attr("class", "legend");
+
+	enterRows.append(typeMarkerElementName);
+	enterRows.append("text");
+	enterRows.on('click',
+				function (d, i)
+				{
+					that.eventManager.publish(that.selectedEventId, {selectKey:d.key});
 				});
+
 	
+	// Update the row elements to match the current data
+
 	// autokey entries which have no key with the data index
 	legendRows.each(function (d, i) { 
 						//if there is no key assigned, make one from the index
 						d.key = 'key' in d ? d.key : i.toString();
 					});
 
+	//each row contains a colored marker and a label.  They are spaced according to the
+	//vertical size of the markers plus a little padding, 4px in this case
+	//counting up from the bottom, make a group for each series and move to stacked position
+	legendRows
+		.attr("transform", function(d, i) {
+					return "translate(0," + (rowCt - i - 1) * (boxLength+4) + ")";
+				});
+
 	if (this.type == "box")
 	{
-		legendRows.append("rect")
+		var rowBoxes = legendRows.select("rect");
+		rowBoxes
 			.attr("x", 0)
 			.attr("y", 0)
 			//make the rectangle a square with width and height set to boxLength
@@ -247,7 +265,8 @@ Legend.prototype.drawData_ = function ()
 	}
 	else
 	{
-		legendRows.append("line") //add a line to each slice
+		var rowLines = legendRows.select("line");
+		rowLines
 			.attr("class", function(d, i) {
 					return "traces stroke" + i;
 				})
@@ -257,7 +276,8 @@ Legend.prototype.drawData_ = function ()
 			.attr("y2", boxLength / 2);
 	}
 
-	legendRows.append("text") //this is native svg text, it doesn't wrap
+	var rowText = legendRows.select("text");
+	rowText
 		.attr("text-anchor", "start") //left align text
 		.attr("class", "legendLabel")
 		.attr("dx", boxLength + 4)
@@ -270,12 +290,6 @@ Legend.prototype.drawData_ = function ()
 				return d.content; //get the label from legend array
 			});
 	
-	legendRows.on('click',
-				function (d, i)
-				{
-					that.eventManager.publish(that.selectedEventId, {selectKey:d.key});
-				});
-
 	this.lastdrawn.legendRows = this.legendBox.selectAll("g.legend");
 
 } //end of Legend.drawData_
