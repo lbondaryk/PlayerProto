@@ -266,6 +266,9 @@ pearson.brix.LabelGroup.prototype.draw = function(container, size)
 			//this interior body shouldn't inherit margins from page body
 			.append("div")
 				.attr("class", "descLabel")
+				// if there are square bullets, make room for them in front of
+				// the label text
+				.classed("bullets", (this.type != "none") ? true : false)
 				// .style("visibility",function(d,i) { return d.viz;})
 				// I punted on the show/hide thing, but it could come back 
 				// in the way it does for callouts -lb
@@ -275,9 +278,12 @@ pearson.brix.LabelGroup.prototype.draw = function(container, size)
 	// a precursor to hotspot answertypes
 	if (this.type != "none")
 	{
-		labelCollection.append("circle")
-			.attr("class", "numSteps")
-			.attr("r", 16).attr("cx", 0).attr("cy", 0);
+		labelCollection.append("rect")
+			//.attr("class", "numSteps")
+			.attr("height", 26)
+			.attr("width", 26)
+			.attr("x", 4)
+			.attr("y", 4);
 	}
 
 	// numbered bullets are what PM is referring to as stepped diagrams,
@@ -290,19 +296,13 @@ pearson.brix.LabelGroup.prototype.draw = function(container, size)
 		var choiceIndex = this.getChoiceNumberToDisplayFn_();
 
 		labelCollection.append("text")
+			.attr("x", 17)
+			.attr("y", 18)
 			.attr("text-anchor", "middle")
 			.attr("alignment-baseline", "middle")
 			.text(function (d, i) {return choiceIndex(i);});
 	}
 
-	/* if (this.type == "numbered")
-	{
-		labelCollection.append("text")
-			.attr("text-anchor", "middle")
-			.attr("alignment-baseline", "middle")
-			.text(function (d, i) { return i + 1; });
-	}
-	*/
 	labelCollection.on('click',
 				function (d, i)
 				{

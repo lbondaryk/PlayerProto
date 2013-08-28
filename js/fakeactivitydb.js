@@ -375,6 +375,37 @@ pearson.brix.test.activities = {
 				response:  "More length impedes electrons, making it harder to pass charge.",
 				}
 		},
+
+	// Chad's questions
+	"pop200": { 
+		"question": "Based on the graph, what average population growth rate looks like the best predictor of population increases over the past 200 years",
+		"answer000": {
+				content: "0.5%",
+				score: 0,
+				response:  "That is not correct."
+				},
+		"answer001": {
+				content: "1.0%",
+				score: 1,
+				response:   "Good guess...",
+				},
+		"answer002": {
+				content: "1.5%",
+				score: 0,
+				response:  "That is not correct.",
+				},
+		"answer003": {
+				content: "2.0%",
+				score: 0,
+				response:   "That is not correct.",
+				},
+		"answer004": {
+				content: "2.5%",
+				score: 0,
+				response:  "That is not correct.",
+				}
+		},
+	// End of Chad's stuff
 	"http://hub.paf.pearson.com/resources/sequences/123/nodes/1": {
 		"1": {
 				content: "1",

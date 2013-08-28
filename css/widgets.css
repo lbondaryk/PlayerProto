@@ -114,21 +114,21 @@ svg g.bricMarkers .markerLabel
 
 /* Labels
 ================================================== */
-svg g.widgetLabel>circle
+svg g.widgetLabel>rect
 {
 	fill:			black;
-	stroke:			white;
+	stroke:		#e4e4e4;
 	stroke-width:	2;
 }
-svg g.widgetLabel.lit>circle
+svg g.widgetLabel.lit>rect
 {
 	fill:			#F05A24;
-	stroke:		#f4f4f4;
+	stroke:		#e4e4e4;
 }
 svg g.widgetLabel>text
 {
 	fill:			white;
-	stroke-width:	1;
+  font: Helvetica bold 13px;
 }
 svg g.widgetLabel.lit>text
 {
@@ -139,19 +139,22 @@ svg g.widgetLabel .descLabel
 {
   color: 666;
   font: Helvetica 9pt;
-  border: 2px solid #e4e4e4;
-  background-color: #f4f4f4;
-  background-image: -webkit-linear-gradient(bottom, #f4f4f4 0%, #e4e4e4 100%);
-  padding: 8px 8px;
+  border: 1px solid #e4e4e4;
+  background-color: #f7f7f7;
+  padding: 8px 10px 7px;
 
+}
+
+svg g.widgetLabel .bullets
+{
+  padding: 8px 10px 7px 35px;
 }
 
 svg g.widgetLabel.lit .descLabel
 {
 	color: #f4f4f4;
-	background-color: #F05A24;
-  background-image: -webkit-linear-gradient(bottom, #FF7b4d 0%, #F05A24 100%);
-  border: 0px;
+	background-color: #ff7747;
+  border: 1px solid #e4e4e4;;
 }
 
 /* Radio groups
@@ -222,7 +225,7 @@ table.widgetCallout td {
   padding-bottom: 3px;
   padding-right: 15px;
   padding-left: 15px; 
-  text-align: right;}
+  }
 
 table.widgetCallout thead>tr td {
   border-bottom: 2px solid #f4f4f4;
@@ -241,12 +244,12 @@ table tr.widgetCallout.lit
 /* used in callout automatic step numbering */
 
 .stepBadge {
-     /* background: radial-gradient( 5px -9px, circle, white 8%, black 26px ); */
+     /* background: radial-gradient( 5px -9px, circle, white 8%, black 26px ); 
     background-color: black;
     border: 2px solid white;
-    border-radius: 14px; /* one half of ( (border * 2) + height + padding ) */
+    border-radius: 14px; /* one half of ( (border * 2) + height + padding ) 
     
-  /*Got this from stack overflow, it's pretty close */
+ Got this from stack overflow, it's pretty close 
     color: white;
     font: 0.9em/1.3em Helvetica, Verdana, Tahoma;
     height: 16px; 
@@ -255,7 +258,11 @@ table tr.widgetCallout.lit
   	margin: 4px 11px 3px 0px;
     text-align: center;
 	display: block;
-	float: left;
+	float: left;*/
+
+  font: bold 13px Helvetica;
+  color: #000;
+  padding: 5px 20px 5px 8px; 
 }
 
 

@@ -183,6 +183,12 @@ var bookConfig = {
                 id: "n.3.10",
                 title: "Age Structure and Dependency Ratio"
             }, 
+            {
+                type: "objective",
+                url: "GlobalEnergyUse.html",
+                id: "n.3.11",
+                title: "Global Energy Use"
+            }, 
             ]
 		},
 		{
