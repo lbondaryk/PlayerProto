@@ -1,5 +1,14 @@
-// sample test for widget-base
-'use strict';
+/*****************************************************************************
+ * Unit test for MessageBroker.
+ *
+ * The unit test for MessageBroker requires use of iframes.
+ * Due to iframe javascript loading requirements, the test must be run from
+ * page hoseted on a webserver, running directly from file will result in 
+ * Javascript loading error in the Console.
+ *
+ * @author Young-Suk Ahn Park 
+ */
+ 'use strict';
 
 var iframeMessageCounter = {};
 
@@ -19,7 +28,7 @@ var iframeMessageCounter = {};
             var objNode2 = helper.createNewObject(containerDiv, "bric", "iframe_bricmock.html?id=TWO");
             var resizeNode = helper.createNewObject(containerDiv, "bric", "iframe_resize.html");
 
-            messageBroker = new MessageBroker();
+            messageBroker = new pearson.utils.MessageBroker();
             messageBroker.initialize({logLevel:4});
             console.log("## MessageBroker instantiated & inited.");
 
@@ -41,13 +50,15 @@ var iframeMessageCounter = {};
             messageBroker.dispose();
         });
 
-        it('should initialize the list of bricIframes with 3 iframes', function () {
+        it('should initialize the list of bricIframes with 3 iframes: 2 brix iframes and 1 resize iframe', function () {
             // @todo: find out what's the correct method for bricIframeMap
             expect(Object.keys(messageBroker.domHelper.frameCustomParams).length).to.equal(3);
         });
 
-        it('should have received 2 bric messages', function () {
-            expect(messageBroker.bricMessageCounter).to.equal(2);
+        // Each brix iframe publishes 2 messages: 1 is consumed by subscribers 
+        // another one is discarded because the handler was unsubscribed
+        it('should have received 4 bric messages: 2 consumed, 2 uncomsumed', function () {
+            expect(messageBroker.bricMessageCounter).to.equal(4);
         });
 
         it('should have received 1 resize messages', function () {

@@ -1,7 +1,9 @@
 <html>
 	<head>
 		<title>IFrame</title>
-		<script src="../js/eventmanager_ex.js"></script>
+		<script src="../../closure/closure-library/closure/goog/base.js"></script>
+    	<script src="../../closure/closure-library/closure/goog/deps.js"></script>
+		<script src="../js/eventmanager.js"></script>
 	</head>
 	<body>
 		<script >
@@ -20,39 +22,66 @@
 			
 			var rxMessageCtr = 0;
 
-            var eventManager = new EventManager();
+			// EventManager with no argument defaults to publishToMessageBroer = true
+            var eventManager = new pearson.utils.EventManager();
 
 
-			window.onload = function(){
-				eventManager.subscribe(subscribeTopic, function(content) {
+			window.onload = function() {
+
+				var rxHandler = function(content) {
 	            	rxMessageCtr++;
 
-	            	/* Sending message to the master page to assert unit test */
-					window.parent.postMessage({
-			            channel:"unittest",
-			            originId:iframeID,
-			            rcvCounter:rxMessageCtr
-			        }, '*');
+	            	if (content.kind === "unittest") {
+						/* Sending message to the master page for the assertion */
+						window.parent.postMessage({
+				            type:"unittest",
+				            originId:iframeID,
+				            rcvCounter:rxMessageCtr
+				        }, '*');
+			        }
 
 	            	console.log("[" + iframeID + "] Rx: " + rxMessageCtr + ", data=" + content.value);
-	            });
+	            };
+
+				eventManager.subscribe(subscribeTopic, rxHandler);
+
+				var noRxHandler = function(content) {
+					console.log("[" + iframeID + "] Should not Rx" );
+					window.parent.postMessage({
+			            type:"unittest",
+			            originId:"NoRx",
+			            rcvCounter:rxMessageCtr
+			        }, '*');
+				}
+				// Checking double subscription on MessageBroker
+				eventManager.subscribe(subscribeTopic + "NoRx", noRxHandler);
+				eventManager.unsubscribe(subscribeTopic + "NoRx", noRxHandler);
+
+
+				noRxHandler
 
 		        eventManager.listenBroker();
 
 		        setTimeout(function(){
 		        	var dataVal = 'testval' + iframeID;
 		        	console.log("[" + iframeID + "] Publishing");
-	                eventManager.publish(publishTopic, {value:dataVal});
+		        	// First message is consumed.
+	                eventManager.publish(publishTopic, {kind: "unittest", value:dataVal});
+
+	                // Second message is not consumed, there is not subscriber because it was
+	                // unsubscribed
+	                eventManager.publish(publishTopic + "NoRx", {kind: "unittest", value:dataVal});
 	         
 	            }, 200);
 
 		        /*
 				window.parent.postMessage({
-		            channel:"bricevent",
-		            message: {
+		            type:"message",
+		            method: "publish",
+		            payload: {
 				 		sendTime:"2013-05-27T12:00:01",
 				 		topic:"topicTest",
-						eventData: {value:'testval'}
+						message: {value:'testval'}
 				 	}
 		        }, '*');*/
 				
