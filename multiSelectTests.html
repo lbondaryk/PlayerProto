@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title class="setTitle"></title>
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<meta content="eCourses Author, Title" name="description">   	
+    <!-- Bootstrap -->
+  
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+
+	</head>
+	<body>
+
+
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+						
+						<div id="Q1here">
+							<p>Test MultiSelect w/ Polling. </p>
+							<p>The maximum number of selects are two. </p>
+						</div>
+						<hr />
+
+					</div>
+					<div class="lc_ec_trailing">
+		            	<!-- right column content -->
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+    
+	<script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
+
+	<script src="js/d3.v3.min.js"></script>
+
+	<script src="js/brixlib-compiled.js"></script>
+	<!--
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
+	<script src="js/eventmanager.js"></script>
+	<script src="js/widget-base.js"></script>
+	<script src="js/widget-checkgroup.js"></script>
+	<script src="js/widget-button.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answermanpolling.js"></script>
+	-->
+
+<script>
+
+	// create event manager
+	var eventManager = new pearson.utils.EventManager();
+
+	var Button = pearson.brix.Button;
+	var RadioGroup = pearson.brix.RadioGroup;
+	var AnswerMan = pearson.brix.AnswerMan;
+	var SubmitManager = pearson.brix.SubmitManager;
+	
+	var MultiSelectQuestion = pearson.brix.MultiSelectQuestion;
+	
+	///////////////////////////////////////////
+	
+	
+	//------------------- Q1 Test --------------------
+
+	var Q1Choices = [
+		{
+			content: "Bewildered.",
+			answerKey: "bewildered"
+		},
+		{
+			content: "Ecstatic.",
+			answerKey: "ecstatic"
+		},
+		{
+			content: "Quixotic.",
+			answerKey: "quixotic"
+		}
+		];
+
+	// Test a select one question using a radio group widget
+	// Additional attribute: maxSelects - limit the number of selections
+	var Q1 = new MultiSelectQuestion({
+			id: "Q1",
+			questionId: "SanVan004",
+			question: "How do you feel when I say 'Hello' (can be mixed feelings)?",
+			choices: Q1Choices,
+			maxSelects: 2,
+			order: "randomized",
+			widget: pearson.brix.CheckGroup,
+			widgetConfig: { numberFormat: "latin-upper" },
+		}, eventManager);
+
+
+	// create submit manager
+	var submitManager = new SubmitManager(eventManager, new pearson.brix.AnswerManPolling());
+	
+	submitManager.handleRequestsFrom(Q1);
+
+	Q1.draw(d3.select("#Q1here"));
+
+
+	$("#test_button").on("click", function(evt) {
+		alert(JSON.stringify(Q1.selectedItems()));
+	});
+
+</script>
+</body>
+</html>
