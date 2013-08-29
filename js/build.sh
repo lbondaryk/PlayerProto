@@ -38,13 +38,17 @@ declare -a COMPILER_ARGS=(\
 	"--language_in=ECMASCRIPT5_STRICT"\
 	"--warning_level=VERBOSE"\
 	"--extra_annotation_name=note"\
-	"--externs=d3.v3-externs.js"\
+	"--externs=d3.v3.externs.js"\
 	"--generate_exports"\
 	)
 
 #
 BRIX_ARGS=$(cat <<EOF
+	--input=answerman.js
+	--input=answermanpolling.js
 	--input=eventmanager.js
+	--input=fakeactivitydb.js
+	--input=submitmanager.js
 	--input=widget-base.js
 	--input=widget-image.js
 	--input=widget-carousel.js
@@ -52,16 +56,12 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-labelgroup.js
 	--input=widget-callouts.js
 	--input=widget-markergroup.js
-	--input=widget-barchart.js
-	--input=fakeactivitydb.js
-	--input=answerman.js
-	--input=submitmanager.js
-	--input=widget-button.js
-	--input=widget-radiogroup.js
 	--input=widget-multiplechoicequestion.js
+	--input=widget-radiogroup.js
 	--input=widget-checkgroup.js
-	--input=answermanpolling.js
 	--input=widget-multiselectquestion.js
+	--input=widget-barchart.js
+	--input=widget-button.js
 	--root=.
 	--root=$LIBRARYDIR
 	--output_mode=compiled
