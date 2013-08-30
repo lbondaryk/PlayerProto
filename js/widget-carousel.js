@@ -187,6 +187,7 @@ pearson.brix.Carousel.prototype.draw = function(container, size)
 									- (itemMargin.left + itemMargin.right)};
 
 	// function used to place each item into its correct position
+	/** @type {d3DataFunc} */
 	var translateItem =
 		function (d, i)
 		{

@@ -557,8 +557,7 @@ pearson.brix.SVGContainer = function (config)
  * @export
  *
  * @param {Object}	svgWidgets		-The widget or array of widgets to draw in the container
- * @param {Object|undefined}
- * 					location		-optional. The location in the container where the
+ * @param {Object=} location		-The location in the container where the
  * 									 widget should be placed. If not specified the entire
  * 									 container will be used.
  * @param {number}	location.topPercentOffset

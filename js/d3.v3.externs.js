@@ -38,7 +38,11 @@ var d3Selector;
  * The 1st parameter is the datum associated w/ the element (d), the 2nd parameter
  * is the innermost index (i) of the element in the selection, the 3rd argument is
  * the next higher selection nesting index (j).
- * @typedef {function(Object=, ...[number]): (string|number|boolean)} d3DataFunc
+ * @note this type was meant to be used for the manipulation methods such as text
+ * and attr, etc. However that seems to require typecasts for all of the anonymous
+ * functions used w/ those methods. As that seems onerous, the annotations below now
+ * just use {!Function}.
+ * @typedef {function(*=, ...[number]): (string|number|boolean)} d3DataFunc
  */
 var d3DataFunc;
 
@@ -292,7 +296,7 @@ d3.selection = function () {};
 
 /**
  * @param {string} name
- * @param {(string|number|boolean|d3DataFunc)=} value
+ * @param {(?string|number|boolean|!Function)=} value
  * @returns {!d3.selection}
  */
 d3.selection.prototype.attr = function (name, value) {};
@@ -304,31 +308,53 @@ d3.selection.prototype.attr = function (name, value) {};
  * adding, removing and toggling of CSS classes.
  *
  * @param {string} name
- * @param {(boolean|function(Object, number=): boolean)=} value
+ * @param {(boolean|!Function)=} value
  * @returns {!d3.selection}
  */
 d3.selection.prototype.classed = function (name, value) {};
 
-d3.selection.prototype.style = function () {};
-d3.selection.prototype.property = function () {};
+/**
+ * If value is specified, sets the CSS style property with the specified
+ * name to the specified value on all selected elements.
+ * An optional priority may also be specified, either as null or the
+ * string "important" (without the exclamation point).
+ * @param {string} name
+ * @param {?string|!Function=} value
+ * @param {?string=} priority
+ * @returns {!d3.selection}
+ */
+d3.selection.prototype.style = function (name, value, priority) {};
+
+/**
+ * Some HTML elements have special properties that are not addressable using
+ * standard attributes or styles. For example, form text fields have a value
+ * string property, and checkboxes have a checked boolean property. You can
+ * use the property operator to get or set these properties, or any other
+ * addressable field on the underlying element, such as className.
+ *
+ * @param {string} name
+ * @param {*|!Function=} value
+ * @returns {!d3.selection}
+ */
+d3.selection.prototype.property = function (name, value) {};
 
 /**
  * The text operator is based on the textContent property; setting the text
  * content will replace any existing child elements.
  *
- * @param {(string|function(Object, ...[number]): string)=} value
+ * @param {(string|!Function)=} value
  * @returns {!d3.selection}
  */
 d3.selection.prototype.text = function (value) {};
 
 /**
- * @param {(htmlString|function(Object, ...[number]): htmlString)=} value
+ * @param {(htmlString|!Function)=} value
  * @returns {!d3.selection}
  */
 d3.selection.prototype.html = function (value) {};
 
 /**
- * @param {(string|function(): Element)} name
+ * @param {string|!Function} name
  * @returns {!d3.selection}
  */
 d3.selection.prototype.append = function (name) {};
@@ -340,8 +366,8 @@ d3.selection.prototype.append = function (name) {};
  * selector does not match any elements, then the new element will be the last
  * child as with append.
  *
- * @param {(string|function(): Element)} name
- * @param {(d3Selector|function(): Element)} before
+ * @param {string|!Function} name
+ * @param {d3Selector|!Function} before
  * @returns {!d3.selection}
  */
 d3.selection.prototype.insert = function (name, before) {};
@@ -368,20 +394,48 @@ d3.selection.prototype.remove = function () {};
  * stored in the property __data__, thus making the data "sticky" so that the
  * data is available on re-selection.
  *
- * @param {Array.<*>=} values
- * @param {(function(*, number=): string)=} key
+ * @param {(!Array.<*>|!Function)=} values
+ * @param {!Function=} key
  * @returns {!d3.dataSelection}
  */
 d3.selection.prototype.data = function (values, key) {};
 
-d3.selection.prototype.enter = function () {};
-d3.selection.prototype.enter = function () {};
 d3.selection.prototype.datum = function () {};
 d3.selection.prototype.filter = function () {};
 d3.selection.prototype.sort = function () {};
 d3.selection.prototype.order = function () {};
-d3.selection.prototype.on = function () {};
+
+/**
+ * Adds or removes an event listener to each element in the current selection,
+ * for the specified type. The type is a string event type name, such as "click",
+ * "mouseover", or "submit". The specified listener is invoked in the same
+ * manner as other operator functions, being passed the current datum d and
+ * index i, with the this context as the current DOM element.
+ * An optional capture flag may be specified, which corresponds to the W3C
+ * useCapture flag.
+ *
+ * @param {string} type
+ * @param {!Function=} listener
+ * @param {boolean=} capture
+ * @returns {!d3.selection}
+ */
+d3.selection.prototype.on = function (type, listener, capture) {};
+
+/**
+ * Starts a transition for the current selection. Transitions behave much
+ * like selections, except operators animate smoothly over time rather
+ * than applying instantaneously.
+ *
+ * @returns {!d3.selection}
+ */
 d3.selection.prototype.transition = function () {};
+
+/**
+ * Immediately interrupts the current transition, if any. Does not cancel
+ * any scheduled transitions that have not yet started.
+ *
+ * @returns {!d3.selection}
+ */
 d3.selection.prototype.interrupt = function () {};
 
 /**
@@ -392,7 +446,7 @@ d3.selection.prototype.interrupt = function () {};
  * The each operator can be used to process selections recursively, by using
  * d3.select(this) within the callback function.
  *
- * @param {function(Object=, ...[number])} fn
+ * @param {!Function} fn
  * @return {!d3.selection}
  */
 d3.selection.prototype.each = function (fn) {};
@@ -474,14 +528,14 @@ d3.dataSelection.prototype.exit = function() {};
 d3.enterSelection = function () {};
 
 /**
- * @param {(string|function(): Element)} name
+ * @param {string|!Function} name
  * @returns {!d3.selection}
  */
 d3.enterSelection.prototype.append = function(name) {};
 
 /**
- * @param {(string|function(): Element)} name
- * @param {(d3Selector|function(): Element)} before
+ * @param {string|!Function} name
+ * @param {d3Selector|!Function} before
  * @returns {!d3.selection}
  */
 d3.enterSelection.prototype.insert = function(name, before) {};
