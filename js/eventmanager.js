@@ -60,6 +60,31 @@ pearson.utils.IEventManager.prototype.publish = function (eventId, eventDetails)
 pearson.utils.IEventManager.prototype.subscribe = function (eventId, handler) {};
 
 /* **************************************************************************
+ * IEventManager.unsubscribe                                           */ /**
+ *
+ * EventManager class method to unsubscribe from an event that an object may fire.
+ *
+ * @param {string}		eventId		-The identifier of the event (aka topic)
+ * 									 to unsubscribe from.
+ * @param {Function}	handler		-The callback function to unsubscribe.  
+ *
+ ****************************************************************************/
+pearson.utils.IEventManager.prototype.unsubscribe = function (eventId, handler) {};
+
+/**
+ * A dummy instance of IEventManager which does nothing. This is useful
+ * as a value for IEventManager properties so they can be used w/o having
+ * to check for null or undefined.
+ * @type {!pearson.utils.IEventManager}
+ */
+pearson.utils.IEventManager.dummyEventManager = /** @type {!pearson.utils.IEventManager} */
+	({
+		publish: function () {},
+		subscribe: function () {},
+		unsubscribe: function () {}
+	});
+
+/* **************************************************************************
  * EventManager                                                        */ /**
  *
  * Constructor for the pearson EventManager which also contains
