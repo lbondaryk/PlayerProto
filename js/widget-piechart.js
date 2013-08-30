@@ -1,6 +1,6 @@
 /* **************************************************************************
- * $Workfile:: widget-piechart.js                                          $
- * **********************************************************************//**
+ * $Workfile:: widget-piechart.js                                           $
+ * *********************************************************************/ /**
  *
  * @fileoverview Implementation of the PieChart widget.
  *
@@ -10,7 +10,7 @@
  * Created on		August 20, 2013
  * @author			Leslie Bondaryk
  *
- * Copyright (c) 2013 Pearson, All rights reserved.
+ * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
@@ -29,30 +29,29 @@
 });
 	
 /* **************************************************************************
- * PieChart                                                             *//**
- *
- * @constructor
+ * PieChart                                                            */ /**
  *
  * The PieChart widget provides single or multiple series bar chart
  * visualization of sets of data points. Can create pyramid chart (two sided)
- *or grouped bar chart (several bars on the same label from different series - multivariate)
+ * or grouped bar chart (several bars on the same label from different series - multivariate)
+ *
+ * @constructor
  *
  * @param {Object}		config			-The settings to configure this PieChart
  * @param {string}		config.id		-String to uniquely identify this PieChart.
- * @param {Array.<Array.<{x: number, y: label}>}
+ * @param {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
  *						config.Data		-An array of series;
  *										 each series is an array of one or more percentages with names.
- * @param {Array.<Array.<{key: "string">}
- *						config.Data  	Either wedges or series can have a key label for highlighting.
- * @param {eventManager} eventManager	- allows the object to emit events
+ *										 Either wedges or series can have a key label for highlighting.
+ * @param {!pearson.utils.EventManager}
+ * 						eventManager	-allows the object to emit events
  *
- * NOTES: Pie Charts could have a type: specifying donut charts instead.
+ * @note: Pie Charts could have a type: specifying donut charts instead.
  * For now, pie charts will always be drawn with a legend that shows the 
  * percentages of each wedge. Note that pie x values don't have to add up to
  * 100.  If they don't, d3 will calculate portions of 100%. 
  **************************************************************************/
-
-function PieChart(config, eventManager)
+PieChart = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the bar chart widget
@@ -64,11 +63,14 @@ function PieChart(config, eventManager)
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
 	 * bar lengths and category w/ a {number/size} x and {string} y property.
 	 * Negative bar lengths Mean bars should face the other way.
-	 * @type Array.<Array.<{x: number, y: string}>
-	 * e.g. 3 series, 1 bar each:
+	 *
+	 * @example
+	 *   3 series, 1 bar each:
 	 *   [[{y: "High Income", x: 5523.6}], [{yVal: "Middle Income", xVal: 1509.3}], [{y: "Low Income", x: 491.8}]]
 	 * bar objects may also include an optional key: string in which case they will be given an ID that 
 	 * associates them with other widget events in the page, such as clicks on the legend.
+	 *
+	 * @type {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
 	 */
 	this.data = config.Data;
 
@@ -77,7 +79,7 @@ function PieChart(config, eventManager)
 	 * Image doesn't use scale functions, but they may get used in a widget chain.
 	 * Otherwise a data extent of [0,1] will be mapped to the given
 	 * container area.
-	 * @type Object
+	 * @type {Object}
 	 * @property {function(number): number}
 	 *						xScale	-function to convert a horizontal data offset
 	 *								 to the pixel offset into the data area.
@@ -108,7 +110,7 @@ function PieChart(config, eventManager)
 	 * List of child widgets which are to be drawn before and after this
 	 * bar chart's data in its data area.
 	 * Child widgets are added using BarChart.append.
-	 * @type {beforeData: Array.<IWidget>, afterData: Array.<IWidget>}
+	 * @type {{beforeData: Array.<pearson.brix.SvgBric>, afterData: Array.<pearson.brix.SvgBric>}}
 	 */
 	this.childWidgets = {beforeData: [], afterData: []};
 	
@@ -148,17 +150,18 @@ function PieChart(config, eventManager)
 
 	this.selectedEventId = this.id + '_wedgeSelected';
 	 
-} // end of PieChart constructor
+}; // end of PieChart constructor
+
 /**
  * Prefix to use when generating ids.
  * @const
  * @type {string}
  */
-	PieChart.autoIdPrefix = "pie_";
+PieChart.autoIdPrefix = "auto_pie_";
 
 
 /* **************************************************************************
- * PieChart.draw                                                       *//**
+ * PieChart.draw                                                       */ /**
  *
  * The PieChart widget provides a circle of wedges visualization
  * of sets of data percentages.
@@ -170,7 +173,7 @@ function PieChart(config, eventManager)
  * @param {number}	size.width	-The width for the graph.
  *
  ****************************************************************************/
-PieChart.prototype.draw = function(container, size)
+PieChart.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -224,11 +227,11 @@ PieChart.prototype.draw = function(container, size)
 	// Draw any 'after' child widgets that got appended after draw was called
 	this.childWidgets.afterData.forEach(this.drawWidget_, this);
 
-}; // end of barChart.draw()
+}; // end of PieChart.draw()
 
 
 /* **************************************************************************
- * PieChart.redraw                                                      *//**
+ * PieChart.redraw                                                     */ /**
  *
  * Redraw the line graph data as it may have been modified. It will be
  * redrawn into the same container area as it was last drawn.
@@ -253,7 +256,7 @@ PieChart.prototype.redraw = function ()
 };
 
 /* **************************************************************************
- * PieChart.drawWidget_                                                 *//**
+ * PieChart.drawWidget_                                                */ /**
  *
  * Draw the given child widget in this charts's data area.
  * This chart must have been drawn BEFORE this method is called or
@@ -272,7 +275,7 @@ PieChart.prototype.drawWidget_ = function (widget)
 
 
 /* **************************************************************************
- * PieChart.redrawWidget_                                              *//**
+ * PieChart.redrawWidget_                                              */ /**
  *
  * Redraw the given child widget.
  * This bar chart and this child widget must have been drawn BEFORE this
@@ -299,7 +302,7 @@ PieChart.prototype.redrawWidget_ = function (widget)
  * 					data.
  *
  ****************************************************************************/
-PieChart.prototype.getLegendLabels_ = function()
+PieChart.prototype.getLegendLabels_ = function ()
 {
 	// take the opportunity to make the legend labels while we're cycling through the data
 	var legLabels = [];
@@ -311,7 +314,7 @@ PieChart.prototype.getLegendLabels_ = function()
 };
 
 /* **************************************************************************
- * PieChart.setScale                                                      */ /**
+ * PieChart.setScale                                                   */ /**
  *
  * Called to preempt the normal scale definition which is done when the
  * widget is drawn. This is usually called in order to force one widget
@@ -332,7 +335,7 @@ PieChart.prototype.setScale = function (xScale, yScale)
 };
 
 /* **************************************************************************
- * PieChart.drawData_                                                   *//**
+ * PieChart.drawData_                                                  */ /**
  *
  * Draw the chart data (overwriting any existing data).
  *
@@ -358,12 +361,13 @@ PieChart.prototype.setScale = function (xScale, yScale)
 	this.data.forEach(
 			function (o, i) { sumData = sumData + Math.abs(o.x); });
 
-	if (sumData<100){
-	// if the sum of all the data points does not add up to 100%, then
-	// append a new data point to bring the total up to 100.
-	// When this is drawn, the "last" point will be detected as
-	// having extended the data range, and we'll color it white (blank).
-	// This allows us to draw wedges instead of the whole pie. - lb
+	if (sumData<100)
+	{
+		// if the sum of all the data points does not add up to 100%, then
+		// append a new data point to bring the total up to 100.
+		// When this is drawn, the "last" point will be detected as
+		// having extended the data range, and we'll color it white (blank).
+		// This allows us to draw wedges instead of the whole pie. - lb
 		this.data.push({x: 100 - sumData, y: "white"});
 	}
 	
@@ -427,7 +431,7 @@ PieChart.prototype.setScale = function (xScale, yScale)
 };
 
 /* **************************************************************************
- * PieChart.append                                                      *//**
+ * PieChart.append                                                     */ /**
  *
  * Append the widget or widgets to this bar chart and draw it/them on top
  * of the data area and any widgets appended earlier. If append
@@ -445,7 +449,7 @@ PieChart.prototype.setScale = function (xScale, yScale)
  * 									 to "after".
  *
  ****************************************************************************/
-PieChart.prototype.append = function(svgWidgets, zOrder)
+PieChart.prototype.append = function (svgWidgets, zOrder)
 {
 	if (!Array.isArray(svgWidgets))
 	{
@@ -471,7 +475,7 @@ PieChart.prototype.append = function(svgWidgets, zOrder)
 }; // end of BarChart.append()
 
 /* **************************************************************************
- * PieChart.append_one_                                                 *//**
+ * PieChart.append_one_                                                */ /**
  *
  * Helper for append that does the work needed to append a single widget.
  * This can handle drawing the widget after the data even after the data
@@ -490,7 +494,7 @@ PieChart.prototype.append = function(svgWidgets, zOrder)
  * @private
  *
  ****************************************************************************/
-PieChart.prototype.append_one_ = function(widget, zOrder)
+PieChart.prototype.append_one_ = function (widget, zOrder)
 {
 	if (zOrder === "before")
 	{
@@ -546,7 +550,7 @@ PieChart.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
 }; // end of PieChart.setLastdrawnScaleFns2ExplicitOrDefault_()
 
 /* **************************************************************************
- * PieChart.lite                                                        *//**
+ * PieChart.lite                                                       */ /**
  *
  * Highlight the members of the collection associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
@@ -554,7 +558,7 @@ PieChart.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-PieChart.prototype.lite = function(liteKey)
+PieChart.prototype.lite = function (liteKey)
 {
 	
 	console.log("TODO: log fired PieChart highlite " + liteKey);

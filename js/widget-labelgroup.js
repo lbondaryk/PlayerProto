@@ -66,7 +66,7 @@ pearson.brix.LabelConfig;
  * drawn, it assumes the data extents are 0 - 1.
  *
  * @constructor
- * this will extend {SvgBric} once it is defined.
+ * @extends {pearson.brix.SvgBric}
  * @export
  *
  * @param {Object}		config			-The settings to configure this LabelGroup

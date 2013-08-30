@@ -2,14 +2,13 @@
  * $Workfile:: widget-barchart.js                                           $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the {@link BarChart} bric.
+ * @fileoverview Implementation of the {@link pearson.brix.BarChart} bric.
  *
  * The Barchart bric provides a line (or scatter) graph visualization
  * of sets of data points.
  *
  * Created on		April 11, 2013
  * @author			Leslie Bondaryk
- * @author			Michael Jay Lippert
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -46,14 +45,17 @@ goog.provide('pearson.brix.BarChart');
  *
  * @param {Object}		config			-The settings to configure this BarChart
  * @param {string}		config.id		-String to uniquely identify this BarChart.
- * @param {Array.<Array.<{x: number, y: string, key: string|undefined}>>}
+ * @param {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
  *						config.Data		-An array of series;
  *										 each series is an array of one or more bars with names.
  *										 Either bars or series can have a key label for highlighting.
  * @param {string}		config.type		-String specifying "grouped", or anything else (ignored)
- * @param {AxisFormat}	config.xAxisFormat -Format of the x axis of the graph.
- * @param {AxisFormat}	config.yAxisFormat -Format of the y axis of the graph.
- * @param {eventManager=} eventManager	-allows the object to emit events
+ * @param {pearson.brix.AxisFormat}
+ * 						config.xAxisFormat -Format of the x axis of the graph.
+ * @param {pearson.brix.AxisFormat}
+ * 						config.yAxisFormat -Format of the y axis of the graph.
+ * @param {!pearson.utils.EventManager=}
+ * 						eventManager	-allows the object to emit events
  *
  * @note: One of the two axes must be ordinal for a bar graph. Only y is accomodated
  * for now.
@@ -70,8 +72,6 @@ goog.provide('pearson.brix.BarChart');
  * or grouped bar chart (several bars on the same label from different series - multivariate)
  *
  **************************************************************************/
-
-
 pearson.brix.BarChart = function (config, eventManager)
 {
 	/**
@@ -84,7 +84,7 @@ pearson.brix.BarChart = function (config, eventManager)
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
 	 * bar lengths and category w/ a {number/size} x and {string} y property.
 	 * Negative bar lengths Mean bars should face the other way.
-	 * @type {Array.<Array.<{x: number, y: string}>>}
+	 * @type {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
 	 *
 	 * @example
 	 *   // 3 series, 1 bar each:
@@ -110,36 +110,25 @@ pearson.brix.BarChart = function (config, eventManager)
 	 */
 	this.type = config.type;
 
+	/**
+	 * Format of the x axis of the graph.
+	 * @type {!pearson.brix.AxisFormat}
+	 */
 	this.xAxisFormat = config.xAxisFormat;
+
+	/**
+	 * Format of the y axis of the graph.
+	 * @type {!pearson.brix.AxisFormat}
+	 */
 	this.yAxisFormat = config.yAxisFormat;
 
 	/**
 	 * List of child widgets which are to be drawn before and after this
 	 * bar chart's data in its data area.
 	 * Child widgets are added using BarChart.append.
-	 * @type {{beforeData: Array.<IWidget>, afterData: Array.<IWidget>}}
+	 * @type {{beforeData: Array.<pearson.brix.SvgBric>, afterData: Array.<pearson.brix.SvgBric>}}
 	 */
 	this.childWidgets = {beforeData: [], afterData: []};
-	
-	
-	/**
-	 * Information about the last drawn instance of this line graph (from the draw method)
-	 * @type {Object}
-	 */
-	this.lastdrawn =
-		{
-			container: null,
-			size: {height: 0, width: 0},
-			dataRect: new pearson.utils.Rect(0, 0, 0, 0),
-			barsId: 'bars',
-			axes: null,
-			xScale: null,
-			yScale: null,
-			groupScale: null,
-			bandsize: null,
-			bars: null,
-			graph: null,
-		};
 		
 	//these aren't hooked up yet, but I expect bar graphs to eventually need
 	//to fire drag events that let users change the data for the bar length
@@ -153,13 +142,33 @@ pearson.brix.BarChart = function (config, eventManager)
 
 	this.selectedEventId = this.id + '_barSelected';
 	this.sortedEventId = this.id + 'barSortChanged';
+	
+	
+	/**
+	 * Information about the last drawn instance of this line graph (from the draw method)
+	 * @type {Object}
+	 */
+	this.lastdrawn =
+		{
+			container: null,
+			size: {height: 0, width: 0},
+			dataRect: new pearson.utils.Rect(0, 0, 0, 0),
+			axes: null,
+			xScale: null,
+			yScale: null,
+			groupScale: null,
+			bandsize: null,
+			bars: null,
+			graph: null,
+		};
 } // end of barChart constructor
+
 /**
- * Prefix to use when generating ids for instances of LineGraph.
+ * Prefix to use when generating ids for instances of BarChart.
  * @const
  * @type {string}
  */
-pearson.brix.BarChart.autoIdPrefix = "auto_";
+pearson.brix.BarChart.autoIdPrefix = "auto_bar_";
 
 
 /* **************************************************************************
@@ -170,10 +179,9 @@ pearson.brix.BarChart.autoIdPrefix = "auto_";
  * @export
  *
  * @param {!d3.selection}
- *					container	-The container svg element to append the graph element tree to.
- * @param {Object}	size		-The size in pixels for the graph
- * @param {number}	size.height	-The height for the graph.
- * @param {number}	size.width	-The width for the graph.
+ *						container	-The container svg element to append the graph element tree to.
+ * @param {!pearson.utils.ISize}
+ * 						size		-The size in pixels for the graph
  *
  ****************************************************************************/
 pearson.brix.BarChart.prototype.draw = function(container, size)
@@ -350,11 +358,9 @@ pearson.brix.BarChart.prototype.redrawWidget_ = function (widget)
  * @private
  *
  ****************************************************************************/
- 
- pearson.brix.BarChart.prototype.drawData_ = function ()
+pearson.brix.BarChart.prototype.drawData_ = function ()
 {
 	// local var names are easier to read (shorter)
-	var barId = this.lastdrawn.barId;
 	var xScale = this.lastdrawn.xScale;
 	var yScale = this.lastdrawn.yScale;
 	var bandsize = this.lastdrawn.bandsize;
@@ -449,8 +455,7 @@ pearson.brix.BarChart.prototype.redrawWidget_ = function (widget)
 				
 	//do a clean selection of the drawn data to store for the object properties
 	this.lastdrawn.bars = graph.selectAll("g.series");
-
-}
+};
 
 /* **************************************************************************
  * BarChart.append                                                     */ /**
@@ -504,7 +509,6 @@ pearson.brix.BarChart.prototype.append = function(svgWidgets, zOrder)
  * This can handle drawing the widget after the data even after the data
  * has been drawn, but it does not handle drawning the widget before when
  * the data has already been drawn, so the caller must deal with that situation.
- * @export
  *
  * @param {!IWidget}	widget	-The widget which is to be drawn in this line
  *								 graph's data area.
@@ -547,7 +551,6 @@ pearson.brix.BarChart.prototype.append_one_ = function(widget, zOrder)
  ****************************************************************************/
 pearson.brix.BarChart.prototype.lite = function(liteKey)
 {
-	
 	window.console.log("TODO: log fired BarChart highlite " + liteKey);
 	
 	// Turn off all current highlights
@@ -573,5 +576,5 @@ pearson.brix.BarChart.prototype.lite = function(liteKey)
 	{
 		window.console.log("No key '" + liteKey + "' in bar chart " + this.id );
 	}
-
 };
+

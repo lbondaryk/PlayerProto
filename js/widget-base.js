@@ -470,7 +470,7 @@ pearson.brix.SVGContainerConfig = function ()
 	 * @type {!d3.selection}
 	 * @note may need to change this to be a standard DOM node object -lb
 	 */
-	this.node = null;
+	this.node = d3.select("html");
 
 	/**
 	 * The maximum width of the svg container (in pixels)
@@ -636,12 +636,75 @@ pearson.brix.SVGContainer.prototype.append_one_ = function (svgWidget, location)
 	}
 };
 
+
+/* **************************************************************************
+ * AxisFormat                                                          */ /**
+ *
+ * An AxisFormat describes how to format the axis of a graph.
+ * Objects w/ these fields are arguments to the Axes contructor.
+ *
+ * @typedef {!Object} pearson.brix.AxisFormat
+ * @property {string} type
+ *							The type of axis defines its scale.
+ *							<ul>
+ *							<li> "linear" - ...
+ *							<li> "log" - ...
+ *							<li> "ordinal" - The values along the axis are determined by a
+ *							                 discrete itemized list, gathered from the graphed data.
+ *							<li> "double positive" - axis that always counts up from zero,
+ *							                         regardless of the sign of the data
+ *							<li> "time" - expects data/time formatted values
+ *							</ul>
+ *
+ * @property {number|Array.<*>} ticks
+ *							The number of "ticks" to display along the axis including those
+ *							at the ends of the axis. Should be a positive integer or zero and
+ *							will be coerced to a valid value in an undefined way if not.
+ *							Or if the type of axis is "ordinal" then ticks may be an array
+ *							to be displayed evenly distributed along the axis.
+ *
+ * @property {Array.<number>|undefined} extent
+ *							The minimum and maximum data values expected for the axis in an
+ *							array with the minimum as element 0 and the maximum as element 1.
+ *							If undefined, will default to [0, 1], or the [min, max] of the ticks
+ *							array if it is an array.
+ *
+ *							@todo find out why current behavior defaults a vertical axis to [0,1] and
+ *							      a horizontal axis to [1e-10,1] -mjl
+ *
+ * @property {string} orientation
+ *							There are 2 sets of orientation values, one for a horizontal (x) axis
+ *							and one for a vertical (y) axis.
+ *							<ul>
+ *							<li> Horizontal (x) axis values
+ *							  <ul>
+ *							  <li> "top" - The axis should be displayed at the top of the display area
+ *							  <li> "bottom" - The axis should be displayed at the bottom of the display area
+ *							  </ul>
+ *							<li> Vertical (y) axis values
+ *							  <ul>
+ *							  <li> "left" - The axis should be displayed at the left of the display area
+ *							  <li> "right" - The axis should be displayed at the right of the display area
+ *							  </ul>
+ *							</ul>
+ * 
+ * @property {htmlString|undefined} label
+ *							The label to display along the axis. It must be valid to be converted to
+ *							html as the inner html of a span element. This allows the use of text
+ *							markup and character entities in the label. Optional. Embedded in SVG as a 
+ *							foreignobject tag.
+ *
+ ****************************************************************************/
+pearson.brix.AxisFormat;
+
 /**
  * An AxisFormat describes how to format the axis of a graph.
  * objects w/ these fields are arguments to the Axes contructor.
  * @constructor
+ * @note this was the 1st attempt I made at creating a type for the AxisFormat
+ * structure. -mjl
  */
-pearson.brix.AxisFormat = function ()
+pearson.brix.AxisFormatOldDef = function ()
 {
 	/**
 	 * The type of axis defines its scale.

@@ -10,11 +10,11 @@
 
 /**
  * DomHelper
- * @constructor
- *
  * The DomHelper abstracts the DOM manipulation including element scanning and
  * element attribute setting (e.g. resizing).
  * 
+ * @constructor
+ *
  */
 var DomHelper = function(options) {
 }

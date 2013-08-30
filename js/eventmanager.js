@@ -38,7 +38,7 @@ pearson.utils.IEventManager = function () {};
  *
  * @param {string}	eventId			-The identifier of the event being fired.
  *									 aka topic.
- * @param {Object}	eventDetails	-The details of the event to be passed to each
+ * @param {Object=}	eventDetails	-The details of the event to be passed to each
  *									 subscriber's notification function. Its value
  *									 is specific to the particular event.
  *
@@ -152,7 +152,7 @@ pearson.utils.EventManager.ManagedEventInfo_;
  * in the parent window.
  * @export
  *
- * @param {boolean} enable		True enables, false disables.
+ * @param {boolean} enable		-True enables, false disables.
  *								
  ****************************************************************************/
 pearson.utils.EventManager.prototype.enablePublishToBroker = function (enable)
@@ -166,12 +166,12 @@ pearson.utils.EventManager.prototype.enablePublishToBroker = function (enable)
  * EventManager class method to subscribe to an event that an object may fire.
  * @export
  *
- * @param {string} eventId		The identifier of the event that when fired
- *								should invoke the given callback. aka topic.
- * @param {Function} handler	The function that will be called when the
- *								event is fired.  
+ * @param {string}		eventId		-The identifier of the event that when fired
+ *									 should invoke the given callback. aka topic.
+ * @param {Function} 	handler		-The function that will be called when the
+ *									 event is fired.  
  *
- * Notes:
+ * @note
  * - We'll need to create some unique token if we want to allow unsubscribe.
  * - If you subscribe to the same callback multiple times, when the event is
  *   fired it will be called once for each subscription.
@@ -219,10 +219,11 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
  * EventManager class method to unsubscribe from an event that an object may fire.
  * @export
  *
- * @param {string} eventId		The identifier of the event (aka topic) to unsubscribe from.
- * @param {Function} handler	The callback function to unsubscribe.  
+ * @param {string}		eventId		-The identifier of the event (aka topic)
+ * 									 to unsubscribe from.
+ * @param {Function}	handler		-The callback function to unsubscribe.  
  *
- * Notes:
+ * @note
  * - We'll need to create some unique token if we want to allow unsubscribe.
  * - If you subscribe to the same callback multiple times, when the event is
  *   fired it will be called once for each subscription.
@@ -231,14 +232,16 @@ pearson.utils.EventManager.prototype.unsubscribe = function (eventId, handler)
 {
 	var event = this.events_[eventId];
 
-	if (!event) {
+	if (!event)
+	{
 		return;
 	}
 	
 	// Iterate over the array of handlers and remove the matching one
 	for( var i = 0, length = event.handlers.length; i < length; i++) 
 	{
-		if (event.handlers[i] === handler) {
+		if (event.handlers[i] === handler)
+		{
 			event.handlers.splice( i, 1 );
 					
 			// Reduce the counter and length accordingly
@@ -253,7 +256,8 @@ pearson.utils.EventManager.prototype.unsubscribe = function (eventId, handler)
 	{
 		// If the topic has zero subscribers (handlers)
 		// then remove from the MessageBroker as well.
-		if (event.handlers.length == 0) {
+		if (event.handlers.length == 0)
+		{
 			window.parent.postMessage({ type: "message",
 										method: "unsubscribe",
 										payload: {
@@ -265,7 +269,6 @@ pearson.utils.EventManager.prototype.unsubscribe = function (eventId, handler)
 							   "] EventManager: unsubscription of topic '" 
 							   + eventId + "' propagated to MessageBroker");
 		}
-
 	}
 };
 
@@ -277,11 +280,11 @@ pearson.utils.EventManager.prototype.unsubscribe = function (eventId, handler)
  * This method does not send message to the MessageBroker.
  * @private
  *
- * @param {string} eventId		The identifier of the event being fired.
- *								aka topic.
- * @param {Object} eventDetails	The details of the event to be passed to each
- *								subscriber's notification function. Its value
- *								is specific to the particular event.
+ * @param {string}	eventId			-The identifier of the event being fired.
+ *									 aka topic.
+ * @param {Object=}	eventDetails	-The details of the event to be passed to each
+ *									 subscriber's notification function. Its value
+ *									 is specific to the particular event.
  *
  ****************************************************************************/
 pearson.utils.EventManager.prototype.publishLocal_ = function (eventId, eventDetails)
@@ -307,11 +310,11 @@ pearson.utils.EventManager.prototype.publishLocal_ = function (eventId, eventDet
  * to the MessageBroker which is an message listener at parent window.
  * @export
  *
- * @param {string} eventId		The identifier of the event being fired.
- *								aka topic.
- * @param {Object} eventDetails	The details of the event to be passed to each
- *								subscriber's notification function. Its value
- *								is specific to the particular event.
+ * @param {string}	eventId			-The identifier of the event being fired.
+ *									 aka topic.
+ * @param {Object=}	eventDetails	-The details of the event to be passed to each
+ *									 subscriber's notification function. Its value
+ *									 is specific to the particular event.
  *
  ****************************************************************************/
 pearson.utils.EventManager.prototype.publish = function (eventId, eventDetails)
@@ -364,7 +367,8 @@ pearson.utils.EventManager.prototype.listenBroker = function ()
 						that.publishLocal_(data.payload.topic, data.payload.message);
 					}
 				}
-			}
+			},
+			false
 	);
 };
 

@@ -1,5 +1,5 @@
 /* **************************************************************************
- * $Workfile:: name-of-file.js                                              $
+ * $Workfile:: messagebroker.js                                             $
  * *********************************************************************/ /**
  *
  * @fileoverview Implementation of the MessageBroker
@@ -26,7 +26,7 @@
  *   Event = {
  *   	source: <source>,
  *   	data: {
- 		channel: <bricevent, resize, topic>
+ *		channel: <bricevent, resize, topic>
  *   		#case bricevent, this is what actually sent at EventManager scope
  *  	 	message: {
  *  	 		sendTime: <time was sent in unix format>
@@ -45,6 +45,7 @@
  *   }
  *
  * **************************************************************************/
+
 /*
  * Change Log:
  * - Working on the topic functionality (messageType changed to channel)

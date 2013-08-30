@@ -43,14 +43,12 @@ goog.provide('pearson.brix.Button');
  * @param {string}		config.text		-The text to be displayed on the button
  * @param {bool}		config.enabled	-The initial enabled state of the button.
  * 										 Optional, defaults to true.
- * @param {!EventManager}
+ * @param {!pearson.utils.EventManager}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
- * @todo: firefox doesn't support HTML5 buttons, they degrade to numeric input
- * fields.
  **************************************************************************/
-pearson.brix.Button = function(config, eventManager)
+pearson.brix.Button = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the button widget
@@ -69,14 +67,14 @@ pearson.brix.Button = function(config, eventManager)
 	/**
 	 * Determines whether the button should be enabled or disabled.
 	 * May be accessed using the methods getEnabled, setEnabled.
-	 * @type {bool}
+	 * @type {boolean}
 	 * @private
 	 */
 	this.enabled_ = config.enabled === false ? false : true;
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.EventManager}
 	 */
 	this.eventManager = eventManager;
 	
@@ -190,7 +188,7 @@ pearson.brix.Button.prototype.getText = function ()
  * This method sets the current enable state of the button.
  * @export
  *
- * @param {bool}	newEnableState	- true to enable the button, false to disable it.
+ * @param {boolean}	newEnableState	-true to enable the button, false to disable it.
  *
  **************************************************************************/
 pearson.brix.Button.prototype.setEnabled = function (newEnableState)

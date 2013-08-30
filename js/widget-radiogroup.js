@@ -93,7 +93,7 @@ pearson.brix.Answer;
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this RadioGroup.
  * 										 if undefined a unique id will be assigned.
- * @param {Array.<pearson.brix.Answer>}
+ * @param {!Array.<!pearson.brix.Answer>}
  *						config.choices	-The list of choices (answers) to be presented by the RadioGroup.
  * @param {string|undefined}
  *						config.numberFormat
@@ -119,7 +119,7 @@ pearson.brix.RadioGroup = function (config, eventManager)
 
 	/**
 	 * The list of choices presented by the RadioGroup.
-	 * @type {Array.<pearson.brix.Answer>}
+	 * @type {!Array.<!pearson.brix.Answer>}
 	 */
 	this.choices = config.choices;
 
