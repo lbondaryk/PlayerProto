@@ -1,5 +1,5 @@
 /* **************************************************************************
- * $Workfile:: widget-multiplechoicequestion.js                             $
+ * $Workfile:: fakeactivitydb.js                                            $
  * *********************************************************************/ /**
  *
  * @fileoverview Defines a fake database used by the mock scoring engine.
@@ -14,18 +14,19 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+goog.provide('pearson.brix.test.activities');
+
 // JSON FakeActiviyDB Document
 /**
- * activities is a global object used as a scoring database.
+ * activities is a test object used as a scoring database.
  * It is an object whose keys are the sequenceNodeId's that identify
  * the activity being scored, and the value contains properties used by
- * the mock scoring engine {@link answerMan}.
+ * the mock scoring engine {@link pearson.brix.AnswerMan}.
  * @type {Object}
- * */
-
-goog.provide('pearson.brix.test');
-
-pearson.brix.test.activities = {		
+ */
+pearson.brix.test.activities =
+{		
 	"louder": { 
 		question: "How high does it go?",
 		"001": {
@@ -413,4 +414,5 @@ pearson.brix.test.activities = {
 				response: "There can be only 1",
 			},
 		},
-	};
+}; // end of pearson.brix.test.activities
+

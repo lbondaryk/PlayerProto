@@ -194,7 +194,7 @@ pearson.utils.EventManager.prototype.subscribe = function (eventId, handler)
  * EventManager class method to unsubscribe from an event that an object may fire.
  * @export
  *
- * @param {string} eventId		The identifier of the event (aka topic) to unsubstribe from.
+ * @param {string} eventId		The identifier of the event (aka topic) to unsubscribe from.
  * @param {Function} handler	The callback function to unsubscribe.  
  *
  * Notes:

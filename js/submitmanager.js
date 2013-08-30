@@ -6,20 +6,25 @@
  *
  * The SubmitManager does some stuff.
  *
- * Created on		June 04, 2013
+ * Created on		June 4, 2013
  * @author			Seann Ives
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
-/* **************************************************************************
- * Page variables
- ****************************************************************************/
+goog.provide('pearson.brix.SubmitManager');
+goog.provide('pearson.paf');
 
-// Sample SubmitManager constructor configuration
-// NA - information about the container to return to and the question ID is
-// passed from the question type, e.g. multiple choice. No config.
+goog.require('pearson.brix.AnswerMan');
+
+/**
+ * The PAF Activity ID used by the scoring engine to identify
+ * the particular activity (question) being scored.
+ *
+ * @typedef {string} pearson.paf.SequenceNodeId
+ */
+pearson.paf.SequenceNodeId;
 
 /* **************************************************************************
  * SubmitManager                                                       */ /**
@@ -28,11 +33,11 @@
  *
  * @constructor
  *
- * @param {Object}		config			-The settings to configure this SubmitManager
- * 										 of which there are currently none.
- * @param {!EventManager}
+ * @param {!pearson.utils.EventManager}
  * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them.
+ * 									 	 and subscribing to them.
+ * @param {!pearson.brix.AnswerMan=}
+ * 						answerMan		-The correctness engine to process the selected answer.
  *
  * @classdesc
  * The submit manager handles your submissions, yo.
@@ -43,71 +48,47 @@
  * is a callback associated w/ the request.
  *
  ****************************************************************************/
-
-goog.provide('pearson.brix.SubmitManager');
-
-/* **************************************************************************
- * SubmitManager                                                              */ /**
- *
- * The SubmitManager manages the submission.
- *
- * @constructor
- * @export
- *
- * @param {!EventManager}	eventManager		-The reference to the EventManager
- * @param {!Object}		answerMan			-The reference to the AnserManager
- */
-pearson.brix.SubmitManager = function(eventManager, answerMan)
+pearson.brix.SubmitManager = function (eventManager, answerMan)
 {
-
 	/**
 	 * The answerMan provides feedback to submissions 
-	 * @type {EventManager}
+	 * @type {!pearson.brix.AnswerMan}
 	 */
-	if (answerMan === undefined) {
-		this.answerMan = new pearson.brix.AnswerMan();
-	}
-	else 
-	{
-		this.answerMan = answerMan;
-	}
+	this.answerMan = answerMan || new pearson.brix.AnswerMan();
 	
 	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * The event manager to use to publish (and subscribe to) events
+	 * @type {!pearson.utils.EventManager}
 	 */
 	this.eventManager = eventManager;
 
 	/**
 	 * map of all submitted answers awaiting a response from
 	 * the scoring engine.
-	 * @type {Object.<SequenceNodeId, PendingDetails>}
+	 * @type {Object.<pearson.paf.SequenceNodeId, pearson.brix.SubmitManager.PendingDetails>}
 	 * @private
 	 */
 	this.requestsAwaitingResponse_ = {};
+};
 
-	/**
-	 * The PAF Activity ID used by the scoring engine to identify
-	 * the particular activity (question) being scored.
-	 *
-	 * @typedef {string} SequenceNodeId
-	 */
-	
-	/**
-	 * The PendingDetails is the information about an outstanding
-	 * request for an activity to be scored by the scoring engine.
-	 *
-	 * @typedef {Object} PendingDetails
-	 * @property {SequenceNodeId}	sequenceNodeId	-The PAF Activity Id which identifies the
-	 * 												 activity being scored.
-	 * @property {string}			answer			-The chosen answer to be scored.
-	 * @property {function(Object)}	responseCallback
-	 * 												-The function to call w/ the response from
-	 * 												 the scoring engine.
-	 * @property {Object}			requestDetails	-The details from the score
-	 * 												 request event from the question widget.
-	 */
-}
+/**
+ * The PendingDetails is the information about an outstanding
+ * request for an activity to be scored by the scoring engine.
+ *
+ * @typedef {Object} pearson.brix.SubmitManager.PendingDetails
+ * @property {pearson.paf.SequenceNodeId}
+ * 								sequenceNodeId	-The PAF Activity Id which identifies the
+ * 												 activity being scored.
+ * @property {string}			answer			-The 'key' of the chosen answer to be scored.
+ * @property {number|undefined}	value			-If the answer selection is not from a discrete list
+ * 												 this is the numeric value chosen.
+ * @property {function(Object)}	responseCallback
+ * 												-The function to call w/ the response from
+ * 												 the scoring engine.
+ * @property {Object}			requestDetails	-The details from the score
+ * 												 request event from the question widget.
+ */
+pearson.brix.SubmitManager.PendingDetails;
 
 /* **************************************************************************
  * SubmitManager.handleRequestsFrom                                    */ /**
@@ -145,19 +126,19 @@ pearson.brix.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails
 {
 	var pendingDetails =
 		{
-			sequenceNodeId: eventDetails.questionId,
-			answer: eventDetails.answerKey,
-			value: eventDetails.submissionValue,
-			responseCallback: eventDetails.responseCallback,
+			sequenceNodeId: eventDetails['questionId'],
+			answer: eventDetails['answerKey'],
+			value: eventDetails['submissionValue'],
+			responseCallback: eventDetails['responseCallback'],
 			requestDetails: eventDetails,
 		};
 
-	if (this.requestsAwaitingResponse_[eventDetails.questionId] !== undefined)
+	if (this.requestsAwaitingResponse_[pendingDetails.sequenceNodeId] !== undefined)
 	{
-		alert("there's already an outstanding submission request for the sequenceNode: " + eventDetails.questionId);
+		alert("there's already an outstanding submission request for the sequenceNode: " + pendingDetails.sequenceNodeId);
 	}
 
-	this.requestsAwaitingResponse_[eventDetails.questionId] = pendingDetails;
+	this.requestsAwaitingResponse_[pendingDetails.sequenceNodeId] = pendingDetails;
 
 	this.submitForScoring_(pendingDetails);
 };
@@ -168,7 +149,8 @@ pearson.brix.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails
  * Send the score request to the scoring engine using whatever means required
  * to access that scoring engine.
  *
- * @param {PendingDetails}	submitDetails	-Information identifying the question
+ * @param {pearson.brix.SubmitManager.PendingDetails}
+ * 							submitDetails	-Information identifying the question
  * 											 and answer to be scored, in the properties:
  * 											 sequenceNodeId and answer.
  * @private
@@ -201,37 +183,6 @@ pearson.brix.SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 		submissionResponse.submitDetails = pendingDetails.requestDetails;
 		pendingDetails.responseCallback(submissionResponse);
 	}
-};
-
-/* **************************************************************************
- * SubmitManager.submit                                                */ /**
- *
- * Submit the student's submission to the answer engine.  Publish the result.
- *
- * CURRENT FAKEY STUB...  We send the submission to the answerman()
- * function in which we can put whatever fakery we want for the short term.
- *
- * IN THE FUTURE...  We likely end up passing the submission to the 
- * Activity Manager which will know where the answer engine is, either 
- * a server-side thing (The Player Backend), a client-side thing (probably also
- * related to the Player), or the PAF Hub.
- * @export
- *
- * @param {string}	submission	-The student's submission
- *
- ****************************************************************************/
-pearson.brix.SubmitManager.prototype.submit = function (submission)
-{
-	// pass the submission on to the answer engine.  This will probably be
-	// via the ActivityManager I'd think
-	// @todo: probably this will have to be fixed with new number of arguments for submitAnswer
-	var submissionResponse = this.answerMan.submitAnswer(
-			{	sequenceNode: this.sequenceNodeID,
-				container: this.container,
-			}, submission);
-
-	// publish the result of the submission
-	this.eventManager.publish(this.submittedEventId, submissionResponse);
 };
 
 /* **************************************************************************
@@ -309,30 +260,3 @@ pearson.brix.SubmitManager.appendResponseWithDefaultFormatting = function (conta
 		.html(responseHtml);
 };
 
-/* **************************************************************************
- * fancyAnswerEngine                                                   */ /**
- *
- * I'm just a stub
- * Yes, I'm only a stub
- * And I'm sitting here on ...
- *
- * If we want to make this more useful, but still fakey, we could extract this
- * into another included javascript file, pretend it's some passthru in the
- * ActivityManager that shunts the submission (and the whole SequenceNode, 
- * which it would get from the sequenceNodeID we have) off to the real Answer Engine,
- * and hardcode some answer enginey stuff in there based on sequenceNodeID.
- *
- * @param {string}	submission	-The student's submission
- *
- ****************************************************************************/
-/* Not being used anywhere in the project. Commented out
-fancyAnswerEngine = function (sequenceNodeID, submission)
-{
-	// You're always WRONG!  HAHAHHAHAHA.
-	var submissionResponse = {
-		grade: 0,
-		response: "Sorry, try again."
-	};
-	return submissionResponse;
-};
-*/

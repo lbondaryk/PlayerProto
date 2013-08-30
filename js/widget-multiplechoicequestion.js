@@ -342,25 +342,26 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function(container)
 	// check if it's an SVG widget with a size, in which case
 	// create 
 
-	if (Array.isArray(this.svgSize)){
-
+	if (Array.isArray(this.svgSize))
+	{
 		var mcSVG = new pearson.brix.SVGContainer({
-			node: choiceWidgetCntr,
-			maxWid: this.svgSize[0],
-			maxHt: this.svgSize[1]
-		});
+				node: choiceWidgetCntr,
+				maxWid: this.svgSize[0],
+				maxHt: this.svgSize[1]
+			});
 
-		if(this.svgBaseBrix) {
+		if (this.svgBaseBrix)
+		{
 		 	this.svgBaseBrix.append(this.choiceWidget);
 		 	mcSVG.append(this.svgBaseBrix);
 		}
-		
-		else {
-		mcSVG.append(this.choiceWidget)
+		else
+		{
+			mcSVG.append(this.choiceWidget)
 		}
 	}
-	
-	else {
+	else
+	{
 		this.choiceWidget.draw(choiceWidgetCntr);
 	}
 
