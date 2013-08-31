@@ -239,7 +239,7 @@ LineGraph.prototype.draw = function(container, size)
 		
 		// if ticks are an array, convert them to dates
 		
-		if(Array.isArray(axesConfig.xAxisFormat.ticks))
+		if (Array.isArray(axesConfig.xAxisFormat.ticks))
 		{
 			axesConfig.xAxisFormat.ticks = axesConfig.xAxisFormat.ticks.map(function (pt) {return new Date(pt);});
 		}
@@ -257,7 +257,7 @@ LineGraph.prototype.draw = function(container, size)
 
 	//make the axes for this graph - draw these first because these are the 
 	//pieces that need extra unknown space for ticks, ticklabels, axis label
-	this.lastdrawn.axes = new pearson.brix.Axes(this.lastdrawn.container, axesConfig);
+	this.lastdrawn.axes = new pearson.brix.PrototypeAxes(this.lastdrawn.container, axesConfig);
 
 	//inherit the dataRect from the axes container
 	this.lastdrawn.dataRect = this.lastdrawn.axes.dataRect;

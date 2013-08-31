@@ -50,6 +50,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=fakeactivitydb.js
 	--input=submitmanager.js
 	--input=widget-base.js
+	--input=widget-prototype-axes.js
 	--input=widget-image.js
 	--input=widget-carousel.js
 	--input=widget-imageviewer.js

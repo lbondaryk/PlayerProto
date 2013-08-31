@@ -16,6 +16,10 @@
 
 goog.provide('pearson.brix.BarChart');
 
+goog.require('pearson.utils.EventManager');
+goog.require('pearson.brix.AxisFormat');
+goog.require('pearson.brix.PrototypeAxes');
+
 // Sample BarChart constructor configuration
 (function()
 {
@@ -222,7 +226,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	
 	//make the axes for this graph - draw these first because these are the 
 	//pieces that need extra unknown space for ticks, ticklabels, axis label
-	this.lastdrawn.axes = new pearson.brix.Axes(this.lastdrawn.container, axesConfig);
+	this.lastdrawn.axes = new pearson.brix.PrototypeAxes(this.lastdrawn.container, axesConfig);
 	//only draw axes if there aren't any yet
 	/*
 	if(!d3.select("#"+ axesConfig.id)[0][0]){
