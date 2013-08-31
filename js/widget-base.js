@@ -296,7 +296,9 @@ pearson.utils.Rect.makeRect = function (definedBy)
 	return new pearson.utils.Rect(left, top, width, height);
 }; // end Rect.makeRect
 
-/**
+/* **************************************************************************
+ * ISize                                                               */ /**
+ *																			
  * Pseudo interface for Size, which just requires height and width properties.
  * It is frequently easier to just create an object w/ those 2 properties
  * rather than ```new Size(h,w)```.
@@ -486,6 +488,67 @@ pearson.brix.SVGContainerConfig = function ()
 };
 
 /* **************************************************************************
+ * Abstract Base Classes
+ * **************************************************************************/
+
+/* **************************************************************************
+ * Bric                                                                */ /**
+ *
+ * Base class constructor used only by derived Bric instances.
+ *
+ * @constructor
+ *
+ * @classdesc
+ * A Bric is a building block "widget" which is capable of drawing itself
+ * on a web page in an HTML element.
+ *
+ ****************************************************************************/
+pearson.brix.Bric = function ()
+{
+};
+
+/* **************************************************************************
+ * HtmlBric                                                            */ /**
+ *
+ * Base class constructor used only by derived HtmlBric instances.
+ *
+ * @constructor
+ * @extends {pearson.brix.Bric}
+ *
+ * @classdesc
+ * An HtmlBric is a Bric which is rendered using HTML tags.
+ *
+ ****************************************************************************/
+pearson.brix.HtmlBric = function ()
+{
+	// call the base class constructor
+	goog.base(this);
+};
+goog.inherits(pearson.brix.HtmlBric, pearson.brix.Bric);
+
+/* **************************************************************************
+ * SvgBric                                                             */ /**
+ *
+ * Base class constructor used only by derived SvgBric instances.
+ *
+ * @constructor
+ * @extends {pearson.brix.Bric}
+ *
+ * @classdesc
+ * An SvgBric is a Bric which is rendered using SVG tags, it is not drawn
+ * directly into the web page, instead it is drawn in a specialized
+ * SvgBric container {@link pearson.brix.SVGContainer}.
+ *
+ ****************************************************************************/
+pearson.brix.SvgBric = function ()
+{
+	// call the base class constructor
+	goog.base(this);
+};
+goog.inherits(pearson.brix.SvgBric, pearson.brix.Bric);
+
+
+/* **************************************************************************
  * SVGContainer                                                        */ /**
  *
  * The SVGContainer creates an svg element and appends it as the last
@@ -493,12 +556,15 @@ pearson.brix.SVGContainerConfig = function ()
  * the given configuration values.
  *
  * @constructor
+ * @extends {pearson.brix.Bric}
  * @export
  *
  * @param {Object}			config			-The settings to configure this SVGContainer
  * @param {!d3.selection}	config.node		-The parent node for the created svg element
  * @param {number}			config.maxWid	-The maximum width of the svg container (in pixels)
  * @param {number}			config.maxHt	-The maximum width of the svg container (in pixels)
+ *
+ * @note Think about whether the SVGContainer is actually an HtmlBric. -mjl
  *
  ****************************************************************************/
 pearson.brix.SVGContainer = function (config)
