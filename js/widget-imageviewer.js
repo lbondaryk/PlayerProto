@@ -2,11 +2,12 @@
  * $Workfile:: widget-imageviewer.js                                        $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the ImageViewer widget.
+ * @fileoverview Implementation of the ImageViewer bric.
  *
- * The ImageViewer widget draws the common widget configuration of a
- * Carousel widget presenting a collection of images with the selected
- * image displayed in an Image widget below the carousel.
+ * The ImageViewer bric draws the common configuration of a
+ * {@link pearson.brix.Carousel} presenting a collection of images with the
+ * selected image displayed in an {@link pearson.brix.Image} bric below the
+ * carousel.
  *
  * Created on		May 18, 2013
  * @author			Michael Jay Lippert
@@ -17,9 +18,11 @@
 
 goog.provide('pearson.brix.ImageViewer');
 
+goog.require('pearson.brix.SvgBric');
 goog.require('pearson.brix.Image');
 goog.require('pearson.brix.CaptionedImage');
 goog.require('pearson.brix.Carousel');
+goog.require('pearson.utils.EventManager');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -40,17 +43,18 @@ goog.require('pearson.brix.Carousel');
  * image displayed in an Image widget below the carousel.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.SvgBric}
  * @export
  *
  * @param {Object}			config			-The settings to configure this ImageViewer
  * @param {string|undefined}
  * 							config.id		-String to uniquely identify this ImageViewer.
  * 											 if undefined a unique id will be assigned.
- * @param {Array.<pearson.brix.Image>}
- * 							config.items	-The list of Image widgets to be presented by the ImageViewer.
- * @param {pearson.utils.IEventManager}
+ * @param {Array.<!pearson.brix.Image>}
+ * 							config.items	-The list of Image brix to be presented by the ImageViewer.
+ * @param {!pearson.utils.EventManager}
  * 							eventManager	-allows the widget to publish and subscribe to events
+ * 											 required for correct internal operation.
  *
  ****************************************************************************/
 pearson.brix.ImageViewer = function (config, eventManager)
@@ -58,14 +62,14 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	var that = this;
 	
 	/**
-	 * A unique id for this instance of the image viewer widget
+	 * A unique id for this instance of the image viewer bric
 	 * @type {string}
 	 */
 	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.ImageViewer);
 
 	/**
-	 * The list of widgets presented by the Carousel in this ImageViewer.
-	 * @type {Array.<IWidget>}
+	 * The list of image brix presented by the Carousel in this ImageViewer.
+	 * @type {Array.<!pearson.brix.Image>}
 	 */
 	this.items = config.items;
 
@@ -85,37 +89,32 @@ pearson.brix.ImageViewer = function (config, eventManager)
 
 	/**
 	 * The carousel widget used by this ImageViewer to present the images.
-	 * @type {pearson.utils.Carousel}
+	 * @type {!pearson.brix.Carousel}
 	 */
 	this.carousel = new pearson.brix.Carousel(crslConfig, eventManager);
 
 	// We may want to eventually support an empty image, but for now
 	// we'll just copy the 1st image into the display image.
-	var imgConfig =
-		{
-			URI: this.items[0].URI,
-			caption: this.items[0].caption,
-			preserveAspectRatio: this.items[0].preserveAspectRatio,
-			actualSize: this.items[0].actualSize
-		};
-
 	var cimgConfig =
 		{
 			id: this.id + "_cimg",
-			image: new Image(imgConfig),
+			URI: this.items[0].URI,
+			caption: this.items[0].caption,
+			preserveAspectRatio: this.items[0].preserveAspectRatio,
+			actualSize: this.items[0].actualSize,
 			captionPosition: "below"
 		};
 
 	/**
 	 * The captioned image widget which displays the image selected
 	 * in the carousel.
-	 * @type {pearson.utils.CaptionedImage}
+	 * @type {!pearson.brix.CaptionedImage}
 	 */
 	this.image = new pearson.brix.CaptionedImage(cimgConfig);
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {pearson.utils.IEventManager}
+	 * @type {!pearson.utils.EventManager}
 	 */
 	this.eventManager = eventManager;
 
@@ -131,6 +130,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	 * @typedef {Object} SelectedEventDetails
 	 * @property {string} selectKey	-The key associated with the selected item.
 	 */
+	var SelectedEventDetails;
 
 	// event handler that connects the carousel selection to changing and redrawing
 	// the image below.
@@ -165,16 +165,18 @@ pearson.brix.ImageViewer.autoIdPrefix = "imgvwr_auto_";
 /* **************************************************************************
  * ImageViewer.draw                                                    */ /**
  *
- * Draw this ImageViewer in the given container.
+ * @inheritDoc
  * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this ImageViewer in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the carousel element tree to.
- * @param {pearson.utils.ISize}
- * 					size		-The height and width in pixels for the carousel
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-pearson.brix.ImageViewer.prototype.draw = function(container, size)
+pearson.brix.ImageViewer.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -303,7 +305,7 @@ pearson.brix.ImageViewer.prototype.assignMissingItemKeys_ = function ()
  * carousel, and select the 1st highlighted image.
  * @export
  *
- * @param {string|number}	liteKey	-The key associated with the image(s) to be highlighted.
+ * @param {string}		liteKey		-The key associated with the image(s) to be highlighted.
  *
  ****************************************************************************/
 pearson.brix.ImageViewer.prototype.lite = function (liteKey)

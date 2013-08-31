@@ -16,6 +16,7 @@
 
 goog.provide('pearson.brix.Carousel');
 
+goog.require('pearson.brix.SvgBric');
 goog.require('pearson.utils.IEventManager');
 
 // Sample configuration objects for classes defined here
@@ -40,14 +41,14 @@ goog.require('pearson.utils.IEventManager');
  * allows one of them to be selected.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.SvgBric}
  * @export
  *
  * @param {Object}		config			-The settings to configure this Carousel
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this Carousel.
  * 										 if undefined a unique id will be assigned.
- * @param {Array.<IWidget>}
+ * @param {!Array.<!pearson.brix.SvgBric>}
  *						config.items	-The list of widgets to be presented by the Carousel.
  * @param {string}		config.layout	-How the carousel will layout the items (vertical or horizontal).
  * @param {{top: number, bottom: number, left: number, right: number}}
@@ -61,7 +62,7 @@ goog.require('pearson.utils.IEventManager');
  *										-If the carousel presentation is "scroll" should it
  *										 wrap from one end to the other or stop when the
  *										 first or last item is visible.
- * @param {pearson.utils.IEventManager=}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -71,17 +72,20 @@ goog.require('pearson.utils.IEventManager');
  ****************************************************************************/
 pearson.brix.Carousel = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	var that = this;
 	
 	/**
-	 * A unique id for this instance of the carousel widget
+	 * A unique id for this instance of the carousel bric
 	 * @type {string}
 	 */
 	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Carousel);
 
 	/**
 	 * The list of widgets presented by the Carousel.
-	 * @type {Array.<IWidget>}
+	 * @type {!Array.<!pearson.brix.SvgBric>}
 	 */
 	this.items = config.items;
 
@@ -115,9 +119,9 @@ pearson.brix.Carousel = function (config, eventManager)
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {pearson.utils.IEventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id published when an item in this carousel is selected.
@@ -132,6 +136,7 @@ pearson.brix.Carousel = function (config, eventManager)
 	 * @property {number} index		-The 0-based index of the selected item.
 	 * @property {string} selectKey	-The key associated with the selected item.
 	 */
+	var SelectedEventDetails;
 
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)
@@ -143,10 +148,11 @@ pearson.brix.Carousel = function (config, eventManager)
 			size: {height: 0, width: 0},
 			widgetGroup: null,
 		};
-} // end of Carousel constructor
+}; // end of Carousel constructor
+goog.inherits(pearson.brix.Carousel, pearson.brix.SvgBric);
 
 /**
- * Prefix to use when generating ids for instances of LabelGroup.
+ * Prefix to use when generating ids for instances of Carousel.
  * @const
  * @type {string}
  */
@@ -155,15 +161,16 @@ pearson.brix.Carousel.autoIdPrefix = "crsl_auto_";
 /* **************************************************************************
  * Carousel.draw                                                       */ /**
  *
- * Draw this Carousel in the given container.
+ * @inheritDoc
  * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this Carousel in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the carousel element tree to.
- * @param {Object}	size		-The size in pixels for the carousel
- * @param {number}	size.height	-The height in pixels of the area the carousel is drawn within.
- * @param {number}	size.width	-The width in pixels of the area the carousel is drawn within.
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
 pearson.brix.Carousel.prototype.draw = function(container, size)
 {
@@ -269,7 +276,7 @@ pearson.brix.Carousel.prototype.redraw = function ()
  * Return the selected item in the carousel.
  * @export
  *
- * @return {Object} the carousel item which is currently selected.
+ * @return {pearson.brix.SvgBric} the carousel item which is currently selected.
  *
  ****************************************************************************/
 pearson.brix.Carousel.prototype.selectedItem = function ()

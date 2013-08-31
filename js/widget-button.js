@@ -17,6 +17,8 @@
 
 goog.provide('pearson.brix.Button');
 
+goog.require('pearson.brix.SvgBric');
+
 // Sample Button constructor configuration
 (function()
 {
@@ -33,7 +35,7 @@ goog.provide('pearson.brix.Button');
  * The Button widget creates a clickable html button that publishes events.
  *
  * @constructor
- * @implements {IHtmlWidget}
+ * @extends {pearson.brix.HtmlBric}
  * @export
  *
  * @param {!Object}		config			-The settings to configure this button
@@ -50,6 +52,9 @@ goog.provide('pearson.brix.Button');
  **************************************************************************/
 pearson.brix.Button = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the button widget
 	 * @type {string}
@@ -95,7 +100,8 @@ pearson.brix.Button = function (config, eventManager)
 			widgetGroup: null,
 		};
 
-} // end of button constructor
+}; // end of Button constructor
+goog.inherits(pearson.brix.Button, pearson.brix.HtmlBric);
 
 /* **************************************************************************
  * Button.draw                                                         */ /**

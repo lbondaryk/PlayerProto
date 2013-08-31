@@ -18,6 +18,9 @@
 goog.provide('pearson.brix.Image');
 goog.provide('pearson.brix.CaptionedImage');
 
+goog.require('pearson.utils.EventManager');
+goog.require('pearson.brix.SvgBric');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -55,7 +58,7 @@ goog.provide('pearson.brix.CaptionedImage');
  * widgets such as LabelGroups.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.SvgBric}
  * @export
  *
  * @param {Object}		config			-The settings to configure this Image
@@ -68,17 +71,21 @@ goog.provide('pearson.brix.CaptionedImage');
  *										-Specify how to treat the relationship between
  *										 the actual aspect ratio of the image and the
  *										 area it is to be drawn in.
- * @param {Size}		config.actualSize
+ * @param {!pearson.utils.ISize}
+ * 						config.actualSize
  *										-The actual height and width in pixels of the image.
  * @param {string}		config.key		-Association key used to determine if this
  *										 image should be highlighted.
- * @param {pearson.utils.IEventManager=}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
  ****************************************************************************/
 pearson.brix.Image = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the image widget
 	 * @type {string}
@@ -112,7 +119,7 @@ pearson.brix.Image = function (config, eventManager)
 	 * The actual size in pixels of the image resource.
 	 * @todo determine if there is a simple way to figure out the actual size
 	 *       at runtime instead of forcing the user to specify it.
-	 * @type {Size|undefined}
+	 * @type {!pearson.utils.ISize}
 	 */
 	this.actualSize = config.actualSize;
 	
@@ -123,17 +130,17 @@ pearson.brix.Image = function (config, eventManager)
 	this.key = config.key;
 
 	/**
-	 * List of child widgets which are to be drawn in this Image's container area.
-	 * Child widgets are added using Image.append.
-	 * @type {Array.<IWidget>}
+	 * List of child brix which are to be drawn in this Image's container area.
+	 * Child brix are added using {@link pearson.brix.Image.append}.
+	 * @type {Array.<pearson.brix.SvgBric>}
 	 */
-	this.childWidgets = [];
+	this.childBrix = [];
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {pearson.utils.IEventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The scale functions set explicitly for this Image using setScale.
@@ -162,6 +169,7 @@ pearson.brix.Image = function (config, eventManager)
 			widgetGroup: null,
 		};
 }; // end of Image constructor
+goog.inherits(pearson.brix.Image, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids for instances of Image.
@@ -173,17 +181,19 @@ pearson.brix.Image.autoIdPrefix = "img_auto_";
 /* **************************************************************************
  * Image.draw                                                          */ /**
  *
- * Draw this Image in the given container.
+ * @inheritDoc
  * @export
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the labels element tree to.
- * @param {Object}	size		-The size in pixels for the label
- * @param {number}	size.height	-The height in pixels of the area the labels are drawn within.
- * @param {number}	size.width	-The width in pixels of the area the labels are drawn within.
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this Image in the given container.
  *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-pearson.brix.Image.prototype.draw = function(container, size)
+pearson.brix.Image.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -229,7 +239,7 @@ pearson.brix.Image.prototype.draw = function(container, size)
 	this.lastdrawn.widgetGroup = imageGroup;
 
 	// Draw any child widgets that got appended before draw was called
-	this.childWidgets.forEach(this.drawWidget_, this);
+	this.childBrix.forEach(this.drawBric_, this);
 	
 }; // end of Image.draw()
 
@@ -251,42 +261,44 @@ pearson.brix.Image.prototype.redraw = function ()
 	var desc = image.select("desc");
 	desc.text(this.caption);
 	
-	this.childWidgets.forEach(this.redrawWidget_, this);
+	this.childBrix.forEach(this.redrawBric_, this);
 };
 
 /* **************************************************************************
- * Image.drawWidget_                                                   */ /**
+ * Image.drawBric_                                                     */ /**
  *
- * Draw the given child widget in this image's area.
+ * Draw the given child bric in this image's area.
  * This image must have been drawn BEFORE this method is called or
  * bad things will happen.
- *
  * @private
+ *
+ * @param {pearson.brix.SvgBric}	bric	-The child bric to draw
  *
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-pearson.brix.Image.prototype.drawWidget_ = function (widget)
+pearson.brix.Image.prototype.drawBric_ = function (bric)
 {
-	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
-	widget.draw(this.lastdrawn.widgetGroup, this.lastdrawn.size);
+	bric.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
+	bric.draw(this.lastdrawn.widgetGroup, this.lastdrawn.size);
 };
 
 /* **************************************************************************
- * Image.redrawWidget_                                                 */ /**
+ * Image.redrawBric_                                                   */ /**
  *
- * Redraw the given child widget.
- * This line graph and this child widget must have been drawn BEFORE this
+ * Redraw the given child bric.
+ * This image and given child bric must have been drawn BEFORE this
  * method is called or bad things will happen.
- *
  * @private
+ *
+ * @param {pearson.brix.SvgBric}	bric	-The child bric to redraw
  *
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-pearson.brix.Image.prototype.redrawWidget_ = function (widget)
+pearson.brix.Image.prototype.redrawBric_ = function (bric)
 {
-	widget.redraw();
+	bric.redraw();
 };
 
 /* **************************************************************************
@@ -296,21 +308,21 @@ pearson.brix.Image.prototype.redrawWidget_ = function (widget)
  * image it should be redrawn.
  * @export
  *
- * @param	{?string}	URI			-The new URI for the image. If null, the URI
+ * @param	{?string}	uri			-The new URI for the image. If null, the URI
  *									 will not be changed.
- * @param	{string=}	opt_caption	-The new caption for the image.
+ * @param	{string=}	caption		-The new caption for the image.
  *
  ****************************************************************************/
-pearson.brix.Image.prototype.changeImage = function (URI, opt_caption)
+pearson.brix.Image.prototype.changeImage = function (uri, caption)
 {
-	if (URI)
+	if (uri)
 	{
-		this.URI = URI;
+		this.URI = uri;
 	}
 	
-	if (opt_caption !== undefined)
+	if (caption !== undefined)
 	{
-		this.caption = opt_caption;
+		this.caption = caption;
 	}
 };
 
@@ -338,26 +350,26 @@ pearson.brix.Image.prototype.setScale = function (xScale, yScale)
 /* **************************************************************************
  * Image.append                                                        */ /**
  *
- * Append the widget or widgets to this image and draw it/them on top
- * of the image and any widgets appended earlier. If append
- * is called before draw has been called, then the appended widget(s) will be
+ * Append the bric or brix to this image and draw it/them on top
+ * of the image and any brix appended earlier. If append
+ * is called before draw has been called, then the appended bric(s) will be
  * drawn when draw is called.
  * @export
  *
- * @param {!IWidget|Array.<IWidget>}
- * 						svgWidgets	-The widget or array of widgets to be drawn in
- *									 this image's area.
+ * @param {!pearson.brix.SvgBric|Array.<!pearson.brix.SvgBric>}
+ * 						svgBrix		-The svg bric or array of svg brix to be
+ *									 drawn in this image's area.
  *
  ****************************************************************************/
-pearson.brix.Image.prototype.append = function(svgWidgets)
+pearson.brix.Image.prototype.append = function(svgBrix)
 {
-	if (!Array.isArray(svgWidgets))
+	if (!goog.isArray(svgBrix))
 	{
-		this.append_one_(svgWidgets);
+		this.append_one_(/**@type {!pearson.brix.SvgBric}*/ (svgBrix));
 	}
 	else
 	{
-		svgWidgets.forEach(this.append_one_, this);
+		svgBrix.forEach(this.append_one_, this);
 	}
 		
 }; // end of Image.append()
@@ -367,18 +379,19 @@ pearson.brix.Image.prototype.append = function(svgWidgets)
  *
  * Helper for append that does the work needed to append a single widget.
  *
- * @param {!IWidget}	widget	-The widget which is to be drawn in this image's
+ * @param {!pearson.brix.SvgBric}
+ * 						bric	-The bric which is to be drawn in this image's
  *								 area.
  *
  * @private
  *
  ****************************************************************************/
-pearson.brix.Image.prototype.append_one_ = function(widget)
+pearson.brix.Image.prototype.append_one_ = function(bric)
 {
-	this.childWidgets.push(widget);
+	this.childBrix.push(bric);
 	
 	if (this.lastdrawn.container !== null)
-		this.drawWidget_(widget);
+		this.drawBric_(bric);
 		
 }; // end of Image.append_one_()
 
@@ -402,9 +415,10 @@ pearson.brix.Image.prototype.lite = function (liteKey)
  *
  * Set this.lastdrawn.xScale and yScale to those stored in explicitScales
  * or to the default scale functions w/ a data domain of [0,1].
- *
- * @param {Size}	cntrSize	-The pixel size of the container given to draw().
  * @private
+ *
+ * @param {!pearson.utils.ISize}
+ * 						cntrSize	-The pixel size of the container given to draw().
  *
  ****************************************************************************/
 pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
@@ -438,7 +452,6 @@ pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function 
  *
  * @constructor
  * @extends {pearson.brix.Image}
- * @implements {pearson.brix.IWidget}
  * @export
  *
  * @param {Object}		config			-The settings to configure this CaptionedImage
@@ -458,7 +471,7 @@ pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function 
  * @param {string}		config.captionPosition
  *										-Where the caption should be placed in
  *										 relation to the image.
- * @param {pearson.utils.IEventManager=}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -510,17 +523,19 @@ pearson.brix.CaptionedImage.autoIdPrefix = "cimg_auto_";
 /* **************************************************************************
  * CaptionedImage.draw                                                 */ /**
  *
- * Draw this CaptionedImage in the given container.
+ * @inheritDoc
  * @export
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the captioned image element tree to.
- * @param {Object}	size		-The size in pixels for the captioned image
- * @param {number}	size.height	-The height in pixels of the area the captioned image are drawn within.
- * @param {number}	size.width	-The width in pixels of the area the captioned image are drawn within.
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this CaptionedImage in the given container.
  *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-pearson.brix.CaptionedImage.prototype.draw = function(container, size)
+pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 {
 	this.captioned_lastdrawn.container = container;
 	this.captioned_lastdrawn.size = size;
@@ -597,14 +612,14 @@ pearson.brix.CaptionedImage.prototype.redraw = function ()
  * image it should be redrawn.
  * @export
  *
- * @param	{?string}	URI			-The new URI for the image. If null, the URI
+ * @param	{?string}	uri			-The new URI for the image. If null, the URI
  *									 will not be changed.
- * @param	{string=}	opt_caption	-The new caption for the image.
+ * @param	{string=}	caption		-The new caption for the image.
  *
  ****************************************************************************/
-pearson.brix.CaptionedImage.prototype.changeImage = function (URI, opt_caption)
+pearson.brix.CaptionedImage.prototype.changeImage = function (uri, caption)
 {
-	goog.base(this, 'changeImage', URI, opt_caption);
+	goog.base(this, 'changeImage', uri, caption);
 };
 
 /* **************************************************************************
@@ -633,17 +648,17 @@ pearson.brix.CaptionedImage.prototype.setScale = function (xScale, yScale)
 /* **************************************************************************
  * CaptionedImage.append                                               */ /**
  *
- * Append the widget or widgets to the encapsulated image.
+ * Append the bric or brix to the encapsulated image.
  * @export
  *
- * @param {!IWidget|Array.<IWidget>}
- * 						svgWidgets	-The widget or array of widgets to be drawn in
- *									 this encapsulated image's area.
+ * @param {!pearson.brix.SvgBric|Array.<pearson.brix.SvgBric>}
+ * 						svgBrix		-The svg bric or array of svg brix to be
+ *									 drawn in this encapsulated image's area.
  *
  ****************************************************************************/
-pearson.brix.CaptionedImage.prototype.append = function(svgWidgets)
+pearson.brix.CaptionedImage.prototype.append = function(svgBrix)
 {
-	goog.base(this, 'append', svgWidgets);
+	goog.base(this, 'append', svgBrix);
 		
 }; // end of CaptionedImage.append()
 
