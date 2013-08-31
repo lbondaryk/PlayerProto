@@ -157,7 +157,7 @@ PieChart = function (config, eventManager)
  * @const
  * @type {string}
  */
-PieChart.autoIdPrefix = "auto_pie_";
+PieChart.autoIdPrefix = "pie_auto_";
 
 
 /* **************************************************************************

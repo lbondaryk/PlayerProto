@@ -168,7 +168,7 @@ pearson.brix.BarChart = function (config, eventManager)
  * @const
  * @type {string}
  */
-pearson.brix.BarChart.autoIdPrefix = "auto_bar_";
+pearson.brix.BarChart.autoIdPrefix = "bar_auto_";
 
 
 /* **************************************************************************

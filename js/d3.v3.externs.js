@@ -219,9 +219,9 @@ var d3 = {
         "irwinHall": function () {}
     },
     "scale": {
-        "linear": function () {},
+//        "linear": function () {},
         "log": function () {},
-        "pow": function () {},
+//        "pow": function () {},
         "sqrt": function () {},
         "ordinal": function () {},
         "category10": function () {},
@@ -281,7 +281,8 @@ var d3 = {
     "xml": function () {}
 };
 
-/**
+/* **************************************************************************
+ * d3.selection                                                        */ /**
  * Selections are arrays of elements—literally. D3 binds additional methods to
  * the array so that you can apply operators to the selected elements, such as
  * setting an attribute on all the selected elements. One nuance is that
@@ -400,7 +401,14 @@ d3.selection.prototype.remove = function () {};
  */
 d3.selection.prototype.data = function (values, key) {};
 
-d3.selection.prototype.datum = function () {};
+/**
+ * Gets or sets the bound data for each selected element.
+ *
+ * @param {(*|!Function)=} value
+ * @returns {!d3.dataSelection}
+ */
+d3.selection.prototype.datum = function (value) {};
+
 d3.selection.prototype.filter = function () {};
 d3.selection.prototype.sort = function () {};
 d3.selection.prototype.order = function () {};
@@ -472,7 +480,17 @@ d3.selection.prototype.call = function (fn, var_args) {};
  */
 d3.selection.prototype.empty = function () {};
 
+/**
+ * Returns the first non-null element in the current selection.
+ * If the selection is empty, returns null.
+ * @returns {Element}
+ */
 d3.selection.prototype.node = function () {};
+
+/**
+ * Returns the total number of elements in the current selection.
+ * @returns {number}
+ */
 d3.selection.prototype.size = function () {};
 
 /**
@@ -500,7 +518,10 @@ d3.selection.prototype.select = function (selector) {};
 d3.selection.prototype.selectAll = function (selector) {};
 
 
-/**
+/* **************************************************************************
+ * d3.dataSelection                                                    */ /**
+ * The selection returned by the d3.selection.data method has some
+ * additional functionality (namely enter and exit methods).
  * @constructor
  * @extends {d3.selection}
  */
@@ -522,7 +543,10 @@ d3.dataSelection.prototype.enter = function() {};
  */
 d3.dataSelection.prototype.exit = function() {};
 
-/**
+/* **************************************************************************
+ * d3.enterSelection                                                   */ /**
+ * The selection returned by the d3.dataSelection.enter method has limited
+ * functionality, that this class represents.
  * @constructor
  */
 d3.enterSelection = function () {};
@@ -560,4 +584,141 @@ d3.enterSelection.prototype.call = function(fn, var_args) {};
  * @returns {boolean}
  */
 d3.enterSelection.prototype.empty = function() {};
+
+/* **************************************************************************
+ * d3.linearScale                                                      */ /**
+ * Given a value x in the input domain, returns the corresponding value
+ * in the output range.
+ * @interface
+ *
+ * @param {number} x
+ * @returns {number}
+ */
+d3.linearScale = function (x) {};
+
+d3.linearScale.prototype.invert = function () {};
+
+/**
+ * @param {Array.<number>=} numbers
+ * @returns {!d3.linearScale}
+ */
+d3.linearScale.prototype.domain = function (numbers) {};
+
+/**
+ * If values is specified, sets the scale's output range to the specified
+ * array of values. The array must contain two or more values, to match
+ * the cardinality of the input domain, otherwise the longer of the two
+ * is truncated to match the other. The elements in the given array need
+ * not be numbers; any value that is supported by the underlying
+ * interpolator will work.
+ *
+ * @param {Array.<*>=} values
+ * @returns {!d3.linearScale}
+ */
+d3.linearScale.prototype.range = function (values) {};
+
+/**
+ * Sets the scale's output range to the specified array of values, while
+ * also setting the scale's interpolator to d3.interpolateRound. This is
+ * a convenience routine for when the values output by the scale should
+ * be exact integers, such as to avoid antialiasing artifacts.
+ *
+ * @param {Array.<number>} values
+ * @returns {!d3.linearScale}
+ */
+d3.linearScale.prototype.rangeRound = function (values) {};
+
+d3.linearScale.prototype.interpolate = function () {};
+d3.linearScale.prototype.clamp = function () {};
+d3.linearScale.prototype.nice = function () {};
+d3.linearScale.prototype.ticks = function () {};
+d3.linearScale.prototype.tickFormat = function () {};
+d3.linearScale.prototype.copy = function () {};
+
+/**
+ * @returns {!d3.linearScale}
+ */
+d3.scale.linear = function () {};
+
+/* **************************************************************************
+ * d3.powScale                                                         */ /**
+ * Given a value x in the input domain, returns the corresponding value
+ * in the output range.
+ * @interface
+ *
+ * @param {number} x
+ * @returns {number}
+ */
+d3.powScale = function (x) {};
+
+d3.powScale.prototype.invert = function () {};
+
+d3.powScale.prototype.domain = function (numbers) {};
+
+d3.powScale.prototype.range = function () {};
+d3.powScale.prototype.rangeRound = function () {};
+d3.powScale.prototype.interpolate = function () {};
+d3.powScale.prototype.clamp = function () {};
+d3.powScale.prototype.nice = function () {};
+d3.powScale.prototype.ticks = function () {};
+d3.powScale.prototype.tickFormat = function () {};
+d3.powScale.prototype.exponent = function () {};
+d3.powScale.prototype.copy = function () {};
+
+/**
+ * @returns {!d3.powScale}
+ */
+d3.scale.pow = function () {};
+
+/* **************************************************************************
+ * d3.logScale                                                         */ /**
+ * Given a value x in the input domain, returns the corresponding value
+ * in the output range.
+ * @interface
+ *
+ * @param {number} x
+ * @returns {number}
+ */
+d3.logScale = function (x) {};
+
+d3.logScale.prototype.invert = function () {};
+d3.logScale.prototype.domain = function () {};
+d3.logScale.prototype.range = function () {};
+d3.logScale.prototype.rangeRound = function () {};
+d3.logScale.prototype.interpolate = function () {};
+d3.logScale.prototype.clamp = function () {};
+d3.logScale.prototype.nice = function () {};
+d3.logScale.prototype.ticks = function () {};
+d3.logScale.prototype.tickFormat = function () {};
+d3.logScale.prototype.copy = function () {};
+
+/**
+ * @returns {!d3.logScale}
+ */
+d3.scale.log = function () {};
+
+/* **************************************************************************
+ * d3.ordinalScale                                                     */ /**
+ * Given a value x in the input domain, returns the corresponding value
+ * in the output range.
+ * @interface
+ *
+ * @param {*} x
+ * @returns {*}
+ */
+d3.ordinalScale = function (x) {};
+
+d3.ordinalScale.prototype.domain = function () {};
+d3.ordinalScale.prototype.range = function () {};
+d3.ordinalScale.prototype.rangePoints = function () {};
+d3.ordinalScale.prototype.rangeBands = function () {};
+d3.ordinalScale.prototype.rangeRoundBands = function () {};
+d3.ordinalScale.prototype.rangeBand = function () {};
+d3.ordinalScale.prototype.rangeExtent = function () {};
+d3.ordinalScale.prototype.copy = function () {};
+
+/**
+ * @returns {!d3.ordinalScale}
+ */
+d3.scale.ordinal = function () {};
 

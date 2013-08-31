@@ -86,7 +86,7 @@ pearson.brix.Answer;
  * Constructor function for RadioGroup widget instances.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.HtmlBric}
  * @export
  *
  * @param {Object}		config			-The settings to configure this RadioGroup
@@ -160,7 +160,7 @@ pearson.brix.RadioGroup = function (config, eventManager)
 			widgetGroup: null,
 			choiceSelected: null,
 		};
-} // end of RadioGroup constructor
+}; // end of RadioGroup constructor
 
 /**
  * Prefix to use when generating ids for instances of RadioGroup.
@@ -180,7 +180,7 @@ pearson.brix.RadioGroup.autoIdPrefix = "rg_auto_";
  *								 group element tree to.
  *
  ****************************************************************************/
-pearson.brix.RadioGroup.prototype.draw = function(container)
+pearson.brix.RadioGroup.prototype.draw = function (container)
 {
 	this.lastdrawn.container = container;
 
@@ -285,7 +285,9 @@ pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 	// choice at index is not selected, so select it and publish selected event
 	selectedInput.checked = true;
 
-	this.eventManager.publish(this.selectedEventId, {selectKey: d3.select(selectedInput).datum().answerKey});
+	var d = /** @type {!pearson.brix.Answer} */ (d3.select(selectedInput).datum());
+
+	this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
 };
 
 /* **************************************************************************
