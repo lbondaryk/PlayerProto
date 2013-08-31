@@ -577,6 +577,22 @@ pearson.brix.SvgBric = function ()
 };
 goog.inherits(pearson.brix.SvgBric, pearson.brix.Bric);
 
+/* **************************************************************************
+ * SvgBric.draw                                                        */ /**
+ *
+ * Draw this SvgBric in the given container (must be an svg element).
+ * @abstract
+ *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
+ *
+ ****************************************************************************/
+pearson.brix.SvgBric.prototype.draw = function (container, size) {};
+pearson.brix.SvgBric.prototype.draw = goog.abstractMethod;
+
 
 /* **************************************************************************
  * SVGContainer                                                        */ /**
