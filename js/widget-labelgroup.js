@@ -176,6 +176,7 @@ pearson.brix.LabelGroup = function (config, eventManager)
 			widgetGroup: null,
 			xScale: null,
 			yScale: null,
+			labelCollection: null,
 		};
 } // end of LabelGroup constructor
 

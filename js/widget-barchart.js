@@ -71,7 +71,7 @@ goog.require('pearson.brix.PrototypeAxes');
  * @todo: emit events when edges of bars are dragged to set a new value
  *
  * @classdesc
- * The BarChart widget provides single or multiple series bar chart
+ * The BarChart bric provides single or multiple series bar chart
  * visualization of sets of data points. Can create pyramid chart (two sided)
  * or grouped bar chart (several bars on the same label from different series - multivariate)
  *
@@ -79,7 +79,7 @@ goog.require('pearson.brix.PrototypeAxes');
 pearson.brix.BarChart = function (config, eventManager)
 {
 	/**
-	 * A unique id for this instance of the bar chart widget
+	 * A unique id for this instance of the bar chart bric
 	 * @type {string}
 	 */
 	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.BarChart);
@@ -97,8 +97,8 @@ pearson.brix.BarChart = function (config, eventManager)
 	 *    [{y: "Low Income", x: 491.8}]]
 	 * @example
 	 *   // bar objects may also include an optional key: string in
-	 *   // which case they will be given an ID that  associates them
-	 *   // with other widget events in the page, such as clicks on
+	 *   // which case they will be given an ID that associates them
+	 *   // with other bric events in the page, such as clicks on
 	 *   // the legend.
 	 */
 	this.data = config.Data;
@@ -127,12 +127,12 @@ pearson.brix.BarChart = function (config, eventManager)
 	this.yAxisFormat = config.yAxisFormat;
 
 	/**
-	 * List of child widgets which are to be drawn before and after this
+	 * List of child brix which are to be drawn before and after this
 	 * bar chart's data in its data area.
-	 * Child widgets are added using BarChart.append.
-	 * @type {{beforeData: Array.<pearson.brix.SvgBric>, afterData: Array.<pearson.brix.SvgBric>}}
+	 * Child brix are added using BarChart.append.
+	 * @type {{beforeData: Array.<!pearson.brix.SvgBric>, afterData: Array.<!pearson.brix.SvgBric>}}
 	 */
-	this.childWidgets = {beforeData: [], afterData: []};
+	this.childBrix = {beforeData: [], afterData: []};
 		
 	//these aren't hooked up yet, but I expect bar graphs to eventually need
 	//to fire drag events that let users change the data for the bar length
@@ -178,7 +178,7 @@ pearson.brix.BarChart.autoIdPrefix = "bar_auto_";
 /* **************************************************************************
  * BarChart.draw                                                       */ /**
  *
- * The LineGraph widget provides a line (or scatter) graph visualization
+ * The LineGraph bric provides a line (or scatter) graph visualization
  * of sets of data points.
  * @export
  *
@@ -279,8 +279,8 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	};
 
 
-	// Draw any 'before' child widgets that got appended before draw was called
-	this.childWidgets.beforeData.forEach(this.drawWidget_, this);
+	// Draw any 'before' child brix that got appended before draw was called
+	this.childBrix.beforeData.forEach(this.drawBric_, this);
 
 	var graph = axesDrawn.group.append("g") //make a group to hold bars
 		.attr("class","widgetBarChart").attr("id", this.id);
@@ -292,8 +292,8 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	// Draw the data (traces and/or points as specified by the graph type)
 	this.drawData_();
 
-	// Draw any 'after' child widgets that got appended after draw was called
-	this.childWidgets.afterData.forEach(this.drawWidget_, this);
+	// Draw any 'after' child brix that got appended after draw was called
+	this.childBrix.afterData.forEach(this.drawBric_, this);
 	
 }; // end of pearson.brix.BarChart.draw()
 
@@ -313,45 +313,49 @@ pearson.brix.BarChart.prototype.redraw = function ()
 
 	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
 	//       by doing nothing? -mjl
-	this.childWidgets.beforeData.forEach(this.redrawWidget_, this);
+	this.childBrix.beforeData.forEach(this.redrawBric_, this);
 	this.drawData_();
-	this.childWidgets.afterData.forEach(this.redrawWidget_, this);
+	this.childBrix.afterData.forEach(this.redrawBric_, this);
 };
 
 /* **************************************************************************
- * BarChart.drawWidget_                                                */ /**
+ * BarChart.drawBric_                                                  */ /**
  *
- * Draw the given child widget in this charts's data area.
+ * Draw the given child bric in this chart's data area.
  * This chart must have been drawn BEFORE this method is called or
  * bad things will happen.
  *
  * @private
  *
+ * @param {!pearson.brix.SvgBric}	bric	-The child bric to draw in the data area.
+ *
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-pearson.brix.BarChart.prototype.drawWidget_ = function (widget)
+pearson.brix.BarChart.prototype.drawBric_ = function (bric)
 {
-	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
-	widget.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
+	bric.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
+	bric.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
 };
 
 
 /* **************************************************************************
- * BarChart.redrawWidget_                                              */ /**
+ * BarChart.redrawBric_                                                */ /**
  *
- * Redraw the given child widget.
- * This bar chart and this child widget must have been drawn BEFORE this
+ * Redraw the given child bric.
+ * This bar chart and this child bric must have been drawn BEFORE this
  * method is called or bad things will happen.
  *
  * @private
  *
+ * @param {!pearson.brix.SvgBric}	bric	-The child bric to redraw.
+ *
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-pearson.brix.BarChart.prototype.redrawWidget_ = function (widget)
+pearson.brix.BarChart.prototype.redrawBric_ = function (bric)
 {
-	widget.redraw();
+	bric.redraw();
 };
 
 /* **************************************************************************
@@ -464,35 +468,35 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 /* **************************************************************************
  * BarChart.append                                                     */ /**
  *
- * Append the widget or widgets to this bar chart and draw it/them on top
- * of the data area and any widgets appended earlier. If append
- * is called before draw has been called, then the appended widget(s) will be
+ * Append the bric or brix to this bar chart and draw it/them on top
+ * of the data area and any brix appended earlier. If append
+ * is called before draw has been called, then the appended bric(s) will be
  * drawn when draw is called.
  * @export
  *
- * @param {!IWidget|Array.<IWidget>}
- * 						svgWidgets	-The widget or array of widgets to be drawn in
+ * @param {!pearson.brix.SvgBric|Array.<!pearson.brix.SvgBric>}
+ * 						svgBrix		-The bric or array of brix to be drawn in
  *									 this line graph's data area.
  * @param {string|undefined}
  * 						zOrder		-Optional. Specifies whether to append this
- * 									 widget to the list of widgets that are
+ * 									 bric to the list of brix that are
  * 									 drawn before the graph data or the list that
  * 									 is drawn after. "after" | "before", defaults
  * 									 to "after".
  *
  ****************************************************************************/
-pearson.brix.BarChart.prototype.append = function(svgWidgets, zOrder)
+pearson.brix.BarChart.prototype.append = function(svgBrix, zOrder)
 {
-	if (!Array.isArray(svgWidgets))
+	if (!Array.isArray(svgBrix))
 	{
-		this.append_one_(svgWidgets, zOrder);
+		this.append_one_(/**@type {!pearson.brix.SvgBric}*/ (svgBrix), zOrder);
 	}
 	else
 	{
-		svgWidgets.forEach(function (w) {this.append_one_(w, zOrder);}, this);
+		svgBrix.forEach(function (w) {this.append_one_(w, zOrder);}, this);
 	}
 
-	// Deal w/ drawing the appended widgets before already drawn data.
+	// Deal w/ drawing the appended brix before already drawn data.
 	if (zOrder === "before" && this.lastdrawn.container != null)
 	{
 		// we need to remove the existing drawn elements and execute draw again
@@ -509,16 +513,17 @@ pearson.brix.BarChart.prototype.append = function(svgWidgets, zOrder)
 /* **************************************************************************
  * BarChart.append_one_                                                */ /**
  *
- * Helper for append that does the work needed to append a single widget.
- * This can handle drawing the widget after the data even after the data
- * has been drawn, but it does not handle drawning the widget before when
+ * Helper for append that does the work needed to append a single bric.
+ * This can handle drawing the bric after the data even after the data
+ * has been drawn, but it does not handle drawning the bric before when
  * the data has already been drawn, so the caller must deal with that situation.
  *
- * @param {!IWidget}	widget	-The widget which is to be drawn in this line
+ * @param {!pearson.brix.SvgBric}	
+ * 						bric	-The bric which is to be drawn in this line
  *								 graph's data area.
  * @param {string|undefined}
  * 						zOrder	-Optional. Specifies whether to append this
- * 								 widget to the list of widgets that are
+ * 								 bric to the list of brix that are
  * 								 drawn before the graph data or the list that
  * 								 is drawn after. "after" | "before", defaults
  * 								 to "after".
@@ -526,18 +531,18 @@ pearson.brix.BarChart.prototype.append = function(svgWidgets, zOrder)
  * @private
  *
  ****************************************************************************/
-pearson.brix.BarChart.prototype.append_one_ = function(widget, zOrder)
+pearson.brix.BarChart.prototype.append_one_ = function(bric, zOrder)
 {
 	if (zOrder === "before")
 	{
-		this.childWidgets.beforeData.push(widget);
+		this.childBrix.beforeData.push(bric);
 	}
 	else
 	{
-		this.childWidgets.afterData.push(widget);
+		this.childBrix.afterData.push(bric);
 	
 		if (this.lastdrawn.container !== null)
-			this.drawWidget_(widget);
+			this.drawBric_(bric);
 	}
 		
 } // end of pearson.brix.BarChart.append_one_()

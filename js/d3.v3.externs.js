@@ -296,6 +296,8 @@ var d3 = {
 d3.selection = function () {};
 
 /**
+ * Sets the attribute with the specified name to the specified value on all selected elements.
+ *
  * @param {string} name
  * @param {(?string|number|boolean|!Function)=} value
  * @returns {!d3.selection}
@@ -349,12 +351,23 @@ d3.selection.prototype.property = function (name, value) {};
 d3.selection.prototype.text = function (value) {};
 
 /**
+ * The html operator is based on the innerHTML property; setting the inner HTML
+ * content will replace any existing child elements. Also, you may prefer to
+ * use the append or insert operators to create HTML content in a data-driven
+ * way; this operator is intended for when you want a little bit of HTML,
+ * say for rich formatting.
+ *
  * @param {(htmlString|!Function)=} value
  * @returns {!d3.selection}
  */
 d3.selection.prototype.html = function (value) {};
 
 /**
+ * Appends a new element with the specified name as the last child of each
+ * element in the current selection, returning a new selection containing the
+ * appended elements. Each new element inherits the data of the current elements,
+ * if any, in the same manner as select for subselections.
+ *
  * @param {string|!Function} name
  * @returns {!d3.selection}
  */
@@ -405,12 +418,40 @@ d3.selection.prototype.data = function (values, key) {};
  * Gets or sets the bound data for each selected element.
  *
  * @param {(*|!Function)=} value
- * @returns {!d3.dataSelection}
+ * @returns {!d3.selection}
  */
 d3.selection.prototype.datum = function (value) {};
 
-d3.selection.prototype.filter = function () {};
-d3.selection.prototype.sort = function () {};
+/**
+ * Filters the selection, returning a new selection that contains only the elements for which the specified selector is true. The selector may be specified either as a function or as a selector string, such as ".foo".
+ *
+ * @param {d3Selector} selector
+ * @returns {!d3.selection}
+ */
+d3.selection.prototype.filter = function (selector) {};
+
+/**
+ * Sorts the elements in the current selection according to the specified
+ * comparator function. The comparator function is passed two data elements
+ * a and b to compare, returning either a negative, positive, or zero value.
+ * If negative, then a should be before b; if positive, then a should be
+ * after b; otherwise, a and b are considered equal and the order is
+ * arbitrary. Note that the sort is not guaranteed to be stable; however,
+ * it is guaranteed to have the same behavior as your browser's built-in
+ * sort method on arrays.
+ *
+ * @param {!Function} comparator
+ * @returns {!d3.selection}
+ */
+d3.selection.prototype.sort = function (comparator) {};
+
+/**
+ * Re-inserts elements into the document such that the document order
+ * matches the selection order. This is equivalent to calling sort() if
+ * the data is already sorted, but much faster.
+ *
+ * @returns {!d3.selection}
+ */
 d3.selection.prototype.order = function () {};
 
 /**
@@ -434,7 +475,7 @@ d3.selection.prototype.on = function (type, listener, capture) {};
  * like selections, except operators animate smoothly over time rather
  * than applying instantaneously.
  *
- * @returns {!d3.selection}
+ * @returns {!d3.transitionSelection}
  */
 d3.selection.prototype.transition = function () {};
 
@@ -584,6 +625,272 @@ d3.enterSelection.prototype.call = function(fn, var_args) {};
  * @returns {boolean}
  */
 d3.enterSelection.prototype.empty = function() {};
+
+/* **************************************************************************
+ * d3.transitionSelection                                              */ /**
+ * A transition is a special type of selection where the operators apply
+ * smoothly over time rather than instantaneously. You derive a transition
+ * from a selection using the transition operator. While transitions
+ * generally support the same operators as selections (such as attr and
+ * style), not all operators are supported; for example, you must append
+ * elements before a transition starts. A remove operator is provided for
+ * convenient removal of elements when the transition ends.
+ *
+ * @constructor
+ * @extends {d3.selection}
+ */
+d3.transitionSelection = function () {};
+
+/**
+ * Specifies the transition delay in milliseconds. If delay is a constant, then
+ * all elements are given the same delay; otherwise, if delay is a function,
+ * then the function is evaluated for each selected element (in order), being
+ * passed the current datum d and the current index i, with the this context as
+ * the current DOM element. The function's return value is then used to set
+ * each element's delay. The default delay is 0.
+ *
+ * @param {number|!Function} delay
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.delay = function (delay) {};
+
+/**
+ * Specifies per-element duration in milliseconds. If duration is a constant,
+ * then all elements are given the same duration; otherwise, if duration is a
+ * function, then the function is evaluated for each selected element (in order),
+ * being passed the current datum d and the current index i, with the this
+ * context as the current DOM element. The function's return value is then used
+ * to set each element's duration. The default duration is 250ms.
+ *
+ * @param {number|!Function} duration
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.duration = function (duration) {};
+
+/**
+ * Specifies the transition easing function. If value is a function, it is used
+ * to ease the current parametric timing value t in the range [0,1]; otherwise,
+ * value is assumed to be a string and the arguments are passed to the d3.ease
+ * method to generate an easing function. The default easing function
+ * is "cubic-in-out".
+ *
+ * @param {string|!Function} value
+ * @param {...} var_args
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.ease = function (value, var_args) {};
+
+/**
+ * Sets the attribute with the specified name to the specified value on all selected elements.
+ * @override
+ *
+ * @param {string} name
+ * @param {(?string|number|boolean|!Function)=} value
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.attr = function (name, value) {};
+
+/**
+ * This operator is a convenience routine for setting the "class" attribute;
+ * it understands that the "class" attribute is a set of tokens separated by
+ * spaces. Under the hood, it will use the classList if available, for convenient
+ * adding, removing and toggling of CSS classes.
+ * @override
+ *
+ * @param {string} name
+ * @param {(boolean|!Function)=} value
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.classed = function (name, value) {};
+
+/**
+ * If value is specified, sets the CSS style property with the specified
+ * name to the specified value on all selected elements.
+ * An optional priority may also be specified, either as null or the
+ * string "important" (without the exclamation point).
+ * @override
+ *
+ * @param {string} name
+ * @param {?string|!Function=} value
+ * @param {?string=} priority
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.style = function (name, value, priority) {};
+
+/**
+ * Some HTML elements have special properties that are not addressable using
+ * standard attributes or styles. For example, form text fields have a value
+ * string property, and checkboxes have a checked boolean property. You can
+ * use the property operator to get or set these properties, or any other
+ * addressable field on the underlying element, such as className.
+ * @override
+ *
+ * @param {string} name
+ * @param {*|!Function=} value
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.property = function (name, value) {};
+
+/**
+ * The text operator is based on the textContent property; setting the text
+ * content will replace any existing child elements.
+ * @override
+ *
+ * @param {(string|!Function)=} value
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.text = function (value) {};
+
+/**
+ * The html operator is based on the innerHTML property; setting the inner HTML
+ * content will replace any existing child elements. Also, you may prefer to
+ * use the append or insert operators to create HTML content in a data-driven
+ * way; this operator is intended for when you want a little bit of HTML,
+ * say for rich formatting.
+ * @override
+ *
+ * @param {(htmlString|!Function)=} value
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.html = function (value) {};
+
+/**
+ * Removes the elements in the current selection from the current document.
+ * Returns the current selection (the same elements that were removed) which
+ * are now "off-screen", detached from the DOM. Note that there is not
+ * currently a dedicated API to add removed elements back to the document;
+ * however, you can pass a function to selection.append or selection.insert
+ * to re-add elements.
+ * @override
+ *
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.remove = function () {};
+
+/**
+ * Gets or sets the bound data for each selected element.
+ * @override
+ *
+ * @param {(*|!Function)=} value
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.datum = function (value) {};
+
+/**
+ * Filters the selection, returning a new selection that contains only the elements for which the specified selector is true. The selector may be specified either as a function or as a selector string, such as ".foo".
+ * @override
+ *
+ * @param {d3Selector} selector
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.filter = function (selector) {};
+
+/**
+ * Sorts the elements in the current selection according to the specified
+ * comparator function. The comparator function is passed two data elements
+ * a and b to compare, returning either a negative, positive, or zero value.
+ * If negative, then a should be before b; if positive, then a should be
+ * after b; otherwise, a and b are considered equal and the order is
+ * arbitrary. Note that the sort is not guaranteed to be stable; however,
+ * it is guaranteed to have the same behavior as your browser's built-in
+ * sort method on arrays.
+ * @override
+ *
+ * @param {!Function} comparator
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.sort = function (comparator) {};
+
+/**
+ * Re-inserts elements into the document such that the document order
+ * matches the selection order. This is equivalent to calling sort() if
+ * the data is already sorted, but much faster.
+ * @override
+ *
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.order = function () {};
+
+/**
+ * Adds or removes an event listener to each element in the current selection,
+ * for the specified type. The type is a string event type name, such as "click",
+ * "mouseover", or "submit". The specified listener is invoked in the same
+ * manner as other operator functions, being passed the current datum d and
+ * index i, with the this context as the current DOM element.
+ * An optional capture flag may be specified, which corresponds to the W3C
+ * useCapture flag.
+ * @override
+ *
+ * @param {string} type
+ * @param {!Function=} listener
+ * @param {boolean=} capture
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.on = function (type, listener, capture) {};
+
+/**
+ * Immediately interrupts the current transition, if any. Does not cancel
+ * any scheduled transitions that have not yet started.
+ * @override
+ *
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.interrupt = function () {};
+
+/**
+ * Invokes the specified function for each element in the current selection,
+ * passing in the current datum d and index i, with the this context of the
+ * current DOM element. This operator is used internally by nearly every other
+ * operator, and can be used to invoke arbitrary code for each selected element.
+ * The each operator can be used to process selections recursively, by using
+ * d3.select(this) within the callback function.
+ * @override
+ *
+ * @param {!Function} fn
+ * @return {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.each = function (fn) {};
+
+/**
+ * Invokes the specified function once, passing in the current selection along
+ * with any optional arguments. The call operator always returns the current
+ * selection, regardless of the return value of the specified function. The
+ * call operator is identical to invoking a function by hand; but it makes it
+ * easier to use method chaining.
+ * @override
+ *
+ * @param {function(!d3.selection, ...)} fn
+ * @param {...} var_args
+ * @return {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.call = function (fn, var_args) {};
+
+/**
+ * For each element in the current selection, selects the first descendant
+ * element that matches the specified selector string. If no element matches
+ * the specified selector for the current element, the element at the current
+ * index will be null in the returned selection;
+ * @override
+ *
+ * @param {d3Selector} selector
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.select = function (selector) {};
+
+/**
+ * For each element in the current selection, selects descendant elements that
+ * match the specified selector string. The returned selection is grouped by
+ * the ancestor node in the current selection. If no element matches the specified
+ * selector for the current element, the group at the current index will be
+ * empty in the returned selection. The subselection does not inherit data
+ * from the current selection;
+ * @override
+ *
+ * @param {d3Selector} selector
+ * @returns {!d3.transitionSelection}
+ */
+d3.transitionSelection.prototype.selectAll = function (selector) {};
+
 
 /* **************************************************************************
  * d3.linearScale                                                      */ /**
