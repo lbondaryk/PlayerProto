@@ -40,6 +40,7 @@ declare -a COMPILER_ARGS=(\
 	"--jscomp_warning=accessControls"\
 	"--jscomp_warning=const"\
 	"--extra_annotation_name=abstract"\
+	"--extra_annotation_name=virtual"\
 	"--extra_annotation_name=note"\
 	"--externs=d3.v3.externs.js"\
 	"--generate_exports"\

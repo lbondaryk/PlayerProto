@@ -220,16 +220,16 @@ var d3 = {
     },
     "scale": {
 //        "linear": function () {},
-        "log": function () {},
+//        "log": function () {},
 //        "pow": function () {},
         "sqrt": function () {},
-        "ordinal": function () {},
+//        "ordinal": function () {},
         "category10": function () {},
         "category20": function () {},
         "category20b": function () {},
         "category20c": function () {},
         "quantile": function () {},
-        "quantize": function () {},
+//        "quantize": function () {},
         "threshold": function () {},
         "identity": function () {}
     },
@@ -410,7 +410,7 @@ d3.selection.prototype.remove = function () {};
  *
  * @param {(!Array.<*>|!Function)=} values
  * @param {!Function=} key
- * @returns {!d3.dataSelection}
+ * @returns {!d3.dataSelection|*}
  */
 d3.selection.prototype.data = function (values, key) {};
 
@@ -893,10 +893,45 @@ d3.transitionSelection.prototype.selectAll = function (selector) {};
 
 
 /* **************************************************************************
+ * d3.baseScale                                                        */ /**
+ * Given a value x in the input domain, returns the corresponding value
+ * in the output range.
+ * @constructor
+ *
+ * @param {number|string} x
+ * @returns {number}
+ */
+d3.baseScale = function (x) {};
+
+/**
+ * Sets the scale's input domain.
+ * @virtual
+ *
+ * @param {Array.<number|string>=} domainVal
+ * @returns {!d3.baseScale}
+ */
+d3.baseScale.prototype.domain = function (domainVal) {};
+
+/**
+ * If values is specified, sets the scale's output range to the specified
+ * array of values. The array must contain two or more values, to match
+ * the cardinality of the input domain, otherwise the longer of the two
+ * is truncated to match the other. The elements in the given array need
+ * not be numbers; any value that is supported by the underlying
+ * interpolator will work.
+ * @virtual
+ *
+ * @param {Array.<*>=} values
+ * @returns {!d3.baseScale}
+ */
+d3.baseScale.prototype.range = function (values) {};
+
+/* **************************************************************************
  * d3.linearScale                                                      */ /**
  * Given a value x in the input domain, returns the corresponding value
  * in the output range.
- * @interface
+ * @constructor
+ * @extends {d3.baseScale}
  *
  * @param {number} x
  * @returns {number}
@@ -906,6 +941,10 @@ d3.linearScale = function (x) {};
 d3.linearScale.prototype.invert = function () {};
 
 /**
+ * Sets the scale's input domain to the specified
+ * array of numbers. The array must contain two or more numbers.
+ * @override
+ *
  * @param {Array.<number>=} numbers
  * @returns {!d3.linearScale}
  */
@@ -918,6 +957,7 @@ d3.linearScale.prototype.domain = function (numbers) {};
  * is truncated to match the other. The elements in the given array need
  * not be numbers; any value that is supported by the underlying
  * interpolator will work.
+ * @override
  *
  * @param {Array.<*>=} values
  * @returns {!d3.linearScale}
@@ -951,7 +991,8 @@ d3.scale.linear = function () {};
  * d3.powScale                                                         */ /**
  * Given a value x in the input domain, returns the corresponding value
  * in the output range.
- * @interface
+ * @constructor
+ * @extends {d3.baseScale}
  *
  * @param {number} x
  * @returns {number}
@@ -960,9 +1001,30 @@ d3.powScale = function (x) {};
 
 d3.powScale.prototype.invert = function () {};
 
+/**
+ * Sets the scale's input domain to the specified
+ * array of numbers. The array must contain two or more numbers.
+ * @override
+ *
+ * @param {Array.<number>=} numbers
+ * @returns {!d3.powScale}
+ */
 d3.powScale.prototype.domain = function (numbers) {};
 
-d3.powScale.prototype.range = function () {};
+/**
+ * If values is specified, sets the scale's output range to the specified
+ * array of values. The array must contain two or more values, to match
+ * the cardinality of the input domain, otherwise the longer of the two
+ * is truncated to match the other. The elements in the given array need
+ * not be numbers; any value that is supported by the underlying
+ * interpolator will work.
+ * @override
+ *
+ * @param {Array.<*>=} values
+ * @returns {!d3.powScale}
+ */
+d3.powScale.prototype.range = function (values) {};
+
 d3.powScale.prototype.rangeRound = function () {};
 d3.powScale.prototype.interpolate = function () {};
 d3.powScale.prototype.clamp = function () {};
@@ -981,7 +1043,8 @@ d3.scale.pow = function () {};
  * d3.logScale                                                         */ /**
  * Given a value x in the input domain, returns the corresponding value
  * in the output range.
- * @interface
+ * @constructor
+ * @extends {d3.baseScale}
  *
  * @param {number} x
  * @returns {number}
@@ -989,8 +1052,31 @@ d3.scale.pow = function () {};
 d3.logScale = function (x) {};
 
 d3.logScale.prototype.invert = function () {};
-d3.logScale.prototype.domain = function () {};
-d3.logScale.prototype.range = function () {};
+
+/**
+ * Sets the scale's input domain to the specified
+ * array of numbers. The array must contain two or more numbers.
+ * @override
+ *
+ * @param {Array.<number>=} numbers
+ * @returns {!d3.logScale}
+ */
+d3.logScale.prototype.domain = function (numbers) {};
+
+/**
+ * If values is specified, sets the scale's output range to the specified
+ * array of values. The array must contain two or more values, to match
+ * the cardinality of the input domain, otherwise the longer of the two
+ * is truncated to match the other. The elements in the given array need
+ * not be numbers; any value that is supported by the underlying
+ * interpolator will work.
+ * @override
+ *
+ * @param {Array.<*>=} values
+ * @returns {!d3.logScale}
+ */
+d3.logScale.prototype.range = function (values) {};
+
 d3.logScale.prototype.rangeRound = function () {};
 d3.logScale.prototype.interpolate = function () {};
 d3.logScale.prototype.clamp = function () {};
@@ -1005,23 +1091,155 @@ d3.logScale.prototype.copy = function () {};
 d3.scale.log = function () {};
 
 /* **************************************************************************
+ * d3.quantizeScale                                                    */ /**
+ * Given a value x in the input domain, returns the corresponding value
+ * in the output range.
+ * @constructor
+ * @extends {d3.linearScale}
+ *
+ * @param {number} x
+ * @returns {number}
+ *
+ * @classdesc
+ * Quantize scales are a variant of linear scales with a discrete rather
+ * than continuous range. The input domain is still continuous, and divided
+ * into uniform segments based on the number of values in (the cardinality of)
+ * the output range. The mapping is linear in that the output range value y
+ * can be expressed as a linear function of the input domain value x: y = mx + b.
+ */
+d3.quantizeScale = function (x) {};
+
+d3.quantizeScale.prototype.invertExent = function (y) {};
+
+/**
+ * Sets the scale's input domain to the specified
+ * array of numbers. The array must contain two or more numbers.
+ * @override
+ *
+ * @param {Array.<number>=} numbers
+ * @returns {!d3.quantizeScale}
+ */
+d3.quantizeScale.prototype.domain = function (numbers) {};
+
+/**
+ * If values is specified, sets the scale's output range to the specified
+ * array of values. The array must contain two or more values, to match
+ * the cardinality of the input domain, otherwise the longer of the two
+ * is truncated to match the other. The elements in the given array need
+ * not be numbers; any value that is supported by the underlying
+ * interpolator will work.
+ * @override
+ *
+ * @param {Array.<*>=} values
+ * @returns {!d3.quantizeScale}
+ */
+d3.quantizeScale.prototype.range = function (values) {};
+
+/**
+ * Constructs a new quantize scale with the default domain [0,1] and the
+ * default range [0,1]. Thus, the default quantize scale is equivalent to
+ * the round function for numbers; for example quantize(0.49) returns 0,
+ * and quantize(0.51) returns 1.
+ *
+ * @returns {!d3.quantizeScale}
+ */
+d3.scale.quantize = function () {};
+
+/* **************************************************************************
  * d3.ordinalScale                                                     */ /**
  * Given a value x in the input domain, returns the corresponding value
  * in the output range.
- * @interface
+ * @constructor
+ * @extends {d3.baseScale}
  *
  * @param {*} x
- * @returns {*}
+ * @returns {number}
  */
 d3.ordinalScale = function (x) {};
 
-d3.ordinalScale.prototype.domain = function () {};
-d3.ordinalScale.prototype.range = function () {};
-d3.ordinalScale.prototype.rangePoints = function () {};
-d3.ordinalScale.prototype.rangeBands = function () {};
-d3.ordinalScale.prototype.rangeRoundBands = function () {};
+/**
+ * Sets the input domain of the ordinal scale to the specified array of
+ * values. The first element in values will be mapped to the first element
+ * in the output range, the second domain value to the second range value,
+ * and so on. Domain values are stored internally in an associative array
+ * as a mapping from value to index; the resulting index is then used to
+ * retrieve a value from the output range.
+ * @override
+ *
+ * @param {Array.<string>=} values
+ * @returns {!d3.ordinalScale}
+ */
+d3.ordinalScale.prototype.domain = function (values) {};
+
+/**
+ * Sets the output range of the ordinal scale to the specified array of
+ * values. The first element in the domain will be mapped to the first
+ * element in values, the second domain value to the second range value,
+ * and so on. If there are fewer elements in the range than in the domain,
+ * the scale will recycle values from the start of the range.
+ * @override
+ *
+ * @param {Array.<*>=} values
+ * @returns {!d3.ordinalScale}
+ */
+d3.ordinalScale.prototype.range = function (values) {};
+
+/**
+ *
+ * @param {!Array.<number>} interval
+ * @param {number=} padding
+ * @returns {!d3.ordinalScale}
+ */
+d3.ordinalScale.prototype.rangePoints = function (interval, padding) {};
+
+/**
+ * Sets the output range from the specified continuous interval.
+ * The array interval contains two elements representing the
+ * minimum and maximum numeric value.
+ *
+ * @param {!Array.<number>} interval
+ * @param {number=} padding
+ * @param {number=} outerPadding
+ * @returns {!d3.ordinalScale}
+ */
+d3.ordinalScale.prototype.rangeBands = function (interval, padding, outerPadding) {};
+
+/**
+ * Like rangeBands, except guarantees that the band width and offset
+ * are integer values, so as to avoid antialiasing artifacts.
+ *
+ * @param {!Array.<number>} interval
+ * @param {number=} padding
+ * @param {number=} outerPadding
+ * @returns {!d3.ordinalScale}
+ */
+d3.ordinalScale.prototype.rangeRoundBands = function (interval, padding, outerPadding) {};
+
+/**
+ * Returns the band width. When the scale’s range is configured with
+ * rangeBands or rangeRoundBands, the scale returns the lower value
+ * for the given input. The upper value can then be computed by
+ * offsetting by the band width. If the scale’s range is set using
+ * range or rangePoints, the band width is zero.
+ *
+ * @returns {number}
+ */
 d3.ordinalScale.prototype.rangeBand = function () {};
+
+/**
+ * Returns a two-element array representing the extent of the scale's
+ * range, i.e., the smallest and largest values.
+ *
+ * @returns {Array}
+ */
 d3.ordinalScale.prototype.rangeExtent = function () {};
+
+/**
+ * Returns an exact copy of this ordinal scale. Changes to this scale
+ * will not affect the returned scale, and vice versa.
+ *
+ * @returns {!d3.ordinalScale}
+ */
 d3.ordinalScale.prototype.copy = function () {};
 
 /**

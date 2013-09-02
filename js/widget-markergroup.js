@@ -16,6 +16,8 @@
 
 goog.provide('pearson.brix.MarkerGroup');
 
+goog.require('pearson.utils.IEventManager');
+
 // Sample Label constructor configuration
 (function()
 {
@@ -55,7 +57,7 @@ pearson.brix.MarkerConfig;
  * assume the data extents are 0 - 1.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.SvgBric}
  * @export
  *
  * @param {Object}		config			-The settings to configure this MarkerGroup
@@ -69,7 +71,7 @@ pearson.brix.MarkerConfig;
  * 										 or the y-axis ('y')
  * @param {string=}		config.mode		-whether the markers may be dragged ('drags') or
  * 										 not (undefined).
- * @param {!pearson.utils.EventManager=}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -95,7 +97,7 @@ pearson.brix.MarkerGroup = function (config, eventManager)
 
 	/**
 	 * Array of markers to be graphed, where each marker is an object in an array
-	 * @type {Array.<!pearson.brix.MarkerConfig>}
+	 * @type {!Array.<!pearson.brix.MarkerConfig>}
 	 * @example
 	 *   // 2 markers, first numerical, second shows string label:
 	 *   [{x: -1.2, y: 2.0}, {x: 5, y: 5, label: "big data"}]
@@ -122,13 +124,13 @@ pearson.brix.MarkerGroup = function (config, eventManager)
 	this.mode = config.mode;
 	
 	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {!pearson.utils.EventManager|undefined}
+	 * The event manager to use to publish (and subscribe to) events for this bric
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
-	 * The event id published when a label in this group is selected.
+	 * The event id published when a marker in this group is selected.
 	 * @const
 	 * @type {string}
 	 */
@@ -140,6 +142,7 @@ pearson.brix.MarkerGroup = function (config, eventManager)
 	 * @property {string|number} selectKey	-The key associated with the selected label if it has one,
 	 *										 otherwise the label's index within the group.
 	 */
+	var SelectedEventDetails;
 	
 	/**
 	 * The scale functions set explicitly for this MarkerGroup using setScale.
@@ -147,10 +150,10 @@ pearson.brix.MarkerGroup = function (config, eventManager)
 	 * the markers. Otherwise a data extent of [0,1] will be mapped to the given
 	 * container area.
 	 * @type Object
-	 * @property {function(number): number}
+	 * @property {d3.baseScale}
 	 *						xScale	-function to convert a horizontal data offset
 	 *								 to the pixel offset into the data area.
-	 * @property {function(number): number}
+	 * @property {d3.baseScale}
 	 *						yScale	-function to convert a vertical data offset
 	 *								 to the pixel offset into the data area.
 	 * @private
@@ -171,28 +174,30 @@ pearson.brix.MarkerGroup = function (config, eventManager)
 			axisType: null,
 			markerCollection: null,
 		};
-}; // end of Label constructor
+}; // end of MarkerGroup constructor
 
 /**
  * Prefix to use when generating ids for instances of MarkerGroup.
  * @const
  * @type {string}
  */
-pearson.brix.MarkerGroup.autoIdPrefix = "marker_";
+pearson.brix.MarkerGroup.autoIdPrefix = "marker_auto_";
 
 /* **************************************************************************
  * MarkerGroup.draw                                                    */ /**
  *
- * Draw this MarkerGroup in the given container. Draw is meant to be called
- * initially and once per page/instance in the case where markers don't yet exist. 
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this MarkerGroup in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the labels element tree to.
- * @param {pearson.utils.ISize}
- * 					size		-The height and width in pixels for the label
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-pearson.brix.MarkerGroup.prototype.draw = function(container, size)
+pearson.brix.MarkerGroup.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -235,41 +240,6 @@ pearson.brix.MarkerGroup.prototype.draw = function(container, size)
 pearson.brix.MarkerGroup.prototype.redraw = function ()
 {
 	this.drawData_();
-};
-
-/* **************************************************************************
- * MarkerGroup.drawWidget_                                             */ /**
- *
- * Draw the given child widget in this charts's data area.
- * This chart must have been drawn BEFORE this method is called or
- * bad things will happen.
- *
- * @private
- *
- * @todo implement some form of error handling! -mjl
- *
- ****************************************************************************/
-pearson.brix.MarkerGroup.prototype.drawWidget_ = function (widget)
-{
-	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
-	widget.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
-};
-
- /* **************************************************************************
- * markerGroup.redrawWidget_                                            */ /**
- *
- * Redraw the given child widget.
- * This child widget must have been drawn BEFORE this
- * method is called or bad things will happen.
- *
- * @private
- *
- * @todo implement some form of error handling! -mjl
- *
- ****************************************************************************/
-pearson.brix.MarkerGroup.prototype.redrawWidget_ = function (widget)
-{
-	widget.redraw();
 };
 
 /* **************************************************************************
@@ -498,10 +468,10 @@ pearson.brix.MarkerGroup.prototype.drawData_ = function ()
  * widget is drawn. This is usually called in order to force one widget
  * to use the scaling/data area calculated by another widget.
  *
- * @param {function(number): number}
+ * @param {d3.baseScale}
  *						xScale	-function to convert a horizontal data offset
  *								 to the pixel offset into the data area.
- * @param {function(number): number}
+ * @param {d3.baseScale}
  *						yScale	-function to convert a vertical data offset
  *								 to the pixel offset into the data area.
  *
@@ -553,9 +523,10 @@ pearson.brix.MarkerGroup.prototype.lite = function (liteKey)
  *
  * Set this.lastdrawn.xScale and yScale to those stored in explicitScales
  * or to the default scale functions w/ a data domain of [0,1].
- *
- * @param {Size}	cntrSize	-The pixel size of the container given to draw().
  * @private
+ *
+ * @param {!pearson.utils.ISize}
+ * 						cntrSize	-The pixel size of the container given to draw().
  *
  ****************************************************************************/
 pearson.brix.MarkerGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
@@ -608,7 +579,8 @@ pearson.brix.MarkerGroup.prototype.setOpacity = function (opacity, duration, del
  *
  * Snap to a data value in the series, rather than open-ended drag positioning.
  *
- * @param {Array}		data		-the data values to snap to as {x: val, y: val}
+ * @param {Array.<{x: (number|string), y: (number|string)}>}
+ * 						data		-the data values to snap to as {x: val, y: val}
  * @param {Array}		range 		-two element array with the start and end point of the canvas
 *
  ****************************************************************************/

@@ -17,6 +17,7 @@
 
 goog.provide('pearson.brix.Button');
 
+goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.SvgBric');
 
 // Sample Button constructor configuration
@@ -45,7 +46,7 @@ goog.require('pearson.brix.SvgBric');
  * @param {string}		config.text		-The text to be displayed on the button
  * @param {bool}		config.enabled	-The initial enabled state of the button.
  * 										 Optional, defaults to true.
- * @param {!pearson.utils.EventManager}
+ * @param {!pearson.utils.IEventManager}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -79,7 +80,7 @@ pearson.brix.Button = function (config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {!pearson.utils.EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager;
 	
