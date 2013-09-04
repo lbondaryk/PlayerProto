@@ -76,14 +76,14 @@ pearson.brix.LabelConfig;
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this LabelGroup.
  * 										 if undefined a unique id will be assigned.
- * @param {Array.<LabelConfig>}
+ * @param {Array.<pearson.brix.LabelConfig>}
  *						config.labels	-An array describing each label in the group.
  *										  
  * @param {string}		config.type		-string specifying "bullets" for dots, "numbered"
  *										 for dots and #, "alpha" for letters, or anything 
  *										 else for just labels
- * @param {boolean}		config.question		-flag specifying whether to use as a question
- * @param {pearson.utils.EventManager=}
+ * @param {boolean}		config.question	-flag specifying whether to use as a question
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -136,9 +136,9 @@ pearson.brix.LabelGroup = function (config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {pearson.utils.EventManager|undefined}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id published when a label in this group is selected.

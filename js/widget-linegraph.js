@@ -2,9 +2,9 @@
  * $Workfile:: widget-linegraph.js                                          $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the LineGraph widget.
+ * @fileoverview Implementation of the LineGraph bric.
  *
- * The LineGraph widget provides a line (or scatter) graph visualization
+ * The LineGraph bric provides a line (or scatter) graph visualization
  * of sets of data points.
  *
  * Created on		March 27, 2013
@@ -15,9 +15,27 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.LineGraph');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.SvgBric');
+goog.require('pearson.brix.AxisFormat');
+goog.require('pearson.brix.PrototypeAxes');
+
 // Sample LineGraph constructor configuration
 (function()
 {
+	var lineData1 = [
+			{ x:    1, y: 0.0011	},
+			{ x:  150, y: 0.02		},
+			{ x:  500, y: 0.2		},
+			{ x: 1300, y: 0.36		},
+			{ x: 1400, y: 0.34		},
+			{ x: 2000, y: 6.115367	},
+			{ x: 2005, y: 6.512276	},
+			{ x: 2010, y: 6.908688	}
+		]; // array of line data
+
 	var lg1Config = {
 			id: "lg1",
 			Data: [lineData1],
@@ -36,11 +54,12 @@
 /* **************************************************************************
  * LineGraph                                                           */ /**
  *
- * The LineGraph widget provides a line (or scatter) graph visualization
+ * The LineGraph bric provides a line (or scatter) graph visualization
  * of sets of data points.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.SvgBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this LineGraph
  * @param {string|undefined}
@@ -49,21 +68,31 @@
  * @param {Array.<Array.<{x: number, y: number}>>}
  *						config.Data		-An array of traces (lines on the graph);
  *										 each trace is an array of points defining that trace.
- * @param {string		config.type		-String specifying "lines", "points", or
+ * @param {string}		config.type		-String specifying "lines", "points", or
  *										 "lines+points" for traces.
- * @param {AxisFormat}	config.xAxisFormat -Format of the x axis of the graph.
- * @param {AxisFormat}	config.yAxisFormat -Format of the y axis of the graph.
+ * @param {pearson.brix.AxisFormat}
+ * 						config.xAxisFormat
+ * 										-Format of the x axis of the graph.
+ * @param {pearson.brix.AxisFormat}
+ * 						config.yAxisFormat
+ * 										-Format of the y axis of the graph.
  *
  * @todo: need to add custom symbols or images for scatter plots.
+ * @todo linegraphs must be selectable to highlight related graph elements and use
+ *       for inputs for mc questions. For accessibility
+ *       we will eventually have to figure out how to do this with they keyboard too -lb
  *
  ****************************************************************************/
-function LineGraph(config,eventManager)
+pearson.brix.LineGraph = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
-	 * A unique id for this instance of the line graph widget
+	 * A unique id for this instance of the line graph bric
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, LineGraph);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LineGraph);
 
 	/**
 	 * Array of traces to be graphed, where each trace is an array of points and each point is an
@@ -91,13 +120,26 @@ function LineGraph(config,eventManager)
 	this.yAxisFormat = config.yAxisFormat;
 
 	/**
-	 * List of child widgets which are to be drawn before and after this
+	 * List of child brix which are to be drawn before and after this
 	 * line graph's data in its data area.
-	 * Child widgets are added using LineGraph.append.
-	 * @type {{beforeData: Array.<IWidget>, afterData: Array.<IWidget>}}
+	 * Child brix are added using LineGraph.append.
+	 * @type {{beforeData: Array.<!pearson.brix.SvgBric>, afterData: Array.<!pearson.brix.SvgBric>}}
 	 */
-	this.childWidgets = {beforeData: [], afterData: []};
+	this.childBrix = {beforeData: [], afterData: []};
 	
+	/**
+	 * The event manager to use to publish (and subscribe to) events for this bric
+	 * @type {!pearson.utils.IEventManager}
+	 */
+	this.eventManager = eventManager;
+
+	/**
+	 * The event id published when a row in this group is selected.
+	 * @const
+	 * @type {string}
+	 */
+	this.selectedEventId = this.id + '_lineSelected';
+
 	/**
 	 * Information about the last drawn instance of this line graph (from the draw method)
 	 * @type {Object}
@@ -116,26 +158,15 @@ function LineGraph(config,eventManager)
 			series: null,
 		};
 		
-	//linegraphs must be selectable to highlight related graph elements and use
-	// for inputs for mc questions. For accessibility
-	//we will eventually have to figure out how to do this with they keyboard too -lb
-	this.eventManager = eventManager;
-
-	/**
-	 * The event id published when a row in this group is selected.
-	 * @const
-	 * @type {string}
-	 */
-	this.selectedEventId = this.id + '_lineSelected';
-
-} // end of LineGraph constructor
+}; // end of LineGraph constructor
+goog.inherits(pearson.brix.LineGraph, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids for instances of LineGraph.
  * @const
  * @type {string}
  */
-LineGraph.autoIdPrefix = "lgrf_auto_";
+pearson.brix.LineGraph.autoIdPrefix = "lgrf_auto_";
 
 
 /* **************************************************************************
@@ -143,11 +174,10 @@ LineGraph.autoIdPrefix = "lgrf_auto_";
  *
  * Clear the lastdrawn property by setting all of its properties back to their
  * initial values.
- *
  * @private
  *
  ****************************************************************************/
-LineGraph.prototype.clearLastdrawn_ = function ()
+pearson.brix.LineGraph.prototype.clearLastdrawn_ = function ()
 {
 	this.lastdrawn.container = null;
 	this.lastdrawn.size = {height: 0, width: 0};
@@ -164,16 +194,18 @@ LineGraph.prototype.clearLastdrawn_ = function ()
 /* **************************************************************************
  * LineGraph.draw                                                      */ /**
  *
- * Draw the LineGraph widget into the specified area of the given container.
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw the LineGraph bric into the specified area of the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the graph element tree to.
- * @param {Object}	size		-The size in pixels for the graph
- * @param {number}	size.height	-The height for the graph.
- * @param {number}	size.width	-The width for the graph.
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-LineGraph.prototype.draw = function(container, size)
+pearson.brix.LineGraph.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -273,11 +305,11 @@ LineGraph.prototype.draw = function(container, size)
 
 	var clipId = linesId + "_clip";
 
-	// Draw any 'before' child widgets that got appended before draw was called
-	this.childWidgets.beforeData.forEach(this.drawWidget_, this);
+	// Draw any 'before' child brix that got appended before draw was called
+	this.childBrix.beforeData.forEach(this.drawBric_, this);
 
 	var graph = axesDrawn.group.append("g") //make a group to hold new lines
-		.attr("class","widgetLineGraph").attr("id", linesId);
+		.attr("class", "widgetLineGraph").attr("id", linesId);
 	
 	
 	graph.append("defs")
@@ -296,8 +328,8 @@ LineGraph.prototype.draw = function(container, size)
 	// Draw the data (traces and/or points as specified by the graph type)
 	this.drawData_();
 
-	// Draw any 'after' child widgets that got appended after draw was called
-	this.childWidgets.afterData.forEach(this.drawWidget_, this);
+	// Draw any 'after' child brix that got appended after draw was called
+	this.childBrix.afterData.forEach(this.drawBric_, this);
 	
 }; // end of LineGraph.draw()
 
@@ -306,64 +338,66 @@ LineGraph.prototype.draw = function(container, size)
  *
  * Redraw the line graph data as it may have been modified. It will be
  * redrawn into the same container area as it was last drawn.
+ * @export
  *
  ****************************************************************************/
-LineGraph.prototype.redraw = function ()
+pearson.brix.LineGraph.prototype.redraw = function ()
 {
 	// TODO: We may want to create new axes if the changed data would cause their
 	//       min/max to have changed, but for now we're going to keep them.
 
 	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
 	//       by doing nothing? -mjl
-	this.childWidgets.beforeData.forEach(this.redrawWidget_, this);
+	this.childBrix.beforeData.forEach(this.redrawBric_, this);
 	this.drawData_();
-	this.childWidgets.afterData.forEach(this.redrawWidget_, this);
+	this.childBrix.afterData.forEach(this.redrawBric_, this);
 };
 
 /* **************************************************************************
- * LineGraph.drawWidget_                                               */ /**
+ * LineGraph.drawBric_                                                 */ /**
  *
- * Draw the given child widget in this line graph's data area.
+ * Draw the given child bric in this line graph's data area.
  * This line graph must have been drawn BEFORE this method is called or
  * bad things will happen.
- *
  * @private
+ *
+ * @param {!pearson.brix.SvgBric}	bric	-The child bric to draw in the data area.
  *
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-LineGraph.prototype.drawWidget_ = function (widget)
+pearson.brix.LineGraph.prototype.drawBric_ = function (bric)
 {
-	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
-	widget.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
+	bric.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
+	bric.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
 };
 
 /* **************************************************************************
- * LineGraph.redrawWidget_                                             */ /**
+ * LineGraph.redrawBric_                                               */ /**
  *
- * Redraw the given child widget.
- * This line graph and this child widget must have been drawn BEFORE this
+ * Redraw the given child bric.
+ * This line graph and this child bric must have been drawn BEFORE this
  * method is called or bad things will happen.
- *
  * @private
+ *
+ * @param {!pearson.brix.SvgBric}	bric	-The child bric to redraw.
  *
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-LineGraph.prototype.redrawWidget_ = function (widget)
+pearson.brix.LineGraph.prototype.redrawBric_ = function (bric)
 {
-	widget.redraw();
+	bric.redraw();
 };
 
 /* **************************************************************************
  * LineGraph.drawData_                                                 */ /**
  *
  * Draw the line graph data (overwriting any existing line graph data).
- *
  * @private
  *
  ****************************************************************************/
-LineGraph.prototype.drawData_ = function ()
+pearson.brix.LineGraph.prototype.drawData_ = function ()
 {
 	// local var names are easier to read (shorter)
 	var linesId = this.lastdrawn.linesId;
@@ -486,39 +520,40 @@ LineGraph.prototype.drawData_ = function ()
 				});
 				
 	}// end of points drawing block
-} // end of LineGraph.drawData_()
+}; // end of LineGraph.drawData_()
 
 /* **************************************************************************
  * LineGraph.append                                                    */ /**
  *
- * Append the widget or widgets to this line graph and draw it/them on top
- * of the line graph's data area and any widgets appended earlier. If append
- * is called before draw has been called, then the appended widget(s) will be
+ * Append the bric or brix to this line graph and draw it/them on top
+ * of the line graph's data area and any brix appended earlier. If append
+ * is called before draw has been called, then the appended bric(s) will be
  * drawn when draw is called.
+ * @export
  *
- * @param {!IWidget|Array.<IWidget>}
- * 						svgWidgets	-The widget or array of widgets to be drawn in
+ * @param {!pearson.brix.SvgBric|Array.<!pearson.brix.SvgBric>}
+ * 						svgBrix		-The bric or array of brix to be drawn in
  *									 this line graph's data area.
- * @param {string|undefined}
+ * @param {string=}
  * 						zOrder		-Optional. Specifies whether to append this
- * 									 widget to the list of widgets that are
+ * 									 bric to the list of brix that are
  * 									 drawn before the graph data or the list that
  * 									 is drawn after. "after" | "before", defaults
  * 									 to "after".
  *
  ****************************************************************************/
-LineGraph.prototype.append = function(svgWidgets, zOrder)
+pearson.brix.LineGraph.prototype.append = function (svgBrix, zOrder)
 {
-	if (!Array.isArray(svgWidgets))
+	if (!Array.isArray(svgBrix))
 	{
-		this.append_one_(svgWidgets, zOrder);
+		this.append_one_(/**@type {!pearson.brix.SvgBric}*/ (svgBrix), zOrder);
 	}
 	else
 	{
-		svgWidgets.forEach(function (w) {this.append_one_(w, zOrder);}, this);
+		svgBrix.forEach(function (bric) {this.append_one_(bric, zOrder);}, this);
 	}
 
-	// Deal w/ drawing the appended widgets before already drawn data.
+	// Deal w/ drawing the appended brix before already drawn data.
 	if (zOrder === "before" && this.lastdrawn.container != null)
 	{
 		// we need to remove the existing drawn elements and execute draw again
@@ -535,35 +570,35 @@ LineGraph.prototype.append = function(svgWidgets, zOrder)
 /* **************************************************************************
  * LineGraph.append_one_                                               */ /**
  *
- * Helper for append that does the work needed to append a single widget.
- * This can handle drawing the widget after the data even after the data
- * has been drawn, but it does not handle drawning the widget before when
+ * Helper for append that does the work needed to append a single bric.
+ * This can handle drawing the bric after the data even after the data
+ * has been drawn, but it does not handle drawning the bric before when
  * the data has already been drawn, so the caller must deal with that situation.
+ * @private
  *
- * @param {!IWidget}	widget	-The widget which is to be drawn in this line
+ * @param {!pearson.brix.SvgBric}
+ * 						bric	-The bric which is to be drawn in this line
  *								 graph's data area.
  * @param {string|undefined}
  * 						zOrder	-Optional. Specifies whether to append this
- * 								 widget to the list of widgets that are
+ * 								 bric to the list of brix that are
  * 								 drawn before the graph data or the list that
  * 								 is drawn after. "after" | "before", defaults
  * 								 to "after".
  *
- * @private
- *
  ****************************************************************************/
-LineGraph.prototype.append_one_ = function(widget, zOrder)
+pearson.brix.LineGraph.prototype.append_one_ = function (bric, zOrder)
 {
 	if (zOrder === "before")
 	{
-		this.childWidgets.beforeData.push(widget);
+		this.childBrix.beforeData.push(bric);
 	}
 	else
 	{
-		this.childWidgets.afterData.push(widget);
+		this.childBrix.afterData.push(bric);
 	
 		if (this.lastdrawn.container !== null)
-			this.drawWidget_(widget);
+			this.drawBric_(bric);
 	}
 		
 }; // end of LineGraph.append_one_()
@@ -573,14 +608,14 @@ LineGraph.prototype.append_one_ = function(widget, zOrder)
  *
  * Highlight the members of the collection associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
+ * @export
  *
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-LineGraph.prototype.lite = function(liteKey)
+pearson.brix.LineGraph.prototype.lite = function (liteKey)
 {
-	
-	console.log("TODO: log fired LineGraph highlite " + liteKey);
+	window.console.log("TODO: log fired LineGraph highlite " + liteKey);
 	
 	// Turn off all current highlights
 	var allTraces = this.lastdrawn.traces;
@@ -603,7 +638,7 @@ LineGraph.prototype.lite = function(liteKey)
 
 	if (linesToLite.empty())
 	{
-		console.log("No key '" + liteKey + "' in line graph " + this.id );
+		window.console.log("No key '" + liteKey + "' in line graph " + this.id );
 	}
-
 };
+

@@ -63,6 +63,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-image.js
 	--input=widget-imageviewer.js
 	--input=widget-labelgroup.js
+	--input=widget-linegraph.js
 	--input=widget-legend.js
 	--input=widget-markergroup.js
 	--input=widget-multiplechoicequestion.js

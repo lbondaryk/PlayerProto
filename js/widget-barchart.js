@@ -16,7 +16,7 @@
 
 goog.provide('pearson.brix.BarChart');
 
-goog.require('pearson.utils.EventManager');
+goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.SvgBric');
 goog.require('pearson.brix.AxisFormat');
 goog.require('pearson.brix.PrototypeAxes');
@@ -60,7 +60,7 @@ goog.require('pearson.brix.PrototypeAxes');
  * 						config.xAxisFormat -Format of the x axis of the graph.
  * @param {pearson.brix.AxisFormat}
  * 						config.yAxisFormat -Format of the y axis of the graph.
- * @param {!pearson.utils.EventManager=}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-allows the object to emit events
  *
  * @note: One of the two axes must be ordinal for a bar graph. Only y is accomodated
@@ -139,18 +139,28 @@ pearson.brix.BarChart = function (config, eventManager)
 	 */
 	this.childBrix = {beforeData: [], afterData: []};
 		
+	/**
+	 * The event manager to use to publish (and subscribe to) events for this bric
+	 * @type {!pearson.utils.IEventManager}
+	 */
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
+
 	//these aren't hooked up yet, but I expect bar graphs to eventually need
 	//to fire drag events that let users change the data for the bar length
 	//and drag events that let users sort the data differently, reordering the bars -lb
-	this.eventManager = eventManager;
 	/**
 	 * The event id published when a row in this group is selected.
 	 * @const
 	 * @type {string}
 	 */
-
 	this.selectedEventId = this.id + '_barSelected';
-	this.sortedEventId = this.id + 'barSortChanged';
+
+	/**
+	 * The event id published when a the order of the bars is changed.
+	 * @const
+	 * @type {string}
+	 */
+	this.sortedEventId = this.id + '_barSortChanged';
 	
 	
 	/**
