@@ -615,6 +615,9 @@ pearson.brix.SvgBric.prototype.draw = goog.abstractMethod;
  ****************************************************************************/
 pearson.brix.SVGContainer = function (config)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * The parent node of the created svg element
 	 * @type {d3.selection}
@@ -659,6 +662,7 @@ pearson.brix.SVGContainer = function (config)
 																	//  A horrible Jquery workaround is documented at
 																	//  http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
 };
+goog.inherits(pearson.brix.SVGContainer, pearson.brix.Bric);
 
 /* **************************************************************************
  * SVGContainer.append                                                 */ /**

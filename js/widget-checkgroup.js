@@ -19,6 +19,9 @@
 
 goog.provide('pearson.brix.CheckGroup');
 
+goog.require('pearson.brix.HtmlBric');
+goog.require('pearson.utils.IEventManager');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -116,6 +119,9 @@ pearson.brix.Answer;
  ****************************************************************************/
 pearson.brix.CheckGroup = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the Check group widget
 	 * @type {string}
@@ -182,7 +188,8 @@ pearson.brix.CheckGroup = function (config, eventManager)
 			widgetGroup: null,
 			choiceSelected: null,
 		};
-} // end of CheckGroup constructor
+}; // end of CheckGroup constructor
+goog.inherits(pearson.brix.CheckGroup, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of CheckGroup.

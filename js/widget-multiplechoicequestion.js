@@ -127,6 +127,9 @@ pearson.brix.Answer;
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
@@ -254,7 +257,8 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 			container: null,
 			widgetGroup: null,
 		};
-} // end of MultipleChoiceQuestion constructor
+}; // end of MultipleChoiceQuestion constructor
+goog.inherits(pearson.brix.MultipleChoiceQuestion, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of MultipleChoiceQuestion.

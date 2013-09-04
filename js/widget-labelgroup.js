@@ -17,6 +17,9 @@
 
 goog.provide('pearson.brix.LabelGroup');
 
+goog.require('pearson.brix.SvgBric');
+goog.require('pearson.utils.IEventManager');
+
 // Sample Label constructor configuration
 (function()
 {
@@ -90,6 +93,9 @@ pearson.brix.LabelConfig;
  ****************************************************************************/
 pearson.brix.LabelGroup = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the labelgroup widget
 	 * @type {string}
@@ -179,6 +185,7 @@ pearson.brix.LabelGroup = function (config, eventManager)
 			labelCollection: null,
 		};
 } // end of LabelGroup constructor
+goog.inherits(pearson.brix.LabelGroup, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids for instances of LabelGroup.
@@ -190,16 +197,18 @@ pearson.brix.LabelGroup.autoIdPrefix = "lblg_auto_";
 /* **************************************************************************
  * LabelGroup.draw                                                     */ /**
  *
- * Draw this LabelGroup in the given container.
+ * @inheritDoc
  * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this LabelGroup in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the labels element tree to.
- * @param {pearson.utils.ISize}
- * 					size		-The size in pixels of the area the labels are drawn within.
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-pearson.brix.LabelGroup.prototype.draw = function(container, size)
+pearson.brix.LabelGroup.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;

@@ -59,6 +59,9 @@ goog.require('pearson.utils.EventManager');
  ****************************************************************************/
 pearson.brix.ImageViewer = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	var that = this;
 	
 	/**
@@ -154,6 +157,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 			widgetGroup: null,
 		};
 }; // end of ImageViewer constructor
+goog.inherits(pearson.brix.ImageViewer, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids for instances of ImageViewer.

@@ -18,7 +18,7 @@
 goog.provide('pearson.brix.Image');
 goog.provide('pearson.brix.CaptionedImage');
 
-goog.require('pearson.utils.EventManager');
+goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.SvgBric');
 
 // Sample configuration objects for classes defined here

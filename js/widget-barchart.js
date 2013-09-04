@@ -17,6 +17,7 @@
 goog.provide('pearson.brix.BarChart');
 
 goog.require('pearson.utils.EventManager');
+goog.require('pearson.brix.SvgBric');
 goog.require('pearson.brix.AxisFormat');
 goog.require('pearson.brix.PrototypeAxes');
 
@@ -45,6 +46,7 @@ goog.require('pearson.brix.PrototypeAxes');
  * Constructor function for a BarChart bric.
  *
  * @constructor
+ * @extends {pearson.brix.SvgBric}
  * @export
  *
  * @param {Object}		config			-The settings to configure this BarChart
@@ -78,6 +80,9 @@ goog.require('pearson.brix.PrototypeAxes');
  **************************************************************************/
 pearson.brix.BarChart = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the bar chart bric
 	 * @type {string}
@@ -166,6 +171,7 @@ pearson.brix.BarChart = function (config, eventManager)
 			graph: null,
 		};
 } // end of barChart constructor
+goog.inherits(pearson.brix.BarChart, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids for instances of BarChart.
@@ -178,15 +184,16 @@ pearson.brix.BarChart.autoIdPrefix = "bar_auto_";
 /* **************************************************************************
  * BarChart.draw                                                       */ /**
  *
- * The LineGraph bric provides a line (or scatter) graph visualization
- * of sets of data points.
+ * @inheritDoc
  * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this BarChart in the given container.
  *
- * @param {!d3.selection}
- *						container	-The container svg element to append the graph element tree to.
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
  * @param {!pearson.utils.ISize}
- * 						size		-The size in pixels for the graph
- *
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
 pearson.brix.BarChart.prototype.draw = function(container, size)
 {

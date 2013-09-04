@@ -18,7 +18,7 @@
 goog.provide('pearson.brix.Button');
 
 goog.require('pearson.utils.IEventManager');
-goog.require('pearson.brix.SvgBric');
+goog.require('pearson.brix.HtmlBric');
 
 // Sample Button constructor configuration
 (function()

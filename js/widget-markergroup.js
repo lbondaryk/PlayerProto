@@ -17,6 +17,7 @@
 goog.provide('pearson.brix.MarkerGroup');
 
 goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.SvgBric');
 
 // Sample Label constructor configuration
 (function()
@@ -89,6 +90,9 @@ pearson.brix.MarkerConfig;
  ****************************************************************************/
 pearson.brix.MarkerGroup = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the MarkerGroup widget
 	 * @type {string}
@@ -175,6 +179,7 @@ pearson.brix.MarkerGroup = function (config, eventManager)
 			markerCollection: null,
 		};
 }; // end of MarkerGroup constructor
+goog.inherits(pearson.brix.MarkerGroup, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids for instances of MarkerGroup.
@@ -246,7 +251,6 @@ pearson.brix.MarkerGroup.prototype.redraw = function ()
  * markerGroup.drawData_                                               */ /**
  *
  * Draw the marker data (overwriting any existing data).
- *
  * @private
  *
  ****************************************************************************/
@@ -459,7 +463,7 @@ pearson.brix.MarkerGroup.prototype.drawData_ = function ()
 
 	this.lastdrawn.markerCollection = markerGroup.selectAll("g.marker");
 
-}; // end of MarkerGroup.draw()
+}; // end of MarkerGroup.drawdata_()
 
 /* **************************************************************************
  * MarkerGroup.setScale                                                */ /**

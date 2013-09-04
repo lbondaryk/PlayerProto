@@ -16,6 +16,9 @@
 
 goog.provide('pearson.brix.RadioGroup');
 
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.HtmlBric');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -65,7 +68,7 @@ goog.provide('pearson.brix.RadioGroup');
  * Answers are presented to users by certain widgets that allow the user to
  * select one (or more of them).
  *
- * @typedef {Object} Answer
+ * @typedef {Object} pearson.brix.Answer
  * @property {string}	content		-The content of the answer, which presents the
  * 									 meaning of the answer.
  * @property {string}	response	-The response is presented to the user when
@@ -109,8 +112,9 @@ pearson.brix.Answer;
  ****************************************************************************/
 pearson.brix.RadioGroup = function (config, eventManager)
 {
-	var that = this;
-	
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the radio group widget
 	 * @type {string}
@@ -161,6 +165,7 @@ pearson.brix.RadioGroup = function (config, eventManager)
 			choiceSelected: null,
 		};
 }; // end of RadioGroup constructor
+goog.inherits(pearson.brix.RadioGroup, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of RadioGroup.
