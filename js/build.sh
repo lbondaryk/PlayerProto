@@ -68,6 +68,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-multiselectquestion.js
 	--input=widget-barchart.js
 	--input=widget-button.js
+	--input=widget-legend.js
 	--root=.
 	--root=$LIBRARYDIR
 	--output_mode=compiled

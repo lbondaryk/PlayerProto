@@ -43,7 +43,7 @@
  *						config.Data		-An array of series;
  *										 each series is an array of one or more percentages with names.
  *										 Either wedges or series can have a key label for highlighting.
- * @param {!pearson.utils.EventManager}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-allows the object to emit events
  *
  * @note: Pie Charts could have a type: specifying donut charts instead.
@@ -102,19 +102,32 @@ PieChart = function (config, eventManager)
 	/**
 	 * The piechart always has a legend which will display the values of the
 	 * wedge angles.
-	 * @type {Legend}
+	 * @type {!pearson.brix.Legend}
 	 */
-	this.legend = new Legend(legendConfig, this.eventManager);
+	this.legend = new pearson.brix.Legend(legendConfig, this.eventManager);
 
 	/**
 	 * List of child widgets which are to be drawn before and after this
 	 * bar chart's data in its data area.
 	 * Child widgets are added using BarChart.append.
-	 * @type {{beforeData: Array.<pearson.brix.SvgBric>, afterData: Array.<pearson.brix.SvgBric>}}
+	 * @type {{beforeData: Array.<!pearson.brix.SvgBric>, afterData: Array.<!pearson.brix.SvgBric>}}
 	 */
 	this.childWidgets = {beforeData: [], afterData: []};
 	
-	
+	/**
+	 * The event manager to use to publish (and subscribe to) events for this bric
+	 * @type {!pearson.utils.IEventManager}
+	 */
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
+
+	/**
+	 * The event id published when a wedge in the pie is selected.
+	 * @const
+	 * @type {string}
+	 */
+
+	this.selectedEventId = this.id + '_wedgeSelected';
+	 
 	/**
 	 * Information about the last drawn instance of this pie chart 
 	 * (values set during the draw method)
@@ -141,15 +154,6 @@ PieChart = function (config, eventManager)
 			graph: null,
 		};
 		
-	this.eventManager = eventManager;
-	/**
-	 * The event id published when a wedge in the pie is selected.
-	 * @const
-	 * @type {string}
-	 */
-
-	this.selectedEventId = this.id + '_wedgeSelected';
-	 
 }; // end of PieChart constructor
 
 /**
