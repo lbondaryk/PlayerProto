@@ -468,10 +468,10 @@ pearson.brix.MarkerGroup.prototype.drawData_ = function ()
  * widget is drawn. This is usually called in order to force one widget
  * to use the scaling/data area calculated by another widget.
  *
- * @param {d3.baseScale}
+ * @param {d3.anyScale}
  *						xScale	-function to convert a horizontal data offset
  *								 to the pixel offset into the data area.
- * @param {d3.baseScale}
+ * @param {d3.anyScale}
  *						yScale	-function to convert a vertical data offset
  *								 to the pixel offset into the data area.
  *

@@ -317,11 +317,13 @@ pearson.brix.CheckGroup.prototype.selectedInputs_ = function ()
 /* **************************************************************************
  * CheckGroup.selectedItems                                            */ /**
  *
- * Return the selected choice(s) in the Check group or null if nothing has been
- * selected.
+ * Return the selected choice(s) in the Check group or null if nothing has
+ * been selected.
  *
  * @return {Array.<pearson.brix.Answer>} the Check group choice(s) which
- * 		is/are currently selected or null.
+ * 		is/are currently selected or null if no choices are selected.
+ *
+ * @todo Why return null for no selected choices instead of just an empty array?
  *
  ****************************************************************************/
 pearson.brix.CheckGroup.prototype.selectedItems = function ()

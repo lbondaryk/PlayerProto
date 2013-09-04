@@ -92,7 +92,7 @@ pearson.brix.Answer;
  *
  * @constructor
  * @extends {pearson.brix.HtmlBric}
- * @implements {IQuestionBric}
+ * @implements {pearson.brix.IQuestionBric}
  * @export
  *
  * @param {Object}		config			-The settings to configure this MultipleChoiceQuestion
