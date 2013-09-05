@@ -15,6 +15,11 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.Sketch');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.SvgBric');
+
 // Sample Label constructor configuration
 (function()
 {
@@ -37,7 +42,7 @@
 /**
  * Information needed to process drawings in a sketch
  *
- * @typedef {Object} SketchConfig
+ * @typedef {Object} pearson.brix.SketchConfig
  * @property {string}	shape	-name of geometric shape, supports circle, rectangle, hexagon, line
  * @property {Array.<nummber, number>}
  *						xyPos	- top left corner of rectangles, center of circles, local coordinates
@@ -56,10 +61,27 @@
  * @property {string|undefined} 
  *						fill	- optional string used to determine fill color from css
  */
+pearson.brix.SketchConfig;
 	
 /* **************************************************************************
  * Sketch                                                              */ /**
  *
+ * Constructor function for Sketch bric instances.
+ *
+ * @constructor
+ * @extends {pearson.brix.SvgBric}
+ * @export
+ *
+ * @param {Object}		config			-The settings to configure this Sketch
+ * @param {string}		config.id		-String to uniquely identify this Sketch.
+ * @param {!Array.<!pearson.brix.SketchConfig>}
+ *						config.drawShape	-An array describing each drawing object in the group.
+ * @param {string}		config.type		- "hot" draws transparent hotspots
+ * @param {!pearson.utils.IEventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
+ *
+ * @classdesc
  * The Sketch widget draws a group of geometric objects at specified locations
  * in an SVGContainer.
  * The Sketch widget might be used on top of another widget which provides the
@@ -70,39 +92,35 @@
  * @note: this might or might not be the start of something like an
  * equation editor or a chemistry editor
  *
- * @constructor
- * @implements {IWidget}
- *
- * @param {Object}		config			-The settings to configure this Sketch
- * @param {string}		config.id		-String to uniquely identify this Sketch.
- * @param {Array.<SketchConfig>}
- *						config.drawShape	-An array describing each drawing object in the group.
- * @param {string}		config.type		- "hot" draws transparent hotspots
- *
  ****************************************************************************/
-function Sketch(config, eventManager)
+pearson.brix.Sketch = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the labelgroup widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, Sketch);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Sketch);
 
 	/**
 	 * Array of objects to be drawn, where each object specifies the shape, position, and size
+	 * @type {!Array.<!pearson.brix.SketchConfig>}
  	 */
 	this.drawShape = config.drawShape;
 	
 	/**
 	 * string specifying whether to use the hotspots class
+	 * @type {string}
  	 */
 	this.type = config.type;
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id published when a label in this group is selected.
@@ -114,9 +132,11 @@ function Sketch(config, eventManager)
 	/**
 	 * The event details for this.selectedEventId events
 	 * @typedef {Object} SelectedEventDetails
-	 * @property {string|number} sketchIndex	-The key associated with the selected label if it has one,
-	 *										 otherwise the label's index within the group.
+	 * @property {string|number}
+	 * 						sketchIndex	-The key associated with the selected label if it has one,
+	 *									 otherwise the label's index within the group.
 	 */
+	var SelectedEventDetails;
 	
 	/**
 	 * The scale functions set explicitly for this Sketch using setScale.
@@ -142,32 +162,35 @@ function Sketch(config, eventManager)
 		{
 			container: null,
 			size: {height: 0, width: 0},
-			sketchId: this.id + 'Sketch',
+			sketchId: this.id + '_sketch',
 			xScale: null,
 			yScale: null,
 		};
-} // end of Label constructor
+}; // end of Sketch constructor
+goog.inherits(pearson.brix.Sketch, pearson.brix.SvgBric);
 
 /**
- * Prefix to use when generating ids for instances of LineGraph.
+ * Prefix to use when generating ids for instances of Sketch.
  * @const
  * @type {string}
  */
-Sketch.autoIdPrefix = "auto_";
+pearson.brix.Sketch.autoIdPrefix = "skch_auto_";
 
 /* **************************************************************************
  * Sketch.draw                                                         */ /**
  *
- * Draw this Sketch in the given container.
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this Sketch bric into the specified area of the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the labels element tree to.
- * @param {Object}	size		-The size in pixels for the label
- * @param {number}	size.height	-The height in pixels of the area the labels are drawn within.
- * @param {number}	size.width	-The width in pixels of the area the labels are drawn within.
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-Sketch.prototype.draw = function(container, size)
+pearson.brix.Sketch.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -196,20 +219,20 @@ Sketch.prototype.draw = function(container, size)
 
 	var sketchContainer = container.append("g") //make a group to hold labels
 		.attr("id", this.lastdrawn.sketchId)
-		.attr("class","widgetSketch");
+		.attr("class", "widgetSketch");
 	
 	// definition of arrowheads if you need 'em
 	sketchContainer.append("defs").append("marker")
-		.attr("id","triangle")
-		.attr("viewBox","0 0 10 10")
-		.attr("refX","0")
-		.attr("refY","5")
-		.attr("markerUnits","strokeWidth")
-		.attr("markerWidth","4")
-		.attr("markerHeight","3")
-		.attr("orient","auto")
+		.attr("id", "triangle")
+		.attr("viewBox", "0 0 10 10")
+		.attr("refX", "0")
+		.attr("refY", "5")
+		.attr("markerUnits", "strokeWidth")
+		.attr("markerWidth", "4")
+		.attr("markerHeight", "3")
+		.attr("orient", "auto")
 			.append("path")
-			.attr("d","M 0 0 L 10 5 L 0 10 z");
+			.attr("d", "M 0 0 L 10 5 L 0 10 z");
 			
 	this.lastdrawn.widgetGroup = sketchContainer;
 
@@ -232,7 +255,7 @@ Sketch.prototype.draw = function(container, size)
  *								 to the pixel offset into the data area.
  *
  ****************************************************************************/
-Sketch.prototype.setScale = function (xScale, yScale)
+pearson.brix.Sketch.prototype.setScale = function (xScale, yScale)
 {
 	this.explicitScales_.xScale = xScale;
 	this.explicitScales_.yScale = yScale;
@@ -242,6 +265,7 @@ Sketch.prototype.setScale = function (xScale, yScale)
  * Sketch.move                                                         */ /**
  *
  * Move the entire sketch by x and y offset values over a period of time
+ * @export
  *
  * @param {number}		xOffset		- value of x to be added to current x position
  * @param {number}		yOffset		- value of y to be added to current y position
@@ -249,7 +273,7 @@ Sketch.prototype.setScale = function (xScale, yScale)
  * @param {number}		delay		- the delay before the transition starts in milliseconds
  *
  ****************************************************************************/
-Sketch.prototype.move = function (xOffset, yOffset, duration, delay)
+pearson.brix.Sketch.prototype.move = function (xOffset, yOffset, duration, delay)
 {
 	var xScale = this.lastdrawn.xScale;
 	var yScale = this.lastdrawn.yScale;
@@ -299,7 +323,7 @@ Sketch.prototype.move = function (xOffset, yOffset, duration, delay)
 					d.points[i][0] = d.points[i][0] + xOffset;
 					d.points[i][1] = d.points[i][1] + yOffset;
 				}
-				return Sketch.pointString(d.points, xScale, yScale);
+				return pearson.brix.Sketch.pointString(d.points, xScale, yScale);
 			})
 		.duration(duration).delay(delay);
 	
@@ -399,6 +423,7 @@ Sketch.prototype.move = function (xOffset, yOffset, duration, delay)
  * Sketch.reflect                                                      */ /**
  *
  * Reflect the sketch over a vertical line, horizontal line, or both
+ * @export
  *
  * @param {number}		xLine		- x value of the vertical line to be reflected over
  * @param {number}		yLine		- y value of the horizontal line to be reflected over
@@ -406,8 +431,7 @@ Sketch.prototype.move = function (xOffset, yOffset, duration, delay)
  * @param {number}		delay		- the delay before the transition starts in milliseconds
  *
  ****************************************************************************/
-
-Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
+pearson.brix.Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 {
 	var xScale = this.lastdrawn.xScale;
 	var yScale = this.lastdrawn.yScale;
@@ -431,7 +455,7 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 					// get the center of the rectangle first
 					var x = d.xyPos[0] + (d.width/2);
 					// reflect it
-					d.xyPos[0] = Sketch.reflectValue(x, xLine) - (d.width/2);
+					d.xyPos[0] = pearson.brix.Sketch.reflectValue(x, xLine) - (d.width/2);
 				}
 				return xScale(d.xyPos[0]);
 			})
@@ -444,7 +468,7 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 					// get the center of the rectangle
 					var y = d.xyPos[1] - (d.height/2);
 					// reflect it
-					d.xyPos[1] = Sketch.reflectValue(y, yLine) + (d.height/2);
+					d.xyPos[1] = pearson.brix.Sketch.reflectValue(y, yLine) + (d.height/2);
 				}
 				return yScale(d.xyPos[1]);
 			})
@@ -460,7 +484,7 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 				// reflect over the vertical line (if provided)
 				if(xLine != null)
 				{
-					d.xyPos[0] = Sketch.reflectValue(d.xyPos[0], xLine);
+					d.xyPos[0] = pearson.brix.Sketch.reflectValue(d.xyPos[0], xLine);
 				}
 				return xScale(d.xyPos[0]);
 			})
@@ -470,7 +494,7 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 				// reflect over the horizontal line (if provided)
 				if (yLine != null)
 				{
-					d.xyPos[1] = Sketch.reflectValue(d.xyPos[1], yLine);
+					d.xyPos[1] = pearson.brix.Sketch.reflectValue(d.xyPos[1], yLine);
 				}
 				return yScale(d.xyPos[1]);
 			})
@@ -487,12 +511,12 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 				// reflect over the vertical line (if provided)
 				if (xLine != null)
 				{
-					d.xyPos[0] = Sketch.reflectValue(d.xyPos[0], xLine);
+					d.xyPos[0] = pearson.brix.Sketch.reflectValue(d.xyPos[0], xLine);
 				}
 				// reflect over the horizontal line (if provided)
 				if (yLine != null)
 				{
-					d.xyPos[1] = Sketch.reflectValue(d.xyPos[1], yLine);
+					d.xyPos[1] = pearson.brix.Sketch.reflectValue(d.xyPos[1], yLine);
 				}
 				// reflect all the points as well
 				var i;
@@ -501,17 +525,17 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 					// reflect over the vertical line (if provided)
 					if (xLine != null)
 					{
-						d.points[i][0] = Sketch.reflectValue(d.points[i][0], xLine);
+						d.points[i][0] = pearson.brix.Sketch.reflectValue(d.points[i][0], xLine);
 					}
 					// reflect over the horizontal line (if provided)
 					if (yLine != null)
 					{
-						d.points[i][1] = Sketch.reflectValue(d.points[i][1], yLine);
+						d.points[i][1] = pearson.brix.Sketch.reflectValue(d.points[i][1], yLine);
 					}
 					
 				}
 				// return the point string
-				return Sketch.pointString(d.points, xScale, yScale);
+				return pearson.brix.Sketch.pointString(d.points, xScale, yScale);
 			})
 		.duration(duration).delay(delay);
 		
@@ -522,12 +546,12 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 				// reflect over the vertical line (if provided)
 				if (xLine != null)
 				{
-					d.angle = Sketch.reflectValue(d.angle, Math.PI/2);
+					d.angle = pearson.brix.Sketch.reflectValue(d.angle, Math.PI/2);
 				}
 				// reflect over the horizontal line (if provided)
 				if (yLine != null)
 				{
-					d.angle = Sketch.reflectValue(d.angle, Math.PI);
+					d.angle = pearson.brix.Sketch.reflectValue(d.angle, Math.PI);
 				}
 				
 				// if the wedge is a hash-wedge
@@ -585,7 +609,7 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 				// reflect over the vertical line (if provided)
 				if (xLine != null)
 				{
-					d.xyPos[0] = Sketch.reflectValue(d.xyPos[0], xLine);
+					d.xyPos[0] = pearson.brix.Sketch.reflectValue(d.xyPos[0], xLine);
 				}
 				return xScale(d.xyPos[0]);
 			})
@@ -595,7 +619,7 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 				// reflect over the horizontal line (if provided)
 				if (yLine != null)
 				{
-					d.xyPos[1] = Sketch.reflectValue(d.xyPos[1], yLine);
+					d.xyPos[1] = pearson.brix.Sketch.reflectValue(d.xyPos[1], yLine);
 				}
 				return yScale(d.xyPos[1]);
 			})
@@ -634,7 +658,7 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 				// reflect over the vertical line (if provided)
 				if(xLine != null)
 				{
-					d.xyPos[0] = Sketch.reflectValue(d.xyPos[0], xLine);
+					d.xyPos[0] = pearson.brix.Sketch.reflectValue(d.xyPos[0], xLine);
 				}
 				return xScale(d.xyPos[0]);
 			})
@@ -644,7 +668,7 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
 				// reflect over the horizontal line (if provided)
 				if (yLine != null)
 				{
-					d.xyPos[1] = Sketch.reflectValue(d.xyPos[1], yLine);
+					d.xyPos[1] = pearson.brix.Sketch.reflectValue(d.xyPos[1], yLine);
 				}
 				return yScale(d.xyPos[1]);
 			})
@@ -658,13 +682,14 @@ Sketch.prototype.reflect = function (xLine, yLine, duration, delay)
  * Sketch.setOpacity                                                   */ /**
  *
  * Set the opacity of the sketch
+ * @export
  *
  * @param {number}		opacity		- opacity value to be set to (0: transparent, 1: opaque)
  * @param {number}		duration	- the duration of the transition in milliseconds
  * @param {number}		delay		- the delay before the transition starts in milliseconds
  *
  ****************************************************************************/
-Sketch.prototype.setOpacity = function (opacity, duration, delay)
+pearson.brix.Sketch.prototype.setOpacity = function (opacity, duration, delay)
 {
 	var sketchContainer = this.lastdrawn.widgetGroup;
 
@@ -682,13 +707,14 @@ Sketch.prototype.setOpacity = function (opacity, duration, delay)
  * Sketch.setColor                                                     */ /**
  *
  * Set the color of the sketch
+ * @export
  *
  * @param {string}		color		- color the sketch should be set to
  * @param {number}		duration	- the duration of the transition in milliseconds
  * @param {number}		delay		- the delay before the transition starts in milliseconds
  *
  ****************************************************************************/
-Sketch.prototype.setColor = function (color, duration, delay)
+pearson.brix.Sketch.prototype.setColor = function (color, duration, delay)
 {
 	var sketchContainer = this.lastdrawn.widgetGroup;
 
@@ -721,9 +747,10 @@ Sketch.prototype.setColor = function (color, duration, delay)
  *
  * Redraw the sketch as it may have been modified in size or draw bits. It will be
  * redrawn into the same container area as it was last drawn.
+ * @export
  *
  ****************************************************************************/
-Sketch.prototype.redraw = function ()
+pearson.brix.Sketch.prototype.redraw = function ()
 {
 	var sketchContainer = this.lastdrawn.widgetGroup;
 
@@ -808,10 +835,10 @@ Sketch.prototype.redraw = function ()
 				function(d)
 				{
 					// create an array of points representing a hexagon
-					d["points"] = Sketch.createHexagon(d.xyPos[0], d.xyPos[1], d.side);
+					d["points"] = pearson.brix.Sketch.createHexagon(d.xyPos[0], d.xyPos[1], d.side);
 					
 					// turn the array into a string
-					return Sketch.pointString(d.points, xScale, yScale);
+					return pearson.brix.Sketch.pointString(d.points, xScale, yScale);
 				});
 	
 	// get collection of triangles
@@ -824,10 +851,10 @@ Sketch.prototype.redraw = function ()
 			function(d)
 			{
 				// create an array of points representing a triangle
-				d["points"] = Sketch.createTriangle(d.xyPos[0], d.xyPos[1], d.side);
+				d["points"] = pearson.brix.Sketch.createTriangle(d.xyPos[0], d.xyPos[1], d.side);
 				
 				// turn the array into a string
-				return Sketch.pointString(d.points, xScale, yScale);
+				return pearson.brix.Sketch.pointString(d.points, xScale, yScale);
 			});
 	
 	// get the collection of wedges
@@ -840,11 +867,11 @@ Sketch.prototype.redraw = function ()
 			function(d)
 			{	
 				// create an array of points representing a wedge
-				d["points"] = Sketch.createWedge(d.xyPos[0], d.xyPos[1], d.width,
+				d["points"] = pearson.brix.Sketch.createWedge(d.xyPos[0], d.xyPos[1], d.width,
 								d.length, d.angle);
 				
 				// turn the array into a string		
-				return Sketch.pointString(d.points, xScale, yScale);
+				return pearson.brix.Sketch.pointString(d.points, xScale, yScale);
 			})
 		.style('fill', 'grey');
 		
@@ -960,7 +987,7 @@ Sketch.prototype.redraw = function ()
 			.each(function (d)
 			  {
 				  var node = d3.select(this);
-				  var fragments = Sketch.splitOnNumbers(d.text);
+				  var fragments = pearson.brix.Sketch.splitOnNumbers(d.text);
 				  var i;
 				  for (i = 1; i < fragments.length; i += 2)
 				  {
@@ -1012,7 +1039,7 @@ Sketch.prototype.redraw = function ()
  * @param {number}	side	-The length of the hexagon's side
  *
  ****************************************************************************/
-Sketch.createHexagon = function (x, y, side)
+pearson.brix.Sketch.createHexagon = function (x, y, side)
 {	
 	// use trigonometry to calculate all the points
 	
@@ -1045,7 +1072,7 @@ Sketch.createHexagon = function (x, y, side)
  * @param {number}	side	-The length of the triangle's side
  *
  ****************************************************************************/
-Sketch.createTriangle = function (x, y, side)
+pearson.brix.Sketch.createTriangle = function (x, y, side)
 {	
 	// use trigonometry to calculate all the points
 	
@@ -1077,7 +1104,7 @@ Sketch.createTriangle = function (x, y, side)
  * @param {number}	ang		-The angle of the wedge's centerline
  *
  ****************************************************************************/
-Sketch.createWedge = function (x, y, wid, len, ang)
+pearson.brix.Sketch.createWedge = function (x, y, wid, len, ang)
 {	
 	// calculate the centerpoint of the side perpendicular to the length
 	var flatx = len * Math.cos(ang) + x;
@@ -1106,7 +1133,7 @@ Sketch.createWedge = function (x, y, wid, len, ang)
  * @param {number}	line	-The line to be reflected over
  *
  ****************************************************************************/
-Sketch.reflectValue = function (value, line)
+pearson.brix.Sketch.reflectValue = function (value, line)
 {
 	// get the distance between the value and the reflection line
 	var diff = line - value;
@@ -1125,7 +1152,7 @@ Sketch.reflectValue = function (value, line)
  * @param {string}	s	-The string to parse on digit groups
  *
  ****************************************************************************/
-Sketch.splitOnNumbers = function (s)
+pearson.brix.Sketch.splitOnNumbers = function (s)
 {
 	if (typeof s === 'number')
 	{
@@ -1154,14 +1181,17 @@ Sketch.splitOnNumbers = function (s)
  * Return a string matching the format needed for the point string of a d3
  * polygon, based on the given 2-dimensional array of points.
  *
- * @param {array}	a		-The 2-dimensional array of points
- * @param {number}	xScale	-function to convert a horizontal data offset
+ * @param {!Array.<!Array.<number>>}
+ * 						a		-The 2-dimensional array of points
+ * @param {function(number): number}
+ * 						xScale	-function to convert a horizontal data offset
  *								 to the pixel offset into the data area.
- * @param {number}	yScale	-function to convert a vertical data offset
+ * @param {function(number): number}
+ * 						yScale	-function to convert a vertical data offset
  *								 to the pixel offset into the data area.
  *
  ****************************************************************************/
-Sketch.pointString = function (a, xScale, yScale)
+pearson.brix.Sketch.pointString = function (a, xScale, yScale)
 {	
 	// formatting function
 	var rnd = d3.format('2f');
@@ -1193,9 +1223,9 @@ Sketch.pointString = function (a, xScale, yScale)
  * @param {string|number}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-Sketch.prototype.lite = function (liteKey)
+pearson.brix.Sketch.prototype.lite = function (liteKey)
 {
-	console.log("TODO: Log fired Sketch Select " + liteKey);
+	window.console.log("TODO: Log fired Sketch Select " + liteKey);
 	
 	// return all styles to normal on all the labels and numbers
 	this.lastdrawn.drawCollection
@@ -1217,7 +1247,7 @@ Sketch.prototype.lite = function (liteKey)
 	} 
 	else
 	{
-		console.log("No key '" + liteKey + "' in Sketch group " + this.id );
+		window.console.log("No key '" + liteKey + "' in Sketch group " + this.id );
 	}
 }; // end of Sketch.lite()
 

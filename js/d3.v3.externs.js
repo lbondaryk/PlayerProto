@@ -652,7 +652,7 @@ d3.transitionSelection = function () {};
  * @param {number|!Function} delay
  * @returns {!d3.transitionSelection}
  */
-d3.transitionSelection.delay = function (delay) {};
+d3.transitionSelection.prototype.delay = function (delay) {};
 
 /**
  * Specifies per-element duration in milliseconds. If duration is a constant,
@@ -665,7 +665,7 @@ d3.transitionSelection.delay = function (delay) {};
  * @param {number|!Function} duration
  * @returns {!d3.transitionSelection}
  */
-d3.transitionSelection.duration = function (duration) {};
+d3.transitionSelection.prototype.duration = function (duration) {};
 
 /**
  * Specifies the transition easing function. If value is a function, it is used
@@ -678,7 +678,7 @@ d3.transitionSelection.duration = function (duration) {};
  * @param {...} var_args
  * @returns {!d3.transitionSelection}
  */
-d3.transitionSelection.ease = function (value, var_args) {};
+d3.transitionSelection.prototype.ease = function (value, var_args) {};
 
 /**
  * Sets the attribute with the specified name to the specified value on all selected elements.

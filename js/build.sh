@@ -72,6 +72,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-piechart.js
 	--input=widget-prototype-axes.js
 	--input=widget-radiogroup.js
+	--input=widget-sketch.js
 	--root=.
 	--root=$LIBRARYDIR
 	--output_mode=compiled
