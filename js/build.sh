@@ -69,6 +69,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-markergroup.js
 	--input=widget-multiplechoicequestion.js
 	--input=widget-multiselectquestion.js
+	--input=widget-numeric.js
 	--input=widget-piechart.js
 	--input=widget-prototype-axes.js
 	--input=widget-radiogroup.js

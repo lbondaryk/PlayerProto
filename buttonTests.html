@@ -80,17 +80,48 @@
 
     
 	<script src="js/d3.v2.min.js"></script>
-	<script src="js/widgets.js"></script>
+
+	<script src="js/brixlib-compiled.js"></script>
+	<!--
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
 	<script src="js/eventmanager.js"></script>
 	<script src="js/widget-base.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-numeric.js"></script>
+	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-button.js"></script>
-	<script src="js/widget-numeric.js"></script>
+	-->
+
 
 <script>
 
-	// create event manager
-	var eventManager = new EventManager();
-	
+	// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+	var Button = pearson.brix.Button;
+	var Readout = pearson.brix.Readout;
+ 
+ 	var eventManager = new EventManager();
+
 	///////////////////////////////////////////
 	
 	// Test 0: One button

@@ -345,7 +345,7 @@ d3.selection.prototype.property = function (name, value) {};
  * The text operator is based on the textContent property; setting the text
  * content will replace any existing child elements.
  *
- * @param {(string|!Function)=} value
+ * @param {(string|number|!Function)=} value
  * @returns {!d3.selection}
  */
 d3.selection.prototype.text = function (value) {};
@@ -736,7 +736,7 @@ d3.transitionSelection.prototype.property = function (name, value) {};
  * content will replace any existing child elements.
  * @override
  *
- * @param {(string|!Function)=} value
+ * @param {(string|number|!Function)=} value
  * @returns {!d3.transitionSelection}
  */
 d3.transitionSelection.prototype.text = function (value) {};
