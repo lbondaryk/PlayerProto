@@ -22,7 +22,7 @@ goog.require('pearson.brix.SvgBric');
 goog.require('pearson.brix.Image');
 goog.require('pearson.brix.CaptionedImage');
 goog.require('pearson.brix.Carousel');
-goog.require('pearson.utils.EventManager');
+goog.require('pearson.utils.IEventManager');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -52,7 +52,7 @@ goog.require('pearson.utils.EventManager');
  * 											 if undefined a unique id will be assigned.
  * @param {Array.<!pearson.brix.Image>}
  * 							config.items	-The list of Image brix to be presented by the ImageViewer.
- * @param {!pearson.utils.EventManager}
+ * @param {!pearson.utils.IEventManager}
  * 							eventManager	-allows the widget to publish and subscribe to events
  * 											 required for correct internal operation.
  *
@@ -117,7 +117,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {!pearson.utils.EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager;
 

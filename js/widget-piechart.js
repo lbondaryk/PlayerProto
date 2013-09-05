@@ -14,6 +14,11 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.PieChart');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.SvgBric');
+
 // Sample BarChart constructor configuration
 (function()
 {
@@ -36,10 +41,12 @@
  * or grouped bar chart (several bars on the same label from different series - multivariate)
  *
  * @constructor
+ * @extends {pearson.brix.SvgBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this PieChart
  * @param {string}		config.id		-String to uniquely identify this PieChart.
- * @param {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
+ * @param {Array.<{x: number, y: string, key: (string|undefined)}>}
  *						config.Data		-An array of series;
  *										 each series is an array of one or more percentages with names.
  *										 Either wedges or series can have a key label for highlighting.
@@ -51,13 +58,16 @@
  * percentages of each wedge. Note that pie x values don't have to add up to
  * 100.  If they don't, d3 will calculate portions of 100%. 
  **************************************************************************/
-PieChart = function (config, eventManager)
+pearson.brix.PieChart = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the bar chart widget
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, PieChart);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.PieChart);
 
 	/**
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
@@ -70,7 +80,7 @@ PieChart = function (config, eventManager)
 	 * bar objects may also include an optional key: string in which case they will be given an ID that 
 	 * associates them with other widget events in the page, such as clicks on the legend.
 	 *
-	 * @type {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
+	 * @type {Array.<{x: number, y: string, key: (string|undefined)}>}
 	 */
 	this.data = config.Data;
 
@@ -125,7 +135,6 @@ PieChart = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-
 	this.selectedEventId = this.id + '_wedgeSelected';
 	 
 	/**
@@ -155,29 +164,31 @@ PieChart = function (config, eventManager)
 		};
 		
 }; // end of PieChart constructor
+goog.inherits(pearson.brix.PieChart, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids.
  * @const
  * @type {string}
  */
-PieChart.autoIdPrefix = "pie_auto_";
+pearson.brix.PieChart.autoIdPrefix = "pie_auto_";
 
 
 /* **************************************************************************
  * PieChart.draw                                                       */ /**
  *
- * The PieChart widget provides a circle of wedges visualization
- * of sets of data percentages.
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw the PieChart bric into the specified area of the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the graph element tree to.
- * @param {Object}	size		-The size in pixels for the graph
- * @param {number}	size.height	-The height for the graph.
- * @param {number}	size.width	-The width for the graph.
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-PieChart.prototype.draw = function (container, size)
+pearson.brix.PieChart.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -239,9 +250,10 @@ PieChart.prototype.draw = function (container, size)
  *
  * Redraw the line graph data as it may have been modified. It will be
  * redrawn into the same container area as it was last drawn.
+ * @export
  *
  ****************************************************************************/
-PieChart.prototype.redraw = function ()
+pearson.brix.PieChart.prototype.redraw = function ()
 {
 	// TODO: We may want to create new axes if the changed data would cause their
 	//       min/max to have changed, but for now we're going to keep them.
@@ -265,13 +277,12 @@ PieChart.prototype.redraw = function ()
  * Draw the given child widget in this charts's data area.
  * This chart must have been drawn BEFORE this method is called or
  * bad things will happen.
- *
  * @private
  *
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-PieChart.prototype.drawWidget_ = function (widget)
+pearson.brix.PieChart.prototype.drawWidget_ = function (widget)
 {
 	widget.setScale(this.lastdrawn.xScale, this.lastdrawn.yScale);
 	widget.draw(this.lastdrawn.axes.group, this.lastdrawn.dataRect.getSize());
@@ -284,13 +295,12 @@ PieChart.prototype.drawWidget_ = function (widget)
  * Redraw the given child widget.
  * This bar chart and this child widget must have been drawn BEFORE this
  * method is called or bad things will happen.
- *
  * @private
  *
  * @todo implement some form of error handling! -mjl
  *
  ****************************************************************************/
-PieChart.prototype.redrawWidget_ = function (widget)
+pearson.brix.PieChart.prototype.redrawWidget_ = function (widget)
 {
 	widget.redraw();
 };
@@ -299,20 +309,19 @@ PieChart.prototype.redrawWidget_ = function (widget)
  * PieChart.getLegendLabels_                                           */ /**
  *
  * Create an array of legend labels for the current data of this PieChart.
- *
  * @private
  *
- * @returns {Array} Labels for a legend for this piechart matching the current
- * 					data.
+ * @returns {Array.<{content: string}>} Labels for a legend for this piechart
+ *          matching the current data.
  *
  ****************************************************************************/
-PieChart.prototype.getLegendLabels_ = function ()
+pearson.brix.PieChart.prototype.getLegendLabels_ = function ()
 {
 	// take the opportunity to make the legend labels while we're cycling through the data
 	var legLabels = [];
 
 	this.data.forEach(
-			function(o, i) { legLabels[i] = {content: o.y + " " + o.x + "%"}; });
+			function (o, i) { legLabels[i] = {content: o.y + " " + o.x + "%"}; });
 
 	return legLabels;
 };
@@ -332,7 +341,7 @@ PieChart.prototype.getLegendLabels_ = function ()
  *								 to the pixel offset into the data area.
  *
  ****************************************************************************/
-PieChart.prototype.setScale = function (xScale, yScale)
+pearson.brix.PieChart.prototype.setScale = function (xScale, yScale)
 {
 	this.explicitScales_.xScale = xScale;
 	this.explicitScales_.yScale = yScale;
@@ -342,11 +351,10 @@ PieChart.prototype.setScale = function (xScale, yScale)
  * PieChart.drawData_                                                  */ /**
  *
  * Draw the chart data (overwriting any existing data).
- *
  * @private
  *
  ****************************************************************************/
- PieChart.prototype.drawData_ = function ()
+pearson.brix.PieChart.prototype.drawData_ = function ()
 {
 	// local var names are easier to read (shorter)
 	var xScale = this.lastdrawn.xScale;
@@ -441,8 +449,9 @@ PieChart.prototype.setScale = function (xScale, yScale)
  * of the data area and any widgets appended earlier. If append
  * is called before draw has been called, then the appended widget(s) will be
  * drawn when draw is called.
+ * @export
  *
- * @param {!IWidget|Array.<IWidget>}
+ * @param {!pearson.brix.SvgBric|Array.<!pearson.brix.SvgBric>}
  * 						svgWidgets	-The widget or array of widgets to be drawn in
  *									 this line graph's data area.
  * @param {string|undefined}
@@ -453,11 +462,11 @@ PieChart.prototype.setScale = function (xScale, yScale)
  * 									 to "after".
  *
  ****************************************************************************/
-PieChart.prototype.append = function (svgWidgets, zOrder)
+pearson.brix.PieChart.prototype.append = function (svgWidgets, zOrder)
 {
 	if (!Array.isArray(svgWidgets))
 	{
-		this.append_one_(svgWidgets, zOrder);
+		this.append_one_(/**@type {!pearson.brix.SvgBric}*/ (svgWidgets), zOrder);
 	}
 	else
 	{
@@ -486,7 +495,8 @@ PieChart.prototype.append = function (svgWidgets, zOrder)
  * has been drawn, but it does not handle drawning the widget before when
  * the data has already been drawn, so the caller must deal with that situation.
  *
- * @param {!IWidget}	widget	-The widget which is to be drawn in this line
+ * @param {!pearson.brix.SvgBric}
+ * 						widget	-The widget which is to be drawn in this line
  *								 graph's data area.
  * @param {string|undefined}
  * 						zOrder	-Optional. Specifies whether to append this
@@ -498,7 +508,7 @@ PieChart.prototype.append = function (svgWidgets, zOrder)
  * @private
  *
  ****************************************************************************/
-PieChart.prototype.append_one_ = function (widget, zOrder)
+pearson.brix.PieChart.prototype.append_one_ = function (widget, zOrder)
 {
 	if (zOrder === "before")
 	{
@@ -519,12 +529,13 @@ PieChart.prototype.append_one_ = function (widget, zOrder)
  *
  * Set this.lastdrawn.xScale and yScale to those stored in explicitScales
  * or to the default scale functions w/ a data domain of [0,1].
- *
- * @param {Size}	cntrSize	-The pixel size of the container given to draw().
  * @private
  *
+ * @param {!pearson.utils.ISize}
+ * 						cntrSize	-The pixel size of the container given to draw().
+ *
  ****************************************************************************/
-PieChart.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
+pearson.brix.PieChart.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
 {
 	if (this.explicitScales_.xScale !== null)
 	{
@@ -558,14 +569,14 @@ PieChart.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
  *
  * Highlight the members of the collection associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
+ * @export
  *
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-PieChart.prototype.lite = function (liteKey)
+pearson.brix.PieChart.prototype.lite = function (liteKey)
 {
-	
-	console.log("TODO: log fired PieChart highlite " + liteKey);
+	window.console.log("TODO: log fired PieChart highlite " + liteKey);
 	
 	// Turn off all current highlights
 	var allWedges = this.lastdrawn.wedges;
@@ -585,7 +596,7 @@ PieChart.prototype.lite = function (liteKey)
 
 	if (wedgesToLite.empty())
 	{
-		console.log("No key '" + liteKey + "' in pie chart " + this.id );
+		window.console.log("No key '" + liteKey + "' in pie chart " + this.id );
 	}
 };
 
