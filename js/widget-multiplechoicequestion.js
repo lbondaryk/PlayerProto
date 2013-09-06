@@ -17,6 +17,7 @@
 goog.provide('pearson.brix.MultipleChoiceQuestion');
 
 goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.SubmitManager');
 goog.require('pearson.brix.HtmlBric');
 
 // Sample configuration objects for classes defined here

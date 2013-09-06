@@ -76,6 +76,9 @@ goog.require('pearson.brix.PrototypeAxes');
  * @param {pearson.brix.AxisFormat}
  * 						config.yAxisFormat
  * 										-Format of the y axis of the graph.
+ * @param {!pearson.utils.IEventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
  *
  * @todo: need to add custom symbols or images for scatter plots.
  * @todo linegraphs must be selectable to highlight related graph elements and use

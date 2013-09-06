@@ -1,10 +1,10 @@
 /* **************************************************************************
- * $Workfile:: widget-numericquestion.js                             $
+ * $Workfile:: widget-numericquestion.js                                    $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the numericquestion widget.
+ * @fileoverview Implementation of the NumericQuestion bric.
  *
- * The numericquestion widget displays a question and a control
+ * The NumericQuestion widget displays a question and a control
  * for entering a numeric answer (slider, text entry, data point) to be scored.
  * It also has facility for allowing several correct answers, or an answer
  * range.
@@ -16,6 +16,12 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.NumericQuestion');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.SubmitManager');
+goog.require('pearson.brix.HtmlBric');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -26,7 +32,7 @@
 		//id: "Q1",
 		questionId: "SanVan003",
 		question: "How high does it go?",
-		widget: Slider,
+		widget: null, // should be a constructor such as: pearson.brix.Slider,
 		widgetConfig: {
 			startVal: 12,
 			minVal: 12.0,
@@ -42,15 +48,16 @@
 /* **************************************************************************
  * NumericQuestion                                                     */ /**
  *
- * Constructor function for numericquestion brix.
+ * Constructor function for NumericQuestion brix.
  *
  * @constructor
- * @implements {IWidget}
- * @implements {IQuestion}
+ * @extends {pearson.brix.HtmlBric}
+ * @implements {pearson.brix.IQuestionBric}
+ * @export
  *
- * @param {Object}		config			-The settings to configure this numericquestion
+ * @param {Object}		config			-The settings to configure this NumericQuestion
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this numericquestion.
+ * 						config.id		-String to uniquely identify this NumericQuestion.
  * 										 if undefined a unique id will be assigned.
  * @param {string}		config.questionId
  * 										-Scoring engine Id of this question
@@ -59,27 +66,28 @@
  * @param {Array|undefined}		
  *						config.svgSize	-Two element array with the maxWidth and Height of the 
  *										 svg container, if the widget is an SVG widget.
- * @param {IWidget}		config.widget	-The constructor for a widget that enables a numeric input.
+ * @param {!function(Object, !pearson.utils.IEventManager=)}
+ * 						config.widget	-The constructor for a widget that enables a numeric input.
  * @param {!Object}		config.widgetConfig
  * 										-The configuration object for the specified widget
  * 										 constructor without the id properties which
  * 										 will be added by this question constructor.
- * @param {EventManager}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
  * @classdesc
- * The numericquestion widget displays a question and a set of possible
+ * The NumericQuestion widget displays a question and a set of possible
  * answers one of which must be selected and submitted to be scored.
  *
  ****************************************************************************/
-function NumericQuestion(config, eventManager)
+pearson.brix.NumericQuestion = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, NumericQuestion);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.NumericQuestion);
 
 	/**
 	 * The scoring engine id of this question.
@@ -93,6 +101,12 @@ function NumericQuestion(config, eventManager)
 	 */
 	this.question = config.question;
 
+	/**
+	 * The event manager to use to publish (and subscribe to) events for this widget
+	 * @type {!pearson.utils.IEventManager}
+	 */
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
+
 	var widgetConfig = config.widgetConfig;
 
 	widgetConfig.id = this.id + "_wdgt";
@@ -103,9 +117,9 @@ function NumericQuestion(config, eventManager)
 	/**
 	 * The widget used to present the numeric entry to answer
 	 * this question.
-	 * @type {IWidget}
+	 * @type {!pearson.brix.HtmlBric}
 	 */
-	this.choiceWidget = new config.widget(widgetConfig, eventManager);
+	this.choiceWidget = new config.widget(widgetConfig, this.eventManager);
 
 	// The configuration options for the submit button
 	var submitBtnConfig =
@@ -118,9 +132,9 @@ function NumericQuestion(config, eventManager)
 	/**
 	 * The button widget which allows the answer to the question to be submitted
 	 * for scoring.
-	 * @type {IWidget}
+	 * @type {!pearson.brix.Button}
 	 */
-	this.submitButton = new pearson.brix.Button(submitBtnConfig, eventManager);
+	this.submitButton = new pearson.brix.Button(submitBtnConfig, this.eventManager);
 
 	/**
 	 * List of responses that have been received for all submitted
@@ -128,12 +142,6 @@ function NumericQuestion(config, eventManager)
 	 * @type {Array.<Object>}
 	 */
 	this.responses = [];
-
-	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
-	 */
-	this.eventManager = eventManager;
 
 	/**
 	 * The event id published when a choice in this question is selected.
@@ -187,7 +195,7 @@ function NumericQuestion(config, eventManager)
  * @const
  * @type {string}
  */
-NumericQuestion.autoIdPrefix = "numQ_auto_";
+pearson.brix.NumericQuestion.autoIdPrefix = "numQ_auto_";
 
 /* **************************************************************************
  * numericquestion.handleSubmitRequested_                       */ /**
@@ -197,7 +205,7 @@ NumericQuestion.autoIdPrefix = "numQ_auto_";
  * @private
  *
  ****************************************************************************/
-NumericQuestion.prototype.handleSubmitRequested_ = function()
+pearson.brix.NumericQuestion.prototype.handleSubmitRequested_ = function ()
 {
 	var that = this;
 	var submitAnsDetails =
@@ -220,14 +228,14 @@ NumericQuestion.prototype.handleSubmitRequested_ = function()
  * @private
  *
  ****************************************************************************/
-NumericQuestion.prototype.handleAnswerSelected_ = function()
+pearson.brix.NumericQuestion.prototype.handleAnswerSelected_ = function ()
 {
 	this.submitButton.setText("Submit Answer");
 	this.submitButton.setEnabled(true);
 };
 
 /* **************************************************************************
- * numericquestion.handleSubmitResponse_                        */ /**
+ * numericquestion.handleSubmitResponse_                               */ /**
  *
  * Handle the response to submitting an answer.
  *
@@ -236,18 +244,18 @@ NumericQuestion.prototype.handleAnswerSelected_ = function()
  * @private
  *
  ****************************************************************************/
-NumericQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
+pearson.brix.NumericQuestion.prototype.handleSubmitResponse_ = function (responseDetails)
 {
 	this.responses.push(responseDetails);
 
 	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
 
 	// For now just use the helper function to write the response.
-	SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
+	pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 };
 
 /* **************************************************************************
- * numericquestion.draw                                         */ /**
+ * numericquestion.draw                                                */ /**
  *
  * Draw this numericquestion in the given container.
  *
@@ -256,7 +264,7 @@ NumericQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
  *								 question element tree to.
  *
  ****************************************************************************/
-NumericQuestion.prototype.draw = function(container)
+pearson.brix.NumericQuestion.prototype.draw = function (container)
 {
 	this.lastdrawn.container = container;
 	
@@ -278,7 +286,7 @@ NumericQuestion.prototype.draw = function(container)
 
 	if (Array.isArray(this.svgSize)){
 
-		var mcSVG = new SVGContainer({
+		var mcSVG = new pearson.brix.SVGContainer({
 			node: d3.select("#choice_id"),
 			maxWid: this.svgSize[0],
 			maxHt: this.svgSize[1]
@@ -303,7 +311,7 @@ NumericQuestion.prototype.draw = function(container)
 }; // end of numericquestion.draw()
 
 /* **************************************************************************
- * numericquestion.selectedItem                                 */ /**
+ * numericquestion.selectedItem                                        */ /**
  *
  * Return the selected choice from the choice widget or null if nothing has been
  * selected.
@@ -311,13 +319,13 @@ NumericQuestion.prototype.draw = function(container)
  * @return {Object} the choice which is currently selected or null.
  *
  ****************************************************************************/
-NumericQuestion.prototype.selectedItem = function ()
+pearson.brix.NumericQuestion.prototype.selectedItem = function ()
 {
 	return this.choiceWidget.selectedItem();
 };
 
 /* **************************************************************************
- * numericquestion.selectItemAtIndex                            */ /**
+ * numericquestion.selectItemAtIndex                                   */ /**
  *
  * Select the choice in the choice widget at the given index. If the choice is
  * already selected, do nothing. The index is the displayed choice index and
@@ -327,7 +335,7 @@ NumericQuestion.prototype.selectedItem = function ()
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-NumericQuestion.prototype.selectItemAtIndex = function (index)
+pearson.brix.NumericQuestion.prototype.selectItemAtIndex = function (index)
 {
 	this.choiceWidget.selectItemAtIndex(index);
 };

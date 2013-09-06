@@ -14,6 +14,11 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.SelectGroup');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.HtmlBric');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -65,7 +70,7 @@
  * configured as a question they need an answerKey to go with each choice.  As with 
  * other brix, they can optionally have an associative highlighting key.
  *
- * @typedef {Object} Answer
+ * @typedef {Object} pearson.brix.Answer
  * @property {string}	content		-The content of the answer, which presents the
  * 									 meaning of the answer.
  * @property {string}	response	-The response is presented to the user when
@@ -80,6 +85,7 @@
  * @todo: One important use of select is as a quiz-me version of a labeled diagram
  * or image.  We will need to layer these on top of SVG objects in SVG pixel positions.
  */
+pearson.brix.Answer;
 
 
 /* **************************************************************************
@@ -89,32 +95,37 @@
  * select one of the choices.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.HtmlBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this SelectGroup
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this SelectGroup.
  * 										 if undefined a unique id will be assigned.
- * @param {Array.<Answer>}
+ * @param {!Array.<!pearson.brix.Answer>}
  *						config.choices	-The list of choices to be presented by the SelectGroup.
  * 
- * @param {boolean.question}			-A flag indicating whether the bric is
+ * @param {boolean}		config.question	-A flag indicating whether the bric is
  *										to be configured as a question to the student
+ * @param {!pearson.utils.IEventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
  *
  ****************************************************************************/
-function SelectGroup(config, eventManager)
+pearson.brix.SelectGroup = function (config, eventManager)
 {
-	var that = this;
-	
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the radio group widget
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, SelectGroup);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.SelectGroup);
 
 	/**
 	 * The list of choices presented by the RadioGroup.
-	 * @type {Array.<Answer>}
+	 * @type {!Array.<!pearson.brix.Answer>}
 	 */
 	this.choices = config.choices;
 
@@ -122,9 +133,9 @@ function SelectGroup(config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager || { publish: function () {}, subscribe: function () {} };
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id published when an item in this carousel is selected.
@@ -138,6 +149,7 @@ function SelectGroup(config, eventManager)
 	 * @typedef {Object} SelectedEventDetails
 	 * @property {string} selectKey	-The answerKey associated with the selected answer.
 	 */
+	var SelectedEventDetails;
 
 	/**
 	 * Information about the last drawn instance of this button (from the draw method)
@@ -150,14 +162,15 @@ function SelectGroup(config, eventManager)
 			options: null,
 			choiceSelected: null,
 		};
-} // end of SelectGroup constructor
+}; // end of SelectGroup constructor
+goog.inherits(pearson.brix.SelectGroup, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of SelectGroup.
  * @const
  * @type {string}
  */
-SelectGroup.autoIdPrefix = "sg_auto_";
+pearson.brix.SelectGroup.autoIdPrefix = "sg_auto_";
 
 /* **************************************************************************
  * SelectGroup.draw                                                    */ /**
@@ -169,7 +182,7 @@ SelectGroup.autoIdPrefix = "sg_auto_";
  *								append the select element tree.
  *
  ****************************************************************************/
-SelectGroup.prototype.draw = function(container)
+pearson.brix.SelectGroup.prototype.draw = function (container)
 {
 	this.lastdrawn.container = container;
 
@@ -220,7 +233,8 @@ SelectGroup.prototype.draw = function(container)
 	//even the first one in the list, represents a change.  Prolly want to do
 	//this differently once we've implemented state. -lb			
 	
-	if (this.question == true) {
+	if (this.question == true)
+	{
 		selectTag[0][0].selectedIndex = -1;
 	}
 
@@ -238,9 +252,9 @@ SelectGroup.prototype.draw = function(container)
  * @param {string}	liteKey	-The key associated with the elements to be highlighted.
  *
  ****************************************************************************/
-SelectGroup.prototype.lite = function (liteKey)
+pearson.brix.SelectGroup.prototype.lite = function (liteKey)
 {
-	console.log("TODO: log fired Select highlite " + liteKey);
+	window.console.log("TODO: log fired Select highlite " + liteKey);
 	
 	//highlighting a dropdown means both selecting an element and
 	//giving focus to the dropdown to call attention to it's possible
@@ -261,20 +275,20 @@ SelectGroup.prototype.lite = function (liteKey)
 
 	if (pickMe.empty())
 	{
-		console.log("No key '" + liteKey + "' in select group " + this.id );
+		window.console.log("No key '" + liteKey + "' in select group " + this.id );
 	}
 }; // end of LabelGroup.lite()
 
 
 /* **************************************************************************
- * SelectGroup.selectedItem                                         */ /**
+ * SelectGroup.selectedItem                                            */ /**
  *
  * Return the selected item's data in the select group.
  *
  * @return {Object} the select group item data which is currently selected.
  *
  ****************************************************************************/
-SelectGroup.prototype.selectedItem = function ()
+pearson.brix.SelectGroup.prototype.selectedItem = function ()
 {
 	var inputCollection = this.lastdrawn.widgetGroup.select("select");
 	// selectedIndex is 0-based, but nth child is 1-based, so add 1
@@ -285,14 +299,16 @@ SelectGroup.prototype.selectedItem = function ()
 };
 
 /* **************************************************************************
- * SelectGroup.selectItemAtIndex                                      */ /**
+ * SelectGroup.selectItemAtIndex                                       */ /**
  *
- * Sets the selection to the selected input's data, and publishes the answerKey.
+ * Select the choice in this select group at the given index. If the choice is
+ * already selected, do nothing.
+ * @export
  *
- * @return {Object} publish the selectKey with the answerKey for scoring.
+ * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-SelectGroup.prototype.selectItemAtIndex = function (index)
+pearson.brix.SelectGroup.prototype.selectItemAtIndex = function (index)
 {
 	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetSelectGroup select");
 	var selectedInput = choiceInputs[0][index];
@@ -305,6 +321,7 @@ SelectGroup.prototype.selectItemAtIndex = function (index)
 	// choice at index is not selected, so select it and publish selected event
 	selectedInput.selected = true;
 
-	this.eventManager.publish(this.selectedEventId, {selectKey: d3.select(selectedInput).datum().answerKey});
+	var d = /** @type {!pearson.brix.Answer} */ (d3.select(selectedInput).datum());
+	this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
 };
 
