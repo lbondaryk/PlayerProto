@@ -97,7 +97,7 @@ pearson.utils.IEventManager.dummyEventManager = /** @type {!pearson.utils.IEvent
  *
  * @param {boolean=} publishToBroker	Whether or not to send message to the 
  * 										MessageBroker in the parent window,
- * 										the default is true.
+ * 										the default is false.
  *
  * @classdesc
  * The event manager keeps track of subscribers of a particular topic (event)
@@ -131,7 +131,7 @@ pearson.utils.EventManager = function (publishToBroker)
 	 * @type {boolean}
 	 * @private
 	 */
-	this.publishToBroker_ = (publishToBroker === undefined) ? true : publishToBroker;
+	this.publishToBroker_ = (publishToBroker === undefined) ? false : publishToBroker;
 };
 
 /**
