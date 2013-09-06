@@ -82,17 +82,14 @@
 	<script src="js/widget-barchart.js"></script>
     <script src="js/widget-legend.js"></script>
     <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-numeric.js"></script>
 	-->
     <script src="js/widget-slider.js"></script>
-    <script src="js/widget-numeric.js"></script>
 
 	<script>
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
-	var eventManager = new pearson.utils.EventManager();
-
 	// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
 	var Size = pearson.utils.Size;
 	var SVGContainer = pearson.brix.SVGContainer;
 	var Image = pearson.brix.Image;
@@ -100,12 +97,21 @@
 	var Carousel = pearson.brix.Carousel;
 	var ImageViewer = pearson.brix.ImageViewer;
 	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
 	var MarkerGroup = pearson.brix.MarkerGroup;
 	var BarChart = pearson.brix.BarChart;
 	var LineGraph = pearson.brix.LineGraph;
 	var PieChart = pearson.brix.PieChart;
 	var Legend = pearson.brix.Legend;
-	
+	var Sketch = pearson.brix.Sketch;
+	var Readout = pearson.brix.Readout;
+	var NumericInput = pearson.brix.NumericInput;
+
+	//the eventManager is an object that is specific to this page.  A new one
+	//is created for every page, and then passed to the widgets in that page
+	//that must talk to it.
+	var eventManager = new EventManager();
+
 	//data to start the graph and the sliders
 	var levoData =   [ { x: 35, y: "Levo" } ];
 	var dextroData = [ { x: 65, y: "Dextro" } ];

@@ -2,8 +2,8 @@
  * $Workfile:: widget-numeric.js                                            $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the {@link Readout} and
- *               {@link NumericInput} brix.
+ * @fileoverview Implementation of the {@link pearson.brix.Readout} and
+ *               {@link pearson.brix.NumericInput} brix.
  *
  * [FILL IN SUMMARY DESCRIPTION OF WHAT IS IN THIS FILE]
  * @note the following text was in this file, I don't believe it is really
@@ -66,7 +66,6 @@ pearson.brix.Readout = function (config)
 	this.label = config.label;
 	//if the readout requires a label to be prepended, do so. String value.
 	// Define the ids of the events this widget broadcasts
-	var that = this;
 	var precision = config.precision;
 
 	//<span id="myID" class"dataLabel">numeric readout</span>;
@@ -84,12 +83,12 @@ pearson.brix.Readout = function (config)
 	.property("value",this.startVal)
 	.attr("align","right")
 	.attr("size",size?size:6)
-	.attr("id",that.id)
+	.attr("id",this.id)
 	; */
 	
 	this.rootEl.append("span")
-		.attr("class","dataLabel")
-		.attr("id",that.id)
+		.attr("class", "dataLabel")
+		.attr("id", this.id)
 		.text(this.startVal);
 
 	this.rootEl.append("span").html("&nbsp;" + (this.unit ? this.unit : ""));
@@ -105,7 +104,7 @@ goog.inherits(pearson.brix.Readout, pearson.brix.HtmlBric);
  * @const
  * @type {string}
  */
-pearson.brix.Readout.autoIdPrefix = "readout_";
+pearson.brix.Readout.autoIdPrefix = "readout_auto_";
 
 /* **************************************************************************
  * Readout.setValue                                                    */ /**
@@ -147,9 +146,9 @@ pearson.brix.Readout.prototype.getValue = function ()
  * @extends {pearson.brix.HtmlBric}
  * @export
  *
- * @param {Object}		config			-The settings to configure this Readout
+ * @param {Object}		config			-The settings to configure this NumericInput
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this Readou.
+ * 						config.id		-String to uniquely identify this NumericInput.
  * 										 if undefined a unique id will be assigned.
  * @param {number} 		config.node		-[DESCRIPTION of config parameter needed]
  * @param {number} 		config.startVal	-[DESCRIPTION of config parameter needed]
@@ -188,7 +187,6 @@ pearson.brix.NumericInput = function (config, eventManager)
 	 */
 	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
-	var that = this;
 
 	//this.rootEl = $('<div><input type="number" min="0" max="100" step="5" value="50"    id="numInput_0" class="dataLabel"></div>');
 	this.rootEl = this.node.append("span");
@@ -199,7 +197,7 @@ pearson.brix.NumericInput = function (config, eventManager)
 		.attr("min", minVal)
 		.attr("max", maxVal)
 		.attr("value", this.startVal)
-		.attr("id", that.id)
+		.attr("id", this.id)
 		.attr("class", "dataLabel")
 		;
 
@@ -212,18 +210,19 @@ pearson.brix.NumericInput = function (config, eventManager)
 		//note that jQuery returns an array for selections, the
 		//first element of which is the actual pointer to the
 		//tag in the DOM
-			that.eventManager.publish(that.changedValueEventId,
-							{value: d3.select("#" + that.id)[0][0].value});
+			that.eventManager.publish(this.changedValueEventId,
+							{value: d3.select("#" + this.id)[0][0].value});
 								} );
 
 	// Define private handlers for subscribed events
+	var that = this;
 	function changedValueHandler(eventDetails)
 	{
 		that.setValue(eventDetails.value);
 	}
 
 	// Subscribe to own events, if appropriate
-	eventManager.subscribe(that.changedValueEventId, changedValueHandler);
+	eventManager.subscribe(this.changedValueEventId, changedValueHandler);
 }; //end NumericInput widget
 goog.inherits(pearson.brix.NumericInput, pearson.brix.HtmlBric);
 
