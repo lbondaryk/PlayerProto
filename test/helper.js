@@ -20,6 +20,8 @@
 var helper = (function () {
     var expect = chai.expect;
 
+	var SVGContainer = pearson.brix.SVGContainer;
+
 	/* **************************************************************************
 	 * createNewDiv                                                         *//**
 	 *

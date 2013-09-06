@@ -3,6 +3,9 @@
 (function () {
     var expect = chai.expect;
 
+	var logFormat = pearson.brix.utils.logFormat;
+	var sign = pearson.brix.utils.sign;
+
     describe('Utility functions should be awesome', function () {
         describe('logFormat should do logFormatting', function () {
             it('should produce negative decade tick label -2 from 10^2', function () {

@@ -17,6 +17,9 @@
 (function () {
     var expect = chai.expect;
 
+	var EventManager = pearson.utils.EventManager;
+	var Carousel = pearson.brix.Carousel;
+
     describe('Carousels: when you need more than one', function () {
 		var eventManager = null;
 

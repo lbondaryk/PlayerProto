@@ -17,6 +17,10 @@
 (function () {
     var expect = chai.expect;
 
+	var EventManager = pearson.utils.EventManager;
+	var CheckGroup = pearson.brix.CheckGroup;
+	var SelectGroup = pearson.brix.SelectGroup;
+	var MultiSelectQuestion = pearson.brix.MultiSelectQuestion;
 
     describe('MultiSelectQuestions: choose multiple', function () {
 		var eventManager = null;

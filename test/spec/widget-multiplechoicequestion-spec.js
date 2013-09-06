@@ -17,7 +17,11 @@
 (function () {
     var expect = chai.expect;
 
-	
+	var EventManager = pearson.utils.EventManager;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var RadioGroup = pearson.brix.RadioGroup;
+	var SelectGroup = pearson.brix.SelectGroup;
+	var CheckGroup = pearson.brix.CheckGroup;
 
     describe('MultipleChoiceQuestions: choose one and only one', function () {
 		var eventManager = null;

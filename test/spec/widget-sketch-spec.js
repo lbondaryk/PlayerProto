@@ -4,6 +4,9 @@
 {
     var expect = chai.expect;
 
+	var EventManager = pearson.utils.EventManager;
+	var Sketch = pearson.brix.Sketch;
+
     describe('Sketch widget tests', function ()
 	{
 		var eventManager = null;
