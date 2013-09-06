@@ -44,6 +44,7 @@ declare -a COMPILER_ARGS=(\
 	"--extra_annotation_name=virtual"\
 	"--extra_annotation_name=note"\
 	"--externs=d3.v3.externs.js"\
+	"--externs=jquery-1.8.externs.js"\
 	"--generate_exports"\
 	)
 
@@ -76,6 +77,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=widget-radiogroup.js
 	--input=widget-selectgroup.js
 	--input=widget-sketch.js
+	--input=widget-slider.js
 	--root=.
 	--root=$LIBRARYDIR
 	--output_mode=compiled

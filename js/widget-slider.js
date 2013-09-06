@@ -2,9 +2,9 @@
  * $Workfile:: widget-slider.js                                             $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the slider widget.
+ * @fileoverview Implementation of the slider bric.
  *
- * The slider widget creates a jQuery slider for setting a numerical value
+ * The slider bric creates a jQuery slider for setting a numerical value
  * from a range.
  *
  * Created on		April 15, 2013
@@ -15,6 +15,11 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+goog.provide('pearson.brix.Slider');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.HtmlBric');
 
 // Sample Slider constructor configuration
 (function()
@@ -38,6 +43,8 @@
  * from a range.
  *
  * @constructor
+ * @extends {pearson.brix.HtmlBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this Slider
  * @param {string|undefined}
@@ -54,20 +61,23 @@
  * @param {function(number): string}
  * 						config.format	-{@link https://github.com/mbostock/d3/wiki/Formatting|formatting function}
  * 										 for displaying value in readout
- * @param {EventManager=}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
  * @note: firefox doesn't support HTML5 sliders, they degrade to numeric input
  * fields.
  **************************************************************************/
-function Slider(config, eventManager)
+pearson.brix.Slider = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the slider widget
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, Slider);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Slider);
 
 	// TODO: These all need comments describing what they are. -mjl 5/16/2013
 	this.startVal = config.startVal;
@@ -98,9 +108,9 @@ function Slider(config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager || { publish: function () {}, subscribe: function () {} };
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id (topic) published when the value of this slider changes.
@@ -122,30 +132,32 @@ function Slider(config, eventManager)
 	 */
 	this.lastdrawn =
 		{
-			/* @type {d3.selection} */		container: null,
-			/* @type {Element} */			widgetGroup: null,		
-			/* @type {number} */			value: null,		
+			/** @type {d3.selection} */		container: null,
+			/** @type {Element} */			widgetGroup: null,		
+			/** @type {?number} */			value: null,		
 		};
-} // end of slider constructor
+}; // end of slider constructor
+goog.inherits(pearson.brix.Slider, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of Slider.
  * @const
  * @type {string}
  */
-Slider.autoIdPrefix = "sldr_auto_";
+pearson.brix.Slider.autoIdPrefix = "sldr_auto_";
 
 
 /* **************************************************************************
  * Slider.draw                                                         */ /**
  *
  * The Slider allows the user to set a numeric value over some defined range.
+ * @export
  *
  * @param {!d3.selection}	container	-The DOM element this slider will be
  * 										 created as the last child of.
  *
  ****************************************************************************/
-Slider.prototype.draw = function(container)
+pearson.brix.Slider.prototype.draw = function (container)
 {	
 	this.lastdrawn.container = container;
 
@@ -211,10 +223,11 @@ Slider.prototype.draw = function(container)
  * Slider.getValue                                                     */ /**
  *
  * The getValue method returns the current value of this Slider bric.
+ * @export
  *
  * @return {number} current value of this Slider.
  ****************************************************************************/
-Slider.prototype.getValue = function()
+pearson.brix.Slider.prototype.getValue = function ()
 {
 	// The value held by the jQuery slider may not be the value of this slider
 	// bric because we update during the jQuery's slide event which is before
@@ -229,6 +242,7 @@ Slider.prototype.getValue = function()
  *
  * The setValue method sets the value of this Slider bric.
  * This does NOT fire the changedValue event.
+ * @export
  *
  * @note: should it fire the changedValue event? -mjl
  *
@@ -236,7 +250,7 @@ Slider.prototype.getValue = function()
  *
  * @return {number} old value of this Slider before it was set to the new value.
  ****************************************************************************/
-Slider.prototype.setValue = function(newValue)
+pearson.brix.Slider.prototype.setValue = function (newValue)
 {
 	var oldValue = this.lastdrawn.value;
 
@@ -253,20 +267,3 @@ Slider.prototype.setValue = function(newValue)
 	return oldValue;
 };
 
-/* **************************************************************************
- * Slider.selectedValue                                             */ /**
- *
- * Return the selectedValue of the slider.  If, in future, we wish to make a slider
- * carry data or an expression associated with it's set value, this might
- * be a place to hang it, to be parallel to the way multiple choice radio
- * buttons work.
- *
- * @return {Object} the radio group data corresponding to the choice 
- * which is currently selected or null.
- *
- ****************************************************************************/
-Slider.prototype.selectedItem = function ()
-{
-	var selectedValue = this.getValue();
-	return selectedValue;
-};
