@@ -77,7 +77,7 @@ var bookConfig = {
                 type: "objective",
                 url: "labelCalloutTests.html",
                 id: "n.2.5",
-                title: "Label and Callout Tests"
+                title: "Label and Marker Tests"
             },
             {
                 type: "objective",
