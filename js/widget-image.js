@@ -482,10 +482,10 @@ pearson.brix.CaptionedImage = function (config, eventManager)
 	 * A unique id for this instance of the captioned image widget
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CaptionedImage);
+	this.captioned_id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CaptionedImage);
 
 	// call the base class constructor
-	config.id = config.id + '_base';
+	config.id = this.captioned_id + '_base';
 	goog.base(this, config, eventManager);
 
 	/**
@@ -548,7 +548,7 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 	// make a group to hold the image
 	var widgetGroup = container.append("g")
 		.attr("class", "widgetCaptionedImage")
-		.attr("id", this.id);
+		.attr("id", this.captioned_id);
 
 	var captionSize = {height: 40, width: size.width};
 	var imageSize = {height: size.height - captionSize.height, width: size.width};
