@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="Author" content="Leslie Bondaryk" />
@@ -9,60 +8,81 @@
 	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
 	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
 	<meta content="Carmen Santiago, Demo Book" name="description" />
-
-    <!-- Bootstrap -->
-    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/widgets.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
-	<link href="css/grey-thing.css" rel="stylesheet">
 	<title class="setTitle"></title>
-</head>
 
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
 <body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span12 leftCol">
-            	<h2 class="setTitle"></h2>
-              	<p>Ocean temperature grows colder with depth.  Here are heat maps showing the distribution of ocean water temperatures across the globe at four depths, alongside images showing the salinity and the oxygen concentration at the ocean surface. Answer the questions about the variations across the globe.
-              	</p>
-				<div id="selectEvents"></div>
-				<div id="oceanTemp"></div>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_minorMajor lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			 
+              			<p>Ocean temperature grows colder with depth.  Here are heat maps showing the distribution of ocean water temperatures across the globe at four depths, alongside images showing the salinity and the oxygen concentration at the ocean surface. Answer the questions about the variations across the globe.
+              			</p>
+						<div id="selectEvents"></div>
+						<div id="oceanTemp"></div>
+					
+				</div>
+			</section>
+
+		<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 	<div class="lc_ec_content">
+       	 		<h2 class="lc_ec_bHead">Questions
+				</h2>
+		 		<div class="lc_ec_leading">
+					<div id="qCwarmE"></div>
+					<div id="qBwarmA"></div>
+				</div>
+				<div class="lc_ec_trailing">
+					<div id="qBsaltyA"></div>
+					<div id="qEfresh"></div>
+					<div id="qCoxyE"></div>
+				</div>
 			</div>
-		</div>
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-				<div id="qCwarmE"></div>
-				<div id="qBwarmA"></div>
-			</div>
-			<div class="span6 rightCol">
-				<div id="qBsaltyA"></div>
-				<div id="qEfresh"></div>
-				<div id="qCoxyE"></div>
-			</div>
-		</div>
-		<div class="row-fluid">
-			<div class="span6 leftCol">
+		</section>
+
+		<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 	<div class="lc_ec_content">
+       	 		<h2 class="lc_ec_bHead">Property relationships
+				</h2>
+				<div class="lc_ec_leading">
 				<p>The ocean has a variety of properties that allow us to interrogate climate change, physical oceanography, and other phenomena.  Some of these properties drive and affect others, and some are reflective of regional differences.
 				Select any letter marker on the map to see it's related data. Use these explorations to answer the question about the data.
-			</p>
+				</p>
 				<div id="earth"></div>
-			</div>
-			<div class="span6 rightCol">
+				</div>
+				<div class="lc_ec_trailing">
 				<div id="graphs"></div>
+				</div>
 			</div>
-		</div>
+		</section>
+	</div>
 	</div>
 	
-	
-    <script src="js/jquery-latest.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<!-- script src="js/jquery.touchSwipe.min.js"></script-->
-	<script src="js/jquery-ui-1.10.2.custom.js"></script>
-	<script src="js/toc-structure.js"></script>    
-	<script src="js/eCourse-master.js"></script>    
+   <script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
+	<script src="js/brixlib-compiled.js"></script>
+
+	<!--
 	<script src="js/widget-base.js"></script>
 	<script src="js/widget-linegraph.js"></script>
     <script src="js/widget-labelgroup.js"></script>
@@ -82,8 +102,35 @@
 	<script src="js/submitmanager.js"></script>
 	<script src="js/answerman.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
+	!-->
 
 	<script>
+// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SubmitManager = pearson.brix.SubmitManager;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var RadioGroup = pearson.brix.RadioGroup;
+	var CheckGroup = pearson.brix.CheckGroup;
+	var SelectGroup = pearson.brix.SelectGroup;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+	var Sketch = pearson.brix.Sketch;
+	var Readout = pearson.brix.Readout;
+	var NumericInput = pearson.brix.NumericInput;
+	var Slider = pearson.brix.Slider;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var NumericQuestion = pearson.brix.NumericQuestion;
 
 	//the eventManager and submitManager are created for every page for Brix on that page
 	var eventManager = new EventManager();
@@ -118,7 +165,7 @@
 		
 	profiles.draw(d3.select("#selectEvents"));
 							
-var svg3D = new SVGContainer({
+var svgmaps = new SVGContainer({
 		node: d3.select("#oceanTemp"),
 		maxWid: 1000,
 		maxHt: 475
@@ -150,7 +197,7 @@ var layers = new ImageViewer({
 			],
 	}, eventManager);
 
-svg3D.append(layers, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.6});
+svgmaps.append(layers, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.6});
 							
 var labels1 = new LabelGroup(
 		{type: "latin-upper",
@@ -169,28 +216,22 @@ var labels1 = new LabelGroup(
 	layers.image.append(labels1);
 
 var salImage = new CaptionedImage ({
-			image: new Image({
 				URI: 'img/oceans/oceanSalinity.png',
 				caption: "Ocean Salinity at 0 m (surface)",
-				actualSize: {height: 530, width: 930}
-				}),
-			captionPosition: "below"
-		}
-	)
+				actualSize: {height: 530, width: 930},
+				captionPosition: "below"
+			});
 
 var oxyImage = new CaptionedImage ({
-			image: new Image({
 				URI: 'img/oceans/oceanOxygen.png',
 				caption: "Ocean Oxygen Concentration at 0 m (surface)",
-				actualSize: {height: 530, width: 930}
-				}),
-			captionPosition: "below"
-		}
-	)
+				actualSize: {height: 530, width: 930},
+				captionPosition: "below"
+		});
 
-svg3D.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+svgmaps.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
 
-svg3D.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+svgmaps.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
 
 
 eventManager.subscribe(profiles.selectedEventId, carouselUpdate);

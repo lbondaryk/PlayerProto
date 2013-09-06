@@ -221,18 +221,7 @@ var bookConfig = {
                 id: "n.4.2",
                 title: "Labeling Assessment Tests"
             },
-            {
-                type: "objective",
-                url: "hotSpotTests.html",
-                id: "n.4.3",
-                title: "Hot Spot Assessment Tests"
-            },
-			  {
-                type: "objective",
-                url: "submitTests.html",
-                id: "n.4.4",
-                title: "Submit Tests"
-            },
+           
             ]
         },
         ]
