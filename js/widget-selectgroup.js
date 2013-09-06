@@ -110,7 +110,7 @@ function SelectGroup(config, eventManager)
 	 * A unique id for this instance of the radio group widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, SelectGroup);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, SelectGroup);
 
 	/**
 	 * The list of choices presented by the RadioGroup.

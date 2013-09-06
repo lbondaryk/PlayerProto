@@ -40,7 +40,7 @@
 
 
 /* **************************************************************************
- * numericquestion                                              */ /**
+ * NumericQuestion                                                     */ /**
  *
  * Constructor function for numericquestion brix.
  *
@@ -79,7 +79,7 @@ function NumericQuestion(config, eventManager)
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, NumericQuestion);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, NumericQuestion);
 
 	/**
 	 * The scoring engine id of this question.
@@ -120,7 +120,7 @@ function NumericQuestion(config, eventManager)
 	 * for scoring.
 	 * @type {IWidget}
 	 */
-	this.submitButton = new Button(submitBtnConfig, eventManager);
+	this.submitButton = new pearson.brix.Button(submitBtnConfig, eventManager);
 
 	/**
 	 * List of responses that have been received for all submitted
