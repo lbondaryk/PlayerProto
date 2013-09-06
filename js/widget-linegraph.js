@@ -134,7 +134,7 @@ pearson.brix.LineGraph = function (config, eventManager)
 	 * The event manager to use to publish (and subscribe to) events for this bric
 	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id published when a row in this group is selected.

@@ -83,6 +83,9 @@ goog.require('pearson.brix.HtmlBric');
  ****************************************************************************/
 pearson.brix.NumericQuestion = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
@@ -188,7 +191,8 @@ pearson.brix.NumericQuestion = function (config, eventManager)
 			container: null,
 			widgetGroup: null,
 		};
-} // end of numericquestion constructor
+}; // end of numericquestion constructor
+goog.inherits(pearson.brix.NumericQuestion, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of numericquestion.
@@ -198,7 +202,7 @@ pearson.brix.NumericQuestion = function (config, eventManager)
 pearson.brix.NumericQuestion.autoIdPrefix = "numQ_auto_";
 
 /* **************************************************************************
- * numericquestion.handleSubmitRequested_                       */ /**
+ * numericquestion.handleSubmitRequested_                              */ /**
  *
  * Handle the pressed event from the submit button which means that we want
  * to fire the submit answer requested event.
@@ -221,7 +225,7 @@ pearson.brix.NumericQuestion.prototype.handleSubmitRequested_ = function ()
 };
 
 /* **************************************************************************
- * numericquestion.handleAnswerSelected_                        */ /**
+ * numericquestion.handleAnswerSelected_                               */ /**
  *
  * Handle the selected event from the choice widget which means that the
  * submit button can be enabled.
@@ -238,10 +242,10 @@ pearson.brix.NumericQuestion.prototype.handleAnswerSelected_ = function ()
  * numericquestion.handleSubmitResponse_                               */ /**
  *
  * Handle the response to submitting an answer.
+ * @private
  *
  * @param {Object}	responseDetails	-An object containing details about how
  * 									 the submitted answer was scored.
- * @private
  *
  ****************************************************************************/
 pearson.brix.NumericQuestion.prototype.handleSubmitResponse_ = function (responseDetails)
@@ -258,6 +262,7 @@ pearson.brix.NumericQuestion.prototype.handleSubmitResponse_ = function (respons
  * numericquestion.draw                                                */ /**
  *
  * Draw this numericquestion in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the
@@ -315,6 +320,7 @@ pearson.brix.NumericQuestion.prototype.draw = function (container)
  *
  * Return the selected choice from the choice widget or null if nothing has been
  * selected.
+ * @export
  *
  * @return {Object} the choice which is currently selected or null.
  *
@@ -331,6 +337,7 @@ pearson.brix.NumericQuestion.prototype.selectedItem = function ()
  * already selected, do nothing. The index is the displayed choice index and
  * not the config choice index (in other words if the choices have been randomized
  * then the configuration index is NOT the displayed index).
+ * @export
  *
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
