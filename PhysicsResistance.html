@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="Author" content="Leslie Bondaryk" />
@@ -9,22 +8,29 @@
 	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
 	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
 	<meta content="Carmen Santiago, Demo Book" name="description" />
-
-    <!-- Bootstrap -->
-    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/widgets.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
-	<link href="css/grey-thing.css" rel="stylesheet">
 	<title class="setTitle"></title>
-</head>
 
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
 <body>
-	
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-            	<h2 class="setTitle"></h2>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
               	<p><b>Resistivity</b> is an electrical material property that specifies how difficult it is to pass current through the material. Every material has its own characteristic resistivity – for example, rubber's resistivity is far larger than copper's. </p>
             	<p>You can think of passing current through a low-resistivity material as pushing water through an empty pipe. Nothing impedes the water. In reality, it's actually the presence rather than abscence of free electrons to pass along the charge that lowers the resistivity. </p>
             	<p>Resistivity is different from <b>resistance</b>, which is dependent on length and cross section of the physical object. A long, thin copper wire has a much larger resistance than a thick, short copper wire.  </p>
@@ -32,7 +38,7 @@
 				<div id="resCross"></div>
 				<div id="resLength"></div>
              </div>
-			<div class="span6 rightCol">
+			<div class="lc_ec_trailing">
          	    <div id="sliders">
                 	<div id="rhoSlider"></div> 
                     <div id="LSlider"></div> 
@@ -51,17 +57,20 @@
 				<div id="diagram"></div>
 			</div>
 		</div>
-	</div>
+	</section>
+</div>
+</div>
 
-	
-    <script src="js/jquery-latest.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<!-- script src="js/jquery.touchSwipe.min.js"></script-->
-	<script src="js/jquery-ui-1.10.2.custom.js"></script>
-	<script src="js/toc-structure.js"></script>    
-	<script src="js/eCourse-master.js"></script>    
+		<script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
+	<script src="js/brixlib-compiled.js"></script>
+
+	<!--
 	<script src="js/widget-base.js"></script>
 	<script src="js/widget-linegraph.js"></script>
     <script src="js/widget-slider.js"></script>
@@ -75,8 +84,27 @@
 	<script src="js/submitmanager.js"></script>
 	<script src="js/answerman.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
+	!-->
 
 	<script>
+
+	// local aliases for convenience
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LineGraph = pearson.brix.LineGraph;
+	var Slider = pearson.brix.Slider;
+	var Readout = pearson.brix.Readout;
+	var Sketch = pearson.brix.Sketch;
+	var EventManager = pearson.utils.EventManager;
+	var SubmitManager = pearson.brix.SubmitManager;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var SelectGroup = pearson.brix.SelectGroup;
+
 	var eventManager = new EventManager();
 	var submitManager = new SubmitManager(eventManager);
 
