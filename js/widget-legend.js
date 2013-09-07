@@ -2,7 +2,7 @@
  * $Workfile:: widget-legend.js                                             $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the {@link Legend} bric.
+ * @fileoverview Implementation of the {@link pearson.brix.Legend} bric.
  *
  * The Legend widget provides a line or box graph with the standard
  * fill color sequence and labels.
@@ -14,6 +14,11 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+goog.provide('pearson.brix.legend');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.SvgBric');
 
 // Sample BarChart constructor configuration
 (function()
@@ -33,17 +38,24 @@
  * Constructor function for a Legend bric.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.SvgBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this widget
- * @param {string}		config.id		-String to uniquely identify this widget
- * @param {Array}		config.labels	-strings for each label
+ * @param {string|undefined}
+ * 						config.id		-String to uniquely identify this Legend.
+ * 										 if undefined a unique id will be assigned.
+ * @param {Array.<string>}
+ * 						config.labels	-strings for each label
  * @param {string}		config.type		-"box", or anything else (ignored) produces lines
  * @param {string}		config.xPos		-horizontal position in axes: "left" or "right"
  * @param {string}		config.yPos 	-vertical position in axes: "top" or "bottom"
- * @param {Array}		config.key		-strings to specify highlighting relationship
+ * @param {Array.<string>}
+ * 						config.key		-strings to specify highlighting relationship
  *										 to other widgets
- * @param {EventManager=} eventManager	-allows the object to emit events
+ * @param {!pearson.utils.IEventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them.
  *
  * @classdesc
  * The Legend widget makes a legend for any series of labels. Should be callable
@@ -54,15 +66,19 @@
  * the box around it based on that.  Eventually might have to resize or rescale
  * axes to make room for this, but for now position it in one corner of axes.
  * @todo: need to add symbols for scatter plots, including custom images
+ * @todo legends must be selectable to highlight related graph elements for accessibility
+ *       we will eventually have to figure out how to do this with they keyboard too -lb
  **************************************************************************/
-
-function Legend(config, eventManager)
+pearson.brix.Legend = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, Legend);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Legend);
 
 	/**
 	 * Array of strings for the labels, one per row 
@@ -79,10 +95,38 @@ function Legend(config, eventManager)
 	 * @type {string}
 	 */
 	this.type = config.type;
+
+	/**
+	 * @todo DOCUMENT ME! -leslie this needs to be described -mjl
+	 * @type {string}
+	 */
 	this.xPos = config.xPos;
+
+	/**
+	 * @todo DOCUMENT ME! -leslie this needs to be described -mjl
+	 * @type {string}
+	 */
 	this.yPos = config.yPos;
+
+	/**
+	 * @todo DOCUMENT ME! -leslie this needs to be described -mjl
+	 * @type {string}
+	 */
 	this.key = config.key;
 	
+	/**
+	 * The event manager to use to publish (and subscribe to) events for this widget
+	 * @type {!pearson.utils.IEventManager}
+	 */
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
+
+	/**
+	 * The event id published when a row in this group is selected.
+	 * @const
+	 * @type {string}
+	 */
+	this.selectedEventId = this.id + '_legendSelected';
+
 	/**
 	 * Information about the last drawn instance of this widget (from the draw method)
 	 * @type {Object}
@@ -95,31 +139,32 @@ function Legend(config, eventManager)
 			legendRows: null,
 		};
 		
-	//legends must be selectable to highlight related graph elements for accessibility
-	//we will eventually have to figure out how to do this with they keyboard too -lb
-	this.eventManager = eventManager;
-	/**
-	 * The event id published when a row in this group is selected.
-	 * @const
-	 * @type {string}
-	 */
+}; // end of Legend constructor
+goog.inherits(pearson.brix.Legend, pearson.brix.SvgBric);
 
-	this.selectedEventId = this.id + '_legendSelected';
-} // end of Legend constructor
+/**
+ * Prefix to use when generating ids for instances of Legend.
+ * @const
+ * @type {string}
+ */
+pearson.brix.Legend.autoIdPrefix = "lgnd_auto_";
 
 
 /* **************************************************************************
  * Legend.draw                                                         */ /**
  *
- * The LineGraph widget provides a line (or scatter) graph visualization
- * of sets of data points.
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this Legend in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the graph element tree to.
- * @param {Size}	size		-The height and width in pixels for the graph
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-Legend.prototype.draw = function (container, size)
+pearson.brix.Legend.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -176,32 +221,31 @@ Legend.prototype.draw = function (container, size)
 	.attr("width", this.boxWid).attr("height", boxHeight) //lineheight+padding x rows
 	.attr("class", "legendBox");
 	
-	
-
 	// Draw the data (each marker line and label)
 	this.drawData_();
 
 }; //end of Legend.draw
 
 /* **************************************************************************
- * Legend.redraw                                                         */ /**
+ * Legend.redraw                                                       */ /**
  *
  * Redraws in the event of a change or data update.
- *
+ * @export
  *
  ****************************************************************************/
-Legend.prototype.redraw = function ()
+pearson.brix.Legend.prototype.redraw = function ()
 {
 	this.drawData_();
-} //end of Legend.redraw
+};
+
 /* **************************************************************************
- * Legend.redraw                                                         */ /**
+ * Legend.drawData_                                                    */ /**
  *
  * Redraws in the event of a change or data update.
- *
+ * @private
  *
  ****************************************************************************/
-Legend.prototype.drawData_ = function ()
+pearson.brix.Legend.prototype.drawData_ = function ()
 {
 	var boxLength = 15, //attractive length for the colored lines or boxes
 		inset = 10;//attractive spacing from edge of axes boxes (innerWid/Ht)
@@ -210,70 +254,90 @@ Legend.prototype.drawData_ = function ()
 
 	//take the number of rows from the number of labels
 	var rowCt = this.labels.length;
+
+	// determine the element name needed based on the type of legend
+	var typeMarkerElementName = this.type == "box" ? "rect" : "line";
+
 	//this selects all <g> elements with class legend  
 	var legendRows = this.legendBox.selectAll("g.legend")
-	.data(this.labels); //associate the data to create stacked slices
+		.data(this.labels); //associate the data to create stacked slices
 	
 	// get rid of any rows without data
 	legendRows.exit().remove();
 	
-	legendRows.enter() //this will create <g> elements for every data element
-	.append("g") //create groups
-		.attr("class","legends")
-	//each row contains a colored marker and a label.  They are spaced according to the
-	//vertical size of the markers plus a little padding, 4px in this case
-	//counting up from the bottom, make a group for each series and move to stacked position
-		.attr("transform", function(d, i) {
-			return "translate(0," + (rowCt - i - 1) * (boxLength+4) + ")";
-	});
-	
-	
-	// autokey entries which have no key with the data index
-	legendRows.each(function (d, i) { 
-					//if there is no key assigned, make one from the index
-					d.key = 'key' in d ? d.key : i.toString();
-					});
+	// Create new rows with the correct element structure
+	var enterRows = legendRows.enter() //this will create <g> elements for every data element
+		.append("g") //create groups
+			.attr("class", "legend");
 
-	if (this.type == "box") {
-		legendRows.append("rect")
-		.attr("x", 0).attr("y", 0)
-		//make the rectangle a square with width and height set to boxLength
-		.attr("width", boxLength)
-		.attr("height", boxLength)
-		.attr("class", function(d, i) {
-			return "fill" + i;
-		});
-	} else {
-		legendRows.append("line") //add a line to each slice
-		.attr("class", function(d, i) {
-			return "traces stroke" + i;
-		}).attr("x1", 0) //start at the left edge of box
-		.attr("x2", boxLength) //set line width
-		.attr("y1", boxLength / 2).attr("y2", boxLength / 2);
-	}
-
-	legendRows.append("text") //this is native svg text, it doesn't wrap
-	.attr("text-anchor", "start") //left align text
-	.attr("class", "legendLabel").attr("dx", boxLength + 4)
-	//offset text to the right beyond marker by 4 px
-	.attr("dy", boxLength/2 ) 
-	//offset text down so it winds up in the middle of the marker
-	.attr("alignment-baseline","central")
-	//and put the vertical center of the text on that midline
-	.text(function(d, i) {
-		return d.content; //get the label from legend array
-	});
-	
-	legendRows.on('click',
+	enterRows.append(typeMarkerElementName);
+	enterRows.append("text");
+	enterRows.on('click',
 				function (d, i)
 				{
 					that.eventManager.publish(that.selectedEventId, {selectKey:d.key});
 				});
 
+	
+	// Update the row elements to match the current data
+
+	// autokey entries which have no key with the data index
+	legendRows.each(function (d, i) { 
+						//if there is no key assigned, make one from the index
+						d.key = 'key' in d ? d.key : i.toString();
+					});
+
+	//each row contains a colored marker and a label.  They are spaced according to the
+	//vertical size of the markers plus a little padding, 4px in this case
+	//counting up from the bottom, make a group for each series and move to stacked position
+	legendRows
+		.attr("transform", function(d, i) {
+					return "translate(0," + (rowCt - i - 1) * (boxLength+4) + ")";
+				});
+
+	if (this.type == "box")
+	{
+		var rowBoxes = legendRows.select("rect");
+		rowBoxes
+			.attr("x", 0)
+			.attr("y", 0)
+			//make the rectangle a square with width and height set to boxLength
+			.attr("width", boxLength)
+			.attr("height", boxLength)
+			.attr("class", function(d, i) {
+					return "fill" + i;
+				});
+	}
+	else
+	{
+		var rowLines = legendRows.select("line");
+		rowLines
+			.attr("class", function(d, i) {
+					return "traces stroke" + i;
+				})
+			.attr("x1", 0) //start at the left edge of box
+			.attr("x2", boxLength) //set line width
+			.attr("y1", boxLength / 2)
+			.attr("y2", boxLength / 2);
+	}
+
+	var rowText = legendRows.select("text");
+	rowText
+		.attr("text-anchor", "start") //left align text
+		.attr("class", "legendLabel")
+		.attr("dx", boxLength + 4)
+		//offset text to the right beyond marker by 4 px
+		.attr("dy", boxLength/2 ) 
+		//offset text down so it winds up in the middle of the marker
+		.attr("alignment-baseline", "central")
+		//and put the vertical center of the text on that midline
+		.text(function(d, i) {
+				return d.content; //get the label from legend array
+			});
+	
 	this.lastdrawn.legendRows = this.legendBox.selectAll("g.legend");
 
-
-} //end of Legend.redraw
+}; //end of Legend.drawData_
 
 /* **************************************************************************
  * Legend.setScale                                                     */ /**
@@ -292,7 +356,7 @@ Legend.prototype.drawData_ = function ()
  *								 to the pixel offset into the data area.
  *
  ****************************************************************************/
-Legend.prototype.setScale = function (xScale, yScale)
+pearson.brix.Legend.prototype.setScale = function (xScale, yScale)
 {
 };
 
@@ -305,10 +369,10 @@ Legend.prototype.setScale = function (xScale, yScale)
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-Legend.prototype.lite = function(liteKey)
+pearson.brix.Legend.prototype.lite = function (liteKey)
 {
 	
-	console.log("TODO: log fired Legend highlite " + liteKey);
+	window.console.log("TODO: log fired Legend highlite " + liteKey);
 	
 	// Turn off all current highlights
 	var allRows = this.lastdrawn.legendRows;
@@ -331,8 +395,7 @@ Legend.prototype.lite = function(liteKey)
 
 	if (rowsToLite.empty())
 	{
-		console.log("No key '" + liteKey + "' in legend " + this.id );
+		window.console.log("No key '" + liteKey + "' in legend " + this.id );
 	}
-
 };
 

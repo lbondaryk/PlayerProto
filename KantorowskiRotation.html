@@ -66,24 +66,63 @@
 	<script src="js/eCourse-master.js"></script>    
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/widget-base.js"></script>
-	<script src="js/widget-barchart.js"></script>
-    <script src="js/widget-slider.js"></script>
-    <script src="js/widget-numeric.js"></script>
-    <script src="js/widget-markergroup.js"></script>
-    <script src="js/widget-piechart.js"></script>
-    <script src="js/widget-legend.js"></script>
+	<script src="js/brixlib-compiled.js"></script>
+	<!--
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
 	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/widget-base.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+	-->
 
 	<script>
-
-
+	// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+	var Sketch = pearson.brix.Sketch;
+	var Readout = pearson.brix.Readout;
+	var NumericInput = pearson.brix.NumericInput;
+	var Slider = pearson.brix.Slider;
 
 	//the eventManager is an object that is specific to this page.  A new one
 	//is created for every page, and then passed to the widgets in that page
 	//that must talk to it.
 	var eventManager = new EventManager();
-	
+
 	//data to start the graph and the sliders
 	var levoData =   [ { x: 35, y: "Levo" } ];
 	var dextroData = [ { x: 65, y: "Dextro" } ];
@@ -294,7 +333,7 @@
 	function updatePieChart(diff)
 	{
 		console.log("TODO: fired updatePieChart log");
-		anglePie.data = [{x: d3.format("4.2f")(sl1.startVal * diff/360), y: "Rotation"}];
+		anglePie.data = [{x: d3.format("4.2f")(sl1.getValue() * diff/360), y: "Rotation"}];
 		
 		var newMark = {x:(1/2), label: d3.format("+0r2")(sl1.getValue() * diff/100) + "&deg;"};
 		angleMark.marks = [newMark];

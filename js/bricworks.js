@@ -13,6 +13,10 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.BrixWorks');
+
+goog.require('pearson.utils.IEventManager');
+
 /* **************************************************************************
  * BricWorks                                                           */ /**
  *
@@ -20,8 +24,8 @@
  *
  * @constructor
  *
- * @param {Object}		config			-The settings to configure this RadioGroup
- * @param {EventManager=}
+ * @param {Object}		config			-The settings to configure this BrixWorks.
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -30,23 +34,24 @@
  * been registered with the BricWorks.
  *
  ****************************************************************************/
-function BricWorks(config, eventManager)
+pearson.brix.BricWorks = function (config, eventManager)
 {
 	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * The event manager to use to publish (and subscribe to) events for the
+	 * created brix.
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager || { publish: function () {}, subscribe: function () {} };
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The bricCatalogue is the reference to all of the brix that this BricWorks
 	 * can manufacture.
-	 * @type {Object.<string, function(Object, EventManager)>}
+	 * @type {Object.<string, function(Object, !pearson.utils.IEventManager=)>}
 	 * @private
 	 */
 	this.bricCatalogue_ = {};
 
-} // end of BricWorks constructor
+}; // end of BricWorks constructor
 
 /* **************************************************************************
  * BricWorks.registerMold                                              */ /**
@@ -54,11 +59,17 @@ function BricWorks(config, eventManager)
  * Register the mold (constructor) used to create a bric.
  *
  * @param {string}	bricName	-The name of the bric that the given mold creates.
- * @param {function(Object, EventManager)}
+ * @param {function(Object, !pearson.utils.IEventManager=)}
  * 					bricMold	-A function which creates the named bric.
  *
+ * @note This is currently set up for a bricMold to be a constructor. I'm
+ *       not sure that's a good idea, and even if it is I'm not sure how
+ *       to annotate it for closure.
+ *       The initial idea that each file defining a bric would access the
+ *       singleton BricWorks and register its mold isn't good since we
+ *       aren't going put code to get executed on load in the various files. -mjl
  ****************************************************************************/
-BricWorks.prototype.registerMold = function (bricName, bricMold)
+pearson.brix.BricWorks.prototype.registerMold = function (bricName, bricMold)
 {
 	this.bricCatalogue_[bricName] = bricMold;
 
@@ -71,10 +82,10 @@ BricWorks.prototype.registerMold = function (bricName, bricMold)
  *
  * @param {string}	bricName	-The name of the bric desired.
  * @param {Object}	config		-The configuration for the specified bric.
- * @return {Object} the radio group choice which is currently selected or null.
+ * @returns {pearson.brix.Bric} the newly created Bric.
  *
  ****************************************************************************/
-BricWorks.prototype.createBric = function (bricName, config)
+pearson.brix.BricWorks.prototype.createBric = function (bricName, config)
 {
 	var bricMold = this.bricCatalogue_[bricName];
 

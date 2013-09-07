@@ -5,6 +5,9 @@
 (function () {
     var expect = chai.expect;
 
+	var EventManager = pearson.utils.EventManager;
+	var BarChart = pearson.brix.BarChart;
+
     describe('Barcharts should be super awesome', function () {
 		var eventManager = null;
 

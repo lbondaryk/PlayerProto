@@ -17,6 +17,9 @@
 (function () {
     var expect = chai.expect;
 
+	var EventManager = pearson.utils.EventManager;
+	var Button = pearson.brix.Button;
+
 	var expectElementTree = function expectElementTree(topElement, treeDescr)
 	{
 		expectElement(topElement, treeDescr);

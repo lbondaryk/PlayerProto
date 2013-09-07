@@ -1,61 +1,92 @@
 <!DOCTYPE html>
 <html>
-    <head>
- 	<title class="setTitle"></title>
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-	<meta content="eCourses Author, Title" name="description">
-    <!-- Bootstrap -->
-    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/widgets.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
- 	<link href="css/widgets.css" rel="stylesheet">
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
 
-    </head>
-	<body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-                <h2 class="setTitle"></h2>
-				<div id="widgetTarget0"><p>0. Single image</p></div>
-				<div id="widgetTarget1n"><p>1. Multiple images in 2 Carousels the top one gets lite events, the bottom isn't subscribed, but does get clicks. In top, 3rd and 5th have same key.</p></div>
-				<div id="widgetTarget2n"><p>2n. Image with graph overlay on local coordinate system (set by data in graph)</p></div>
-				<div id="widgetTarget2"><p>2. Image with graph overlay on local coordinate system (set by data in graph)</p></div>
-				
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+						<div id="widgetTarget0"><p>0. Single image</p></div>
+						<div id="widgetTarget1n"><p>1. Multiple images in 2 Carousels the top one gets lite events, the bottom isn't subscribed, but does get clicks. In top, 3rd and 5th have same key.</p></div>
+						<div id="widgetTarget2n"><p>2. Image with graph overlay on local coordinate system (set by data in graph)</p></div>
+				</div>
+				<div class="lc_ec_trailing">
+					<div id="widgetTarget50"><p>3. Three scaled images in grid</p></div>
+					<div id="widgetTarget1bn"><p>4. ImageViewer widget (carousel and image viewer and caption combined) and associated callouts. ImageViewer can also be controlled with a slider.</p>
+						<span id="slider1"></span>
+                	</div>
+                	<div id="calls"></div>
+				</div>
 			</div>
-			<div class="span6 rightCol">
-				<div id="widgetTarget50"><p>3. Three scaled images in grid</p></div>
-				<div id="widgetTarget1bn"><p>4. ImageViewer widget (carousel and image viewer and caption combined) and associated callouts. ImageViewer can also be controlled with a slider.</p>
-				<span id="slider1"></span>
-                </div>
-                <div id="calls"></div>
-			</div>
-		</div>
+		</section>
 	</div>
-    <script src="js/jquery-latest.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<!-- <script src="js/jquery.touchSwipe.min.js"></script> -->
-	<script src="js/jquery-ui-1.10.2.custom.js"></script>
-	<script src="js/toc-structure.js"></script>    
-	<script src="js/eCourse-master.js"></script>    
+</div>
+      
+	<script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/widgets.js"></script>
+	<script src="js/brixlib-compiled.js"></script>
+
+	<!--
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
 	<script src="js/eventmanager.js"></script>
 	<script src="js/widget-base.js"></script>
-	<script src="js/widget-linegraph.js"></script>
-	<script src="js/widget-labelgroup.js"></script>
-    <script src="js/widget-callouts.js"></script>
     <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
     <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-numeric.js"></script>
+	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-slider.js"></script>
-	<script src="js/widget-numeric.js"></script>
+	-->
+	
+	
 
 <script>
-	var eventManager = new EventManager();
+	var eventManager = new pearson.utils.EventManager();
 
+	// local aliases for convenience
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LineGraph = pearson.brix.LineGraph;
+	var Slider = pearson.brix.Slider;
+	
 	var lineData = [
 		{	x: 0,	y: -3.1},
 		{	x: 2,	y: -2.02},
@@ -74,28 +105,22 @@
 		]; // array of line data
 		
 	
-	//<div id="widgetTarget0"><p>0. Single bar graph</p></div>
-
-	var imgConfig0 =
-		{
-			id: "img0n",
-			URI: 'img/ch4_1.jpg',
-			caption: "The Whitewater-Baldy Complex wildfire.",
-			actualSize: {height: 960, width: 1280}
-		};
+//<div id="widgetTarget0"><p>0. Single image</p></div>
 
 	var cimgConfig0 =
 		{
-			id: "cimg0n",
-			image: new Image(imgConfig0),
+			//id: "cimg0n",
+			URI: 'img/ch4_1.jpg',
+			caption: "The Whitewater-Baldy Complex wildfire.",
+			//actualSize: {height: 960, width: 1280}
 //			captionPosition: "below"
 		};
 		
-	var cntrSize = Size.matchRatioWithHeight(450 - 40, cimgConfig0.image.actualSize);
+	var cntrSize = Size.matchRatioWithHeight(450 - 40, {height: 960, width: 1280});
 	var cntrConfig0 = 
 		{
 			node: d3.select("#widgetTarget0"),
-			maxSize: Size.matchRatioWithHeight(450 - 40, imgConfig0.actualSize),
+			maxSize: Size.matchRatioWithHeight(450 - 40, {height: 960, width: 1280}),
 			maxWid: cntrSize.width, //550,
 			maxHt: 450
 		};
@@ -103,7 +128,7 @@
 	var cntr0 = new SVGContainer(cntrConfig0);
 	var cimg0 = new CaptionedImage(cimgConfig0);
 	
-	cntr0.append(cimg0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 1});
+	cntr0.append(cimg0);
 	
 //	<div id="widgetTarget1"><p>1. Multiple images with autoCarousel</p></div>
 	var imgConfig1 =
@@ -313,41 +338,6 @@
 	lg5.append(img5, "before");
 	var cntr5 = new SVGContainer(cntrConfig5);
 	cntr5.append(lg5);
-	
-	// The old broken test drawing an image under the graph data
-	var svg2 = new MakeSVGContainer(
-		{node: d3.select("#widgetTarget2"),
-		maxWid: 500,
-		maxHt: 400
-		}
-	);
-	svg2.Axes({
-		id: 2,
-		xPosPerc: 0, yPosPerc:0, //top, left corner
-		xPerc: 1, yPerc: 1,//full height and width
-		Data: [lineData],
-		xaxisType: "linear",
-		xTicks: 5,
-		xOrient: "bottom",
-		xLabel: "distance",
-		yaxisType: "linear",
-		yTicks: 5,
-		yOrient: "left",
-		yLabel: "Strata dividing line"
-	});
-	
-	svg2.ScalableImage(
-		{images: [
-			{URI:'img/strata.jpg', caption: "Earth's strata"}
-			]
-		}
-	);
-	svg2.LineGraph({
-		Data: [lineData],
-		type: "lines"
-	});
-	
-	
 
 
 	//	<div id="widgetTarget70"><p>Images in grid</p></div>
@@ -364,30 +354,24 @@
 	var contTrio = new SVGContainer(bigCntrCnfg);
 	var oneOfThree = new CaptionedImage({
 			id: "oneofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_2.jpg', caption: "Aerial image near downtown West Liberty, Kentucky.",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI:'img/ch4_2.jpg',
+			caption: "Aerial image near downtown West Liberty, Kentucky.",
+			actualSize: {height: 500, width: 500}
 			});
 			
 	var twoOfThree = new CaptionedImage({
 			id: "twoofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_3.jpg', caption: "Withering Iowa corn.",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI:'img/ch4_3.jpg',
+			caption: "Withering Iowa corn.",
+			actualSize: {height: 500, width: 500}
 			});
 	
 			
 	var threeOfThree = new CaptionedImage({
 			id: "threeofthree",
-			image: new Image({
-				id: "img1of3",
-				URI:'img/ch4_4.jpg', caption: "Seaside, NJ, after Hurricane Sandy",
-				actualSize: {height: 500, width: 500}
-				}),
+			URI:'img/ch4_4.jpg',
+			caption: "Seaside, NJ, after Hurricane Sandy",
+			actualSize: {height: 500, width: 500}
 			});
 			
 	contTrio.append(oneOfThree, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.33});

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="Author" content="Leslie Bondaryk" />
@@ -9,28 +8,36 @@
 	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
 	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
 	<meta content="Carmen Santiago, Demo Book" name="description" />
-
-    <!-- Bootstrap -->
-    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/widgets.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
-	<link href="css/grey-thing.css" rel="stylesheet">
 	<title class="setTitle"></title>
-</head>
 
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
 <body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-            	<h2 class="setTitle"></h2>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
               	<p> Consider the following facts: The human population reached 1 billion in the early 1800s, 2 billion by 1925, 3 billion by 1960, 4 billion by 1974, 5 billion by the late 1980s, 6 billion by about 1996, and 7 billion by about 2011. Thinking about this increase in another way, it took the vast majority of human history to reach a population of 1 billion, but only about 15 years to add the most recent billion. The figure highlights this rapid growth.</p>
 				
 				<p>The astounding growth of the human population over the past few centuries is a consequence of basic reproductive biology. In a nutshell, when a population grows, there will be more people who can have children, and therefore the population will grow even faster.  This change is represented as the <a href="#def0" class="term">growth rate</a>, the number of people added over a period of time divided by the size of the total population. The world's population is now increasing at a rate of about 1.2 percent per year; a rate that is equivalent to the annual addition of 1.2 people for every 100 people. This may not sound like a lot, but in a population of 7 billion people, a 1.2 percent growth rate means that about 84 million people will be added in a year. </p>
 				
 				<p>At this growth rate, the world's population would hit 9 billion around 2033. In the figure, you can see what happens if the growth rate falls or rises just a little, and as you can see, small changes in the growth rate can have big impacts on future population growth.</p>
 			</div>
-			<div class="span6 rightCol">         
+			<div class="lc_ec_trailing">         
                 <div id="graph0"></div> 
                		<table width="100%">
                     <tr><td colspan="2">
@@ -43,21 +50,26 @@
             		</table>
 			</div>
 		</div>
+	</section>
 	</div>
+</div>
 	<div class="aside" id='def0'>
     	<div class="label">Growth rate</div>
     	<div class="content">The number of people added over a period of time divided by the size of the total population.
     	</div>
     </div>
 	
-    <script src="js/jquery-latest.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<!-- script src="js/jquery.touchSwipe.min.js"></script-->
-	<script src="js/jquery-ui-1.10.2.custom.js"></script>
-	<script src="js/toc-structure.js"></script>    
-	<script src="js/eCourse-master.js"></script>    
+  
+	<script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
+	<script src="js/brixlib-compiled.js"></script>
+
+	<!--
 	<script src="js/widget-base.js"></script>
 	<script src="js/widget-linegraph.js"></script>
     <script src="js/widget-slider.js"></script>
@@ -65,14 +77,30 @@
     <script src="js/widget-legend.js"></script>
     <script src="js/widget-numeric.js"></script>
 	<script src="js/eventmanager.js"></script>
+	!-->
 
 	<script>
 
 
 
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
+	// local aliases for convenience
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LineGraph = pearson.brix.LineGraph;
+	var Slider = pearson.brix.Slider;
+	var Readout = pearson.brix.Readout;
+	var Sketch = pearson.brix.Sketch;
+	var Legend = pearson.brix.Legend;
+	var EventManager = pearson.utils.EventManager;
+	var SubmitManager = pearson.brix.SubmitManager;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var SelectGroup = pearson.brix.SelectGroup;
+
 	var eventManager = new EventManager();
 	
 	

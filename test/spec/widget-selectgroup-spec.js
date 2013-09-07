@@ -17,6 +17,9 @@
 (function () {
     var expect = chai.expect;
 
+	var EventManager = pearson.utils.EventManager;
+	var SelectGroup = pearson.brix.SelectGroup;
+
     describe('SelectGroups: Pick one from column A', function () {
 		var eventManager = null;
 

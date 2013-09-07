@@ -1,5 +1,5 @@
 /* **************************************************************************
- * $Workfile:: answerprovider-poll.js                                             $
+ * $Workfile:: answermanpolling.js                                          $
  * *********************************************************************/ /**
  *
  * @fileoverview Implementation of a AnswerProvider for Poll.
@@ -14,41 +14,62 @@
  *
  * **************************************************************************/
 
-/**
- * Constructor
- */
-var AnswerManPolling = function()
-{
+goog.provide('pearson.brix.AnswerManPolling');
 
-}
 
-/**
- * Process the answer.
+/* **************************************************************************
+ * AnswerManPolling                                                    */ /**
  *
- * @param {string}	studAnswerKey	- The student's answer key
- * @return {object} - The object literal 
+ * The AnswerMan widget creates a clickable html button that publishes events.
+ *
+ * @constructor
+ * @export
+ *
+ **************************************************************************/
+pearson.brix.AnswerManPolling = function ()
+{
+};
+
+/* **************************************************************************
+ * AnswerMan.submitAnswer                                              */ /**
+ *
+ * Mock scoring engine.
+ * @export
+ *
+ * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
+ * @param {string} 		studAnswerKey	-The student's answer key.
+ * @param {string} 		studAnswerValue	-The student's answer value.
+ *
+ * @return {Object} - The object literal 
  * 			{submission:<the studAnswerKey>,
  *			feedback: <what will be displayed back to the student>,
  *			score: <the numeric score>}
- */
-AnswerManPolling.prototype.submitAnswer = function(sequenceNode, studAnswerKey, studAnswerValue) 
+ ****************************************************************************/
+pearson.brix.AnswerManPolling.prototype.submitAnswer = function(sequenceNode, studAnswerKey, studAnswerValue) 
 {
-	if (studAnswerKey in this.statData) {
-		this.statData[studAnswerKey] = this.statData[studAnswerKey] + 1;
-	} else {
-		this.statData[studAnswerKey] = 1;		
+	if (!(studAnswerKey in this.statData))
+	{
+		this.statData[studAnswerKey] = 0;
 	}
+
+	// increment the count of times this answer was submitted
+	++this.statData[studAnswerKey];
 
 	var responseHtml = "<div class='alert alert-success'><i class='icon-ok-sign'></i> " +
 		"OK " + studAnswerKey + " selected " + this.statData[studAnswerKey] + " times. </div>";
 
 	var scored = {
-				// YSAP - No references 
-				//container: config.container,
-				submission: studAnswerKey,
-				feedback: responseHtml
-				};
-	return scored;
-}
+					submission: studAnswerKey,
+					feedback: responseHtml
+				 };
 
-AnswerManPolling.prototype.statData = {};
+	return scored;
+};
+
+/**
+ * statData is in desperate need of a description! -mjl
+ * Being defined like this makes it used by ALL instances of AnswerManPolling,
+ * so what is it's purpose? Are you sure it shouldn't be an instance variable?
+ * @type {Object}
+ */
+pearson.brix.AnswerManPolling.prototype.statData = {};

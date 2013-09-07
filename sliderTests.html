@@ -1,38 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-    <title class="setTitle"></title>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-	<meta content="Book Author, Book Title" name="description">
-	
-    <!-- Bootstrap -->
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
     <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/graphics_and_svg.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/module-opener.css" rel="stylesheet">
-	<link href="css/toc.css" rel="stylesheet">
-	<link href="css/grey-thing.css" rel="stylesheet">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
 	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
-	
-	<style>
-	
-		div.test
-		{
-			min-height: 200px;
-		}
-	
-	</style>
 
-    </head>
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
 <body>
-
-	<!-- Body Content -->
-	<div class="container-fluid">
-		<div class="row-fluid">
-            
-			<div class="span6 leftCol">
-				
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
 				<div class="test">
 					<p>Test 0: One slider, no readout</p>
 					<span id="t0slider"></span>
@@ -98,7 +95,7 @@
 				
 				
 			</div>
-			<div class="span6 rightCol">
+			<div class="lc_ec_trailing">
 				
 				<div class="test">
 					<p>Test 8: Slider next to readout</p>
@@ -131,7 +128,9 @@
 				
 			</div>
 		</div>
+	</section>
     </div>
+</div>
 
     <script src="js/jquery-latest.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -141,14 +140,57 @@
     <script src="js/eCourse-master.js"></script>    
     <script src="js/d3.v3.min.js"></script>
 
+	<script src="js/brixlib-compiled.js"></script>
+	<!--
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
+	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
 	<script src="js/widget-base.js"></script>
-	<script src="js/widget-slider.js"></script>
-	<script src="js/widget-numeric.js"></script>
-    <script src="js/widgets.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
     <script src="js/widget-callouts.js"></script>
-    <script src="js/eventmanager.js"></script>
+    <script src="js/widget-button.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+	-->
 
 <script>
+	// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+	var Sketch = pearson.brix.Sketch;
+	var Readout = pearson.brix.Readout;
+	var NumericInput = pearson.brix.NumericInput;
+	var Slider = pearson.brix.Slider;
 
 	// create event manager
 	var eventManager = new EventManager();

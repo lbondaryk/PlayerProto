@@ -2,9 +2,9 @@
  * $Workfile:: widget-multiplechoicequestion.js                             $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the MultipleChoiceQuestion widget.
+ * @fileoverview Implementation of the MultipleChoiceQuestion bric.
  *
- * The MultipleChoiceQuestion widget displays a question and a set of possible
+ * The MultipleChoiceQuestion bric displays a question and a set of possible
  * answers one of which must be selected and submitted to be scored.
  *
  * Created on		May 29, 2013
@@ -13,6 +13,12 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+goog.provide('pearson.brix.MultipleChoiceQuestion');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.SubmitManager');
+goog.require('pearson.brix.HtmlBric');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -58,7 +64,7 @@
 		question: "Why?",
 		choices: Q1Choices,
 		order: "randomized", //default, even if not specified
-		widget: RadioGroup,
+		widget: null, // or actually something such as: pearson.brix.RadioGroup,
 		widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultipleChoiceQuestion
 	};
 });
@@ -67,7 +73,7 @@
  * Answers are presented to users by certain widgets that allow the user to
  * select one (or more of them).
  *
- * @typedef {Object} Answer
+ * @typedef {Object} pearson.brix.Answer
  * @property {string}	content		-The content of the answer, which presents the
  * 									 meaning of the answer.
  * @property {string}	answerKey	-This is the unique ID that will be returned
@@ -77,6 +83,7 @@
  * @todo: the content currently must be text (a string) however, we are likely
  * to want to make the content be any widget.
  */
+pearson.brix.Answer;
 
 
 /* **************************************************************************
@@ -85,8 +92,9 @@
  * Constructor function for MultipleChoiceQuestion brix.
  *
  * @constructor
- * @implements {IWidget}
- * @implements {IQuestion}
+ * @extends {pearson.brix.HtmlBric}
+ * @implements {pearson.brix.IQuestionBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this MultipleChoiceQuestion
  * @param {string|undefined}
@@ -96,37 +104,42 @@
  * 										-Scoring engine Id of this question
  * @param {string}		config.question	-The question being posed to the user which should
  * 										 be answered by choosing one of the presented choices.
- * @param {Array.<Answer>}
+ * @param {!Array.<!pearson.brix.Answer>}
  *						config.choices	-The list of choices (answers) to be presented
  *										 by the MultipleChoiceQuestion.
  * @param {string|undefined}
  *						config.order	-The order in which the choices should be presented.
  *										 either "randomized" or "ordered". Default is
  *										 "randomized" if not specified.
- * @param {IWidget}		config.widget	-The constructor for a widget that presents choices.
+ * @param {!function(Object, !pearson.utils.IEventManager=)}
+ * 						config.widget	-The constructor for a widget that presents choices.
  * @param {!Object}		config.widgetConfig
  * 										-The configuration object for the specified widget
  * 										 constructor without the id or choices properties which
  * 										 will be added by this question constructor.
- * @param {EventManager}
+ * @param {!pearson.utils.IEventManager}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
  * @classdesc
- * The MultipleChoiceQuestion widget displays a question and a set of possible
+ * The MultipleChoiceQuestion bric displays a question and a set of possible
  * answers one of which must be selected and submitted to be scored.
  *
  ****************************************************************************/
-function MultipleChoiceQuestion(config, eventManager)
+pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the select one question widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, MultipleChoiceQuestion);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.MultipleChoiceQuestion);
 
 	/**
 	 * The scoring engine id of this question.
+	 * (e.g. the sequence node id)
 	 * @type {string}
 	 */
 	this.questionId = config.questionId;
@@ -150,6 +163,7 @@ function MultipleChoiceQuestion(config, eventManager)
 
 	var choices = config.choices;
 
+	/** @todo these 2 instance variables need comments (and review and unit tests) -mjl */
 	this.svgSize = config.svgSize;
 	this.svgBaseBrix = config.svgBaseBrix;
 
@@ -158,7 +172,7 @@ function MultipleChoiceQuestion(config, eventManager)
 		// clone the array before we rearrange it so we don't modify the
 		// array passed in the config.
 		choices = choices.slice(0);
-		randomizeArray(choices);
+		pearson.utils.randomizeArray(choices);
 	}
 
 	widgetConfig.choices = choices;
@@ -166,7 +180,7 @@ function MultipleChoiceQuestion(config, eventManager)
 	/**
 	 * The widget used to present the choices that may be selected to answer
 	 * this question.
-	 * @type {IWidget}
+	 * @type {!pearson.brix.HtmlBric}
 	 */
 	this.choiceWidget = new config.widget(widgetConfig, eventManager);
 
@@ -181,9 +195,9 @@ function MultipleChoiceQuestion(config, eventManager)
 	/**
 	 * The button widget which allows the answer to the question to be submitted
 	 * for scoring.
-	 * @type {IWidget}
+	 * @type {!pearson.brix.Button}
 	 */
-	this.submitButton = new Button(submitBtnConfig, eventManager);
+	this.submitButton = new pearson.brix.Button(submitBtnConfig, eventManager);
 
 	/**
 	 * List of responses that have been received for all submitted
@@ -194,7 +208,7 @@ function MultipleChoiceQuestion(config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager;
 
@@ -210,6 +224,7 @@ function MultipleChoiceQuestion(config, eventManager)
 	 * @typedef {Object} SelectedEventDetails
 	 * @property {string} selectKey	-The answerKey associated with the selected answer.
 	 */
+	var SelectedEventDetails;
 
 	/**
 	 * The event id published when the submit button is clicked.
@@ -221,21 +236,21 @@ function MultipleChoiceQuestion(config, eventManager)
 	/**
 	 * The event details for this.submitScoreRequestEventId events
 	 * @typedef {Object} SubmitAnswerRequest
-	 * @property {SelecOneQuestion} question	-This question widget
+	 * @property {Iuestion} 		question	-This question widget
 	 * @property {string} 			questionId	-The id which identifies this question to the scoring engine.
 	 * @property {string} 			answerKey	-The answerKey associated with the selected answer.
 	 * @property {function(Object)}	responseCallback
 	 * 											-[optional] function to call with the response when it is
 	 * 											 returned by the scoring engine.
 	 */
+	var SubmitAnswerRequest;
 
 	// subscribe to events of our 'child' widgets
-	var that = this;
-	eventManager.subscribe(this.submitButton.pressedEventId, function () {that.handleSubmitRequested_();});
-	eventManager.subscribe(this.choiceWidget.selectedEventId, function () {that.handleAnswerSelected_();});
+	eventManager.subscribe(this.submitButton.pressedEventId, goog.bind(this.handleSubmitRequested_, this));
+	eventManager.subscribe(this.choiceWidget.selectedEventId, goog.bind(this.handleAnswerSelected_, this));
 
 	/**
-	 * Information about the last drawn instance of this widget (from the draw method)
+	 * Information about the last drawn instance of this bric (from the draw method)
 	 * @type {Object}
 	 */
 	this.lastdrawn =
@@ -243,14 +258,15 @@ function MultipleChoiceQuestion(config, eventManager)
 			container: null,
 			widgetGroup: null,
 		};
-} // end of MultipleChoiceQuestion constructor
+}; // end of MultipleChoiceQuestion constructor
+goog.inherits(pearson.brix.MultipleChoiceQuestion, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of MultipleChoiceQuestion.
  * @const
  * @type {string}
  */
-MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
+pearson.brix.MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
 
 /* **************************************************************************
  * MultipleChoiceQuestion.handleSubmitRequested_                       */ /**
@@ -260,7 +276,7 @@ MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
+pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function ()
 {
 	var that = this;
 	var submitAnsDetails =
@@ -268,7 +284,7 @@ MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
 			question: this,
 			questionId: this.questionId,
 			answerKey: this.choiceWidget.selectedItem().answerKey,
-			responseCallback: function (responseDetails) { that.handleSubmitResponse_(responseDetails); }
+			responseCallback: goog.bind(this.handleSubmitResponse_, this)
 		};
 
 	this.eventManager.publish(this.submitScoreRequestEventId, submitAnsDetails);
@@ -282,7 +298,7 @@ MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function()
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
+pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function ()
 {
 	this.submitButton.setText("Submit Answer");
 	this.submitButton.setEnabled(true);
@@ -298,27 +314,28 @@ MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function()
  * @private
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function(responseDetails)
+pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (responseDetails)
 {
 	this.responses.push(responseDetails);
 
 	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
 
 	// For now just use the helper function to write the response.
-	SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
+	pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 };
 
 /* **************************************************************************
  * MultipleChoiceQuestion.draw                                         */ /**
  *
  * Draw this MultipleChoiceQuestion in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the
  *								 question element tree to.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.draw = function(container)
+pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 {
 	this.lastdrawn.container = container;
 	
@@ -338,25 +355,26 @@ MultipleChoiceQuestion.prototype.draw = function(container)
 	// check if it's an SVG widget with a size, in which case
 	// create 
 
-	if (Array.isArray(this.svgSize)){
+	if (Array.isArray(this.svgSize))
+	{
+		var mcSVG = new pearson.brix.SVGContainer({
+				node: choiceWidgetCntr,
+				maxWid: this.svgSize[0],
+				maxHt: this.svgSize[1]
+			});
 
-		var mcSVG = new SVGContainer({
-			node: choiceWidgetCntr,
-			maxWid: this.svgSize[0],
-			maxHt: this.svgSize[1]
-		});
-
-		if(this.svgBaseBrix) {
+		if (this.svgBaseBrix)
+		{
 		 	this.svgBaseBrix.append(this.choiceWidget);
 		 	mcSVG.append(this.svgBaseBrix);
 		}
-		
-		else {
-		mcSVG.append(this.choiceWidget)
+		else
+		{
+			mcSVG.append(this.choiceWidget)
 		}
 	}
-	
-	else {
+	else
+	{
 		this.choiceWidget.draw(choiceWidgetCntr);
 	}
 
@@ -378,11 +396,12 @@ MultipleChoiceQuestion.prototype.draw = function(container)
  *
  * Return the selected choice from the choice widget or null if nothing has been
  * selected.
+ * @export
  *
  * @return {Object} the choice which is currently selected or null.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.selectedItem = function ()
+pearson.brix.MultipleChoiceQuestion.prototype.selectedItem = function ()
 {
 	return this.choiceWidget.selectedItem();
 };
@@ -394,11 +413,12 @@ MultipleChoiceQuestion.prototype.selectedItem = function ()
  * already selected, do nothing. The index is the displayed choice index and
  * not the config choice index (in other words if the choices have been randomized
  * then the configuration index is NOT the displayed index).
+ * @export
  *
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-MultipleChoiceQuestion.prototype.selectItemAtIndex = function (index)
+pearson.brix.MultipleChoiceQuestion.prototype.selectItemAtIndex = function (index)
 {
 	this.choiceWidget.selectItemAtIndex(index);
 };

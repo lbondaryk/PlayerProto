@@ -5,6 +5,9 @@
 (function () {
     var expect = chai.expect;
 
+	var EventManager = pearson.utils.EventManager;
+	var LineGraph = pearson.brix.LineGraph;
+
     describe('LineGraphs should be super awesome', function () {
 		var eventManager = null;
 
@@ -45,8 +48,8 @@
             });
 
 			it('should create an empty array of child Widgets', function () {
-                expect(myGraph.childWidgets.beforeData).to.be.empty;
-                expect(myGraph.childWidgets.afterData).to.be.empty;
+                expect(myGraph.childBrix.beforeData).to.be.empty;
+                expect(myGraph.childBrix.afterData).to.be.empty;
             });
 
 			describe('DOM manipulation (create/update elements) tests', function () {

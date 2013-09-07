@@ -1,5 +1,5 @@
 /* **************************************************************************
- * $Workfile:: widget-callouts.js                                          $
+ * $Workfile:: widget-callouts.js                                           $
  * *********************************************************************/ /**
  *
  * @fileoverview Implementation of the {@link Callouts} bric.
@@ -15,6 +15,8 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+goog.provide('pearson.brix.callouts');
 
 // Sample Callout constructor configuration
 (function()
@@ -46,8 +48,8 @@ var callOutConfig = {
 });
 
 /**
- * CalloutItems are usd to describe the individual callouts in the configuration
- * object for the {@link Callouts} bric.
+ * A CalloutItem is used to describe the individual callouts in the configuration
+ * object for the {@link pearson.brix.Callouts} bric.
  *
  * @typedef {Object} CalloutItem
  * @property {string}	key		-key used to associate this item w/ items in other
@@ -58,6 +60,7 @@ var callOutConfig = {
  * 								 to be displayed in a different column of the item row.
  *
  */
+pearson.brix.CalloutItem;
 	
 /* **************************************************************************
  * Callouts	                                                           */ /**
@@ -65,15 +68,16 @@ var callOutConfig = {
  * Constructor function for Callouts brix.
  *
  * @constructor
+ * @export
  *
  * @param {Object}		config			-The settings to configure this widget
  * @param {string}		config.id		-String to uniquely identify this widget
  * @param {string}		config.type 	-switch to autogenerate "numbered"
  * @param {string}		config.show		-String to specify "all" or one row (null)
  * @param {Array}		config.headers 	-strings to specify headers on table (optional)
- * @param {Array.<CalloutItem>}
+ * @param {Array.<pearson.brix.CalloutItem>}
  * 						config.textBits	-list of all the callout items to be presented
- * @param {EventManager=}
+ * @param {!pearson.utils.EventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -87,14 +91,13 @@ var callOutConfig = {
  * related tags over an image.
  *
  **************************************************************************/
-
-function Callouts(config, eventManager)
+pearson.brix.Callouts = function (config, eventManager)
 {
 	/**
 	 * A unique id for this instance of the widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, Callouts);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Callouts);
 
 	this.textBits = config.textBits;
 	this.headers = config.headers;
@@ -103,7 +106,7 @@ function Callouts(config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.EventManager|undefined}
 	 */
 	this.eventManager = eventManager;
 
@@ -114,27 +117,28 @@ function Callouts(config, eventManager)
 	 */
 	this.selectedEventId = this.id + '_Callout';
 	 	
-} // end of Callouts constructor
+}; // end of Callouts constructor
 
 /**
  * Prefix to use when generating ids 
  * @const
  * @type {string}
  */
-Callouts.autoIdPrefix = "callout_";
+pearson.brix.Callouts.autoIdPrefix = "callout_";
 
 /* **************************************************************************
  * Callouts.draw                                                       */ /**
  *
  * "draw" this Callouts bric at the end of the given container, by appending
  * a new element tree representation to that container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the callouts
  *								 element tree to.
  *
  ****************************************************************************/
-Callouts.prototype.draw = function (container)
+pearson.brix.Callouts.prototype.draw = function (container)
 {
 	// @todo this.node property really should be this.lastdrawn.container -mjl 7-22-2013
 	this.node = container;
@@ -198,7 +202,7 @@ Callouts.prototype.draw = function (container)
 		.style("display",null);
 	}
 
-	console.log("Callouts made");
+	window.console.log("Callouts made");
 	
 	this.calloutCollection.on('click',
 		function (d, i)
@@ -208,37 +212,37 @@ Callouts.prototype.draw = function (container)
 					{selectKey: d.key});
 			});
 	
+}; //end Callouts object draw function
 
-} //end Callouts object draw function
-
-/* ********************************************************************
-* calloutSwap                                                    */ /**
-*
-* Updates the Callouts widget to display the text that matches 
-* the currently selected index, lite.
-*
-* @note: this is currently all based on members of a collection having
-* ID's that have the litekey or index appended to them after the ID.
-* Handles either the one-at-a-time callOuts display or the table 
-* row highlight display.
-*
-* @param lite				the index or key specifying which of a
-*							collection to lite up
-*
-***********************************************************************/
-Callouts.prototype.lite = function (lite)
-	{
-		console.log("TODO: log fired callout highlight/swap", lite);
-		
-		var unset = this.calloutCollection;
-		//remove all special formatting
-		unset.classed("lit",false);
-		
-		// if individually shown, hide all.  This is part of functionality
-		// so I didn't put this in the CSS -lb
-		if(this.show != "all"){
-			unset
-			.style("display","none");}
+/* **************************************************************************
+ * lite                                                                */ /**
+ *
+ * Updates the Callouts widget to display the text that matches 
+ * the currently selected index, lite.
+ *
+ * @note: this is currently all based on members of a collection having
+ * ID's that have the litekey or index appended to them after the ID.
+ * Handles either the one-at-a-time callOuts display or the table 
+ * row highlight display.
+ * @export
+ *
+ * @param {*}	lite	-the index or key specifying which of a
+ *						 collection to lite up
+ *
+ ****************************************************************************/
+pearson.brix.Callouts.prototype.lite = function (lite)
+{
+	window.console.log("TODO: log fired callout highlight/swap", lite);
+	
+	var unset = this.calloutCollection;
+	//remove all special formatting
+	unset.classed("lit",false);
+	
+	// if individually shown, hide all.  This is part of functionality
+	// so I didn't put this in the CSS -lb
+	if(this.show != "all"){
+		unset
+		.style("display","none");}
 		
 	// create a filter function that will match all instances of the liteKey
 	// then find the set that matches
@@ -254,7 +258,8 @@ Callouts.prototype.lite = function (lite)
 
 	if (selectionToLite.empty())
 	{
-		console.log("No key '" + lite + "' in Labels group " + this.id );
+		window.console.log("No key '" + lite + "' in Labels group " + this.id );
 	}
 	
-	} //end Callouts.lite method
+}; //end Callouts.lite method
+

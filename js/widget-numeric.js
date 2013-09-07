@@ -2,8 +2,8 @@
  * $Workfile:: widget-numeric.js                                            $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the {@link Readout} and
- *               {@link NumericInput} brix.
+ * @fileoverview Implementation of the {@link pearson.brix.Readout} and
+ *               {@link pearson.brix.NumericInput} brix.
  *
  * [FILL IN SUMMARY DESCRIPTION OF WHAT IS IN THIS FILE]
  * @note the following text was in this file, I don't believe it is really
@@ -20,6 +20,12 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.Readout');
+goog.provide('pearson.brix.NumericInput');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.HtmlBric');
+
 
 /* **************************************************************************
  * Readout                                                             */ /**
@@ -27,20 +33,18 @@
  * Constructor function for a Readout bric.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.HtmlBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this Readout
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this Readou.
- * 										 if undefined a unique id will be assigned.
+ *      				config.id		-String to uniquely identify this Readou.
+ *										 if undefined a unique id will be assigned.
  * @param {number} 		config.startVal	-[DESCRIPTION of config parameter needed]
  * @param {htmlString} 	config.unit		-[DESCRIPTION of config parameter needed]
  * @param {htmlString}	config.label	-[DESCRIPTION of config parameter needed]
  * @param {*} 			config.precision
  * 										-[DESCRIPTION of config parameter needed]
- * @param {EventManager=}
- * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them.
  *
  * @classdesc
  * Readout Widget is just a way to display calculated or event-driven text
@@ -48,18 +52,20 @@
  * Formerly done as a text input so you can either display or type into it
  *
  ****************************************************************************/
-function Readout(config)
+pearson.brix.Readout = function (config)
 {
-	this.id = getIdFromConfigOrAuto(config, Readout);
+	// call the base class constructor
+	goog.base(this);
+
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Readout);
 
 	this.node = config.node;
-	this.startVal = config.startVal;	
+	this.startVal = config.startVal;
 	this.unit = config.unit;
 	//if the readout requires a unit to be appended, do so. String value.
 	this.label = config.label;
 	//if the readout requires a label to be prepended, do so. String value.
 	// Define the ids of the events this widget broadcasts
-	var that = this;
 	var precision = config.precision;
 
 	//<span id="myID" class"dataLabel">numeric readout</span>;
@@ -77,27 +83,29 @@ function Readout(config)
 	.property("value",this.startVal)
 	.attr("align","right")
 	.attr("size",size?size:6)
-	.attr("id",that.id)
+	.attr("id",this.id)
 	; */
 	
 	this.rootEl.append("span")
-		.attr("class","dataLabel")
-		.attr("id",that.id)
+		.attr("class", "dataLabel")
+		.attr("id", this.id)
 		.text(this.startVal);
 
 	this.rootEl.append("span").html("&nbsp;" + (this.unit ? this.unit : ""));
 	
 	// TEST: the written text span is the start value
-	console.log("text is the startVal:", d3.select("#" + this.id).text() == this.startVal, d3.select("#" + this.id).text());
+	window.console.log("text is the startVal:", d3.select("#" + this.id).text() == this.startVal, d3.select("#" + this.id).text());
 
-} //end Readout widget
+}; //end Readout widget
+goog.inherits(pearson.brix.Readout, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids 
  * @const
  * @type {string}
  */
-Readout.autoIdPrefix = "readout_";
+pearson.brix.Readout.autoIdPrefix = "readout_auto_";
+
 /* **************************************************************************
  * Readout.setValue                                                    */ /**
  *
@@ -107,9 +115,9 @@ Readout.autoIdPrefix = "readout_";
  * @param {number} newValue	-The new value for the widget
  *
  ****************************************************************************/
-Readout.prototype.setValue = function (newValue)
+pearson.brix.Readout.prototype.setValue = function (newValue)
 {
-	console.log("TODO: called setReadoutValue log", this.id, newValue);
+	window.console.log("TODO: called setReadoutValue log", this.id, newValue);
 	
 	// The value is kept in the input element which was given an id
 	d3.select("#" + this.id).text(newValue);
@@ -122,10 +130,8 @@ Readout.prototype.setValue = function (newValue)
  * The Readout getValue method gets the value of the Readout
  * widget. This does NOT fire the changedValue event.
  *
- * @param {number} newValue	-The new value for the widget
- *
  ****************************************************************************/
-Readout.prototype.getValue = function ()
+pearson.brix.Readout.prototype.getValue = function ()
 {
 	// The value is kept in the input element which was given an id
 	return d3.select("#" + this.id).text();
@@ -137,11 +143,12 @@ Readout.prototype.getValue = function ()
  * Constructor function for a NumericInput bric.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.HtmlBric}
+ * @export
  *
- * @param {Object}		config			-The settings to configure this Readout
+ * @param {Object}		config			-The settings to configure this NumericInput
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this Readou.
+ * 						config.id		-String to uniquely identify this NumericInput.
  * 										 if undefined a unique id will be assigned.
  * @param {number} 		config.node		-[DESCRIPTION of config parameter needed]
  * @param {number} 		config.startVal	-[DESCRIPTION of config parameter needed]
@@ -149,7 +156,7 @@ Readout.prototype.getValue = function ()
  * @param {number} 		config.maxVal	-[DESCRIPTION of config parameter needed]
  * @param {htmlString} 	config.unit		-[DESCRIPTION of config parameter needed]
  * @param {htmlString}	config.label	-[DESCRIPTION of config parameter needed]
- * @param {EventManager=}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -157,8 +164,11 @@ Readout.prototype.getValue = function ()
  * A NumericInput widget...
  *
  ****************************************************************************/
-function NumericInput(config, eventManager)
+pearson.brix.NumericInput = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	this.id = config.id;
 
 	this.node = config.node;
@@ -170,9 +180,13 @@ function NumericInput(config, eventManager)
 	this.label = config.label;
 	// Define the ids of the events the ButtonWidget uses
 	this.changedValueEventId = this.id + 'Number';
-	this.eventManager = eventManager;
+	
+	/**
+	 * The event manager to use to publish (and subscribe to) events for this widget
+	 * @type {!pearson.utils.IEventManager}
+	 */
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
-	var that = this;
 
 	//this.rootEl = $('<div><input type="number" min="0" max="100" step="5" value="50"    id="numInput_0" class="dataLabel"></div>');
 	this.rootEl = this.node.append("span");
@@ -183,7 +197,7 @@ function NumericInput(config, eventManager)
 		.attr("min", minVal)
 		.attr("max", maxVal)
 		.attr("value", this.startVal)
-		.attr("id", that.id)
+		.attr("id", this.id)
 		.attr("class", "dataLabel")
 		;
 
@@ -196,19 +210,21 @@ function NumericInput(config, eventManager)
 		//note that jQuery returns an array for selections, the
 		//first element of which is the actual pointer to the
 		//tag in the DOM
-			that.eventManager.publish(that.changedValueEventId,
-							{value: $("#" + that.id)[0].value});
+			that.eventManager.publish(this.changedValueEventId,
+							{value: d3.select("#" + this.id)[0][0].value});
 								} );
 
 	// Define private handlers for subscribed events
+	var that = this;
 	function changedValueHandler(eventDetails)
 	{
 		that.setValue(eventDetails.value);
 	}
 
 	// Subscribe to own events, if appropriate
-	eventManager.subscribe(that.changedValueEventId, changedValueHandler);
-} //end NumericInput widget
+	eventManager.subscribe(this.changedValueEventId, changedValueHandler);
+}; //end NumericInput widget
+goog.inherits(pearson.brix.NumericInput, pearson.brix.HtmlBric);
 
 /* **************************************************************************
  * NumericInput.getValue                                               */ /**
@@ -216,10 +232,10 @@ function NumericInput(config, eventManager)
  * The NumericInput getValue method returns the value of the NumericInput
  * widget.
  ****************************************************************************/
-NumericInput.prototype.getValue = function()
+pearson.brix.NumericInput.prototype.getValue = function()
 {
 	// The value is kept in the input element which was given an id
-	return $("#" + this.id)[0].value;
+	return d3.select("#" + this.id)[0][0].value;
 };
 
 /* **************************************************************************
@@ -231,11 +247,11 @@ NumericInput.prototype.getValue = function()
  * @param {number} newValue	-The new value for the widget
  *
  ****************************************************************************/
-NumericInput.prototype.setValue = function(newValue)
+pearson.brix.NumericInput.prototype.setValue = function(newValue)
 {
-	console.log("TODO: called setNumericInputValue log", this.id, newValue);
+	window.console.log("TODO: called setNumericInputValue log", this.id, newValue);
 
 	// The value is kept in the input element which was given an id
-	$("#" + this.id)[0].value = newValue;
+	d3.select("#" + this.id)[0][0].value = newValue;
 };
 

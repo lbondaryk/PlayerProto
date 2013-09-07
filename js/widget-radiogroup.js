@@ -14,6 +14,11 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.RadioGroup');
+
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.HtmlBric');
+
 // Sample configuration objects for classes defined here
 (function()
 {
@@ -63,7 +68,7 @@
  * Answers are presented to users by certain widgets that allow the user to
  * select one (or more of them).
  *
- * @typedef {Object} Answer
+ * @typedef {Object} pearson.brix.Answer
  * @property {string}	content		-The content of the answer, which presents the
  * 									 meaning of the answer.
  * @property {string}	response	-The response is presented to the user when
@@ -75,6 +80,7 @@
  * @todo: the content currently must be text (a string) however, we are likely
  * to want to make the content be any widget.
  */
+pearson.brix.Answer;
 
 
 /* **************************************************************************
@@ -83,39 +89,41 @@
  * Constructor function for RadioGroup widget instances.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.HtmlBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this RadioGroup
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this RadioGroup.
  * 										 if undefined a unique id will be assigned.
- * @param {Array.<Answer>}
+ * @param {!Array.<!pearson.brix.Answer>}
  *						config.choices	-The list of choices (answers) to be presented by the RadioGroup.
  * @param {string|undefined}
  *						config.numberFormat
  *										-The format for numbering the choices. default is "none"
- * @param {EventManager|undefined}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them. (Optional)
+ * 										 and subscribing to them.
  *
  * @classdesc
  * The RadioGroup widget draws a list of choices and allows the user to
  * select one of the choices by selecting a radio button next to the choice.
  *
  ****************************************************************************/
-function RadioGroup(config, eventManager)
+pearson.brix.RadioGroup = function (config, eventManager)
 {
-	var that = this;
-	
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the radio group widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, RadioGroup);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.RadioGroup);
 
 	/**
 	 * The list of choices presented by the RadioGroup.
-	 * @type {Array.<Answer>}
+	 * @type {!Array.<!pearson.brix.Answer>}
 	 */
 	this.choices = config.choices;
 
@@ -128,9 +136,9 @@ function RadioGroup(config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager || { publish: function () {}, subscribe: function () {} };
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id published when an item in this carousel is selected.
@@ -144,6 +152,7 @@ function RadioGroup(config, eventManager)
 	 * @typedef {Object} SelectedEventDetails
 	 * @property {string} selectKey	-The answerKey associated with the selected answer.
 	 */
+	var SelectedEventDetails;
 
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)
@@ -155,26 +164,28 @@ function RadioGroup(config, eventManager)
 			widgetGroup: null,
 			choiceSelected: null,
 		};
-} // end of RadioGroup constructor
+}; // end of RadioGroup constructor
+goog.inherits(pearson.brix.RadioGroup, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of RadioGroup.
  * @const
  * @type {string}
  */
-RadioGroup.autoIdPrefix = "rg_auto_";
+pearson.brix.RadioGroup.autoIdPrefix = "rg_auto_";
 
 /* **************************************************************************
  * RadioGroup.draw                                                     */ /**
  *
  * Draw this RadioGroup in the given container.
+ * @export
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the radio
  *								 group element tree to.
  *
  ****************************************************************************/
-RadioGroup.prototype.draw = function(container)
+pearson.brix.RadioGroup.prototype.draw = function (container)
 {
 	this.lastdrawn.container = container;
 
@@ -197,6 +208,7 @@ RadioGroup.prototype.draw = function(container)
 	var ansRows = tbody.selectAll("tr").data(this.choices);
 	ansRows.enter().append("tr");
 
+	/** @type {d3DataFunc} */
 	var getButtonId = function (d, i) {return that.id + "_btn" + i;};
 
 	var buttonCell = ansRows.append("td");
@@ -205,7 +217,7 @@ RadioGroup.prototype.draw = function(container)
 		var choiceIndex = this.getChoiceNumberToDisplayFn_();
 
 		buttonCell
-			.text(function (d, i) {return choiceIndex(i) + ") ";});
+			.text(/** @type {d3DataFunc} */ (function (d, i) {return choiceIndex(i) + ") ";}));
 	}
 
 	buttonCell
@@ -239,14 +251,16 @@ RadioGroup.prototype.draw = function(container)
  * Return the selected choice in the radio group and it's data, 
  * or null if nothing has been selected. Used in multiple choice questions.
  * Note that this does not return the index of the checked item.
+ * @export
+ *
  * @todo: implement lite for this and keys so it can be used as a regular
- * ui selection widget for mutually exclusive selections.
+ * ui selection widget for mutually exclusive selections. -lb
  *
  * @return {Object} the radio group data corresponding to the choice 
  * which is currently selected or null.
  *
  ****************************************************************************/
-RadioGroup.prototype.selectedItem = function ()
+pearson.brix.RadioGroup.prototype.selectedItem = function ()
 {
 	var selectedInputSelector = "div.widgetRadioGroup input[name='" + this.id + "']:checked";
 	var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
@@ -258,11 +272,12 @@ RadioGroup.prototype.selectedItem = function ()
  *
  * Select the choice in the radio group at the given index. If the choice is
  * already selected, do nothing.
+ * @export
  *
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-RadioGroup.prototype.selectItemAtIndex = function (index)
+pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 {
 	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetRadioGroup input");
 	var selectedInput = choiceInputs[0][index];
@@ -275,7 +290,9 @@ RadioGroup.prototype.selectItemAtIndex = function (index)
 	// choice at index is not selected, so select it and publish selected event
 	selectedInput.checked = true;
 
-	this.eventManager.publish(this.selectedEventId, {selectKey: d3.select(selectedInput).datum().answerKey});
+	var d = /** @type {!pearson.brix.Answer} */ (d3.select(selectedInput).datum());
+
+	this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
 };
 
 /* **************************************************************************
@@ -287,7 +304,7 @@ RadioGroup.prototype.selectItemAtIndex = function (index)
  * @private
  *
  ****************************************************************************/
-RadioGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
+pearson.brix.RadioGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 {
 	var formatIndexUsing =
 	{

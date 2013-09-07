@@ -1,44 +1,59 @@
 <!DOCTYPE html>
 <html>
-    <head>
- 	<title class="setTitle"></title>
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-	<meta content="eCourses Author, Title" name="description">
-    <!-- Bootstrap -->
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
     <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
 	<link href="css/widgets.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
 	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
- 
-    </head>
-	<body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-                <h2 class="setTitle"></h2>
-				<div id="widgetTarget0"><p>0. Single image with labels</p></div>
-				<div id="newBruce"><p>1. Line Graph with labels and callouts (events)</p></div>
-				<div id="phaseCall"></div>
-				<div id="oceans"><p>1a. Image carousel with alpha labels</p></div>
-			</div>
-			<div class="span6 rightCol">
-				<div id="widgetTarget50n"><p>2. Label positions</p></div>
-                <div id="lineMarks"><p>3. x-axis Line Markers x and y</p></div>
-                <div id="lineMarks1"><p>4. x-axis Line Markers just labels. Note that our handling of different label lengths is not very sophisticated. Of course, maybe if the label runs on that long it shouldn't be a label? Also nothing to prevent labels from obscuring each other if the markers are close together.</p></div>
-			</div>
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+						<div id="widgetTarget0"><p>0. Single image with labels</p></div>
+						<div id="newBruce"><p>1. Line Graph with labels and callouts (events)</p></div>
+						<div id="phaseCall"></div>
+						<div id="oceans"><p>1a. Image carousel with alpha labels</p></div>
+					</div>
+					<div class="lc_ec_trailing">
+						<div id="widgetTarget50n"><p>2. Label positions</p></div>
+                		<div id="lineMarks"><p>3. x-axis Line Markers x and y</p></div>
+                		<div id="lineMarks1"><p>4. x-axis Line Markers just labels. Note that our handling of different label lengths is not very sophisticated. Of course, maybe if the label runs on that long it shouldn't be a label? Also nothing to prevent labels from obscuring each other if the markers are close together.</p></div>
+					</div>
+				</div>
+			</section>
 		</div>
 	</div>
 
-
-	
-    <script src="js/jquery-latest.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<!-- <script src="js/jquery.touchSwipe.min.js"></script> -->
-	<script src="js/jquery-ui-1.10.2.custom.js"></script>
-	<script src="js/toc-structure.js"></script>    
-	<script src="js/eCourse-master.js"></script>    
+	<script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
+	<script src="js/brixlib-compiled.js"></script>
+	<!--
 	<script src="js/eventmanager.js"></script>
 	<script src="js/widget-base.js"></script>
 	<script src="js/widget-linegraph.js"></script>
@@ -48,7 +63,24 @@
 	<script src="js/widget-image.js"></script>
 	<script src="js/widget-imageviewer.js"></script>
 	<script src="js/widget-carousel.js"></script>
+	!-->
+
 <script>
+// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var Legend = pearson.brix.Legend;
 
 	var eventManager = new EventManager();
 
@@ -203,7 +235,6 @@ for (i = 0; i < dataPts; i++)
 		{ 
 			URI: 'img/FG12_5_3.jpg',
 			caption: "Examples of ecological footprints",
-			actualSize: {height: 300, width: 400}
 		}
 	);
 	
@@ -212,22 +243,17 @@ for (i = 0; i < dataPts; i++)
 		//maxSize not yet used, but should be, so that the container gets sized to match
 		//the image not the other way round
 		//maxSize: Size.matchRatioWithHeight(440, ecofoot.actualSize),
-		maxWid: 394,
+		maxWid: 550,
 		//adding 40px to make room for the caption
 		maxHt: 300
 		}
 	);
 		
-	var ecocap = new CaptionedImage({
-			image: ecofoot,
-			captionPosition: "below"
-		});
-	
 	
 	var ecoLabels = new LabelGroup({
 		labels: 	
 		  [	
-			{content: "United States",	xyPos: [0,.2], width: 150	},
+			{content: "United States",	xyPos: [0,.2], width: 150},
 			{content: "European Union",	xyPos:[0.45,0.2], width: 100},
 			{content: "Afghanistan", xyPos:[0.8,0.2], 
 			//scale on the image is 0 to 1, so I want this label to be 8/10 of the way across, 
@@ -240,8 +266,8 @@ for (i = 0; i < dataPts; i++)
 		});
 	
 	
-	ecocap.append(ecoLabels);
-	svg0.append(ecocap);
+	ecofoot.append(ecoLabels);
+	svg0.append(ecofoot);
 	
 	
 	//	<div id="newBruce"><p>1. Graph with Labels</p></div>
@@ -351,11 +377,11 @@ var Oceanlabels = new LabelGroup(
 		{type: "latin-upper",
 		labels: 	
 		  [	
-			{content: "", xyPos:[0.5, 0.58], width: 0, key: "A"},
-			{content: "", xyPos:[0.78, 0.58], width: 0, key: "B"},
-			{content: "", xyPos:[0.62, 0.44], width: 0, key: "C"},
-			{content: "", xyPos:[0.77, 0.25], width: 0, key: "D"},
-			{content: "", xyPos:[0.33, 0.2], width: 0, key: "E"},
+			{content: "", xyPos:[0.47, 0.62], width: 0, key: "A"},
+			{content: "", xyPos:[0.76, 0.62], width: 0, key: "B"},
+			{content: "", xyPos:[0.6, 0.5], width: 0, key: "C"},
+			{content: "", xyPos:[0.74, 0.32], width: 0, key: "D"},
+			{content: "", xyPos:[0.31, 0.25], width: 0, key: "E"},
 		  ]
 		});
 		

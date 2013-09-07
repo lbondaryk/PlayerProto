@@ -1,14 +1,14 @@
 /* **************************************************************************
- * $Workfile:: widget-checkroup.js                                         $
+ * $Workfile:: widget-checkgroup.js                                         $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the CheckGroup widget.
+ * @fileoverview Implementation of the CheckGroup bric.
  *
- * The CheckGroup widget draws a list of choices and allows the user to
+ * The CheckGroup bric draws a list of choices and allows the user to
  * select one or more choices.
  * It is analogous to radio group, with the difference of using checkbox
- * and allowing multiple selects. Also it is possible to set max number
- * selects.
+ * and allowing multiple selections. Also it is possible to set the max
+ * number of selections.
  *
  * Created on		July 29, 2013
  * @author			Young-Suk Ahn 
@@ -16,6 +16,11 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+goog.provide('pearson.brix.CheckGroup');
+
+goog.require('pearson.brix.HtmlBric');
+goog.require('pearson.utils.IEventManager');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -66,7 +71,7 @@
  * Answers are presented to users by certain widgets that allow the user to
  * select one (or more of them).
  *
- * @typedef {Object} Answer
+ * @typedef {Object} pearson.brix.Answer
  * @property {string}	content		-The content of the answer, which presents the
  * 									 meaning of the answer.
  * @property {string}	response	-The response is presented to the user when
@@ -78,57 +83,60 @@
  * @todo: the content currently must be text (a string) however, we are likely
  * to want to make the content be any widget.
  */
+pearson.brix.Answer;
 
 
 /* **************************************************************************
  * CheckGroup                                                          */ /**
  *
- * Constructor function for CheckGroup widget instances.
+ * Constructor function for CheckGroup bric instances.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.HtmlBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this CheckGroup
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this CheckGroup.
  * 										 if undefined a unique id will be assigned.
- * @param {Array.<Answer>}
+ * @param {!Array.<!pearson.brix.Answer>}
  *						config.choices	-The list of choices (answers) to be presented by the CheckGroup.
- * @param {int}
- *						config.maxSelects -The maximum number of items that can be selected
+ * @param {number} 		config.maxSelects
+ * 										-The maximum number of choices that can be selected
  *
  * @param {string|undefined}
  *						config.numberFormat
  *										-The format for numbering the choices. default is "none"
- * @param {EventManager|undefined}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them. (Optional)
+ * 										 and subscribing to them.
  *
  * @classdesc
- * The CheckGroup widget draws a list of choices and allows the user to
- * select one of the choices by selecting a Check button next to the choice.
+ * The CheckGroup bric draws a list of choices and allows the user to
+ * select one or more of the choices by checking a box next to the desired
+ * choices.
  *
  ****************************************************************************/
-function CheckGroup(config, eventManager)
+pearson.brix.CheckGroup = function (config, eventManager)
 {
-	var that = this;
-	
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the Check group widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, CheckGroup);
-
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CheckGroup);
 
 	/**
 	 * The maximum number of allowed selects.
-	 * @type {int}
+	 * @type {number}
 	 */
 	this.maxSelects = config.maxSelects;
 
 	/**
 	 * The list of choices presented by the CheckGroup.
-	 * @type {Array.<Answer>}
+	 * @type {!Array.<!pearson.brix.Answer>}
 	 */
 	this.choices = config.choices;
 
@@ -141,24 +149,34 @@ function CheckGroup(config, eventManager)
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager || { publish: function () {}, subscribe: function () {} };
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
-	 * The event id published when an item in this carousel is selected.
+	 * The event id published when an item in this CheckGroup is selected.
 	 * @const
 	 * @type {string}
 	 */
 	this.selectedEventId = this.id + '_itemSelected';
 
+	/**
+	 * @todo DOCUMENT ME! -young suk this needs to be described -mjl
+	 * @const
+	 * @type {string}
+	 */
 	this.exceedSelectionEventId = this.id + '_exceedSelection';
 	
 	/**
 	 * The event details for this.selectedEventId events
 	 * @typedef {Object} SelectedEventDetails
-	 * @property {string} selectKey	-The answerKey associated with the selected answer.
+	 * @property {string|undefined}
+	 * 							selectKey	-The answerKey associated with the selected answer.
+	 * @property {string|undefined}
+	 * 							unselectKey	-The answerKey associated with the unselected answer.
+	 * @property {number}		numSelected	-The answerKey associated with the selected answer.
 	 */
+	var SelectedEventDetails;
 
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)
@@ -170,14 +188,15 @@ function CheckGroup(config, eventManager)
 			widgetGroup: null,
 			choiceSelected: null,
 		};
-} // end of CheckGroup constructor
+}; // end of CheckGroup constructor
+goog.inherits(pearson.brix.CheckGroup, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids for instances of CheckGroup.
  * @const
  * @type {string}
  */
-CheckGroup.autoIdPrefix = "cg_auto_";
+pearson.brix.CheckGroup.autoIdPrefix = "cg_auto_";
 
 /* **************************************************************************
  * CheckGroup.draw                                                     */ /**
@@ -189,7 +208,7 @@ CheckGroup.autoIdPrefix = "cg_auto_";
  *								 group element tree to.
  *
  ****************************************************************************/
-CheckGroup.prototype.draw = function(container)
+pearson.brix.CheckGroup.prototype.draw = function (container)
 {
 	this.lastdrawn.container = container;
 
@@ -215,6 +234,7 @@ CheckGroup.prototype.draw = function(container)
 	var getButtonId = function (d, i) {return that.id + "_btn" + i;};
 
 	var buttonCell = ansRows.append("td");
+
 	if (this.numberFormat !== "none")
 	{
 		var choiceIndex = this.getChoiceNumberToDisplayFn_();
@@ -245,21 +265,27 @@ CheckGroup.prototype.draw = function(container)
 	choiceInputs
 		.on("click", function (d)
 				{
-					var selInputs = that.selectedInputs()[0];
+					var selInputs = that.selectedInputs_()[0];
 					var numSelected = (selInputs) ? selInputs.length : 0;
 					// Guard against exceeding max number of selects
-					if (selInputs && selInputs.length > that.maxSelects) {
+					if (selInputs && selInputs.length > that.maxSelects)
+					{
 						that.eventManager.publish(that.exceedSelectionEventId, {max: that.maxSelects});
 						// Unselect if select exceeded
 						d3.event.preventDefault();
-					} else {
+					}
+					else
+					{
 						// Notice that depending on checked value, the attribute name is selectedKey or unselected 
-						if (d3.event.target.checked) {
-							that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey, numSelected:numSelected});
+						if (d3.event.target.checked)
+						{
+							that.eventManager.publish(that.selectedEventId,
+													  {selectKey: d.answerKey, numSelected: numSelected});
 						}
 						else 
 						{
-							that.eventManager.publish(that.selectedEventId, {unselectKey: d.answerKey, numSelected:numSelected});
+							that.eventManager.publish(that.selectedEventId,
+													  {unselectKey: d.answerKey, numSelected: numSelected});
 						}
 					}
 				});
@@ -268,7 +294,7 @@ CheckGroup.prototype.draw = function(container)
 	choiceInputs
 		.on("change", function (d)
 				{
-					var selInputs = that.selectedInputs()[0];
+					var selInputs = that.selectedInputs_()[0];
 					var numSelected = (selInputs) ? selInputs.length : 0;
 					if (numSelected <= that.maxSelects) {
 						that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey, numSelected:numSelected});
@@ -281,14 +307,15 @@ CheckGroup.prototype.draw = function(container)
 }; // end of CheckGroup.draw()
 
 /* **************************************************************************
- * CheckGroup.selectedInputs                                            */ /**
+ * CheckGroup.selectedInputs_                                          */ /**
  *
  * Return the selected choice input nodes in the Check group.
+ * @private
  *
- * @return {Object} the list of selected input nodes.
+ * @return {!d3.selection} the list of selected input nodes.
  *
  ****************************************************************************/
-CheckGroup.prototype.selectedInputs = function ()
+pearson.brix.CheckGroup.prototype.selectedInputs_ = function ()
 {
 	var selectedInputsSelector = "div.widgetCheckGroup input[name='" + this.id + "']:checked";
 	return this.lastdrawn.widgetGroup.selectAll(selectedInputsSelector);
@@ -297,17 +324,19 @@ CheckGroup.prototype.selectedInputs = function ()
 /* **************************************************************************
  * CheckGroup.selectedItems                                            */ /**
  *
- * Return the selected choice(s) in the Check group or null if nothing has been
- * selected.
+ * Return the selected choice(s) in the Check group or null if nothing has
+ * been selected.
  *
- * @return {Object} the Check group choice(s) which is/are currently selected 
- *                  or null.
+ * @return {Array.<pearson.brix.Answer>} the Check group choice(s) which
+ * 		is/are currently selected or null if no choices are selected.
+ *
+ * @todo Why return null for no selected choices instead of just an empty array?
  *
  ****************************************************************************/
-CheckGroup.prototype.selectedItems = function ()
+pearson.brix.CheckGroup.prototype.selectedItems = function ()
 {
-	var selectedInputs = this.selectedInputs();
-	return !selectedInputs.empty() ? selectedInputs.data() : null;
+	var selectedInputs = this.selectedInputs_();
+	return !selectedInputs.empty() ? /**@type {!Array.<pearson.brix.Answer>}*/ (selectedInputs.data()) : null;
 };
 
 /* **************************************************************************
@@ -319,12 +348,13 @@ CheckGroup.prototype.selectedItems = function ()
  * @param {number}	index	-the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
-CheckGroup.prototype.selectItemAtIndex = function (index)
+pearson.brix.CheckGroup.prototype.selectItemAtIndex = function (index)
 {
 	// Guard against exceeding max number of selects
-	var selInputs = this.selectedInputs()[0];
+	var selInputs = this.selectedInputs_()[0];
 	var numSelected = (selInputs) ? selInputs.length : 0;
-	if (numSelected >= this.maxSelects) {
+	if (numSelected >= this.maxSelects)
+	{
 		this.eventManager.publish(this.exceedSelectionEventId, {max: this.maxSelects});
 		return;
 	}
@@ -341,14 +371,22 @@ CheckGroup.prototype.selectItemAtIndex = function (index)
 	selectedInput.checked = true;
 
 	// @todo: serialize all selected keys and send as array
+	/**@type {pearson.brix.Answer}*/
+	var d = d3.select(selectedInput).datum();
 	this.eventManager.publish(this.selectedEventId, 
-		{selectKey: d3.select(selectedInput).datum().answerKey, numSelected: numSelected});
+							  {selectKey: d.answerKey, numSelected: numSelected});
 };
 
- /*
-  *
-  ****************************************************************************/
-CheckGroup.prototype.unselectItemAtIndex = function (index)
+/* **************************************************************************
+ * CheckGroup.unselectItemAtIndex                                      */ /**
+ *
+ * Unselect the choice in this check group at the given index. If the choice is
+ * already unselected, do nothing.
+ *
+ * @param {number}	index	-the 0-based index of the choice to mark as unselected.
+ *
+ ****************************************************************************/
+pearson.brix.CheckGroup.prototype.unselectItemAtIndex = function (index)
 {
 	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetCheckGroup input");
 	var selectedInput = choiceInputs[0][index];
@@ -363,19 +401,20 @@ CheckGroup.prototype.unselectItemAtIndex = function (index)
 
 	// @todo: Maybe changing to 'changedEventId' to keep consistent with HTML and also 
 	//        the semantics supports checked as well as unchecked
-	this.eventManager.publish(this.selectedEventId, {unselectKey: d3.select(selectedInput).datum().answerKey});
-}
+	/**@type {pearson.brix.Answer}*/
+	var d = d3.select(selectedInput).datum();
+	this.eventManager.publish(this.selectedEventId, {unselectKey: d.answerKey});
+};
 
 /* **************************************************************************
  * CheckGroup.getChoiceNumberToDisplayFn_                              */ /**
  *
  * Get a function which returns the string that should be prefixed to the
  * choice at a given index
- *
  * @private
  *
  ****************************************************************************/
-CheckGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
+pearson.brix.CheckGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 {
 	var formatIndexUsing =
 	{

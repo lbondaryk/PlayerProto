@@ -1,45 +1,60 @@
 <!DOCTYPE html>
 <html>
-	<head>
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
 	<title class="setTitle"></title>
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-	<meta content="eCourses Author, Title" name="description">   	
-    <!-- Bootstrap -->
-  
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
     <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
 	<link href="css/widgets.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/module-opener.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
 	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
 
-	</head>
-	<body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-                <h2 class="setTitle"></h2>
-				<div id="multiChoice"><p>0. Labels as Multiple Choice inputs</p>
-				</div>
-				<div id="multiSel"><p>1. Labels as multiselect</p></div>
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+						<div id="multiChoice"><p>0. Labels as Multiple Choice inputs</p>
+						</div>
+						<div id="multiSel"><p>1. Labels as multiselect</p></div>
 	              
-			</div>
-			<div class="span6 rightCol">
-				<div id="labelsDrop">
-					<p>2. Labels as dropdowns</p>
-                </div>
-				<div id="dragnDrop"><p>3. Labels as DragnDrop</p></div>
-			</div>
+					</div>
+					<div class="lc_ec_trailing">
+						<div id="labelsDrop">
+							<p>2. Labels as dropdowns</p>
+               			 </div>
+						<div id="dragnDrop"><p>3. Labels as DragnDrop</p></div>
+					</div>
+				</div>
+			</section>
 		</div>
 	</div>
-    
-    
-	<script src="js/jquery-latest.js"></script>
+    	<script src="js/jquery-latest.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-ui-1.10.2.custom.js"></script>
 	<script src="js/toc-structure.js"></script>
 	<script src="js/eCourse-master.js"></script>
-    <script src="js/eventmanager.js"></script>
 	<script src="js/d3.v3.min.js"></script>
+
+	<script src="js/brixlib-compiled.js"></script>
+
+	<!--
 	<script src="js/widget-base.js"></script>
 	<script src="js/widget-selectgroup.js"></script>
     <script src="js/widget-image.js"></script>
@@ -52,7 +67,29 @@
 	<script src="js/submitmanager.js"></script>
 	<script src="js/answerman.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
+
+	!-->
+
 <script>
+
+// local aliases for convenience
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LineGraph = pearson.brix.LineGraph;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var Button = pearson.brix.Button;
+	var Slider = pearson.brix.Slider;
+	var Readout = pearson.brix.Readout;
+	var Sketch = pearson.brix.Sketch;
+	var EventManager = pearson.utils.EventManager;
+	var SubmitManager = pearson.brix.SubmitManager;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var SelectGroup = pearson.brix.SelectGroup;
 
 	var eventManager = new EventManager();
 	var submitManager = new SubmitManager(eventManager);

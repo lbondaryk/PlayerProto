@@ -20,6 +20,11 @@
     <script src="../js/jquery-latest.js"></script>
     <script src="../js/jquery-ui-1.10.2.custom.js"></script>
 	<script src="../js/d3.v3.min.js"></script>
+
+	<script src="../../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../../closure/closure-library/closure/goog/deps.js"></script>
+	<script src="../js/eventmanager.js"></script>
+
     <!-- LB - still need this old widget code for pie charts and markers, TODO: update and remove -->
     <script src="../js/widgets.js"></script>    
 	<script src="../js/widget-base.js"></script>
@@ -27,7 +32,6 @@
 	<script src="../js/widget-markergroup.js"></script>
     <script src="../js/widget-slider.js"></script>
     <script src="../js/widget-numeric.js"></script>
-	<script src="../js/eventmanager_ex.js"></script>
 </head>
 
 <body>
@@ -53,7 +57,7 @@
 
 	// SI - you still need an eventManager for the scripts to not throw an error.  It just doesn't do anything
 
-	var eventManager = new EventManager();
+	var eventManager = new pearson.utils.EventManager();
 	
 	// LB - include only js for this 'object', this data is included redundantly
  	var levoData =   [ { x: 35, y: "Levo" } ];

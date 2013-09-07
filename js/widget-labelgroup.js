@@ -15,6 +15,11 @@
  *
  * **************************************************************************/
 
+goog.provide('pearson.brix.LabelGroup');
+
+goog.require('pearson.brix.SvgBric');
+goog.require('pearson.utils.IEventManager');
+
 // Sample Label constructor configuration
 (function()
 {
@@ -35,11 +40,13 @@
 /**
  * Information needed to process a label in a LabelGroup.
  *
- * @typedef {Object} LabelConfig
- * @property {string}	content	-string with HTML markup to be displayed by the label
- * @property {Array.<nummber, number>}
- *						xyPos	-An array containing the x,y data coordinates for the
- *								 top left corner of the label
+ * @typedef {Object} pearson.brix.LabelConfig
+ * @property {htmlString}
+ * 						content	-string with HTML markup to be displayed by the label
+ * @property {Array.<nummber>}
+ *						xyPos	-An 2 element array containing the x,y data coordinates
+ *								 as elements 0 and 1 respectively for the top left
+ *								 corner of the label
  * @property {number}	width	-The pixel width of the label
  *								 @todo we need a better way to deal w/ the width, 
  *									than hard-coding it here. -lb
@@ -49,6 +56,7 @@
  *								 does not need to be unique, and if not all labels
  *								 with the same key will be addressed.
  */
+pearson.brix.LabelConfig;
 	
 /* **************************************************************************
  * LabelGroup                                                          */ /**
@@ -61,20 +69,21 @@
  * drawn, it assumes the data extents are 0 - 1.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.SvgBric}
+ * @export
  *
  * @param {Object}		config			-The settings to configure this LabelGroup
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this LabelGroup.
  * 										 if undefined a unique id will be assigned.
- * @param {Array.<LabelConfig>}
+ * @param {Array.<pearson.brix.LabelConfig>}
  *						config.labels	-An array describing each label in the group.
  *										  
  * @param {string}		config.type		-string specifying "bullets" for dots, "numbered"
  *										 for dots and #, "alpha" for letters, or anything 
  *										 else for just labels
- * @param {boolean}		config.question		-flag specifying whether to use as a question
- * @param {EventManager=}
+ * @param {boolean}		config.question	-flag specifying whether to use as a question
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -82,13 +91,16 @@
  * @todo: we need some sort of autowidth intelligence on these, but I don't
  * know how to reconcile that with giving user control over wrapping
  ****************************************************************************/
-function LabelGroup(config, eventManager)
+pearson.brix.LabelGroup = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
 	 * A unique id for this instance of the labelgroup widget
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, LabelGroup);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelGroup);
 
 	/**
 	 * Array of traces to be graphed, where each trace is an array of points and each point is an
@@ -101,25 +113,32 @@ function LabelGroup(config, eventManager)
 
 	 // if we are using labels as a question input, get the labels from the choices property.
 	 // otherwise get them from the correctly named labels property
+	 // @todo This shouldn't be done this way. we should ALWAYS expect a labels property in config. -mjl
+	 /**
+	  * An array describing each label in the group, what it should display,
+	  * and where it should be displayed using data coordinate scale values.
+	  * @type {Array.<pearson.brix.LabelConfig>}
+	  */
 	this.labels = config.question ? config.choices : config.labels;
 
 	/**
-	 * The type specifies an adornment on each label or no adornment if it is not specified.
+	 * The type specifies an adornment on each label or no adornment.
 	 * It must be one of:
 	 *
+	 * - "none" for no adornment
 	 * - "bullets" for a solid bullet adornment
 	 * - "numbered" for a bullet containing the index number adornment
 	 * - "latin-upper" for a bullet containing a sequential capital letter
 	 *
-	 * @type {string|undefined}
+	 * @type {string}
 	 */
 	this.type = config.type || "none";
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id published when a label in this group is selected.
@@ -163,35 +182,42 @@ function LabelGroup(config, eventManager)
 			widgetGroup: null,
 			xScale: null,
 			yScale: null,
+			labelCollection: null,
 		};
-} // end of Label constructor
+} // end of LabelGroup constructor
+goog.inherits(pearson.brix.LabelGroup, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids for instances of LabelGroup.
  * @const
  * @type {string}
  */
-LabelGroup.autoIdPrefix = "lblg_auto_";
+pearson.brix.LabelGroup.autoIdPrefix = "lblg_auto_";
 
 /* **************************************************************************
  * LabelGroup.draw                                                     */ /**
  *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
  * Draw this LabelGroup in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the labels element tree to.
- * @param {Object}	size		-The size in pixels for the label
- * @param {number}	size.height	-The height in pixels of the area the labels are drawn within.
- * @param {number}	size.width	-The width in pixels of the area the labels are drawn within.
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-LabelGroup.prototype.draw = function(container, size)
+pearson.brix.LabelGroup.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
 	
 	this.setLastdrawnScaleFns2ExplicitOrDefault_(size);
 	
+	// local aliases for convenience
+	var attrFnVal = pearson.brix.utils.attrFnVal;
+
 	var that = this;
 	var numLabels = this.labels.length;
 
@@ -298,15 +324,20 @@ LabelGroup.prototype.draw = function(container, size)
 
 }; // end of LabelGroup.draw()
 
-/* *************************************************************************
- * currently there are no features that require updates of data/position/etc.
+/* **************************************************************************
+ * LabelGroup.redraw                                                   */ /**
+ *
+ * Redraw the labelgroup as it may have been changed (new content or position).
+ * It will be redrawn into the same container area as it was last drawn.
+ *
+ * @note currently there are no features that require updates of data/position/etc.
  * to label groups, so redraw is empty.  Eventually, when we need to drag 
- * labels around, we'll have to parcel out the redraw and draw methods.
- ************************************************************************/
-LabelGroup.prototype.redraw = function () {
-
+ * labels around, we'll have to parcel out the redraw and draw methods. -lb
+ *
+ ****************************************************************************/
+pearson.brix.LabelGroup.prototype.redraw = function ()
+{
 };
-
 
 /* **************************************************************************
  * LabelGroup.setScale                                                 */ /**
@@ -323,7 +354,7 @@ LabelGroup.prototype.redraw = function () {
  *								 to the pixel offset into the data area.
  *
  ****************************************************************************/
-LabelGroup.prototype.setScale = function (xScale, yScale)
+pearson.brix.LabelGroup.prototype.setScale = function (xScale, yScale)
 {
 	this.explicitScales_.xScale = xScale;
 	this.explicitScales_.yScale = yScale;
@@ -334,13 +365,14 @@ LabelGroup.prototype.setScale = function (xScale, yScale)
  *
  * Highlight the label(s) associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
+ * @export
  *
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-LabelGroup.prototype.lite = function (liteKey)
+pearson.brix.LabelGroup.prototype.lite = function (liteKey)
 {
-	console.log("TODO: log fired Label highlite " + liteKey);
+	window.console.log("TODO: log fired Label highlite " + liteKey);
 	
 	// Turn off all current highlights
 	var allLabels = this.lastdrawn.labelCollection;
@@ -359,21 +391,21 @@ LabelGroup.prototype.lite = function (liteKey)
 
 	if (labelsToLite.empty())
 	{
-		console.log("No key '" + liteKey + "' in Labels group " + this.id );
+		window.console.log("No key '" + liteKey + "' in Labels group " + this.id );
 	}
 }; // end of LabelGroup.lite()
 
 /* **************************************************************************
- * LabelGroup.selectedItem                                         */ /**
+ * LabelGroup.selectedItem                                             */ /**
  *
  * Return the selected item's data in the select group.
+ * @export
  *
  * @return {Object} the select group item data which is currently selected.
  *
  ****************************************************************************/
-LabelGroup.prototype.selectedItem = function ()
+pearson.brix.LabelGroup.prototype.selectedItem = function ()
 {
-	
 	var inputCollection = this.lastdrawn.widgetGroup;
 	var selectedInput = inputCollection.selectAll(".lit");
 	return !selectedInput.empty() ? selectedInput.datum() : null;
@@ -385,11 +417,11 @@ LabelGroup.prototype.selectedItem = function ()
  * Set this.lastdrawn.xScale and yScale to those stored in explicitScales
  * or to the default scale functions w/ a data domain of [0,1].
  *
- * @param {Size}	cntrSize	-The pixel size of the container given to draw().
+ * @param {pearson.utils.ISize}	cntrSize	-The pixel size of the container given to draw().
  * @private
  *
  ****************************************************************************/
-LabelGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
+pearson.brix.LabelGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSize)
 {
 	if (this.explicitScales_.xScale !== null)
 	{
@@ -417,14 +449,14 @@ LabelGroup.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function (cntrSiz
  * LabelGroup.setOpacity                                               */ /**
  *
  * Set the opacity of the sketch
+ * @export
  *
  * @param {number}		opacity		- opacity value to be set to (0: transparent, 1: opaque)
  * @param {number}		duration	- the duration of the transition in milliseconds
  * @param {number}		delay		- the delay before the transition starts in milliseconds
  *
  ****************************************************************************/
-
-LabelGroup.prototype.setOpacity = function (opacity, duration, delay)
+pearson.brix.LabelGroup.prototype.setOpacity = function (opacity, duration, delay)
 {
 	var xScale = this.lastdrawn.xScale;
 	var yScale = this.lastdrawn.yScale;
@@ -434,8 +466,6 @@ LabelGroup.prototype.setOpacity = function (opacity, duration, delay)
 	allLabels.transition()
 		.style('opacity', opacity)
 		.duration(duration).delay(delay);
-
-
 };
 
 /* **************************************************************************
@@ -447,7 +477,7 @@ LabelGroup.prototype.setOpacity = function (opacity, duration, delay)
  * @private
  *
  ****************************************************************************/
-LabelGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
+pearson.brix.LabelGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 {
 	var formatIndexUsing =
 	{
@@ -470,7 +500,6 @@ LabelGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 	};
 
 	return (this.type in formatIndexUsing) ? formatIndexUsing[this.type]
-												   : formatIndexUsing["none"];
+										   : formatIndexUsing["none"];
 };
-
 

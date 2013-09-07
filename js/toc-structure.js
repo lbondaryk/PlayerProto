@@ -77,7 +77,7 @@ var bookConfig = {
                 type: "objective",
                 url: "labelCalloutTests.html",
                 id: "n.2.5",
-                title: "Label and Callout Tests"
+                title: "Label and Marker Tests"
             },
             {
                 type: "objective",
@@ -211,22 +211,17 @@ var bookConfig = {
             },
             {
                 type: "objective",
+                url: "multiSelectTests.html",
+                id: "n.4.1b",
+                title: "Multiple Select Tests"
+            },
+            {
+                type: "objective",
                 url: "labelScoreTests.html",
                 id: "n.4.2",
                 title: "Labeling Assessment Tests"
             },
-            {
-                type: "objective",
-                url: "hotSpotTests.html",
-                id: "n.4.3",
-                title: "Hot Spot Assessment Tests"
-            },
-			  {
-                type: "objective",
-                url: "submitTests.html",
-                id: "n.4.4",
-                title: "Submit Tests"
-            },
+           
             ]
         },
         ]

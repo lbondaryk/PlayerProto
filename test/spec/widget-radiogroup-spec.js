@@ -17,6 +17,9 @@
 (function () {
     var expect = chai.expect;
 
+	var EventManager = pearson.utils.EventManager;
+	var RadioGroup = pearson.brix.RadioGroup;
+
     describe('RadioGroups: broadcasting for an answer', function () {
 		var eventManager = null;
 

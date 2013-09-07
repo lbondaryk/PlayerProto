@@ -14,29 +14,42 @@
  *
  * **************************************************************************/
 
-/* **************************************************************************
- * answerMan                                                           */ /**
- *
- * Mock scoring engine.
- *
- * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
- * @param {string} 		studAnswer		-The student's answer.
- ****************************************************************************/
+goog.provide('pearson.brix.AnswerMan');
+
+goog.require('pearson.brix.test.activities');
 
 // YSAP - Changed from function to class with method.
 // Proposal: change from AnswerMan to EvalProvider
 
-var AnswerMan = function()
+/* **************************************************************************
+ * AnswerMan                                                           */ /**
+ *
+ * The AnswerMan widget creates a clickable html button that publishes events.
+ *
+ * @constructor
+ * @export
+ *
+ **************************************************************************/
+pearson.brix.AnswerMan = function ()
 {
+};
 
-} 
 
-AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
+/* **************************************************************************
+ * AnswerMan.submitAnswer                                              */ /**
+ *
+ * Mock scoring engine.
+ * @export
+ *
+ * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
+ * @param {string} 		studAnswerKey	-The student's answer key.
+ * @param {string} 		studAnswerValue	-The student's answer value.
+ ****************************************************************************/
+pearson.brix.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
 { 
-	 
 	//lookup the student answer in the answer key in fakeactivitydb.js, which
 	//got loaded with the page
-	
+	var activities = pearson.brix.test.activities;
 	var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
 	var solution = (studAnswerKey in activity) ? activity[studAnswerKey] : "solution key not found";
 
@@ -51,23 +64,24 @@ AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAn
 	// is set to the value the student submitted.
 	
 	var feedback = solution.response;
+	var ansKey;
 	if (studAnswerValue)
-		{
+	{
 		ansKey = studAnswerValue != solution.correctValue ? 0 : 1;
 		solution.content = studAnswerValue;
-		}
+	}
 	else
-		{
-			var ansKey = solution.score;
-		}
+	{
+		ansKey = solution.score;
+	}
 	
 	//initialized the scored return object.  We'll need to know it's container
 	//(specifies where to write the responses), the value of the student submission,
 	//the score, and any specialized response.
 	var scored = {
-				submission: solution.content,
-				response: feedback
-				};
+					submission: solution.content,
+					response: feedback
+				 };
 				
 	//then we switch on the lookup right or wrong response.  This is hard-coded
 	//to student answer now, but needs to come from the lookup vs. the student 
@@ -80,7 +94,7 @@ AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAn
 	//sliding scale functionality that allows some answers to be more correct
 	//and some less -lb
 	switch(ansKey)
-		{
+	{
 		case 1:
   		// You got it right, hooray!
 			scored.score = 1;
@@ -100,9 +114,9 @@ AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAn
   			scored.score = 2;
 			//scored.response =" Sorta kinda.";
   			break;
-		}
+	}
 	
 	//the return the scored object to the submitting page.
 	return scored;
 	
-} //end answerMan function
+}; //end answerMan function

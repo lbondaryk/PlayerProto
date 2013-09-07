@@ -1,96 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
 <head>
 	<meta charset="UTF-8">
-	<meta name="Author" content="Jordan Vishniac" />
+	<meta name="Author" content="Leslie Bondaryk" />
 	<meta name="Owner" content="Pearson" />
 	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
 	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-	<meta content="eCourses Author, Title" name="description" />
-    <!-- Bootstrap -->
-    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/graphics_and_svg.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
-	
+	<meta content="Carmen Santiago, Demo Book" name="description" />
 	<title class="setTitle"></title>
-	
-	<style>
-	
-		div.test
-		{
-			min-height: 200px;
-		}
-	
-	</style>
-</head>
 
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+
+</head>
 <body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-				
-				<div class="test">
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+
+						<div class="test">
 					<p>Test 0: One button</p>
 					<span id="t0button"></span>
-				</div>
+						</div>
 				
-				<div class="test">
+						<div class="test">
 					<p>Test 1: Two buttons</p>
 					<span id="t1_1button"></span>
 					<span id="t1_2button"></span>
-				</div>
+						</div>
 				
-				<div class="test">
+						<div class="test">
 					<p>Test 2: One button with event</p>
 					<span id="t2button"></span>
 					<p>Click to increment: <span id="t2val"></span></p>
-				</div>
+						</div>
 				
+					</div>
+					<div class="lc_ec_trailing">
+						<div class="test">
+							<p>Test 3: Two buttons with events</p>
+							<span id="t3_1button"></span>
+							<p>Click button 1 to increment</p>
+							<span id="t3_2button"></span>
+							<p>Click button 2 to decrement
+							<p>Value: <span id="t3val"></span></p>
+						</div>
+						<div class="test">
+							<p>Test 4: One button changes text on another button</p>
+							<span id="t4_1button"></span>
+							<p>Click button 1 to change text on button 2</p>
+							<span id="t4_2button"></span>
+						</div>
+					</div>
 			</div>
-			<div class="span6 rightCol">
-				
-				<div class="test">
-					<p>Test 3: Two buttons with events</p>
-					<span id="t3_1button"></span>
-					<p>Click button 1 to increment</p>
-					<span id="t3_2button"></span>
-					<p>Click button 2 to decrement
-					<p>Value: <span id="t3val"></span></p>
-				</div>
-				
-				<div class="test">
-					<p>Test 4: One button changes text on another button</p>
-					<span id="t4_1button"></span>
-					<p>Click button 1 to change text on button 2</p>
-					<span id="t4_2button"></span>
-				</div>
-				
-			</div>
+		</section>
 		</div>
 	</div>
 	<script src="js/jquery-latest.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<!--script src="js/jquery.touchSwipe.min.js"></script-->
-	<script src="js/jquery-ui-1.10.2.custom.js"></script>
-	<script src="js/toc-structure.js"></script>    
-	<script src="js/eCourse-master.js"></script>    
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
+	<script src="js/d3.v3.min.js"></script>
 
-    
-	<script src="js/d3.v2.min.js"></script>
-	<script src="js/widgets.js"></script>
+	<script src="js/brixlib-compiled.js"></script>
+
+	<!--
+
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
 	<script src="js/eventmanager.js"></script>
 	<script src="js/widget-base.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-numeric.js"></script>
+	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-button.js"></script>
-	<script src="js/widget-numeric.js"></script>
+	-->
+
 
 <script>
 
-	// create event manager
-	var eventManager = new EventManager();
-	
+	// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+	var Button = pearson.brix.Button;
+	var Readout = pearson.brix.Readout;
+ 
+ 	var eventManager = new EventManager();
+
 	///////////////////////////////////////////
 	
 	// Test 0: One button

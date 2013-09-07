@@ -2,11 +2,12 @@
  * $Workfile:: widget-imageviewer.js                                        $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the ImageViewer widget.
+ * @fileoverview Implementation of the ImageViewer bric.
  *
- * The ImageViewer widget draws the common widget configuration of a
- * Carousel widget presenting a collection of images with the selected
- * image displayed in an Image widget below the carousel.
+ * The ImageViewer bric draws the common configuration of a
+ * {@link pearson.brix.Carousel} presenting a collection of images with the
+ * selected image displayed in an {@link pearson.brix.Image} bric below the
+ * carousel.
  *
  * Created on		May 18, 2013
  * @author			Michael Jay Lippert
@@ -14,6 +15,14 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+goog.provide('pearson.brix.ImageViewer');
+
+goog.require('pearson.brix.SvgBric');
+goog.require('pearson.brix.Image');
+goog.require('pearson.brix.CaptionedImage');
+goog.require('pearson.brix.Carousel');
+goog.require('pearson.utils.IEventManager');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -34,29 +43,36 @@
  * image displayed in an Image widget below the carousel.
  *
  * @constructor
- * @implements {IWidget}
+ * @extends {pearson.brix.SvgBric}
+ * @export
  *
  * @param {Object}			config			-The settings to configure this ImageViewer
  * @param {string|undefined}
  * 							config.id		-String to uniquely identify this ImageViewer.
  * 											 if undefined a unique id will be assigned.
- * @param {Array.<Image>}	config.items	-The list of Image widgets to be presented by the ImageViewer.
- * @param {EventManager}	eventManager	-allows the widget to publish and subscribe to events
+ * @param {Array.<!pearson.brix.Image>}
+ * 							config.items	-The list of Image brix to be presented by the ImageViewer.
+ * @param {!pearson.utils.IEventManager}
+ * 							eventManager	-allows the widget to publish and subscribe to events
+ * 											 required for correct internal operation.
  *
  ****************************************************************************/
-function ImageViewer(config, eventManager)
+pearson.brix.ImageViewer = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	var that = this;
 	
 	/**
-	 * A unique id for this instance of the image viewer widget
+	 * A unique id for this instance of the image viewer bric
 	 * @type {string}
 	 */
-	this.id = getIdFromConfigOrAuto(config, ImageViewer);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.ImageViewer);
 
 	/**
-	 * The list of widgets presented by the Carousel in this ImageViewer.
-	 * @type {Array.<IWidget>}
+	 * The list of image brix presented by the Carousel in this ImageViewer.
+	 * @type {Array.<!pearson.brix.Image>}
 	 */
 	this.items = config.items;
 
@@ -76,37 +92,32 @@ function ImageViewer(config, eventManager)
 
 	/**
 	 * The carousel widget used by this ImageViewer to present the images.
-	 * @type {Carousel}
+	 * @type {!pearson.brix.Carousel}
 	 */
-	this.carousel = new Carousel(crslConfig, eventManager);
+	this.carousel = new pearson.brix.Carousel(crslConfig, eventManager);
 
 	// We may want to eventually support an empty image, but for now
 	// we'll just copy the 1st image into the display image.
-	var imgConfig =
-		{
-			URI: this.items[0].URI,
-			caption: this.items[0].caption,
-			preserveAspectRatio: this.items[0].preserveAspectRatio,
-			actualSize: this.items[0].actualSize
-		};
-
 	var cimgConfig =
 		{
 			id: this.id + "_cimg",
-			image: new Image(imgConfig),
+			URI: this.items[0].URI,
+			caption: this.items[0].caption,
+			preserveAspectRatio: this.items[0].preserveAspectRatio,
+			actualSize: this.items[0].actualSize,
 			captionPosition: "below"
 		};
 
 	/**
 	 * The captioned image widget which displays the image selected
 	 * in the carousel.
-	 * @type {CaptionedImage}
+	 * @type {!pearson.brix.CaptionedImage}
 	 */
-	this.image = new CaptionedImage(cimgConfig);
+	this.image = new pearson.brix.CaptionedImage(cimgConfig);
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {EventManager}
+	 * @type {!pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager;
 
@@ -122,6 +133,7 @@ function ImageViewer(config, eventManager)
 	 * @typedef {Object} SelectedEventDetails
 	 * @property {string} selectKey	-The key associated with the selected item.
 	 */
+	var SelectedEventDetails;
 
 	// event handler that connects the carousel selection to changing and redrawing
 	// the image below.
@@ -144,29 +156,37 @@ function ImageViewer(config, eventManager)
 			size: {height: 0, width: 0},
 			widgetGroup: null,
 		};
-} // end of ImageViewer constructor
+}; // end of ImageViewer constructor
+goog.inherits(pearson.brix.ImageViewer, pearson.brix.SvgBric);
 
 /**
  * Prefix to use when generating ids for instances of ImageViewer.
  * @const
  * @type {string}
  */
-ImageViewer.autoIdPrefix = "imgvwr_auto_";
+pearson.brix.ImageViewer.autoIdPrefix = "imgvwr_auto_";
 
 /* **************************************************************************
  * ImageViewer.draw                                                    */ /**
  *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
  * Draw this ImageViewer in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container svg element to append the carousel element tree to.
- * @param {Size}	size		-The height and width in pixels for the carousel
- *
+ * @param {!d3.selection}	container	-The container svg element to append
+ * 										 this SvgBric element tree to.
+ * @param {!pearson.utils.ISize}
+ * 							size		-The size (in pixels) of the area this
+ * 										 SvgBric has been allocated.
  ****************************************************************************/
-ImageViewer.prototype.draw = function(container, size)
+pearson.brix.ImageViewer.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
+
+	// aliases of utility functions for readability
+	var attrFnVal = pearson.brix.utils.attrFnVal;
 
 	var that = this;
 	
@@ -208,9 +228,10 @@ ImageViewer.prototype.draw = function(container, size)
  * ImageViewer.redraw                                                  */ /**
  *
  * Redrawing the ImageViewer currently does nothing.
+ * @export
  *
  ****************************************************************************/
-ImageViewer.prototype.redraw = function ()
+pearson.brix.ImageViewer.prototype.redraw = function ()
 {
 };
 
@@ -218,11 +239,12 @@ ImageViewer.prototype.redraw = function ()
  * ImageViewer.selectedItem                                            */ /**
  *
  * Return the selected item in the carousel.
+ * @export
  *
  * @return {Object} the carousel item which is currently selected.
  *
  ****************************************************************************/
-ImageViewer.prototype.selectedItem = function ()
+pearson.brix.ImageViewer.prototype.selectedItem = function ()
 {
 	return this.carousel.selectedItem();
 };
@@ -231,11 +253,12 @@ ImageViewer.prototype.selectedItem = function ()
  * ImageViewer.selectItemAtIndex                                       */ /**
  *
  * Select the item in the carousel at the given index.
+ * @export
  *
  * @param {number}	index	-the 0-based index of the item to flag as selected.
  *
  ****************************************************************************/
-ImageViewer.prototype.selectItemAtIndex = function (index)
+pearson.brix.ImageViewer.prototype.selectItemAtIndex = function (index)
 {
 	this.carousel.selectItemAtIndex(index);
 };
@@ -245,14 +268,15 @@ ImageViewer.prototype.selectItemAtIndex = function (index)
  *
  * Find the first item in the list of items in this ImageViewer which has the
  * specified key and return its index. If no item has that key return null.
+ * @export
  *
- * @param {Object}	key		-The key of the item to find
+ * @param {string}	key		-The key of the item to find
  *
  * @return {?number} the index of the item in the list of items with the
  * 			specified key.
  *
  ****************************************************************************/
-ImageViewer.prototype.itemKeyToIndex = function(key)
+pearson.brix.ImageViewer.prototype.itemKeyToIndex = function(key)
 {
 	return this.carousel.itemKeyToIndex(key);
 };
@@ -266,7 +290,7 @@ ImageViewer.prototype.itemKeyToIndex = function(key)
  * @private
  *
  ****************************************************************************/
-ImageViewer.prototype.assignMissingItemKeys_ = function ()
+pearson.brix.ImageViewer.prototype.assignMissingItemKeys_ = function ()
 {
 	this.items.forEach(function (item, i)
 					   {
@@ -283,13 +307,14 @@ ImageViewer.prototype.assignMissingItemKeys_ = function ()
  *
  * Highlight the image(s) associated w/ the given liteKey (key) in the
  * carousel, and select the 1st highlighted image.
+ * @export
  *
- * @param {string|number}	liteKey	-The key associated with the image(s) to be highlighted.
+ * @param {string}		liteKey		-The key associated with the image(s) to be highlighted.
  *
  ****************************************************************************/
-ImageViewer.prototype.lite = function (liteKey)
+pearson.brix.ImageViewer.prototype.lite = function (liteKey)
 {
-	console.log("called ImageViewer.lite( " + liteKey + " )");
+	window.console.log("called ImageViewer.lite( " + liteKey + " )");
 
 	var i = this.itemKeyToIndex(liteKey);
 

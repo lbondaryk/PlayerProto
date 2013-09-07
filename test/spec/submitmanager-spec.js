@@ -17,6 +17,9 @@
 (function () {
     var expect = chai.expect;
 
+	var SubmitManager = pearson.brix.SubmitManager;
+	var AnswerMan = pearson.brix.AnswerMan;
+
 	var createMockEventManager = function ()
 		{
 			return {

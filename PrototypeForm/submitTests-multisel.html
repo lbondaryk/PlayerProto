@@ -39,29 +39,38 @@
 	<script src="../js/eCourse-master.js"></script>    
 	<script src="../js/d3.v3.min.js"></script>
     
-    <script src="../js/widget-base.js"></script>
-    <script src="../js/widget-button.js"></script>
-	<script src="../js/widget-slider.js"></script>
-	<!-- widget-numeric is required with widget-slider, even if you don't want a readout, as you'll get an "Uncaught ReferenceError: Readout is not defined" error without it -->
-	<script src="../js/widget-numeric.js"></script>
-	<script src="../js/widget-checkgroup.js"></script>
-	<!--<script src="../js/widget-multiplechoicequestion.js"></script>-->
-	<script src="../js/eventmanager.js"></script>
-	<!--<script src="../js/submitmanager.js"></script>-->
-	<!--<script src="../js/answerman.js"></script>-->
-	<script src="../js/fakeactivitydb.js"></script>
+    <script src="js/brixlib-compiled.js"></script>
+	<!--
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
-	<!-- New library -->
+	<script src="js/eventmanager.js"></script>
+	<script src="js/widget-base.js"></script>
+
+	<script src="js/widget-button.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/submitmanager.js"></script>
 	<script src="../js/widget-multiselectquestion.js"></script>
 	<script src="../js/submitmanager.js"></script>
+	-->
+
+	<!-- New library -->
 	<script src="../js/answermanpolling.js"></script>
 
 	<a id="test_button" type="button" >Test Submit</a>
 	<script>
 
 	// create event manager
-	var eventManager = new EventManager();
+	var eventManager = new pearson.utils.EventManager();
+
+	var Button = pearson.brix.Button;
+	var RadioGroup = pearson.brix.RadioGroup;
+	var AnswerMan = pearson.brix.AnswerMan;
+	var SubmitManager = pearson.brix.SubmitManager;
 	
+	var MultiSelectQuestion = pearson.brix.MultiSelectQuestion;
+
 	///////////////////////////////////////////
 	
 	
@@ -97,7 +106,7 @@
 
 
 	// create submit manager
-	var submitManager = new SubmitManager(eventManager, new AnswerManPolling());
+	var submitManager = new SubmitManager(eventManager, new pearson.brix.AnswerManPolling());
 	
 	submitManager.handleRequestsFrom(Q1);
 

@@ -1,58 +1,89 @@
 <!DOCTYPE html>
 <html>
-    <head>
- 	<title class="setTitle"></title>
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-	<meta content="eCourses Author, Title" name="description">
-    <!-- Bootstrap -->
-    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
-	<link href="css/widgets.css" rel="stylesheet">
-	<link href="css/learning-objective.css" rel="stylesheet">
-	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
- 	<link href="css/widgets.css" rel="stylesheet" media="screen">
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
 
-    </head>
-	<body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span6 leftCol">
-                <h2 class="setTitle"></h2>
-				<div id="table0"><p>0. Table of callouts: these use headers, multiple columns, no key, no autonumbering, and the "all" type.</p>
-                </div>
-				<div id="singly"><p>1. Individual callout - only shows the first callout text from the table above, and headers if there are any. Typically used with selection events from labels or markers or carousels.</p>
-                </div>
-				<div id="optionsOff"><p>2. Degenerate: single column, no headers	
-                					</p>
-                </div>
-                <div id="numbered"><p>3. autonumbered callouts, linked to #4</p>
-                </div>
-			</div>
-			<div class="span6 rightCol">
-				<div id="imgReactor"><p>4. Stepped image (auto numbered callouts - labels fire table, table fires labels)</p>
-                </div>
-				<div id="Endocrine"><p>5. Labels fire single callouts using Keys not numerical index (below image) <div style="color: 'red'">BUG: labels aren't highlighting at the moment since swapover to new framework</div></p>
-                </div>
-                <div id="endoCall">
-                </div>
-                <p> Thus endeth the lesson.... </p>
-			</div>
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+						<div id="table0"><p>0. Table of callouts: these use headers, multiple columns, no key, no autonumbering, and the "all" type.</p>
+                		</div>
+						<div id="singly"><p>1. Individual callout - only shows the first callout text from the table above, and headers if there are any. Typically used with selection events from labels or markers or carousels.</p>
+               			</div>
+						<div id="optionsOff"><p>2. Degenerate: single column, no headers</p>
+               			</div>
+                		<div id="numbered"><p>3. autonumbered callouts, linked to #4</p>
+                		</div>
+					</div>
+					<div class="lc_ec_trailing">
+						<div id="imgReactor"><p>4. Stepped image (auto numbered callouts - labels fire table, table fires labels)</p>
+                		</div>
+						<div id="Endocrine"><p>5. Labels fire single callouts using Keys not numerical index (below image) </p>
+               			</div>
+                		<div id="endoCall"></div>
+					</div>
+				</div>
+			</section>
 		</div>
 	</div>
-	</div>
-    <script src="js/jquery-latest.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<!-- <script src="js/jquery.touchSwipe.min.js"></script> -->
-	<script src="js/jquery-ui-1.10.2.custom.js"></script>
-	<script src="js/toc-structure.js"></script>    
-	<script src="js/eCourse-master.js"></script>    
+
+   	<script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
-       
+
+	<script src="js/brixlib-compiled.js"></script>
+	<!--
     <script src="js/widget-base.js"></script>
     <script src="js/widget-callouts.js"></script>
     <script src="js/widget-labelgroup.js"></script>
     <script src="js/widget-image.js"></script>
 	<script src="js/eventmanager.js"></script>
+	!-->
+
 <script>
+// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var Legend = pearson.brix.Legend;
+
 
 	var eventManager = new EventManager();
 	var phaseData = [
@@ -111,28 +142,19 @@ textChunks.draw(d3.select("#optionsOff"));
 
 		//	<div id="stepped"><p>Stepped Image</p></div>
 
-	var imgConfig0 =
-		{
-			id: "imgReactor",
-			URI: 'img/reactor.jpg',
-			caption: "Nuclear Reactor Schematic Diagram",
-			actualSize: {height: 310, width: 680}
-		};
-
 	var cimgConfig0 =
 		{
 			id: "cimg0n",
-			image: new Image(imgConfig0),
+			URI: 'img/reactor.jpg',
+			caption: "Nuclear Reactor Schematic Diagram",
 			captionPosition: "below"
 		};
 	
-	var cntrSize = Size.matchRatioWithHeight(350 - 40, imgConfig0.actualSize);
-
 	var cntrConfig0 = 
 		{
 			node: d3.select("#imgReactor"),
-			maxSize: cntrSize,
-			maxWid: cntrSize.width, //550,
+			//maxSize: cntrSize,
+			maxWid: 680, //550,
 			maxHt: 350
 		};
 		
@@ -173,27 +195,19 @@ callEm.draw(d3.select("#numbered"));
 	
 	
 	//	<div id="widgetTarget80"><p>5. labels fire callouts (events)</p></div>
-var imgBodyCfg = {
-				id: "endoBody",
-				URI: 'img/endocrineSystem.jpg',
-				caption: "Human Glands",
-				actualSize: {height: 500, width: 430}
-				};
 
-var imgContBodyCfg =
+	var imgContBodyCfg =
 		{
 			id: "endoBody1",
-			image: new Image(imgBodyCfg),
+			URI: 'img/endocrineSystem.jpg',
+			caption: "Human Glands",
 			captionPosition: "below"
 		};
 	
-	var cntrSize1 = Size.matchRatioWithHeight(540 - 40, imgContBodyCfg.image.actualSize);
-		
 	var svg5 = new SVGContainer({
 			node: d3.select("#Endocrine"),
-			maxSize: cntrSize1,
-			maxWid: cntrSize1.width, //550,
-			maxHt: 540
+			maxWid: 500, //550,
+			maxHt: 620
 		});
 		
 	var glands = new CaptionedImage(imgContBodyCfg);
@@ -211,7 +225,7 @@ var imgContBodyCfg =
 		{key: "Thyroid", content: "Thyroid gland", xyPos: [.5,.98], width: 100},
 		{key: "Parathyroid", content: "Parathyroid gland", xyPos: [.8,.9], width: 90},
 		{key: "Adrenal", content: "Adrenal (surparenal)", xyPos: [.78,.8], width: 90},
-		{key: "Pancreas", content: "Pancreas", xyPos: [.82,.6], width: 100},
+		{key: "Pancreas", content: "Pancreas", xyPos: [.82,.55], width: 100},
 		{key: "Ovaries", content: "Ovaries", xyPos: [.65,.45], width: 70},
 		{key: "Testes", content: "Testicles", xyPos: [.7,.1], width: 80}
 		]
