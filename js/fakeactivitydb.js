@@ -16,8 +16,28 @@
  * **************************************************************************/
 
 goog.provide('pearson.brix.test.activities');
+goog.provide('pearson.brix.test.extendActivityDb');
+
+goog.require('goog.object');
 
 // JSON FakeActiviyDB Document
+
+/* **************************************************************************
+ * extendActivityDb                                                    */ /**
+ *
+ * Extends the activities database with the additional activities defined
+ * in the given object.
+ * @export
+ *
+ * @param {!Object}		additionalActivities	-object containing additional
+ * 												 activity answer keys for multiple
+ * 												 choice questions.
+ ****************************************************************************/
+pearson.brix.test.extendActivityDb = function (additionalActivities)
+{
+	goog.object.extend(pearson.brix.test.activities, additionalActivities);
+};
+
 /**
  * activities is a test object used as a scoring database.
  * It is an object whose keys are the sequenceNodeId's that identify
@@ -86,7 +106,7 @@ pearson.brix.test.activities =
 				}
 		},
 
-		"oceanRegion": { 
+	"oceanRegion": { 
 		question: "Which region stands out as having either the lowest or the highest overall value for each of the data shown?",
 		a01: {
 				content:  "Region A, upper Pacific Ocean",
@@ -114,7 +134,7 @@ pearson.brix.test.activities =
 				response:  "",
 				}
 		},
-		"cOxyE": { 
+	"cOxyE": { 
 		question: "Why does C (Pacific) have less oxygent than E (by the South Pole)?",
 		answer000: {
 				content:  "It's colder",
