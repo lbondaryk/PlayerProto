@@ -48,7 +48,18 @@ declare -a COMPILER_ARGS=(\
 	"--generate_exports"\
 	)
 
-#
+# commenting out this compiler option for now as it seems to conflict
+# with E. Also there is a closurebuilder bug that prevents having spaces in
+# these args (http://code.google.com/p/closure-library/issues/detail?id=164).
+# "--output_wrapper=(function(){%output%})();"
+
+declare -a BLDR_COMPILER_ARGS
+numArgs=${#COMPILER_ARGS[*]}
+for (( i = 0; i < $numArgs; ++i ))
+do
+	BLDR_COMPILER_ARGS=("${BLDR_COMPILER_ARGS[*]}" "--compiler_flags=${COMPILER_ARGS[$i]}");
+done
+
 BRIX_ARGS=$(cat <<EOF
 	--input=answerman.js
 	--input=answermanpolling.js
@@ -83,7 +94,7 @@ BRIX_ARGS=$(cat <<EOF
 	--output_mode=compiled
 	--output_file=$OUTFILE
 	--compiler_jar=$COMPILER
-	${COMPILER_ARGS[*]/#/--compiler_flags=}
+	${BLDR_COMPILER_ARGS[*]}
 EOF
 )
 

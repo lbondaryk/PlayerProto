@@ -29,6 +29,7 @@ goog.provide('pearson.brix.SVGContainer');
  * @namespace {!Object} pearson
  */
 pearson;
+goog.exportSymbol('pearson', pearson);
 
 /**
  * The pearson.utils namespace is where any utility class, function or variable
