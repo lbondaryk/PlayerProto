@@ -260,8 +260,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	//inherit the x and y scales from the axes 
 	this.lastdrawn.xScale = axesDrawn.xScale;
 	this.lastdrawn.yScale = axesDrawn.yScale;
-	this.lastdrawn.barsId = this.id + '_bars';
-	var barsId = this.lastdrawn.barsId;
+	var barsId = this.id + '_bars';
 	
 	
 
@@ -300,7 +299,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	this.childBrix.beforeData.forEach(this.drawBric_, this);
 
 	var graph = axesDrawn.group.append("g") //make a group to hold bars
-		.attr("class","widgetBarChart").attr("id", this.id);
+		.attr("class","widgetBarChart").attr("id", barsId);
 
 	
 	this.lastdrawn.graph = graph;
