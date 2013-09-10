@@ -43,12 +43,19 @@ declare -a COMPILER_ARGS=(\
 	"--extra_annotation_name=abstract"\
 	"--extra_annotation_name=virtual"\
 	"--extra_annotation_name=note"\
+	"--output_wrapper=(function(){%output%}).call(this);"
 	"--externs=d3.v3.externs.js"\
 	"--externs=jquery-1.8.externs.js"\
 	"--generate_exports"\
 	)
 
-#
+declare -a BLDR_COMPILER_ARGS
+numArgs=${#COMPILER_ARGS[*]}
+for (( i = 0; i < $numArgs; ++i ))
+do
+	BLDR_COMPILER_ARGS=("${BLDR_COMPILER_ARGS[*]}" "--compiler_flags=${COMPILER_ARGS[$i]}");
+done
+
 BRIX_ARGS=$(cat <<EOF
 	--input=answerman.js
 	--input=answermanpolling.js
@@ -83,7 +90,7 @@ BRIX_ARGS=$(cat <<EOF
 	--output_mode=compiled
 	--output_file=$OUTFILE
 	--compiler_jar=$COMPILER
-	${COMPILER_ARGS[*]/#/--compiler_flags=}
+	${BLDR_COMPILER_ARGS[*]}
 EOF
 )
 

@@ -19,6 +19,7 @@
 
 	var EventManager = pearson.utils.EventManager;
 	var Carousel = pearson.brix.Carousel;
+	var Image = pearson.brix.Image;
 
     describe('Carousels: when you need more than one', function () {
 		var eventManager = null;

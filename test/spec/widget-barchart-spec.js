@@ -36,17 +36,13 @@
 				myGraph = new BarChart(configGraph);
 			});
 			
-            it('should auto create id from base id + _bar', function () {
-                expect(myGraph.lastdrawn.barsId).to.equal('bars');
-            });
-
 			/*it('should know it values at its first point', function () {
                 expect(myGraph.data[0][0]).to.deep.equal({x: 50, y: "chccolate creme"});
             });*/
 
-			it('should create an empty array of child Widgets', function () {
-                expect(myGraph.childWidgets.beforeData).to.be.empty;
-                expect(myGraph.childWidgets.afterData).to.be.empty;
+			it('should create an empty array of child Brix', function () {
+                expect(myGraph.childBrix.beforeData).to.be.empty;
+                expect(myGraph.childBrix.afterData).to.be.empty;
             });
 
 			describe('DOM manipulation (create/update elements) tests', function () {
@@ -75,7 +71,7 @@
 					});
 
 					 it('should make a group in svg with barsId', function () {
-						expect(myGraph.lastdrawn.graph.attr("id")).to.equal(myGraph.lastdrawn.barsId);
+						expect(myGraph.lastdrawn.graph.attr("id")).to.equal(myGraph.id + "_bars");
 					});
 				});
 			});	
