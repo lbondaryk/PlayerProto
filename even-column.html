@@ -34,7 +34,7 @@
 						<p class="lc_ec_leading">Your learning objective content goes here. This column is wrapped to even (1/2) width because of the lc_ec_fiftyFifty class on the section. Aenean ut est quis est consequat rutrum quis sit amet metus. Donec vitae malesuada justo. Vivamus feugiat justo a sem bibendum, ac semper risus condimentum. Ut ullamcorper nunc lorem, a vestibulum sapien placerat eget. Cras eu faucibus justo. Duis accumsan quam fringilla ullamcorper tincidunt. Duis odio leo, accumsan et tellus non, egestas commodo urna.</p>
 						<!-- use the HTML5 figure tag to handle the illustrations/interactives -->
 						<figure class="lc_ec_trailing">
-							<div style="
+							<div id="Target0" style="
 							width: 100%;
 							height: 200px;
 							background: #ccc;
@@ -60,13 +60,57 @@
 	<script src="js/eCourse-master.js"></script>    
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/widget-base.js"></script>
-	<script src="js/widget-linegraph.js"></script>
-    <script src="js/widget-slider.js"></script>
-    <script src="js/widget-callouts.js"></script>
-     <script src="js/widget-numeric.js"></script>
+    <script src="js/brixlib-compiled.js"></script>
+	<!--
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
 	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/widget-base.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+	-->
+
 <script>
+	// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+ 
 var testData = [
 	{	x: 0,
 		y: 0
