@@ -43,15 +43,11 @@ declare -a COMPILER_ARGS=(\
 	"--extra_annotation_name=abstract"\
 	"--extra_annotation_name=virtual"\
 	"--extra_annotation_name=note"\
+	"--output_wrapper=(function(){%output%}).call(this);"
 	"--externs=d3.v3.externs.js"\
 	"--externs=jquery-1.8.externs.js"\
 	"--generate_exports"\
 	)
-
-# commenting out this compiler option for now as it seems to conflict
-# with E. Also there is a closurebuilder bug that prevents having spaces in
-# these args (http://code.google.com/p/closure-library/issues/detail?id=164).
-# "--output_wrapper=(function(){%output%})();"
 
 declare -a BLDR_COMPILER_ARGS
 numArgs=${#COMPILER_ARGS[*]}
