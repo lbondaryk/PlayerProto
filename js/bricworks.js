@@ -13,9 +13,10 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.BrixWorks');
+goog.provide('pearson.brix.BricWorks');
 
 goog.require('pearson.utils.IEventManager');
+
 
 /* **************************************************************************
  * BricWorks                                                           */ /**
@@ -46,7 +47,7 @@ pearson.brix.BricWorks = function (config, eventManager)
 	/**
 	 * The bricCatalogue is the reference to all of the brix that this BricWorks
 	 * can manufacture.
-	 * @type {Object.<string, function(Object, !pearson.utils.IEventManager=)>}
+	 * @type {Object.<string, function(new:pearson.brix.Bric, Object, !pearson.utils.IEventManager=)>}
 	 * @private
 	 */
 	this.bricCatalogue_ = {};
@@ -58,8 +59,9 @@ pearson.brix.BricWorks = function (config, eventManager)
  *
  * Register the mold (constructor) used to create a bric.
  *
- * @param {string}	bricName	-The name of the bric that the given mold creates.
- * @param {function(Object, !pearson.utils.IEventManager=)}
+ * @param {string}
+ * 					bricName	-The name of the bric that the given mold creates.
+ * @param {function(new:pearson.brix.Bric, Object, !pearson.utils.IEventManager=)}
  * 					bricMold	-A function which creates the named bric.
  *
  * @note This is currently set up for a bricMold to be a constructor. I'm
@@ -72,7 +74,6 @@ pearson.brix.BricWorks = function (config, eventManager)
 pearson.brix.BricWorks.prototype.registerMold = function (bricName, bricMold)
 {
 	this.bricCatalogue_[bricName] = bricMold;
-
 };
 
 /* **************************************************************************

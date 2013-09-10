@@ -16,7 +16,9 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.callouts');
+goog.provide('pearson.brix.Callouts');
+
+goog.require('pearson.utils.IEventManager');
 
 // Sample Callout constructor configuration
 (function()
