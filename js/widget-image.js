@@ -204,16 +204,18 @@ pearson.brix.Image.prototype.draw = function (container, size)
 	
 	// make a group to hold the image
 	var imageGroup = container.append("g")
-		.attr("class", "widgetImage")
+		.attr("class", "brixImage")
 		.attr("id", this.id);
 
-	// Rect for the background of the viewbox in case the image doesn't fill it
+	/* Rect for the background of the viewbox in case the image doesn't fill it
 	imageGroup
 		.append("rect")
 			.attr("class", "background")
 			.attr("width", size.width)
 			.attr("height", size.height)
 			.attr("fill", "#efefef");	// TODO: move this to css selector: 'g.widgetImage>rect' -mjl
+	current UX calls for no backgrounds....
+	*/ 
 	
 	// Draw the image itself
 	imageGroup
@@ -547,11 +549,15 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 
 	// make a group to hold the image
 	var widgetGroup = container.append("g")
-		.attr("class", "widgetCaptionedImage")
+		.attr("class", "brixCaptionedImage")
+		.attr("transform", attrFnVal("translate", 10, 0))
 		.attr("id", this.captioned_id);
 
+	// caption size is hard set to 40, but this will need to be dynamically measured -lb
 	var captionSize = {height: 40, width: size.width};
-	var imageSize = {height: size.height - captionSize.height, width: size.width};
+	// putting in a 10 pixel margin on either side of the image rectangle, and 
+	// slice off height for the caption.  
+	var imageSize = {height: d3.round(size.height - captionSize.height), width: d3.round(size.width - 20)};
 	
 	// Draw the image
 	var imageGroup = widgetGroup.append("g");

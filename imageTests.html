@@ -40,6 +40,7 @@
 						<span id="slider1"></span>
                 	</div>
                 	<div id="calls"></div>
+                	<div id="neff3"><p><br>5. Three images same size create thumbs that span the carousel without extra space.</p></div>
 				</div>
 			</div>
 		</section>
@@ -185,7 +186,7 @@
 					new Image(imgConfig1[5])
 				],
 			layout: "horizontal",
-			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
+			itemMargin: {top: 4, bottom: 4, left: 0, right: 2},
 			presentation: "scaleToFit", // or "scroll"
 			scrollMode: "nowrap"
 		};
@@ -202,7 +203,7 @@
 					new Image(imgConfig1[0])
 				],
 			layout: "horizontal",
-			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
+			itemMargin: {top: 4, bottom: 4, left: 4, right: 4},
 			presentation: "scaleToFit", // or "scroll"
 			scrollMode: "nowrap"
 		};
@@ -210,8 +211,8 @@
 	var cntrConfig1 = 
 		{
 			node: d3.select("#widgetTarget1n"),
-			maxWid: 400,
-			maxHt: 160
+			maxWid: 570,
+			maxHt: 200
 		};
 
 	var cntr1 = new SVGContainer(cntrConfig1);
@@ -378,6 +379,36 @@
 	contTrio.append(twoOfThree, {topPercentOffset: 0, leftPercentOffset: 0.34, heightPercent: 1, widthPercent: 0.33});
 	contTrio.append(threeOfThree, {topPercentOffset: 0, leftPercentOffset: 0.68, heightPercent: 1, widthPercent: 0.33});
 	
+
+	//5. Three images same size span the carousel space exactly no white space and autosize the height.
+	var neffCont = new SVGContainer({
+			node: d3.select("#neff3"),
+			maxWid: 570,
+			maxHt: 550
+		});
+
+	var imgvwr = new ImageViewer({
+			items:
+				[
+					new Image({
+					URI: 'img/Neff/Neff_12.6.3_S1.jpg',
+					caption: "70% more food",
+					actualSize: {height: 380, width: 570}
+					}),
+					new Image({
+					URI: 'img/Neff/Neff_12.6.3_S2.jpg',
+					caption: "200% more energy",
+					actualSize: {height: 380, width: 570},
+					}),
+					new Image({
+					URI: 'img/Neff/Neff_12.6.3_S3.jpg',
+					caption: "80% more water for agriculture",
+					actualSize: {height: 380, width: 570},
+					}),
+				],
+			}, eventManager);
+	
+	neffCont.append(imgvwr);
 	
 </script>
 </body>

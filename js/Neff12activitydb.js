@@ -59,3 +59,4 @@ var activitiesNeff =
 		},
 }; // end of pearson.brix.test.activities
 
+pearson.brix.test.extendActivityDb(activitiesNeff);

@@ -85,7 +85,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 			id: this.id + "_crsl",
 			items: this.items,
 			layout: "horizontal",
-			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
+			itemMargin: {top: 6, bottom: 6, left: 6, right: 6},
 			presentation: "scaleToFit",
 			scrollMode: "nowrap"
 		};
@@ -192,7 +192,7 @@ pearson.brix.ImageViewer.prototype.draw = function (container, size)
 	
 	// make a group to hold the imageviewer
 	var widgetGroup = container.append("g")
-		.attr("class", "widgetImageViewer")
+		.attr("class", "brixImageViewer")
 		.attr("id", this.id);
 
 	// Rect for the background of the image viewer
@@ -202,10 +202,8 @@ pearson.brix.ImageViewer.prototype.draw = function (container, size)
 			.attr("width", size.width)
 			.attr("height", size.height);
 
-	// calculate the optimum carousel height for the given width, but don't let
-	// it be greater than 20% of the total height of this ImageViewer.
-	var carouselHeight = Math.min(this.carousel.calcOptimumHeightForWidth(size.width),
-								  0.2 * size.height);
+	// calculate the correct aspect ratio carousel height for the given width.
+	var carouselHeight = this.carousel.calcOptimumHeightForWidth(size.width);
 
 	// Carousel goes at the top
 	var carouselGroup = widgetGroup.append("g");

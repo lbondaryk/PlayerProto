@@ -9,53 +9,63 @@
 
 /* Images
 ================================================== */
-svg g.widgetImage>rect.background
+
+svg g.brixImage
 {
-	fill:			#efefef;
+  margin: 0px;
+}
+
+svg g.brixImage>rect.background
+{
+	fill:			#fff;
 	stroke-width:	0;
 }
-svg g.widgetImage>rect.highlight
+svg g.brixImage>rect.highlight
 {
 	fill: none;
 	fill-opacity:	0.0;
-	stroke-opacity:	0.0;	
+	stroke-opacity:	0.0;	s
 }
-svg g.widgetImage.lit>rect.highlight
+svg g.brixIImage.lit>rect.highlight
 {
 	fill-opacity:	0.0;
 	stroke:			blue;
 	stroke-opacity:	0.8;	
 }
 
-svg g.widgetCaptionedImage div.widgetImageCaption
+svg g.brixCaptionedImage div.widgetImageCaption
 {
-	text-align:		center;
+	text-align:	left;
+  font: Helvetica 14px;
+  margin: 10px;
 }
 
 svg g.widgetCarousel>rect.background
 {
-	fill:			#4f00ef;
-	fill-opacity:	0.0;
+	fill:	#efefef;
+  stroke: #e4e4e4;
 }
 
 svg g.widgetCarousel>g.widgetItem>rect.selection
 {
-	fill:			#4f00ef;
+	fill:			#fff;
 	fill-opacity:	0.0;
-	stroke:			blue;
+	stroke:		#999;
+  stroke-width: 1;
 	stroke-opacity:	0.0;	
 }
 
 svg g.widgetCarousel>g.widgetItem.selected>rect.selection
 {
-	fill-opacity:	0.1;
-	stroke-opacity:	0.8;	
+	fill-opacity:	0.3;
+	stroke-opacity:	1;	
 }
 
-svg g.widgetImageViewer>rect.background
+svg g.brixImageViewer>rect 
 {
 	fill-opacity:	0.0;
-	stroke-width:	0;
+	stroke-width:	1;
+  stroke: #e4e4e4;
 }
 
 /* Markers
@@ -199,7 +209,7 @@ span.widgetSlider .range
 ================================================== */
 
 div.widgetnumericquestion,
-div.widgetMultipleChoiceQuestion 
+div.brixMultipleChoiceQuestion 
 {
   color: 333;
   background-color: #f4f4f4;

@@ -341,7 +341,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 	
 	// make a div to hold the select one question
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetMultipleChoiceQuestion")
+		.attr("class", "brixMultipleChoiceQuestion")
 		.attr("id", this.id);
 
 	var question = widgetGroup.append("p")
@@ -378,14 +378,19 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 		this.choiceWidget.draw(choiceWidgetCntr);
 	}
 
+	// make a target for feedback when the question is answered
+
+	widgetGroup.append("div")
+		.attr("class", "responses");
+
 	// draw the submit button below
 	var submitButtonCntr = widgetGroup.append("div")
 		.attr("class", "submit");
 
+
+
 	this.submitButton.draw(submitButtonCntr);
 
-	widgetGroup.append("div")
-		.attr("class", "responses");
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 
