@@ -539,6 +539,22 @@ pearson.brix.Bric = function ()
 };
 
 /* **************************************************************************
+ * Bric.getId                                                          */ /**
+ *
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.Bric.prototype.getId = function ()
+{
+	// There is no id defined unless the derived class defines one and
+	// overrides this method.
+	return 'override in derived class for real id';
+};
+
+
+/* **************************************************************************
  * HtmlBric                                                            */ /**
  *
  * Base class constructor used only by derived HtmlBric instances.
@@ -556,6 +572,20 @@ pearson.brix.HtmlBric = function ()
 	goog.base(this);
 };
 goog.inherits(pearson.brix.HtmlBric, pearson.brix.Bric);
+
+/* **************************************************************************
+ * HtmlBric.draw                                                       */ /**
+ *
+ * Draw this HtmlBric in the given container (must be an html element).
+ * @abstract
+ *
+ * @param {!d3.selection}	container	-The container html element to append
+ * 										 this HtmlBric element tree to.
+ *
+ ****************************************************************************/
+pearson.brix.HtmlBric.prototype.draw = function (container) {};
+pearson.brix.HtmlBric.prototype.draw = goog.abstractMethod;
+
 
 /* **************************************************************************
  * SvgBric                                                             */ /**

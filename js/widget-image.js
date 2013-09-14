@@ -2,7 +2,7 @@
  * $Workfile:: widget-image.js                                              $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the Image widget.
+ * @fileoverview Implementation of the Image and CaptionedImage brix.
  *
  * The Image widget draws a scaled image in an SVGContainer.
  * The CaptionedImage widget draws a caption next to an Image.
@@ -54,8 +54,8 @@ goog.require('pearson.brix.SvgBric');
  *
  * The Image widget draws an image in an SVGContainer.
  *
- * The Image is frequently used by other widgets, or drawn under other
- * widgets such as LabelGroups.
+ * The Image is frequently used by other brix, or drawn under other
+ * brix such as LabelGroups.
  *
  * @constructor
  * @extends {pearson.brix.SvgBric}
@@ -87,17 +87,17 @@ pearson.brix.Image = function (config, eventManager)
 	goog.base(this);
 
 	/**
-	 * A unique id for this instance of the image widget
+	 * A unique id for this instance of the image bric
+	 * @private
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Image);
+	this.imageId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Image);
 
 	/**
 	 * The URI where the image resource is located.
 	 * @type {string}
 	 */
 	this.URI = config.URI;
-	
 	
 	/**
 	 * The caption for the image.
@@ -147,6 +147,7 @@ pearson.brix.Image = function (config, eventManager)
 	 * Image doesn't use scale functions, but they may get used in a widget chain.
 	 * Otherwise a data extent of [0,1] will be mapped to the given
 	 * container area.
+	 * @private
 	 * @type Object
 	 * @property {function(number): number}
 	 *						xScale	-function to convert a horizontal data offset
@@ -154,7 +155,6 @@ pearson.brix.Image = function (config, eventManager)
 	 * @property {function(number): number}
 	 *						yScale	-function to convert a vertical data offset
 	 *								 to the pixel offset into the data area.
-	 * @private
 	 */
 	this.explicitScales_ = {xScale: null, yScale: null};
 	
@@ -205,7 +205,7 @@ pearson.brix.Image.prototype.draw = function (container, size)
 	// make a group to hold the image
 	var imageGroup = container.append("g")
 		.attr("class", "widgetImage")
-		.attr("id", this.id);
+		.attr("id", this.imageId_);
 
 	// Rect for the background of the viewbox in case the image doesn't fill it
 	imageGroup
@@ -448,7 +448,7 @@ pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function 
 /* **************************************************************************
  * CaptionedImage                                                      */ /**
  *
- * The CaptionedImage widget draws an image in an SVGContainer with a caption.
+ * The CaptionedImage bric draws an image in an SVGContainer with a caption.
  *
  * @constructor
  * @extends {pearson.brix.Image}
@@ -479,13 +479,14 @@ pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function 
 pearson.brix.CaptionedImage = function (config, eventManager)
 {
 	/**
-	 * A unique id for this instance of the captioned image widget
+	 * A unique id for this instance of the captioned image bric
+	 * @private
 	 * @type {string}
 	 */
-	this.captioned_id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CaptionedImage);
+	this.captionedId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CaptionedImage);
 
 	// call the base class constructor
-	config.id = this.captioned_id + '_base';
+	config.id = this.captionedId_ + '_base';
 	goog.base(this, config, eventManager);
 
 	/**
@@ -548,7 +549,7 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 	// make a group to hold the image
 	var widgetGroup = container.append("g")
 		.attr("class", "widgetCaptionedImage")
-		.attr("id", this.captioned_id);
+		.attr("id", this.captionedId_);
 
 	var captionSize = {height: 40, width: size.width};
 	var imageSize = {height: size.height - captionSize.height, width: size.width};

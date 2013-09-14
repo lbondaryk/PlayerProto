@@ -4,7 +4,7 @@
  *
  * @fileoverview Implementation of the {@link Callouts} bric.
  *
- * The callout widget creates sequential keyed blobs of HTML for highlight
+ * The callout bric creates sequential keyed blobs of HTML for highlight
  * association with a labeled, keyed image.  Can be shown individually or as 
  * a table.
  *
@@ -70,6 +70,7 @@ pearson.brix.CalloutItem;
  * Constructor function for Callouts brix.
  *
  * @constructor
+ * @extends {pearson.brix.HtmlBric}
  * @export
  *
  * @param {Object}		config			-The settings to configure this widget
@@ -77,9 +78,9 @@ pearson.brix.CalloutItem;
  * @param {string}		config.type 	-switch to autogenerate "numbered"
  * @param {string}		config.show		-String to specify "all" or one row (null)
  * @param {Array}		config.headers 	-strings to specify headers on table (optional)
- * @param {Array.<pearson.brix.CalloutItem>}
+ * @param {!Array.<!pearson.brix.CalloutItem>}
  * 						config.textBits	-list of all the callout items to be presented
- * @param {!pearson.utils.EventManager=}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -95,11 +96,15 @@ pearson.brix.CalloutItem;
  **************************************************************************/
 pearson.brix.Callouts = function (config, eventManager)
 {
+	// call the base class constructor
+	goog.base(this);
+
 	/**
-	 * A unique id for this instance of the widget
+	 * A unique id for this instance of the bric
+	 * @private
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Callouts);
+	this.calloutsId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Callouts);
 
 	this.textBits = config.textBits;
 	this.headers = config.headers;
@@ -107,26 +112,27 @@ pearson.brix.Callouts = function (config, eventManager)
 	this.show = config.show;
 
 	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {!pearson.utils.EventManager|undefined}
+	 * The event manager to use to publish (and subscribe to) events for this bric
+	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
 	 * The event id published when the user selects a particular callout item.
 	 * @const
 	 * @type {string}
 	 */
-	this.selectedEventId = this.id + '_Callout';
+	this.selectedEventId = this.calloutsId_ + '_Callout';
 	 	
 }; // end of Callouts constructor
+goog.inherits(pearson.brix.Callouts, pearson.brix.HtmlBric);
 
 /**
  * Prefix to use when generating ids 
  * @const
  * @type {string}
  */
-pearson.brix.Callouts.autoIdPrefix = "callout_";
+pearson.brix.Callouts.autoIdPrefix = "callout_auto_";
 
 /* **************************************************************************
  * Callouts.draw                                                       */ /**
@@ -151,7 +157,7 @@ pearson.brix.Callouts.prototype.draw = function (container)
 	//this.rootEl = <div>A bunch of text that swaps here and has visibility set</div>
 	//TODO make the class or the style so that these stack up and only one is visible
 	//use the event handlers
-	this.rootEl = this.node.append("div").attr("id", this.id);
+	this.rootEl = this.node.append("div").attr("id", this.calloutsId_);
 	
 	var table = this.rootEl.append("table").attr("class", "widgetCallout");
 		
@@ -253,14 +259,14 @@ pearson.brix.Callouts.prototype.lite = function (lite)
 	var selectionToLite = this.calloutCollection.filter(matchesLabelIndex);
 
 	// Highlight the labels w/ the matching key
-	selectionToLite.style("display",null);
+	selectionToLite.style("display", null);
 	
 	selectionToLite
-		.classed("lit",true);
+		.classed("lit", true);
 
 	if (selectionToLite.empty())
 	{
-		window.console.log("No key '" + lite + "' in Labels group " + this.id );
+		window.console.log("No key '" + lite + "' in Labels group " + this.calloutsId_);
 	}
 	
 }; //end Callouts.lite method
