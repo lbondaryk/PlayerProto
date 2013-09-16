@@ -40,7 +40,8 @@ svg g.brixCaptionedImage div.widgetImageCaption
   margin: 10px;
 }
 
-svg g.widgetCarousel>rect.background
+svg g.widgetCarousel>rect.background,
+svg g.brixLabelSelector>rect.background
 {
 	fill:	#efefef;
   stroke: #e4e4e4;

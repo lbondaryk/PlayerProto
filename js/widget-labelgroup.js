@@ -284,8 +284,8 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
 				// in the way it does for callouts -lb
 				.html(function (d) { return d.content; }); //make the label
 
-	// bullets type just puts big black circle markers on key areas of a diagram
-	// a precursor to hotspot answertypes
+	// bullets type just puts big black square markers on key areas of a diagram
+	// a possible precursor to hotspot answertypes
 	if (this.type != "none")
 	{
 		labelCollection.append("rect")

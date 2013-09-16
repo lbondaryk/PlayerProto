@@ -41,6 +41,8 @@
                 	</div>
                 	<div id="calls"></div>
                 	<div id="neff3"><p><br>5. Three images same size create thumbs that span the carousel without extra space.</p></div>
+
+                	<div id="neff3Numbers"><p><br>6. Three images same size with LabelSelector.</p></div>
 				</div>
 			</div>
 		</section>
@@ -53,12 +55,13 @@
 	<script src="js/toc-structure.js"></script>
 	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
-
+<!--
 	<script src="js/brixlib-compiled.js"></script>
 
-	<!--
+		-->
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+	
 
 	<script src="js/eventmanager.js"></script>
 	<script src="js/widget-base.js"></script>
@@ -70,7 +73,9 @@
     <script src="js/widget-numeric.js"></script>
 	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-slider.js"></script>
-	-->
+	<script src="js/brix-labelselector.js"></script>
+
+
 	
 	
 
@@ -87,6 +92,8 @@
 	var Callouts = pearson.brix.Callouts;
 	var LineGraph = pearson.brix.LineGraph;
 	var Slider = pearson.brix.Slider;
+	var LabelSelector = pearson.brix.LabelSelector;
+	
 	
 	var lineData = [
 		{	x: 0,	y: -3.1},
@@ -249,8 +256,8 @@
 	var cntrConfig4 = 
 		{
 			node: d3.select("#widgetTarget1bn"),
-			maxWid: 450,
-			maxHt: 450
+			maxWid: 550,
+			maxHt: 550
 		};
 
 	var cntr4 = new SVGContainer(cntrConfig4);
@@ -334,12 +341,12 @@
 						   label: "Strata dividing line" },
 		};
 
-	var img5 = new Image(imgConfig5);
+	/* var img5 = new Image(imgConfig5);
 	var lg5 = new LineGraph(lgConfig5);
 	lg5.append(img5, "before");
 	var cntr5 = new SVGContainer(cntrConfig5);
 	cntr5.append(lg5);
-
+*/
 
 	//	<div id="widgetTarget70"><p>Images in grid</p></div>
 		
@@ -409,7 +416,22 @@
 			}, eventManager);
 	
 	neffCont.append(imgvwr);
+
+	//5. Three images same size with LabelSelector.
+	var neffCont2 = new SVGContainer({
+			node: d3.select("#neff3Numbers"),
+			maxWid: 570,
+			maxHt: 150
+		});
 	
+	var labSelect = new LabelSelector ({
+			items: ["foo","bar","thing"],
+			layout: "horizontal",
+			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
+			type: "numbered",
+		}, eventManager);
+
+	neffCont2.append(labSelect);
 </script>
 </body>
 </html>

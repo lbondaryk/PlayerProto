@@ -39,6 +39,7 @@
 						<div id="widgetTarget50n"><p>2. Label positions</p></div>
                 		<div id="lineMarks"><p>3. x-axis Line Markers x and y</p></div>
                 		<div id="lineMarks1"><p>4. x-axis Line Markers just labels. Note that our handling of different label lengths is not very sophisticated. Of course, maybe if the label runs on that long it shouldn't be a label? Also nothing to prevent labels from obscuring each other if the markers are close together.</p></div>
+                		<div id="labelSel"><p>5. label selector, can be applied to make horizontal (eventually vertical) selectors for labels - useful for carousels.</p></div>
 					</div>
 				</div>
 			</section>
@@ -81,6 +82,7 @@
 	var BarChart = pearson.brix.BarChart;
 	var LineGraph = pearson.brix.LineGraph;
 	var Legend = pearson.brix.Legend;
+	var LabelSelector = pearson.brix.LabelSelector;
 
 	var eventManager = new EventManager();
 
@@ -551,6 +553,24 @@ handleSelectionChanged({selectKey: "Post"});
 		phases.lite(eventDetails.selectKey);
 		
 	}
+
+
+//<div id="labelSel"><p>5. label selector, can be applied to make horizontal selectors for labels</p></div>
+
+	var neffCont2 = new SVGContainer({
+			node: d3.select("#labelSel"),
+			maxWid: 770,
+			maxHt: 50
+		});
+	
+	var labSelect = new LabelSelector ({
+			items: ["Predevelopment", "Developing",	 "Modernizing", "Developed","Postdevelopment"],
+			layout: "horizontal",
+			itemMargin: {top: 4, bottom: 4, left: 0, right: 0},
+			type: null,
+		}, eventManager);
+
+	neffCont2.append(labSelect);
 </script>
 </body>
 </html>

@@ -1,20 +1,20 @@
 /* **************************************************************************
- * $Workfile:: widget-carousel.js                                           $
+ * $Workfile:: brix-labelselector.js                                           $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the Carousel widget.
+ * @fileoverview Implementation of the LabelSelector widget.
  *
- * The Carousel widget draws a collection of images in an SVGContainer and
+ * The LabelSelector widget draws a collection of labels in an SVGContainer and
  * allows one of them to be selected.
  *
- * Created on		May 04, 2013
- * @author			Michael Jay Lippert
+ * Created on		Sept 13, 2013
+ * @author			Leslie Bondaryk
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.Carousel');
+goog.provide('pearson.brix.LabelSelector');
 
 goog.require('pearson.brix.SvgBric');
 goog.require('pearson.utils.IEventManager');
@@ -23,45 +23,39 @@ goog.require('pearson.utils.IEventManager');
 (function()
 {
 	// config for Carousel class
-	var carouselConfig =
+	var labelSelectorConfig =
 		{
 			id: "crsl1",
-			items: [],
+			items: ["foo","bar","thing"],
 			layout: "horizontal",
 			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
-			presentation: "scaleToFit", // or "scroll"
-			scrollMode: "nowrap"
+			type: "numbered"
 		};
 });
 
 /* **************************************************************************
- * Carousel                                                            */ /**
+ * LabelSelector                                                          */ /**
  *
- * The Carousel widget draws a collection of images in an SVGContainer and
- * allows one of them to be selected.
+ * The LabelSelector widget draws a collection of labels side by side in an 
+ * SVGContainer and allows one of them to be selected.
  *
  * @constructor
  * @extends {pearson.brix.SvgBric}
  * @export
  *
- * @param {Object}		config			-The settings to configure this Carousel
+ * @param {Object}		config			-The settings to configure this bric
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this Carousel.
+ * 						config.id		-String to uniquely identify this LabelSelector.
  * 										 if undefined a unique id will be assigned.
  * @param {!Array.<!pearson.brix.SvgBric>}
- *						config.items	-The list of widgets to be presented by the Carousel.
- * @param {string}		config.layout	-How the carousel will layout the items (vertical or horizontal).
+ *						config.items	-The list of label strings to be presented by the Selector.
+ * @param {string}		config.layout	-How the selector will layout the items (vertical or horizontal).
  * @param {{top: number, bottom: number, left: number, right: number}}
  *						config.itemMargin
- *										-The margin around each item, note that the
+ *										-The margin around each label, note that the
  *										 intra-item gap will be the sum of the left and right margin.
- * @param {string}		config.presentation
- *										-How should the items be presented if they won't
- *										 fit naturally? scaleToFit or scroll?
- * @param {string}		config.scrollMode
- *										-If the carousel presentation is "scroll" should it
- *										 wrap from one end to the other or stop when the
- *										 first or last item is visible.
+ * @param {string}		config.type 	- 'numbered', 'bullets' or null to auto number or bullet
+ *				
  * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
@@ -70,7 +64,7 @@ goog.require('pearson.utils.IEventManager');
  * @todo Implement the "scroll" presentation, after we figure out what it means to fit naturally (maybe it means we specify an itemAspectRatio). -mjl
  *
  ****************************************************************************/
-pearson.brix.Carousel = function (config, eventManager)
+pearson.brix.LabelSelector = function (config, eventManager)
 {
 	// call the base class constructor
 	goog.base(this);
@@ -78,18 +72,18 @@ pearson.brix.Carousel = function (config, eventManager)
 	var that = this;
 	
 	/**
-	 * A unique id for this instance of the carousel bric
+	 * A unique id for this instance of the LabelSelector bric
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Carousel);
+	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelSelector);
 
 	/**
-	 * The list of widgets presented by the Carousel.
-	 * @type {!Array.<!pearson.brix.SvgBric>}
+	 * The list of label strings presented by the LabelSelector.
+	 * @type {!Array.<!string>}
 	 */
 	this.items = config.items;
 
-	this.assignMissingItemKeys_();
+	//this.assignMissingItemKeys_();
 	
 	/**
 	 * How the carousel will layout the items (vertical or horizontal).
@@ -105,17 +99,10 @@ pearson.brix.Carousel = function (config, eventManager)
 	this.itemMargin = config.itemMargin;
 	
 	/**
-	 * How should the items be presented if they won't fit naturally? scaleToFit or scroll?
+	 * Should labels have numbers or bullets?
 	 * @type {string}
 	 */
-	this.presentation = config.presentation;
-	
-	/**
-	 * If the carousel presentation is "scroll" should it wrap from one end
-	 * to the other or stop when the first or last item is visible.
-	 * @type {string}
-	 */
-	this.scrollMode = config.scrollMode;
+	this.type = config.type;
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
@@ -124,7 +111,7 @@ pearson.brix.Carousel = function (config, eventManager)
 	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
 	/**
-	 * The event id published when an item in this carousel is selected.
+	 * The event id published when an item in this LabelSelector is selected.
 	 * @const
 	 * @type {string}
 	 */
@@ -148,23 +135,23 @@ pearson.brix.Carousel = function (config, eventManager)
 			size: {height: 0, width: 0},
 			widgetGroup: null,
 		};
-}; // end of Carousel constructor
-goog.inherits(pearson.brix.Carousel, pearson.brix.SvgBric);
+}; // end of LabelSelector constructor
+goog.inherits(pearson.brix.LabelSelector, pearson.brix.SvgBric);
 
 /**
- * Prefix to use when generating ids for instances of Carousel.
+ * Prefix to use when generating ids for instances of LabelSelector.
  * @const
  * @type {string}
  */
-pearson.brix.Carousel.autoIdPrefix = "crsl_auto_";
+pearson.brix.LabelSelector.autoIdPrefix = "labSel_";
 
 /* **************************************************************************
- * Carousel.draw                                                       */ /**
+ * LabelSelector.draw                                                       */ /**
  *
  * @inheritDoc
  * @export
  * @description The following is here until jsdoc supports the inheritDoc tag.
- * Draw this Carousel in the given container.
+ * Draw this LabelSelector in the given container.
  *
  * @param {!d3.selection}	container	-The container svg element to append
  * 										 this SvgBric element tree to.
@@ -172,7 +159,7 @@ pearson.brix.Carousel.autoIdPrefix = "crsl_auto_";
  * 							size		-The size (in pixels) of the area this
  * 										 SvgBric has been allocated.
  ****************************************************************************/
-pearson.brix.Carousel.prototype.draw = function(container, size)
+pearson.brix.LabelSelector.prototype.draw = function(container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -184,37 +171,32 @@ pearson.brix.Carousel.prototype.draw = function(container, size)
 	
 	var itemMargin = this.itemMargin;
 	
-	// We don't support anything other than this.presentation === "sizeToFit"
-	// and this.layout === "horizontal"
+	// We don't support anything other than this.layout === "horizontal"
 	
 	// Carve the width up for the n items
 	var itemCnt = this.items.length;
-	// deducting 20 pixels for margins
-	var thumbWidth = (size.width - 20) / (itemCnt ? itemCnt : 1) - (itemMargin.left + itemMargin.right);
+	// deducting 20 pixels for margins, and preventing divide by 0
+	var labelWidth = (size.width - 20) / (itemCnt ? itemCnt : 1) - (itemMargin.left + itemMargin.right);
 
-	//calculate the height for the thumbnail item based on aspect ratio
-	var itemAspectRatio = this.items[0].actualSize.height/this.items[0].actualSize.width;
-	var thumbHeight = (thumbWidth * itemAspectRatio);
-	var itemSize = {height: thumbHeight,
-					width: thumbWidth};
+	var itemSize = {height: 30,
+					width: labelWidth};
 
 	// function used to place each item into its correct position
 	/** @type {d3DataFunc} */
-	var translateItem =
+	var positionItem =
 		function (d, i)
 		{
+			// these values are done as percentages of the height and width of the container
 			var x = 10 + itemMargin.left + i * (itemMargin.left + itemSize.width + itemMargin.right);
+			var xPerc = x/size.width;
 			var y = itemMargin.top;
-			return attrFnVal("translate", x, y);
+			var yPerc = 1 - y/size.height;
+			return [xPerc, yPerc];
 		};
 
-	// Make sure they fit
-	// TODO: error handling -mjl
-	
-	
 	// make a group to hold the carousel
 	var widgetGroup = container.append("g")
-		.attr("class", "widgetCarousel")
+		.attr("class", "brixLabelSelector")
 		.attr("id", this.id);
 
 	// Rect for the background of the carousel
@@ -224,51 +206,47 @@ pearson.brix.Carousel.prototype.draw = function(container, size)
 			.attr("width", size.width)
 			.attr("height", size.height);
 
-	// Create a group for each item then draw the item in that group
-	var itemGroups = widgetGroup.selectAll("g.widgetItem").data(this.items);
-	
-	var itemOffset = {x: (itemMargin.left + itemMargin.right)/2,
-					  y: (itemMargin.top + itemMargin.bottom)/2 }
-	itemGroups.enter()
-		.append("g")
-			.attr("class", "widgetItem")
-			// draw each image object at it's new thumbnail size
-			.each(function (d)
-				  {
-					  d.draw(d3.select(this), itemSize);
-				  })
-			// draw the overlay rectangle that will be used for highlighting and selection
-			.append("rect")
-				.attr("class", "selection")
-				.attr("width", itemSize.width + itemOffset.x)
-				.attr("height", itemSize.height + itemOffset.y)
-				.attr("stroke-width", 1)
-				.attr("x", -itemOffset.x/2)
-				.attr("y", -itemOffset.y/2);
-	
-	// position each item
-	itemGroups
-		.attr("transform", translateItem);
+	var labelConfig = [];
 
-	itemGroups.on('click',
+	this.items.forEach(
+			function (o, i) { labelConfig[i] = 
+										{
+										content: o,
+										xyPos: positionItem(o, i),
+										width: labelWidth
+										}; 
+							});
+	
+	
+	var labelItems = new pearson.brix.LabelGroup(
+			{
+			type: this.type,
+			labels: labelConfig
+			});
+
+	labelItems.draw(container,size);
+
+	/*itemGroups.on('click',
 				  function (d, i)
 				  {
 					  that.selectItemAtIndex(i);
 				  });
+*/
 				
 	this.lastdrawn.widgetGroup = widgetGroup;
 
-}; // end of Carousel.draw()
+}; // end of LabelSelector.draw()
+
 
 /* **************************************************************************
- * Carousel.redraw                                                     */ /**
+ * LabelSelector.redraw                                                     */ /**
  *
  * Redraw the image as it may have been changed (new URI or caption). It will be
  * redrawn into the same container area as it was last drawn.
  * @export
  *
  ****************************************************************************/
-pearson.brix.Carousel.prototype.redraw = function ()
+pearson.brix.LabelSelector.prototype.redraw = function ()
 {
 	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
 	//       by doing nothing? -mjl
@@ -280,7 +258,7 @@ pearson.brix.Carousel.prototype.redraw = function ()
 };
 
 /* **************************************************************************
- * Carousel.selectedItem                                               */ /**
+ * LabelSelector.selectedItem                                               */ /**
  *
  * Return the selected item in the carousel.
  * @export
@@ -288,13 +266,13 @@ pearson.brix.Carousel.prototype.redraw = function ()
  * @return {pearson.brix.SvgBric} the carousel item which is currently selected.
  *
  ****************************************************************************/
-pearson.brix.Carousel.prototype.selectedItem = function ()
+pearson.brix.LabelSelector.prototype.selectedItem = function ()
 {
 	return this.lastdrawn.widgetGroup.select("g.widgetItem.selected").datum();
 };
 
 /* **************************************************************************
- * Carousel.selectItemAtIndex                                          */ /**
+ * LabelSelector.selectItemAtIndex                                          */ /**
  *
  * Select the item in the carousel at the given index. If the item is
  * already selected, do nothing.
@@ -303,7 +281,7 @@ pearson.brix.Carousel.prototype.selectedItem = function ()
  * @param {number}	index	-the 0-based index of the item to flag as selected.
  *
  ****************************************************************************/
-pearson.brix.Carousel.prototype.selectItemAtIndex = function (index)
+pearson.brix.LabelSelector.prototype.selectItemAtIndex = function (index)
 {
 	var itemGroups = this.lastdrawn.widgetGroup.selectAll("g.widgetItem");
 	var selectedItemGroup = d3.select(itemGroups[0][index]);
@@ -319,7 +297,7 @@ pearson.brix.Carousel.prototype.selectItemAtIndex = function (index)
 };
 
 /* **************************************************************************
- * Carousel.itemKeyToIndex                                             */ /**
+ * LabelSelector.itemKeyToIndex                                             */ /**
  *
  * Find the first item in the list of items in this Carousel which has the
  * specified key and return its index. If no item has that key return null.
@@ -331,7 +309,7 @@ pearson.brix.Carousel.prototype.selectItemAtIndex = function (index)
  * 			specified key.
  *
  ****************************************************************************/
-pearson.brix.Carousel.prototype.itemKeyToIndex = function(key)
+pearson.brix.LabelSelector.prototype.itemKeyToIndex = function(key)
 {
 	for (var i = 0; i < this.items.length; ++i)
 	{
@@ -345,7 +323,7 @@ pearson.brix.Carousel.prototype.itemKeyToIndex = function(key)
 };
 
 /* **************************************************************************
- * Carousel.calcOptimumHeightForWidth                                  */ /**
+ * LabelSelector.calcOptimumHeightForWidth                                  */ /**
  *
  * Calculate the optimum height for this carousel laid out horizontally
  * to fit within the given width.
@@ -357,7 +335,7 @@ pearson.brix.Carousel.prototype.itemKeyToIndex = function(key)
  * 					in the given width.
  *
  ****************************************************************************/
-pearson.brix.Carousel.prototype.calcOptimumHeightForWidth = function (width)
+pearson.brix.LabelSelector.prototype.calcOptimumHeightForWidth = function (width)
 {
 	// Carve the width up for the n items
 	var itemCnt = this.items.length;
@@ -387,7 +365,7 @@ pearson.brix.Carousel.prototype.calcOptimumHeightForWidth = function (width)
 };
 
 /* **************************************************************************
- * Carousel.assignMissingItemKeys_                                     */ /**
+ * LabelSelector.assignMissingItemKeys_                                     */ /**
  *
  * Assign a key property value of the index in the item list to any
  * item which doesn't have a key property. This key is used for selection and
@@ -395,7 +373,7 @@ pearson.brix.Carousel.prototype.calcOptimumHeightForWidth = function (width)
  * @private
  *
  ****************************************************************************/
-pearson.brix.Carousel.prototype.assignMissingItemKeys_ = function ()
+pearson.brix.LabelSelector.prototype.assignMissingItemKeys_ = function ()
 {
 	this.items.forEach(function (item, i)
 					   {
@@ -408,7 +386,7 @@ pearson.brix.Carousel.prototype.assignMissingItemKeys_ = function ()
 };
 
 /* **************************************************************************
- * Carousel.lite                                                       */ /**
+ * LabelSelector.lite                                                       */ /**
  *
  * Highlight the label(s) associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.
@@ -417,7 +395,7 @@ pearson.brix.Carousel.prototype.assignMissingItemKeys_ = function ()
  * @param {string|number}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-pearson.brix.Carousel.prototype.lite = function (liteKey)
+pearson.brix.LabelSelector.prototype.lite = function (liteKey)
 {
 	window.console.log("called Carousel.lite( " + liteKey + " )");
 
