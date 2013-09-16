@@ -103,19 +103,19 @@ pearson.brix.LabelSelector = function (config, eventManager)
 	 * @type {string}
 	 */
 	this.type = config.type;
+
+	this.labelItems = new pearson.brix.LabelGroup(
+			{
+			id: this.id,
+			type: this.type,
+			labels: []
+			});
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
 	 * @type {!pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
-
-	/**
-	 * The event id published when an item in this LabelSelector is selected.
-	 * @const
-	 * @type {string}
-	 */
-	this.selectedEventId = this.id + '_itemSelected';
 	
 	/**
 	 * The event details for this.selectedEventId events
@@ -178,7 +178,7 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 	// deducting 20 pixels for margins, and preventing divide by 0
 	var labelWidth = (size.width - 20) / (itemCnt ? itemCnt : 1) - (itemMargin.left + itemMargin.right);
 
-	var itemSize = {height: 30,
+	var itemSize = {height: 40,
 					width: labelWidth};
 
 	// function used to place each item into its correct position
@@ -194,10 +194,13 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 			return [xPerc, yPerc];
 		};
 
-	// make a group to hold the carousel
+	
+	/* 
+	// make a group to hold the labels
 	var widgetGroup = container.append("g")
 		.attr("class", "brixLabelSelector")
 		.attr("id", this.id);
+
 
 	// Rect for the background of the carousel
 	widgetGroup
@@ -205,6 +208,7 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 			.attr("class", "background")
 			.attr("width", size.width)
 			.attr("height", size.height);
+			*/
 
 	var labelConfig = [];
 
@@ -218,22 +222,24 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 							});
 	
 	
-	var labelItems = new pearson.brix.LabelGroup(
+	this.labelItems = new pearson.brix.LabelGroup(
 			{
+			id: this.id,
 			type: this.type,
 			labels: labelConfig
 			});
 
-	labelItems.draw(container,size);
+	this.labelItems.draw(container,size);
 
-	/*itemGroups.on('click',
+
+	/* this.labelItems.on('click',
 				  function (d, i)
 				  {
 					  that.selectItemAtIndex(i);
 				  });
-*/
-				
-	this.lastdrawn.widgetGroup = widgetGroup;
+
+				*/
+	this.lastdrawn.widgetGroup = d3.select(this.id);
 
 }; // end of LabelSelector.draw()
 
@@ -241,20 +247,15 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 /* **************************************************************************
  * LabelSelector.redraw                                                     */ /**
  *
- * Redraw the image as it may have been changed (new URI or caption). It will be
+ * Redraw the labels as they may get updated text or order. It will be
  * redrawn into the same container area as it was last drawn.
  * @export
  *
  ****************************************************************************/
 pearson.brix.LabelSelector.prototype.redraw = function ()
 {
-	// TODO: Do we want to allow calling redraw before draw (ie handle it gracefully
-	//       by doing nothing? -mjl
-	var image = this.widgetGroup.select("image");
-	image.attr("xlink:href", this.URI);
-	
-	var desc = image.select("desc");
-	desc.text(this.caption);
+ 
+
 };
 
 /* **************************************************************************
@@ -268,7 +269,7 @@ pearson.brix.LabelSelector.prototype.redraw = function ()
  ****************************************************************************/
 pearson.brix.LabelSelector.prototype.selectedItem = function ()
 {
-	return this.lastdrawn.widgetGroup.select("g.widgetItem.selected").datum();
+	this.labelItems.selectedItem();
 };
 
 /* **************************************************************************
@@ -283,8 +284,9 @@ pearson.brix.LabelSelector.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.LabelSelector.prototype.selectItemAtIndex = function (index)
 {
-	var itemGroups = this.lastdrawn.widgetGroup.selectAll("g.widgetItem");
-	var selectedItemGroup = d3.select(itemGroups[0][index]);
+
+	this.labelItems.lite(index.toString());
+	/* var selectedItemGroup = d3.select(itemGroups[0][index]);
 	if (selectedItemGroup.classed('selected'))
 	{
 		return;
@@ -292,8 +294,9 @@ pearson.brix.LabelSelector.prototype.selectItemAtIndex = function (index)
 
 	itemGroups.classed("selected", false);
 	selectedItemGroup.classed("selected", true);
+	*/
 
-	this.eventManager.publish(this.selectedEventId, {index: index, selectKey: selectedItemGroup.datum().key});
+	this.eventManager.publish(this.selectedEventId, {index: index, selectKey: index.toString()});
 };
 
 /* **************************************************************************
@@ -322,47 +325,6 @@ pearson.brix.LabelSelector.prototype.itemKeyToIndex = function(key)
 	return null;
 };
 
-/* **************************************************************************
- * LabelSelector.calcOptimumHeightForWidth                                  */ /**
- *
- * Calculate the optimum height for this carousel laid out horizontally
- * to fit within the given width.
- * @export
- *
- * @param {number}	width	-The width available to lay out the images in the carousel.
- *
- * @return {number} The optimum height for the carousel to display its items
- * 					in the given width.
- *
- ****************************************************************************/
-pearson.brix.LabelSelector.prototype.calcOptimumHeightForWidth = function (width)
-{
-	// Carve the width up for the n items
-	var itemCnt = this.items.length;
-	var itemWidth = width / itemCnt - (this.itemMargin.left + this.itemMargin.right);
-	var thumbWidth = width / (itemCnt ? itemCnt : 1) - (this.itemMargin.left + this.itemMargin.right);
-
-	//calculate the height for the thumbnail item based on aspect ratio
-	var itemAspectRatio = this.items[0].actualSize.height/this.items[0].actualSize.width;
-	var thumbHeight = (thumbWidth * itemAspectRatio);
-	
-	/* 
- 	I'm ditching this for now, it seems that the correctly scaled height of
-	 the first thumbnail is what's desired - lb
-	
-	var getHeight = function (item)
-	{
-		var hwRatio = item.actualSize.height / item.actualSize.width;
-		return itemWidth * hwRatio;
-	};
-
-	 //Try optimum being the average height
-	 var itemHeights = this.items.map(getHeight);
-	 var heightSum = itemHeights.reduce(function (pv, cv) {return pv + cv;});
-	 */
-
-	return thumbHeight + this.itemMargin.top + this.itemMargin.bottom;
-};
 
 /* **************************************************************************
  * LabelSelector.assignMissingItemKeys_                                     */ /**

@@ -40,8 +40,8 @@ svg g.brixCaptionedImage div.widgetImageCaption
   margin: 10px;
 }
 
-svg g.widgetCarousel>rect.background,
-svg g.brixLabelSelector>rect.background
+svg g.widgetCarousel>rect.background
+
 {
 	fill:	#efefef;
   stroke: #e4e4e4;
@@ -62,9 +62,10 @@ svg g.widgetCarousel>g.widgetItem.selected>rect.selection
 	stroke-opacity:	1;	
 }
 
-svg g.brixImageViewer>rect 
+svg g.brixImageViewer>rect,
+svg g.brixLabelCarousel>rect 
 {
-	fill-opacity:	0.0;
+	fill:	none;
 	stroke-width:	1;
   stroke: #e4e4e4;
 }
