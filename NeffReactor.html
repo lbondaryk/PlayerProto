@@ -65,14 +65,28 @@
 
 	<script>
 
+	// Create an object that will contain the objects needed for the activities
+	// on this page.
+	pearson.brix.activity = {};
+	var a = pearson.brix.activity;
 
+	// The activity config that defines the brix and cement for this page
+	a.config =
+	{
+	};
 
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
-	var eventManager = new pearson.utils.EventManager();
+	// create the eventmanager to be used by the created brix, and the
+	// bricLayer which will create them, and then tell the bricLayer to build.
+	a.eventManager = new pearson.utils.EventManager();
+	a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager);
+
+	a.building = a.bricLayer.build(a.config);
+
+	// EVERYTHING FROM HERE ON will be removed once the config and bricLayer.build
+	// are working. -mjl
 
 	// local aliases for convenience
+	var eventManager = a.eventManager;
 	var Size = pearson.utils.Size;
 	var SVGContainer = pearson.brix.SVGContainer;
 	var CaptionedImage = pearson.brix.CaptionedImage;
