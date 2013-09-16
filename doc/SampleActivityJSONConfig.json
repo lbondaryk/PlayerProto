@@ -1,3 +1,160 @@
+// This is a JSON schema that is under development (it is expected to encapsulate the ideas
+// in the sample instance below it. -mjl 9/16/2013
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Pearson Brix Activity Configuration",
+    "description": "A complete configuration used to create all the related brix and cement needed to perform an activity.",
+    "type": "object"
+	"required": ["sequenceNodeKey", "containerConfig"],
+	"properties":
+		{
+			"sequenceNodeKey":
+				{
+					"description": "The sequence node key created from the sequence node id by the IPS for the PAF sequence node that this config has been extracted from. This should not exist in the config stored in PAF.",
+					"type": "string"
+				},
+			"containerConfig":
+				{
+					"description": "Array of configuration objects each of which defines all the brix and cement that live together in a single element (or iframe), for all of the targets on a page.",
+					"type": "array",
+					"minItems": 1,
+					"items": { "$ref": "#/definitions/containerConfig" }
+				}
+		},
+	"definitions":
+		{
+			"containerConfig":
+				{
+					"description": "defines all the brix and cement that live together in a single element (or iframe).",
+					"type": "object",
+					"required": ["containerId", "brixConfig"],
+					"properties":
+						{
+							"containerId":
+								{
+									"description": "Unique ID of page container, probably the ID on the div or iframe or object element that is the target of this configuration",
+									"type": "string",
+									"minLength": 1
+								},
+							"brixConfig":
+								{
+									"description": "Array of configuration for all of the brix in this container.",
+									"type": "array",
+									"items": { "$ref": "#/definitions/brixConfig" }
+								},
+							"cementConfig":
+								{
+									"description": "Array of configuration for all of the cement in this container.",
+									"type": "array",
+									"items": { "$ref": "#/definitions/cementConfig" }
+								},
+						}
+				},
+			"brixConfig":
+				{
+					"description": "configuration of a particular bric.",
+					"type": "object",
+					"required": ["bricId", "bricType", "config"],
+					"properties":
+						{
+							"bricId":
+								{
+									"description": "",
+									"type": "string",
+									"minLength": 1
+								},
+							"bricType":
+								{
+									"description": "BricTypes enum name used to register the bric with the BricWorks",
+									"enum":
+										[
+											"SvgContainer",
+											"BarChart",
+											"Button",
+											"Callouts",
+											"CaptionedImage",
+											"Carousel",
+											"CheckGroup",
+											"Image",
+											"ImageViewer",
+											"LabelGroup",
+											"Legend",
+											"LineGraph",
+											"MarkerGroup",
+											"MultipleChoiceQuestion",
+											"MultiSelectQuestion",
+											"NumericInput",
+											"NumericQuestion",
+											"PieChart",
+											"RadioGroup",
+											"Readout",
+											"SelectGroup",
+											"Sketch",
+											"Slider"
+										],
+								},
+							"config":
+								{
+									"description": "config for the bric type specified",
+									"type": "object",
+								},
+							"configFixup":
+								{
+									"description": "config for the bric type specified",
+									<[optional] object describing runtime modifications to the config, perhaps
+										adding properties referencing a previously created bric>
+									"type": "string",
+								},
+						}
+				},
+			"cementConfig":
+				{
+					"description": "",
+					"type": "object",
+					"required": [],
+					"properties":
+						{
+						}
+				},
+			"foo":
+				{
+					"description": "",
+					"type": "object",
+					"required": [],
+					"properties":
+						{
+						}
+				},
+			"foo":
+				{
+					"description": "",
+					"type": "object",
+					"required": [],
+					"properties":
+						{
+						}
+				},
+			"foo":
+				{
+					"description": "",
+					"type": "object",
+					"required": [],
+					"properties":
+						{
+						}
+				},
+			"foo":
+				{
+					"description": "",
+					"type": "object",
+					"required": [],
+					"properties":
+						{
+						}
+				},
+		}
+}
+
 {
 	"activityId": <PAF activity guid>,
 	"containerConfig":
