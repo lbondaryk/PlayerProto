@@ -72,8 +72,150 @@
 
 	// The activity config that defines the brix and cement for this page
 	a.config =
-	{
-	};
+		{
+			"sequenceNodeKey": "39b0706e-8587-447e-a598-ecc5e9a1b883",
+			"containerConfig":
+				[
+					{
+						"containerId": "imgReactor",
+						"brixConfig":
+							[
+								{
+									"bricId": "cimage1",
+									"bricType": "CaptionedImage",
+									"config":
+										{
+											"id": "cimg0n",
+											"URI": "img/reactor.jpg",
+											"caption": "Nuclear Reactor Schematic Diagram",
+											"actualSize": {"height": 310, "width": 680},
+											"captionPosition": "below"
+										},
+									"configFixup":
+										{
+											//<[optional] object describing runtime modifications to the config, perhaps
+											//	adding properties referencing a previously created bric>
+										}
+								},
+								{
+									"bricId": "cntr1",
+									"bricType": "SvgContainer",
+									"config":
+										{
+											"node": d3.select("#imgReactor"),
+											"maxSize": pearson.utils.Size.matchRatioWithHeight(350 - 40, {"height": 310, "width": 680}/*"cimage1"."config"."actualSize"*/),
+										},
+									"configFixup":
+										{
+											//<[optional] object describing runtime modifications to the config, perhaps
+											//	adding properties referencing a previously created bric>
+										}
+								},
+								{
+									"bricId": "labels1",
+									"bricType": "LabelGroup",
+									"config":
+										{
+											"id": "reactorNum",
+											"type": "numbered",
+											"labels": 	
+												[	
+													{"content": "1", "xyPos": [0, 0.22], "width": 0},
+													{"content": "2", "xyPos": [0.05, 0.43], "width": 0},
+													{"content": "3", "xyPos": [0.3, 0.7], "width": 0},
+													{"content": "4", "xyPos": [0.62, 0.65], "width": 0},
+													{"content": "5", "xyPos": [0.66, 0.15], "width": 0}
+												]
+										},
+									"configFixup":
+										{
+											//<[optional] object describing runtime modifications to the config, perhaps
+											//	adding properties referencing a previously created bric>
+										}
+								}
+							],
+						"cementConfig":
+							[
+								{
+									"cementId": "<unique id for this cement in this container>",
+									"cementType": "BrixEventHandler",
+									"config":
+										{
+											"events": ["fixup"],
+											"action":
+												{
+													"type": "call-method",
+													"bric": "labels1",
+													"method": "lite",
+													"params": ["liteKey"]
+												}
+										}
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"actionType": "method-call", /* the method-call handles a lot of the actions needed, but I expect there are other types of actions */
+									"config":
+										{
+											"objectId": "Invoker-GUID",
+											"methodName": "registerObject",
+											"args":
+												[
+													{ "type": "static", "value": "barChart_GUID" }, /* static args use the value specified here */
+													{ "type": "bric-obj-ref", "id": "barChart_GUID" } /* obj refs are replaced w/ the object created above w/ the specified id */
+												]
+										}
+								}
+							]
+					},
+					{
+						"containerId": "steps",
+						"brixConfig":
+							[
+								{
+									"bricId": "lbltbl1",
+									"bricType": "Callouts",
+									"config":
+										{
+										},
+									"configFixup":
+										{
+											//<[optional] object describing runtime modifications to the config, perhaps
+											//	adding properties referencing a previously created bric>
+										}
+								},
+							],
+						"cementConfig":
+							[
+								{
+									"cementId": "<unique id for this cement in this container>",
+									"cementType": "BrixEventHandler",
+									"config":
+										{
+											//... config for cement type specified
+										}
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"actionType": "method-call", /* the method-call handles a lot of the actions needed, but I expect there are other types of actions */
+									"config":
+										{
+											"objectId": "Invoker-GUID",
+											"methodName": "registerObject",
+											"args":
+												[
+													{ "type": "static", "value": "barChart_GUID" }, /* static args use the value specified here */
+													{ "type": "bric-obj-ref", "id": "barChart_GUID" } /* obj refs are replaced w/ the object created above w/ the specified id */
+												]
+										}
+								}
+							]
+					}
+				]
+		};
 
 	// create the eventmanager to be used by the created brix, and the
 	// bricLayer which will create them, and then tell the bricLayer to build.
