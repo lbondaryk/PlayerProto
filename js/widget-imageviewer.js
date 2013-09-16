@@ -211,9 +211,9 @@ pearson.brix.ImageViewer.prototype.draw = function (container, size)
 
 	// Image goes below carousel
 	var imageGroup = widgetGroup.append("g")
-		.attr("transform", attrFnVal("translate", 0, carouselHeight));
+		.attr("transform", attrFnVal("translate", 0, carouselHeight + 10));
 
-	this.image.draw(imageGroup, {height: size.height - carouselHeight, width: size.width});
+	this.image.draw(imageGroup, {height: size.height - carouselHeight - 10, width: size.width});
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 
