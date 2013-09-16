@@ -1,5 +1,5 @@
 /* **************************************************************************
- * $Workfile:: brix-labelselector.js                                           $
+ * $Workfile:: brix-labelselector.js                                        $
  * *********************************************************************/ /**
  *
  * @fileoverview Implementation of the LabelSelector widget.
@@ -34,7 +34,7 @@ goog.require('pearson.utils.IEventManager');
 });
 
 /* **************************************************************************
- * LabelSelector                                                          */ /**
+ * LabelSelector                                                       */ /**
  *
  * The LabelSelector widget draws a collection of labels side by side in an 
  * SVGContainer and allows one of them to be selected.
@@ -47,7 +47,7 @@ goog.require('pearson.utils.IEventManager');
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this LabelSelector.
  * 										 if undefined a unique id will be assigned.
- * @param {!Array.<!pearson.brix.SvgBric>}
+ * @param {!Array.<string>}
  *						config.items	-The list of label strings to be presented by the Selector.
  * @param {string}		config.layout	-How the selector will layout the items (vertical or horizontal).
  * @param {{top: number, bottom: number, left: number, right: number}}
@@ -79,7 +79,7 @@ pearson.brix.LabelSelector = function (config, eventManager)
 
 	/**
 	 * The list of label strings presented by the LabelSelector.
-	 * @type {!Array.<!string>}
+	 * @type {!Array.<string>}
 	 */
 	this.items = config.items;
 
@@ -104,27 +104,33 @@ pearson.brix.LabelSelector = function (config, eventManager)
 	 */
 	this.type = config.type;
 
-	this.labelItems = new pearson.brix.LabelGroup(
-			{
-			id: this.id,
-			type: this.type,
-			labels: []
-			});
-	
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
 	 * @type {!pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 	
-	/**
-	 * The event details for this.selectedEventId events
-	 * @typedef {Object} SelectedEventDetails
-	 * @property {number} index		-The 0-based index of the selected item.
-	 * @property {string} selectKey	-The key associated with the selected item.
-	 */
-	var SelectedEventDetails;
+	// configuration for the labelItems LabelGroup.
+	var labelConfig =
+		{
+			id: this.id + '_labels',
+			type: this.type,
+			labels: []	// will be populated by draw()
+		};
 
+	/**
+	 * The label group that draws the labels
+	 * @type {pearson.brix.LabelGroup}
+	 */
+	this.labelItems = new pearson.brix.LabelGroup(labelConfig, this.eventManager);
+	
+	/**
+	 * The event id published when a label in this LabelSelector is selected.
+	 * @const
+	 * @type {string}
+	 */
+	this.selectedEventId = this.labelItems.selectedEventId;
+	
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)
 	 * @type {Object}
@@ -143,10 +149,10 @@ goog.inherits(pearson.brix.LabelSelector, pearson.brix.SvgBric);
  * @const
  * @type {string}
  */
-pearson.brix.LabelSelector.autoIdPrefix = "labSel_";
+pearson.brix.LabelSelector.autoIdPrefix = "labSel_auto_";
 
 /* **************************************************************************
- * LabelSelector.draw                                                       */ /**
+ * LabelSelector.draw                                                  */ /**
  *
  * @inheritDoc
  * @export
@@ -181,8 +187,10 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 	var itemSize = {height: 40,
 					width: labelWidth};
 
-	// function used to place each item into its correct position
-	/** @type {d3DataFunc} */
+	/**
+	 * function used to place each item into its correct position
+	 * @type {function(*, number):Array.<number>}
+	 */
 	var positionItem =
 		function (d, i)
 		{
@@ -210,26 +218,18 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 			.attr("height", size.height);
 			*/
 
-	var labelConfig = [];
+	var labelItemsLabels = this.labelItems.labels;
 
 	this.items.forEach(
-			function (o, i) { labelConfig[i] = 
-										{
+			function (o, i) { labelItemsLabels[i] = 
+									{
 										content: o,
 										xyPos: positionItem(o, i),
 										width: labelWidth
-										}; 
+									}; 
 							});
-	
-	
-	this.labelItems = new pearson.brix.LabelGroup(
-			{
-			id: this.id,
-			type: this.type,
-			labels: labelConfig
-			});
 
-	this.labelItems.draw(container,size);
+	this.labelItems.draw(container, size);
 
 
 	/* this.labelItems.on('click',
@@ -245,7 +245,7 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 
 
 /* **************************************************************************
- * LabelSelector.redraw                                                     */ /**
+ * LabelSelector.redraw                                                */ /**
  *
  * Redraw the labels as they may get updated text or order. It will be
  * redrawn into the same container area as it was last drawn.
@@ -254,26 +254,10 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
  ****************************************************************************/
 pearson.brix.LabelSelector.prototype.redraw = function ()
 {
- 
-
 };
 
 /* **************************************************************************
- * LabelSelector.selectedItem                                               */ /**
- *
- * Return the selected item in the carousel.
- * @export
- *
- * @return {pearson.brix.SvgBric} the carousel item which is currently selected.
- *
- ****************************************************************************/
-pearson.brix.LabelSelector.prototype.selectedItem = function ()
-{
-	this.labelItems.selectedItem();
-};
-
-/* **************************************************************************
- * LabelSelector.selectItemAtIndex                                          */ /**
+ * LabelSelector.selectItemAtIndex                                     */ /**
  *
  * Select the item in the carousel at the given index. If the item is
  * already selected, do nothing.
@@ -300,7 +284,7 @@ pearson.brix.LabelSelector.prototype.selectItemAtIndex = function (index)
 };
 
 /* **************************************************************************
- * LabelSelector.itemKeyToIndex                                             */ /**
+ * LabelSelector.itemKeyToIndex                                        */ /**
  *
  * Find the first item in the list of items in this Carousel which has the
  * specified key and return its index. If no item has that key return null.
@@ -327,7 +311,7 @@ pearson.brix.LabelSelector.prototype.itemKeyToIndex = function(key)
 
 
 /* **************************************************************************
- * LabelSelector.assignMissingItemKeys_                                     */ /**
+ * LabelSelector.assignMissingItemKeys_                                */ /**
  *
  * Assign a key property value of the index in the item list to any
  * item which doesn't have a key property. This key is used for selection and
@@ -348,7 +332,7 @@ pearson.brix.LabelSelector.prototype.assignMissingItemKeys_ = function ()
 };
 
 /* **************************************************************************
- * LabelSelector.lite                                                       */ /**
+ * LabelSelector.lite                                                  */ /**
  *
  * Highlight the label(s) associated w/ the given liteKey (key) and
  * remove any highlighting on all other labels.

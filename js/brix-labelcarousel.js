@@ -1,5 +1,5 @@
 /* **************************************************************************
- * $Workfile:: brix-labelcarousel.js                                           $
+ * $Workfile:: brix-labelcarousel.js                                        $
  * *********************************************************************/ /**
  *
  * @fileoverview Implementation of the Label Carousel widget.
@@ -81,9 +81,8 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 	 */
 	this.items = config.items;
 
-	function makeLabels () 
+	function makeLabels() 
 		{
-			
 			if (config.labels) 
 			{
 				return config.labels;
@@ -97,7 +96,6 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 				};
 				
 				return labelArray;
-
 			}
 		}
 
@@ -194,7 +192,7 @@ goog.inherits(pearson.brix.LabelCarousel, pearson.brix.SvgBric);
 pearson.brix.LabelCarousel.autoIdPrefix = 'labCrsl_';
 
 /* **************************************************************************
- * LabelCarousel.draw                                                    */ /**
+ * LabelCarousel.draw                                                  */ /**
  *
  * @inheritDoc
  * @export
@@ -250,7 +248,7 @@ pearson.brix.LabelCarousel.prototype.draw = function (container, size)
 }; // end of ImageViewer.draw()
 
 /* **************************************************************************
- * LabelCarousel.redraw                                                  */ /**
+ * LabelCarousel.redraw                                                */ /**
  *
  * Redrawing the ImageViewer currently does nothing.
  * @export
@@ -261,7 +259,7 @@ pearson.brix.LabelCarousel.prototype.redraw = function ()
 };
 
 /* **************************************************************************
- * LabelCarousel.selectedItem                                            */ /**
+ * LabelCarousel.selectedItem                                          */ /**
  *
  * Return the selected item in the carousel.
  * @export
@@ -275,7 +273,7 @@ pearson.brix.LabelCarousel.prototype.selectedItem = function ()
 };
 
 /* **************************************************************************
- * LabelCarousel.selectItemAtIndex                                       */ /**
+ * LabelCarousel.selectItemAtIndex                                     */ /**
  *
  * Select the item in the carousel at the given index.
  * @export
@@ -307,7 +305,7 @@ pearson.brix.LabelCarousel.prototype.itemKeyToIndex = function(key)
 };
 
 /* **************************************************************************
- * LabelCarousel.assignMissingItemKeys_                                  */ /**
+ * LabelCarousel.assignMissingItemKeys_                                */ /**
  *
  * Assign a key property value of the index in the item list to any
  * item which doesn't have a key property. This key is used for selection and
@@ -328,7 +326,7 @@ pearson.brix.LabelCarousel.prototype.assignMissingItemKeys_ = function ()
 };
 
 /* **************************************************************************
- * LabelCarousel.lite                                                    */ /**
+ * LabelCarousel.lite                                                  */ /**
  *
  * Highlight the image(s) associated w/ the given liteKey (key) in the
  * carousel, and select the 1st highlighted image.
