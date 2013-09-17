@@ -111,13 +111,15 @@ pearson.brix.BricLayer = function (config, eventManager)
 	/**
 	 * The event manager to use to publish (and subscribe to) events for the
 	 * created brix and cement.
+	 * @private
 	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager || new pearson.utils.EventManager();
+	this.eventManager_ = eventManager || new pearson.utils.EventManager();
 
 	/**
 	 * The bricWorks is the factory which builds all brix. It should
 	 * ONLY be accessed using the getBricWorks accessor function.
+	 * @private
 	 * @type {pearson.brix.BricWorks}
 	 */
 	this.bricWorks_ = null;
@@ -158,7 +160,7 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
 	}
 
 	// 1st time the BricWorks was accessed, so create it.
-	var bricWorks = new pearson.brix.BricWorks(null, this.eventManager);
+	var bricWorks = new pearson.brix.BricWorks(null, this.eventManager_);
 
 	// register all brix
 	var BricTypes = pearson.brix.BricTypes;
@@ -166,6 +168,7 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
 	bricWorks.registerMold(BricTypes.BARCHART, pearson.brix.BarChart);
 	bricWorks.registerMold(BricTypes.BUTTON, pearson.brix.Button);
 	bricWorks.registerMold(BricTypes.CALLOUTS, pearson.brix.Callouts);
+	bricWorks.registerMold(BricTypes.CAPTIONEDIMAGE, pearson.brix.CaptionedImage);
 	bricWorks.registerMold(BricTypes.CAROUSEL, pearson.brix.Carousel);
 	bricWorks.registerMold(BricTypes.CHECKGROUP, pearson.brix.CheckGroup);
 	bricWorks.registerMold(BricTypes.IMAGE, pearson.brix.Image);
