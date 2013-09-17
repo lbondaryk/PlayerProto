@@ -435,25 +435,25 @@
 		}, eventManager);
 
 	var imgCrsl = new LabelCarousel({
-			items:
+			images:
 				[
-					new Image({
-					URI: 'img/Neff/Neff_12.6.3_S1.jpg',
-					caption: "70% more food",
-					actualSize: {height: 380, width: 570}
-					}),
-					new Image({
-					URI: 'img/Neff/Neff_12.6.3_S2.jpg',
-					caption: "200% more energy",
-					actualSize: {height: 380, width: 570},
-					}),
-					new Image({
-					URI: 'img/Neff/Neff_12.6.3_S3.jpg',
-					caption: "80% more water for agriculture",
-					actualSize: {height: 380, width: 570},
-					}),
+					{
+						URI: 'img/Neff/Neff_12.6.3_S1.jpg',
+						caption: "70% more food",
+						//selectorLabel: "Food"
+					},
+					{
+						URI: 'img/Neff/Neff_12.6.3_S2.jpg',
+						caption: "200% more energy",
+						selectorLabel: "Energy"
+					},
+					{
+						URI: 'img/Neff/Neff_12.6.3_S3.jpg',
+						caption: "80% more water for agriculture",
+						//selectorLabel: "Water"
+					},
 				],
-			//labels: ["Food", "Energy", "Water"]
+			imagesActualSize: {height: 380, width: 570},
 			}, eventManager);
 
 	neffCont2.append(imgCrsl);

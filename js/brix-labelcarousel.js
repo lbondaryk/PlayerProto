@@ -53,10 +53,11 @@ goog.require('pearson.utils.IEventManager');
  * @param {string|undefined}
  * 							config.id		-String to uniquely identify this ImageViewer.
  * 											 if undefined a unique id will be assigned.
- * @param {Array.<!pearson.brix.Image>}
- * 							config.items	-The list of Image brix to be presented by Carousel.
- * @param {Array.<!pearson.brix.LabelSelector>}
- * 							config.labels	-The list of labels to be presented by the Selector.
+ * @param {!Array.<{URI: string, caption: string, selectorLabel: string}>}
+ * 							config.images	-The list of info to load the images for the carousel.
+ * @param {!pearson.utils.ISize}
+ * 							config.imagesActualSize
+ * 											-The actual size of all of the images.
  * @param {!pearson.utils.IEventManager}
  * 							eventManager	-allows the bric to publish and subscribe to events
  * 											 required for correct internal operation.
@@ -76,39 +77,19 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelCarousel);
 
 	/**
-	 * The list of image brix presented by this LabelCarousel.
-	 * @type {Array.<!pearson.brix.Image>}
+	 * The list of info for each image to be presented by this LabelCarousel.
+	 * @type {!Array.<{URI: string, caption: string, selectorLabel: string}>}
 	 */
-	this.items = config.items;
-
-	function makeLabels() 
-		{
-			if (config.labels) 
-			{
-				return config.labels;
-			}
-			else
-			{ 
-				var labelArray = [];
-				for (var i = that.items.length - 1; i >= 0; i--) 
-				{
-					labelArray[i] = '&nbsp;';
-				};
-				
-				return labelArray;
-			}
-		}
-
-	this.labels = makeLabels(); 
+	this.imagesInfo = config.images;
 
 	this.assignMissingItemKeys_();
 
 	// The ImageViewer uses a standard layout of the Carousel to make its
 	// configuration simpler.
-	var crslConfig =
+	var lblselConfig =
 		{
 			id: this.id + "_labels",
-			items: this.labels,
+			labels: config.images.map(function (e) {return e.selectorLabel || '&nbsp;';}),
 			layout: "horizontal",
 			type: "numbered",
 			itemMargin: {top: 0, bottom: 0, left: 2, right: 2}
@@ -118,17 +99,16 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 	 * The selector bric used by this LabelCarousel to present the images.
 	 * @type {!pearson.brix.LabelSelector}
 	 */
-	this.labelSelector = new pearson.brix.LabelSelector(crslConfig, eventManager);
+	this.labelSelector = new pearson.brix.LabelSelector(lblselConfig, eventManager);
 
 	// We may want to eventually support an empty image, but for now
 	// we'll just copy the 1st image into the display image.
 	var cimgConfig =
 		{
 			id: this.id + "_cimg",
-			URI: this.items[0].URI,
-			caption: this.items[0].caption,
-			preserveAspectRatio: this.items[0].preserveAspectRatio,
-			actualSize: this.items[0].actualSize,
+			URI: this.imagesInfo[0].URI,
+			caption: this.imagesInfo[0].caption,
+			actualSize: config.imagesActualSize,
 			captionPosition: "below"
 		};
 
@@ -159,17 +139,17 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 	 */
 	var SelectedEventDetails;
 
-	// event handler that connects the carousel selection to changing and redrawing
+	// event handler that connects the label selector selection to changing and redrawing
 	// the image below.
 	var handleLabelSelection = function (eventDetails)
 	{
-		console.log("firing image change handler");
-		that.image.changeImage(that.items[Number(eventDetails.selectKey)].URI,
-							   that.items[Number(eventDetails.selectKey)].caption);
+		window.console.log("firing image change handler");
+		that.image.changeImage(that.imagesInfo[eventDetails.index].URI,
+							   that.imagesInfo[eventDetails.index].caption);
 		that.image.redraw();
 	};
 
-	eventManager.subscribe(this.labelSelector.labelItems.selectedEventId, handleLabelSelection);
+	eventManager.subscribe(this.labelSelector.selectedEventId, handleLabelSelection);
 	
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)
@@ -269,7 +249,7 @@ pearson.brix.LabelCarousel.prototype.redraw = function ()
  ****************************************************************************/
 pearson.brix.LabelCarousel.prototype.selectedItem = function ()
 {
-	return this.labelSelector.selectedItem();
+	return {};
 };
 
 /* **************************************************************************
@@ -315,14 +295,6 @@ pearson.brix.LabelCarousel.prototype.itemKeyToIndex = function(key)
  ****************************************************************************/
 pearson.brix.LabelCarousel.prototype.assignMissingItemKeys_ = function ()
 {
-	this.items.forEach(function (item, i)
-					   {
-						   // A falsy key is invalid, set it to the index
-						   if (!item.key)
-						   {
-							   item.key = i.toString();
-						   }
-					   });
 };
 
 /* **************************************************************************

@@ -48,7 +48,7 @@ goog.require('pearson.utils.IEventManager');
  * 						config.id		-String to uniquely identify this LabelSelector.
  * 										 if undefined a unique id will be assigned.
  * @param {!Array.<string>}
- *						config.items	-The list of label strings to be presented by the Selector.
+ *						config.labels	-The list of label strings to be presented by the Selector.
  * @param {string}		config.layout	-How the selector will layout the items (vertical or horizontal).
  * @param {{top: number, bottom: number, left: number, right: number}}
  *						config.itemMargin
@@ -81,7 +81,7 @@ pearson.brix.LabelSelector = function (config, eventManager)
 	 * The list of label strings presented by the LabelSelector.
 	 * @type {!Array.<string>}
 	 */
-	this.items = config.items;
+	this.items = config.labels;
 
 	//this.assignMissingItemKeys_();
 	

@@ -150,9 +150,10 @@ pearson.brix.LabelGroup = function (config, eventManager)
 	/**
 	 * The event details for this.selectedEventId events
 	 * @typedef {Object} SelectedEventDetails
-	 * @property {string|number} selectKey	-The key associated with the selected label if it has one,
-	 *										 otherwise the label's index within the group.
+	 * @property {number} index		-The 0-based index of the selected label within the label group.
+	 * @property {string} selectKey	-The key associated with the selected label.
 	 */
+	var SelectedEventDetails;
 	
 	/**
 	 * The scale functions set explicitly for this LabelGroup using setScale.
@@ -316,7 +317,7 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
 	labelCollection.on('click',
 				function (d, i)
 				{
-					that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+					that.eventManager.publish(that.selectedEventId, {index: i, selectKey: d.key});
 					that.lite(d.key);
 				});
 				
