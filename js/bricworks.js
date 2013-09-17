@@ -15,6 +15,7 @@
 
 goog.provide('pearson.brix.BricWorks');
 
+goog.require('goog.object');
 goog.require('pearson.utils.IEventManager');
 
 
@@ -73,6 +74,10 @@ pearson.brix.BricWorks = function (config, eventManager)
  ****************************************************************************/
 pearson.brix.BricWorks.prototype.registerMold = function (bricName, bricMold)
 {
+	// only non-empty strings are valid names
+	if (!bricName || !goog.isString(bricName))
+		return;
+
 	this.bricCatalogue_[bricName] = bricMold;
 };
 
@@ -90,6 +95,20 @@ pearson.brix.BricWorks.prototype.createBric = function (bricName, config)
 {
 	var bricMold = this.bricCatalogue_[bricName];
 
-	return new bricMold(config, this.eventManager);
+	return bricMold ? new bricMold(config, this.eventManager) : null;
+};
+
+/* **************************************************************************
+ * BricWorks.getMoldCount                                              */ /**
+ *
+ * Get the number of molds that have been successfully registered w/ this
+ * BricWorks. (This method is provided as a testing/debugging aid).
+ *
+ * @returns {number} the number of molds registered w/ this BricWorks
+ *
+ ****************************************************************************/
+pearson.brix.BricWorks.prototype.getMoldCount = function ()
+{
+	return goog.object.getCount(this.bricCatalogue_);
 };
 
