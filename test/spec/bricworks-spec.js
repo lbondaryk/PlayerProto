@@ -4,8 +4,8 @@
  *
  * @fileoverview BricWorks unit tests
  *
- * Created on		September 17, 2013
- * @author			Michael Jay Lippert
+ * Created on	September 17, 2013
+ * @author		Michael Jay Lippert
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -16,15 +16,13 @@
 (function () {
     var expect = chai.expect;
 
-	var EventManager = pearson.utils.EventManager;
 	var BricWorks = pearson.brix.BricWorks;
 
     describe('BricWorks: the place to go when you need brix', function () {
-		var eventManager = null;
-		var DummyBricCtor = function (c, e) {this.cfg = c; this.em = e;};
 
         describe('A BricWorks with no registered molds', function () {
 			var bricWorks;
+			var DummyBricCtor = function (c, e) {this.cfg = c; this.em = e;};
 
 			before(function () {
 				bricWorks = new BricWorks({});
@@ -86,6 +84,10 @@
 				expect(bricWorks.createBric('foo', {})).to.be.null;
 			});
 
+			it('should report that it has a mold for the registered name', function () {
+				expect(bricWorks.hasMold(BRIC1)).is.true;
+			});
+
 			it('should create the correct bric using the given config and eventmanager' +
 			   ' from the bricWorks constructor', function () {
 				var mynewbric1 = bricWorks.createBric(BRIC1, config1);
@@ -115,6 +117,15 @@
 
 			it('should have a registered mold count of 2', function () {
 				expect(bricWorks.getMoldCount()).to.equal(2);
+			});
+
+			it('should report that it has a mold for both registered names', function () {
+				expect(bricWorks.hasMold(BRIC1)).is.true;
+				expect(bricWorks.hasMold(BRIC2)).is.true;
+			});
+
+			it('should report that it doesn\'t have a mold for an unregistered name', function () {
+				expect(bricWorks.hasMold('foo')).is.false;
 			});
 
 			it('should return null when creating a bric with an unregistered name', function () {

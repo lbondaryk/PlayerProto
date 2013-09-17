@@ -112,3 +112,19 @@ pearson.brix.BricWorks.prototype.getMoldCount = function ()
 	return goog.object.getCount(this.bricCatalogue_);
 };
 
+/* **************************************************************************
+ * BricWorks.hasMold                                                   */ /**
+ *
+ * Check whether a bric mold with the specified name has been registered.
+ *
+ * @param {Object}	bricName		-The name of the bric mold to check for.
+ * 
+ * @returns {boolean} true if a mold for a bric w/ that name has been
+ * 		registered otherwise false;
+ *
+ ****************************************************************************/
+pearson.brix.BricWorks.prototype.hasMold = function (bricName)
+{
+	return goog.object.containsKey(this.bricCatalogue_, bricName);
+};
+
