@@ -105,6 +105,16 @@
 										adding properties referencing a previously created bric>
 									"type": "string",
 								},
+							"state":
+								{
+									"description": "State information specific to this bric that it can use to restore itself. Will probably require a method on all brix to send this info to. Can state be restored before the bric is drawn or only after?",
+									"type": "object",
+								},
+							"answerKey":
+								{
+									"description": "The answer key defining how to determine if a student's answer is correct, and the various responses that may be returned",
+									"type": "object",
+								},
 						}
 				},
 			"cementConfig":
