@@ -106,9 +106,13 @@ goog.require('goog.object');
 			activityConfig.containerConfig[0].brixConfig.push(staticBricConfig);
 
 			var building = bricLayer.build(activityConfig);
-			it('should build the bric with an exact copy of the static config', function () {
+
+			it('should create the bric as a property of the brix object with a property name of the bricId', function () {
+				expect(building.brix).to.have.a.property(dummyBricId);
 				expect(building.brix[dummyBricId]).to.be.an.instanceOf(DummyBricCtor);
-				
+			});
+
+			it('should build the bric with an exact copy of the static config', function () {
 				var dummyBric = building.brix[dummyBricId];
 				// the exact config obj from the activity config should not be passed to the ctor.
 				expect(dummyBric.cfg).to.not.equal(dummyBricConfig);

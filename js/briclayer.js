@@ -17,6 +17,7 @@
 goog.provide('pearson.brix.BrixLayer');
 goog.provide('pearson.brix.BricTypes');
 
+goog.require('goog.object');
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.utils.EventManager');
 goog.require('pearson.brix.BricWorks');
@@ -196,6 +197,50 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
 
 	building['info']['seqNodeId'] = activityConfig['sequenceNodeKey'];
 
+	activityConfig['containerConfig'].forEach(goog.bind(this.buildContainer_, this, building));
+
 	return building;
+};
+
+/* **************************************************************************
+ * BricLayer.buildContainer_                                           */ /**
+ *
+ * Build all the brix and cement specified by the given container config.
+ * @private
+ *
+ * @param {Object}	building		-Object containing everything that's been
+ * 									 built so far, and where all the new objects
+ * 									 defined in this container are to be put.
+ * @param {Object}	containerConfig	-Configuration for all of the brix and connecting
+ * 									 cement in "container", that get rendered
+ * 									 as children of a single element (usually a div).
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.buildContainer_ = function (building, containerConfig)
+{
+	containerConfig['brixConfig'].forEach(goog.bind(this.buildBric_, this, building));
+};
+
+/* **************************************************************************
+ * BricLayer.buildBric_                                                */ /**
+ *
+ * Build the bric defined by the given configuration.
+ * @private
+ *
+ * @param {Object}	building	-Object containing everything that's been
+ * 								 built so far, and where this new bric
+ * 								 is to be put.
+ * @param {Object}	bricConfig	-Configuration for creating a bric.
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
+{
+	var bricWorks = this.getBricWorks();
+	var id = bricConfig['bricId'];
+	var type = bricConfig['bricType'];
+	var config = {};
+	goog.object.extend(config, bricConfig['config']);
+
+	building['brix'][id] = bricWorks.createBric(type, config);
 };
 
