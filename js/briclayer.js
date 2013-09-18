@@ -127,24 +127,6 @@ pearson.brix.BricLayer = function (config, eventManager)
 }; // end of BricLayer constructor
 
 /* **************************************************************************
- * BricLayer.build                                                     */ /**
- *
- * Create all of the brix and cement as described in the given configuration
- * object.
- *
- * @param {Object}	activityConfig		-Configuration describing the brix and
- * 										 cement to be created.
- *
- * @returns {Object} an object containing all of the created brix and cement.
- *
- ****************************************************************************/
-pearson.brix.BricLayer.prototype.build = function (activityConfig)
-{
-	var building = {};
-	return building;
-};
-
-/* **************************************************************************
  * BricLayer.getBricWorks                                              */ /**
  *
  * Get the BricWorks that is used by this BricLayer to create all brix.
@@ -191,5 +173,29 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
 	this.bricWorks_ = bricWorks;
 
 	return this.bricWorks_;
+};
+
+/* **************************************************************************
+ * BricLayer.build                                                     */ /**
+ *
+ * Create all of the brix and cement as described in the given configuration
+ * object.
+ *
+ * @param {Object}	activityConfig		-Configuration describing the brix and
+ * 										 cement to be created.
+ *
+ * @returns {Object} an object containing all of the created brix and cement.
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.build = function (activityConfig)
+{
+	/**
+	 * @dict
+	 */
+	var building = {'info': {}, 'brix': {}, 'cement': {}};
+
+	building['info']['seqNodeId'] = activityConfig['sequenceNodeKey'];
+
+	return building;
 };
 

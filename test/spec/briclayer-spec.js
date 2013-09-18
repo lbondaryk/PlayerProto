@@ -20,6 +20,24 @@ goog.require('goog.object');
 
 	var BricLayer = pearson.brix.BricLayer;
 
+	var createActivityConfigSkeleton = function ()
+	{
+		var activityConfig =
+			{
+				"sequenceNodeKey": "seq key", 
+				"containerConfig":
+					[
+						{
+							"containerId": "container1", 
+							"brixConfig": [], 
+							"cementConfig": [] 
+						}
+					]
+			};
+
+		return activityConfig;
+	};
+
     describe('BricLayer: who do ya call when you need a brix house? BricLayer!', function () {
 		var dummyEventMgr = {publish: function () {}, subscribe: function () {}, unsubscribe: function () {}};
 		var DummyBricCtor = function (c, e) {this.cfg = c; this.em = e;};
@@ -41,6 +59,63 @@ goog.require('goog.object');
 
 			goog.object.forEach(BricTypes, function (bricName, key) {
 				expect(bricWorks.hasMold(bricName), key + '("' + bricName + '")').to.be.true;
+			});
+		});
+
+		describe('BricLayer.build with valid empty activity config', function () {
+			var bricLayer = new BricLayer({}, dummyEventMgr);
+			var activityConfig = createActivityConfigSkeleton();
+			var building = bricLayer.build(activityConfig);
+
+			it('should return an object w/ an info property which is an object', function () {
+				expect(building).to.have.a.property('info');
+				expect(building.info).to.be.an('object');
+			});
+
+			it('should return an object w/ a brix property which is an object w/ no properties', function () {
+				expect(building).to.have.a.property('brix');
+				expect(building.brix).to.be.an('object');
+				expect(goog.object.getCount(building.brix)).to.equal(0);
+			});
+
+			it('should return an object w/ a cement property which is an object w/ no properties', function () {
+				expect(building).to.have.a.property('cement');
+				expect(building.cement).to.be.an('object');
+				expect(goog.object.getCount(building.cement)).to.equal(0);
+			});
+		});
+
+		describe('BricLayer.build with static bric config', function () {
+			var bricLayer = new BricLayer({}, dummyEventMgr);
+			var bricWorks = bricLayer.getBricWorks();
+			// Add another mold for testing purposes
+			var dummyBricName = '_dummy test bric_'
+			bricWorks.registerMold(dummyBricName, DummyBricCtor);
+
+			var activityConfig = createActivityConfigSkeleton();
+			var dummyBricId = 'test';
+			var dummyBricConfig = {"foo": "any foo will do"};
+
+			var staticBricConfig =
+				{
+					"bricId": dummyBricId, 
+					"bricType": dummyBricName,
+					"config": dummyBricConfig
+				};
+
+			activityConfig.containerConfig[0].brixConfig.push(staticBricConfig);
+
+			var building = bricLayer.build(activityConfig);
+			it('should build the bric with an exact copy of the static config', function () {
+				expect(building.brix[dummyBricId]).to.be.an.instanceOf(DummyBricCtor);
+				
+				var dummyBric = building.brix[dummyBricId];
+				// the exact config obj from the activity config should not be passed to the ctor.
+				expect(dummyBric.cfg).to.not.equal(dummyBricConfig);
+				// the config obj should be identical to the activity config
+				expect(dummyBric.cfg).to.deep.equal(dummyBricConfig);
+				// the eventmanager the BricLayer was created with is passed to the bric ctor.
+				expect(dummyBric.em).to.equal(dummyEventMgr);
 			});
 		});
     });
