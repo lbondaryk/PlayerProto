@@ -320,6 +320,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
 
 	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
 
+	responseDiv.selectAll('div.responses > *').remove();
+
 	// For now just use the helper function to write the response.
 	pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 };
