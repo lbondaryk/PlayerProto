@@ -378,7 +378,11 @@ pearson.brix.LabelGroup.prototype.lite = function (liteKey)
 	// Turn off all current highlights
 	var allLabels = this.lastdrawn.labelCollection;
 	allLabels
-		.classed("lit", false);
+		.classed("lit", false)
+		// HACKALERT: swapping the display styles is just to force certain webkit and chrome
+		// broswers to redraw the page when they don't want to. -lb
+		.style('display','block');
+
 	
 	// create a filter function that will match all instances of the liteKey
 	// then find the set that matches
@@ -388,7 +392,10 @@ pearson.brix.LabelGroup.prototype.lite = function (liteKey)
 
 	// Highlight the labels w/ the matching key
 	labelsToLite
-		.classed("lit", true);
+		.classed("lit", true)
+		// HACKALERT: swapping the display styles is just to force certain webkit and chrome
+		// broswers to redraw the page when they don't want to.
+		.style('display','inline');
 
 	if (labelsToLite.empty())
 	{

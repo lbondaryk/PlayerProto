@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head> 
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<meta content="Neff, Our Changing Planet" name="description">   	
+   
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="../css/widgets.css" rel="stylesheet" media="screen">
+
+</head>
+<body>
+	<div id="clickImg"></div>
+	<div id="hiliteTable"></div>
+
+	<script src="../js/d3.v3.min.js"></script>
+	<script src="../js/brixlib-compiled.js"></script>
+	 
+	<script>
+
+	var eventManager = new pearson.utils.EventManager();
+	
+
+	// local aliases for convenience
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var LabelSelector = pearson.brix.LabelSelector;
+	var Callouts = pearson.brix.Callouts;
+
+
+	var svgCont = new SVGContainer({
+			node: d3.select('#clickImg'),
+			maxWid: 570,
+			maxHt: 420
+		});
+
+	var img = new CaptionedImage({
+					URI: '../img/birthdeath.png',
+					caption: "Example birth and death rates",
+					}, eventManager);
+	
+	var labSelect = new LabelSelector ({
+			labels: ["Stage 1", "Stage 2", "Stage 3", "Stage 4", "Stage 5"],
+			layout: "horizontal",
+			itemMargin: {top: 4, bottom: 4, left: 1, right: 0},
+			type: null,
+		}, eventManager);
+
+	var newLabels = new LabelGroup(
+		{ 
+		labels: 	
+		  [	
+			{content: "Pre-development", xyPos: [0,0], width: 100},
+			{content: "Developing",	xyPos:[.2,0], width: 85},
+			{content: "Modernizing", xyPos:[.4,0], width: 90},
+			{content:"Developed",	xyPos:[.6,0], width: 85},
+			{content:"Post-development", xyPos:[.8,0], width: 100},
+		  ]
+		}, eventManager);
+		
+	
+	svgCont.append(img, {topPercentOffset: .1, leftPercentOffset: 0, heightPercent: .9, widthPercent: 1});
+	
+	
+	// write the labels onto the image 
+	svgCont.append(labSelect, {topPercentOffset: 0, leftPercentOffset: 0.08, heightPercent: 1, widthPercent: .92});
+
+	//make a set of callouts in a table that lights up with the labels.
+	var phases = new Callouts ({
+		id: "phaseDesc",
+		headers: ["Stage", "Characteristics"],
+		show: "all",
+		textBits: [
+			{
+			cols: ['Pre-development',
+	 			"High birth and death rates offset each other, so the population grows slowly."]
+			},
+			{
+			cols: ['Developing','As a country\'s economy becomes stronger, medical care, clean water, and food are more available. The death rate declines and the birth rate remains high, so the population grows more rapidly.' ]
+			},
+			{
+			cols: ['Modernizing', 'Economic, educational, and social changes cause declines in the birth rate. Population growth starts to slow.']
+			},
+	 		{
+			cols: ['Developed', 'Birth and death rates fall to low levels, slowing population growth.']
+			},
+			{
+			cols: ['Post-development', 'In highly developed countries, the birth rate is falling while the death rate is relatively constant. The population growth rate is negative and the population declines.']}]
+	}, eventManager);
+
+	phases.draw(d3.select('#hiliteTable'));
+
+
+//Test: set the start highlight state of 0 index by calling the 
+//handler with a hard-set index of 0.  This should result in the
+//first label getting highlighted and the first callout being displayed.
+handleSelectionChanged({selectKey: "0"});
+
+	
+	eventManager.subscribe(labSelect.selectedEventId,
+						   handleSelectionChanged);
+	eventManager.subscribe(phases.selectedEventId,
+						   handleSelectionChanged);
+	
+
+
+/************************************************************************
+* handleSelectionChanged                                            *//**
+*
+* handleInputValueChanged is called from the event handler for one of
+* the input widgets when the user changes its value. It updates the
+* given matching input widget's value to match the new value and then
+* updates the bar chart.
+*
+* @param eventDetails			These are the keyed values returned by 
+*								the event, in this case, a selection
+*								(click).
+*************************************************************************/
+	function handleSelectionChanged(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		//LabelLite should be a method of Labels, once Labels
+		//is written as a constructor
+		labSelect.lite(eventDetails.selectKey);
+		phases.lite(eventDetails.selectKey);
+		
+	}
+
+	</script>
+</body>
+</html>

@@ -25,35 +25,37 @@
 	var Image = pearson.brix.Image;
 	var CaptionedImage = pearson.brix.CaptionedImage;
 	var Carousel = pearson.brix.Carousel;
-	var ImageViewer = pearson.brix.ImageViewer;
-	
+	var LabelCarousel = pearson.brix.LabelCarousel;
+	var LabelSelector = pearson.brix.LabelSelector;
+
 	//var eventManager = new EventManager();
 
 	var svgCont = new SVGContainer({
 			node: d3.select("#carousel0"),
 			maxWid: 570,
-			maxHt: 550
+			maxHt: 560
 		});
 
-	var imgvwr = new ImageViewer({
-			items:
+	var imgvwr = new LabelCarousel({
+			images:
 				[
 					new Image({
-					URI: '../img/Neff_12.6.3_S1.jpg',
+					URI: '../img/Neff/Neff_12.6.3_S1.jpg',
 					caption: "70% more food",
-					actualSize: {height: 380, width: 570}
+					//actualSize: {height: 380, width: 570}
 					}),
 					new Image({
-					URI: '../img/Neff_12.6.3_S2.jpg',
+					URI: '../img/Neff/Neff_12.6.3_S2.jpg',
 					caption: "200% more energy",
-					actualSize: {height: 380, width: 570},
+					//actualSize: {height: 380, width: 570},
 					}),
 					new Image({
-					URI: '../img/Neff_12.6.3_S3.jpg',
+					URI: '../img/Neff/Neff_12.6.3_S3.jpg',
 					caption: "80% more water for agriculture",
-					actualSize: {height: 380, width: 570},
+					//actualSize: {height: 380, width: 570},
 					}),
 				],
+			//imagesActualSize: {height: 200, width: 570},
 			}, eventManager);
 	
 	svgCont.append(imgvwr);

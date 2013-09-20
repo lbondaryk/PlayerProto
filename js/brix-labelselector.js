@@ -346,7 +346,7 @@ pearson.brix.LabelSelector.prototype.lite = function (liteKey)
 	window.console.log("called Carousel.lite( " + liteKey + " )");
 
 	// todo: this works well when all the items are Images but not so well for other widget types
-	this.items.forEach(function (item) {item.lite(liteKey);});
+	this.labelItems.lite(liteKey);
 	
 }; // end of Carousel.lite()
 

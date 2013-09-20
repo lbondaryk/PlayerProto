@@ -143,9 +143,8 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 	// the image below.
 	var handleLabelSelection = function (eventDetails)
 	{
-		window.console.log("firing image change handler");
 		that.image.changeImage(that.imagesInfo[eventDetails.index].URI,
-							   that.imagesInfo[eventDetails.index].caption);
+								that.imagesInfo[eventDetails.index].caption);
 		that.image.redraw();
 	};
 

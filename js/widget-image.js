@@ -4,8 +4,8 @@
  *
  * @fileoverview Implementation of the Image widget.
  *
- * The Image widget draws a scaled image in an SVGContainer.
- * The CaptionedImage widget draws a caption next to an Image.
+ * The Image bric draws a scaled image in an SVGContainer.
+ * The CaptionedImage bric draws a caption next to an Image.
  *
  * Created on		May 04, 2013
  * @author			Leslie Bondaryk
@@ -52,10 +52,10 @@ goog.require('pearson.brix.SvgBric');
 /* **************************************************************************
  * Image                                                               */ /**
  *
- * The Image widget draws an image in an SVGContainer.
+ * The Image bric draws an image in an SVGContainer.
  *
- * The Image is frequently used by other widgets, or drawn under other
- * widgets such as LabelGroups.
+ * The Image is frequently used by other brix, or drawn under other
+ * brix such as LabelGroups or graphs.
  *
  * @constructor
  * @extends {pearson.brix.SvgBric}
@@ -87,7 +87,7 @@ pearson.brix.Image = function (config, eventManager)
 	goog.base(this);
 
 	/**
-	 * A unique id for this instance of the image widget
+	 * A unique id for this instance of the image bric
 	 * @type {string}
 	 */
 	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Image);
@@ -332,7 +332,7 @@ pearson.brix.Image.prototype.changeImage = function (uri, caption)
  * Image.setScale                                                      */ /**
  *
  * Called to preempt the normal scale definition which is done when the
- * widget is drawn. This is usually called in order to force one widget
+ * widget is drawn. This is usually called in order to force one bric
  * to use the scaling/data area calculated by another widget.
  *
  * @param {function(number): number}
@@ -573,7 +573,7 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 			.append("xhtml:body")
 				.style("margin", "0px")		// this interior body shouldn't inherit margins from page body
 				.append("div")
-					.attr("class", "widgetImageCaption")
+					.attr("class", "brixCaption")
 					.html(this.caption);
 
 	// position the caption

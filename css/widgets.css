@@ -1,10 +1,14 @@
 /*
-* Axes, markers, ticks, and other graph styling
+* Axes, markers, ticks, carousel, image, and other brix styling
 * required for San/Van.
 */
 
-/* highlights                                      
-===================================================*/
+
+/* Add adjustment to allow text resizing */
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%; }
 
 
 /* Images
@@ -12,7 +16,7 @@
 
 svg g.brixImage
 {
-  margin: 0px;
+  margin: 0;
 }
 
 svg g.brixImage>rect.background
@@ -26,19 +30,17 @@ svg g.brixImage>rect.highlight
 	fill-opacity:	0.0;
 	stroke-opacity:	0.0;	s
 }
-svg g.brixIImage.lit>rect.highlight
+svg g.brixImage.lit>rect.highlight
 {
 	fill-opacity:	0.0;
 	stroke:			blue;
 	stroke-opacity:	0.8;	
 }
 
-svg g.brixCaptionedImage div.widgetImageCaption
+svg g.brixCaptionedImage div.brixCaption
 {
-	text-align:	left;
-  font: Helvetica 14px;
-  margin: 10px;
-}
+	font: bold 16px Helvetica;
+} 
 
 svg g.widgetCarousel>rect.background
 
@@ -166,21 +168,21 @@ svg g.widgetLabel.lit .descLabel
 {
 	color: #f4f4f4;
 	background-color: #ff7747;
-  border: 1px solid #e4e4e4;;
+  border: 1px solid #e4e4e4;
 }
 
 /* Radio groups
 ================================================== */
-div.widgetRadioGroup tr>td
+div.brixRadioGroup tr>td
 {
 	padding: 0;
 }
-div.widgetRadioGroup table.questionTable tr>td:first-child
+div.brixRadioGroup ol.question-responses tr>td:first-child
 {
 	width: 			5em;
 	text-align: 	right;
 }
-div.widgetRadioGroup table.questionTable tr>td:nth-of-type(2)
+div.brixRadioGroup table.questionTable tr>td:nth-of-type(2)
 {
 	padding-left:	8px;
 }
@@ -228,6 +230,8 @@ div.brixMultipleChoiceQuestion
 /* tables of callouts/data
 ================================================== */
 table.widgetCallout {
+  border-collapse: collapse;
+  border-spacing: 0; 
   border: 2px solid #f4f4f4;
   width: auto; }
 
@@ -243,7 +247,7 @@ table.widgetCallout thead>tr td {
   border-bottom: 2px solid #f4f4f4;
   padding-bottom: 3px;
   font-weight: bold; 
-  text-align: right;}
+  text-align: left;}
   
 
 table tr.widgetCallout.lit 
