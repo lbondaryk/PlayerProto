@@ -30,7 +30,7 @@ goog.require('goog.object');
 						{
 							"containerId": "container1", 
 							"brixConfig": [], 
-							"cementConfig": [] 
+							"mortarConfig": [] 
 						}
 					]
 			};
@@ -78,10 +78,10 @@ goog.require('goog.object');
 				expect(goog.object.getCount(building.brix)).to.equal(0);
 			});
 
-			it('should return an object w/ a cement property which is an object w/ no properties', function () {
-				expect(building).to.have.a.property('cement');
-				expect(building.cement).to.be.an('object');
-				expect(goog.object.getCount(building.cement)).to.equal(0);
+			it('should return an object w/ a mortar property which is an object w/ no properties', function () {
+				expect(building).to.have.a.property('mortar');
+				expect(building.mortar).to.be.an('object');
+				expect(goog.object.getCount(building.mortar)).to.equal(0);
 			});
 		});
 

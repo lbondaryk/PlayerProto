@@ -3,7 +3,7 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "Pearson Brix Activity Configuration",
-    "description": "A complete configuration used to create all the related brix and cement needed to perform an activity.",
+    "description": "A complete configuration used to create all the related brix and mortar needed to perform an activity.",
     "type": "object"
 	"required": ["sequenceNodeKey", "containerConfig"],
 	"properties":
@@ -15,7 +15,7 @@
 				},
 			"containerConfig":
 				{
-					"description": "Array of configuration objects each of which defines all the brix and cement that live together in a single element (or iframe), for all of the targets on a page.",
+					"description": "Array of configuration objects each of which defines all the brix and mortar that live together in a single element (or iframe), for all of the targets on a page.",
 					"type": "array",
 					"minItems": 1,
 					"items": { "$ref": "#/definitions/containerConfig" }
@@ -25,7 +25,7 @@
 		{
 			"containerConfig":
 				{
-					"description": "defines all the brix and cement that live together in a single element (or iframe).",
+					"description": "defines all the brix and mortar that live together in a single element (or iframe).",
 					"type": "object",
 					"required": ["containerId", "brixConfig"],
 					"properties":
@@ -42,11 +42,11 @@
 									"type": "array",
 									"items": { "$ref": "#/definitions/brixConfig" }
 								},
-							"cementConfig":
+							"mortarConfig":
 								{
-									"description": "Array of configuration for all of the cement in this container.",
+									"description": "Array of configuration for all of the mortar in this container.",
 									"type": "array",
-									"items": { "$ref": "#/definitions/cementConfig" }
+									"items": { "$ref": "#/definitions/mortarConfig" }
 								},
 						}
 				},
@@ -117,7 +117,7 @@
 								},
 						}
 				},
-			"cementConfig":
+			"mortarConfig":
 				{
 					"description": "",
 					"type": "object",
@@ -192,18 +192,18 @@
 						},
 						...
 					],
-				"cementConfig":
+				"mortarConfig":
 					[
 						{
-							"cementId": <unique id for this cement in this container>,
-							"cementType": "BrixEventHandler"|"DataConverter"|"Action"|...etc,
+							"mortarId": <unique id for this mortar in this container>,
+							"mortarType": "BrixEventHandler"|"DataConverter"|"Action"|...etc,
 							"config":
 								{
-									... config for cement type specified
+									... config for mortar type specified
 								}
 						},
 						{
-							"cementType": ...
+							"mortarType": ...
 							"config": ...
 						},
 						...
@@ -233,7 +233,7 @@
 			{
 				"containerId": ...
 				"brixConfig": ...
-				"cementConfig": ...
+				"mortarConfig": ...
 			},
 			...
 		]

@@ -4,7 +4,7 @@
  *
  * @fileoverview Implementation of the BricLayer.
  *
- * The BricLayer creates brix and connecting cement as defined by a
+ * The BricLayer creates brix and connecting mortar as defined by a
  * master configuration object.
  *
  * Created on		September 10, 2013
@@ -47,7 +47,7 @@ goog.require('pearson.brix.SelectGroup');
 goog.require('pearson.brix.Sketch');
 goog.require('pearson.brix.Slider');
 
-// cement
+// mortar
 // none yet
 
 
@@ -103,7 +103,7 @@ pearson.brix.BricTypes =
  * 										 and subscribing to them.
  *
  * @classdesc
- * A BricLayer creates brix and connecting cement as defined by a master
+ * A BricLayer creates brix and connecting mortar as defined by a master
  * configuration object.
  *
  ****************************************************************************/
@@ -111,7 +111,7 @@ pearson.brix.BricLayer = function (config, eventManager)
 {
 	/**
 	 * The event manager to use to publish (and subscribe to) events for the
-	 * created brix and cement.
+	 * created brix and mortar.
 	 * @private
 	 * @type {!pearson.utils.IEventManager}
 	 */
@@ -179,13 +179,13 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
 /* **************************************************************************
  * BricLayer.build                                                     */ /**
  *
- * Create all of the brix and cement as described in the given configuration
+ * Create all of the brix and mortar as described in the given configuration
  * object.
  *
  * @param {Object}	activityConfig		-Configuration describing the brix and
- * 										 cement to be created.
+ * 										 mortar to be created.
  *
- * @returns {Object} an object containing all of the created brix and cement.
+ * @returns {Object} an object containing all of the created brix and mortar.
  *
  ****************************************************************************/
 pearson.brix.BricLayer.prototype.build = function (activityConfig)
@@ -193,7 +193,7 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
 	/**
 	 * @dict
 	 */
-	var building = {'info': {}, 'brix': {}, 'cement': {}};
+	var building = {'info': {}, 'brix': {}, 'mortar': {}};
 
 	building['info']['seqNodeId'] = activityConfig['sequenceNodeKey'];
 
@@ -205,14 +205,14 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
 /* **************************************************************************
  * BricLayer.buildContainer_                                           */ /**
  *
- * Build all the brix and cement specified by the given container config.
+ * Build all the brix and mortar specified by the given container config.
  * @private
  *
  * @param {Object}	building		-Object containing everything that's been
  * 									 built so far, and where all the new objects
  * 									 defined in this container are to be put.
  * @param {Object}	containerConfig	-Configuration for all of the brix and connecting
- * 									 cement in "container", that get rendered
+ * 									 mortar in "container", that get rendered
  * 									 as children of a single element (usually a div).
  *
  ****************************************************************************/
