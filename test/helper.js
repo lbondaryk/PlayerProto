@@ -196,6 +196,16 @@ var helper = (function () {
 		descr.class && expect(element.classed(descr.class), 'has class ' + descr.class).to.be.true;
 	};
 
+	/***************************************************************************
+	 * Clones a JSON object.
+	 * 
+	 * @param {Object} obj      The JSON object to clone.
+	 ****************************************************************************/
+	var cloneObject = function cloneObject(obj)
+	{
+	return JSON.parse(JSON.stringify(obj));
+	};
+
 	return {
 		createNewDiv: createNewDiv,
 		createNewSvgContainer: createNewSvgContainer,
@@ -203,6 +213,7 @@ var helper = (function () {
 		appendChild: appendChild,
 		removeAllChildren: removeAllChildren,
 		expectElementTree: expectElementTree,
+		cloneObject: cloneObject,
 	};
 
 })();

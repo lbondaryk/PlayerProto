@@ -2,7 +2,7 @@
  * $Workfile:: answermanpolling.js                                          $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of a AnswerProvider for Poll.
+ * @fileoverview Implementation of a AnswerMan for Poll.
  *               
  * The AnswerProvider is direct replacement of AnsManager, but instead of
  * function, it is a class extending the BricBase class.
