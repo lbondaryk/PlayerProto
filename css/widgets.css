@@ -19,9 +19,10 @@ svg g.brixImage
   margin: 0;
 }
 
-svg g.brixImage>rect.background
+svg g.brixImage>rect.background,
+svg g.brixCaptionedImage>rect.background
 {
-	fill:			#fff;
+	fill:			#f8f8f8;
 	stroke-width:	0;
 }
 svg g.brixImage>rect.highlight
@@ -39,14 +40,14 @@ svg g.brixImage.lit>rect.highlight
 
 svg g.brixCaptionedImage div.brixCaption
 {
-	font: bold 16px Helvetica;
+	font: 16px Helvetica;
+  background-color: #f8f8f8;
 } 
 
 svg g.widgetCarousel>rect.background
 
 {
-	fill:	#efefef;
-  stroke: #e4e4e4;
+	fill:	#f8f8f8;
 }
 
 svg g.widgetCarousel>g.widgetItem>rect.selection
@@ -67,9 +68,9 @@ svg g.widgetCarousel>g.widgetItem.selected>rect.selection
 svg g.brixImageViewer>rect,
 svg g.brixLabelCarousel>rect 
 {
-	fill:	none;
+	fill:	#f8f8f8;
 	stroke-width:	1;
-  stroke: #e4e4e4;
+  stroke: #f0f0f0;
 }
 
 /* Markers
@@ -128,47 +129,49 @@ svg g.bricMarkers .markerLabel
 
 /* Labels
 ================================================== */
-svg g.widgetLabel>rect
+svg g.brixLabel>rect
 {
-	fill:			black;
-	stroke:		#e4e4e4;
-	stroke-width:	2;
+	fill:			#f8f8f8;
+	stroke:		#c0c0c0;
+	stroke-width:	1;
 }
-svg g.widgetLabel.lit>rect
+svg g.brixLabel.lit>rect
 {
-	fill:			#F05A24;
-	stroke:		#e4e4e4;
+	fill:			#107aca;
+	stroke:		#0d65a6;
 }
-svg g.widgetLabel>text
+svg g.brixLabel>text
 {
-	fill:			white;
-  font: Helvetica bold 13px;
+	fill:			#4d4d4d;
+  font: bold 20px Helvetica;
+  margin: 50px;
 }
-svg g.widgetLabel.lit>text
+svg g.brixLabel.lit>text
 {
 	fill:			#f4f4f4;
 }
 
-svg g.widgetLabel .descLabel
+svg g.brixLabel .descLabel
 {
-  color: 666;
-  font: Helvetica 9pt;
-  border: 1px solid #e4e4e4;
-  background-color: #f7f7f7;
+  color: 4d4d4d;
+  font: 16px Helvetica;
+  border: 1px solid #c0c0c0;
+  background-color: #f8f8f8;
   padding: 8px 10px 7px;
 
 }
 
-svg g.widgetLabel .bullets
+svg g.brixLabel .bullets
 {
-  padding: 8px 10px 7px 35px;
+  padding: 8px 7px 6px 52px;
+  min-height: 35px;
 }
 
-svg g.widgetLabel.lit .descLabel
+svg g.brixLabel.lit .descLabel
 {
 	color: #f4f4f4;
-	background-color: #ff7747;
-  border: 1px solid #e4e4e4;
+	background-color: #107aca;
+  border: 1px solid #0d65A6;
 }
 
 /* Radio groups
@@ -253,7 +256,7 @@ table.widgetCallout thead>tr td {
 table tr.widgetCallout.lit 
 {
 	color:#1d456e;
-	border-left: 4px solid #F05A24;
+	border-left: 4px solid #107aca;
 	background-color: #f4f4f4;
 }
 
@@ -299,7 +302,7 @@ svg g.widgetSketch .shape.hot {
 }
 
 svg g.widgetSketch .shape.lit {
-	fill: #F05A24;
+	fill: #107aca;
 	stroke: #1d95ae;
 	stroke-width:3;
 	opacity: 0.5;

@@ -88,13 +88,11 @@
 			captionPosition: "below"
 		};
 	
-	var cntrSize = Size.matchRatioWithHeight(350 - 40, cimgConfig.actualSize);
 
 	var cntrConfig0 = 
 		{
 			node: d3.select("#imgReactor"),
-			maxSize: cntrSize,
-			maxWid: cntrSize.width, //550,
+			maxWid: 745,
 			maxHt: 350
 		};
 		
@@ -111,11 +109,11 @@
 			type: "numbered",
 			labels: 	
 			[	
-				{content: "1", xyPos: [0, 0.22], width: 0},
-				{content: "2", xyPos: [0.05, 0.43], width: 0},
+				{content: "1", xyPos: [0, 0.24], width: 0},
+				{content: "2", xyPos: [0.05, 0.45], width: 0},
 				{content: "3", xyPos: [0.3, 0.7], width: 0},
-				{content: "4", xyPos: [0.62, 0.65], width: 0},
-				{content: "5", xyPos: [0.66, 0.15], width: 0}
+				{content: "4", xyPos: [0.62, 0.67], width: 0},
+				{content: "5", xyPos: [0.64, 0.18], width: 0}
 			]
 		}, eventManager);
 	

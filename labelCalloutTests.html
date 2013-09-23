@@ -255,15 +255,15 @@ for (i = 0; i < dataPts; i++)
 	var ecoLabels = new LabelGroup({
 		labels: 	
 		  [	
-			{content: "United States",	xyPos: [0,.2], width: 150},
-			{content: "European Union",	xyPos:[0.45,0.2], width: 100},
+			{content: "United States",	xyPos: [0,.2], width: 180},
+			{content: "European Union",	xyPos:[0.36,0.2], width: 180},
 			{content: "Afghanistan", xyPos:[0.8,0.2], 
 			//scale on the image is 0 to 1, so I want this label to be 8/10 of the way across, 
 			//and 1/5 from the bottom, so xyPos is 80% and 20%
-			width: 120	},
-			{content:"23 Acres/person",	xyPos:[0,1], width: 100},
-			{content:"11.5 acres/person", xyPos:[0.45,.7], width: 100	},
-			{content:"1 acre/ person", xyPos:[0.7,0.5], width: 80}
+			width: 180	},
+			{content:"23 Acres/person",	xyPos:[0,1], width: 180},
+			{content:"11.5 acres/person", xyPos:[0.36,.7], width: 180	},
+			{content:"1 acre/ person", xyPos:[0.7,0.5], width: 180}
 		  ]
 		});
 	
@@ -403,14 +403,14 @@ var Oceanlabels = new LabelGroup(
 			type: "numbered",
 			labels: 	
 			[
-				{ content: "TOP left",		xyPos: [0,   1],	width: 110	},
-				{ content: "middle left",	xyPos: [0,   0.5],	width: 140	},
-				{ content: "Bottom left" ,	xyPos: [0,   0],	width: 140	},
-				{ content: "top middle",	xyPos: [0.5, 1],	width: 130	},
-				{ content: "center",		xyPos: [0.5, 0.5],	width: 110	},
-				{ content: "bottom middle",	xyPos: [0.5, 0],	width: 110	},
-				{ content: "TOP right",		xyPos: [1,   1],	width: 50	},
-				{ content: "middle right",	xyPos: [1,   0.5],	width: 250	},
+				{ content: "TOP left",		xyPos: [0,   1],	width: 150	},
+				{ content: "middle left",	xyPos: [0,   0.5],	width: 150	},
+				{ content: "Bottom left" ,	xyPos: [0,   0],	width: 150	},
+				{ content: "top middle",	xyPos: [0.5, 1],	width: 150	},
+				{ content: "center",		xyPos: [0.5, 0.5],	width: 150	},
+				{ content: "bottom middle",	xyPos: [0.5, 0],	width: 150	},
+				{ content: "TOP right",		xyPos: [1,   1],	width: 150	},
+				{ content: "middle right",	xyPos: [1,   0.5],	width: 150	},
 				{ content: "width 100 at 1/4,1/4",
 											xyPos: [0.25, 0.25],	width:  100	},
 				{ content: "width 150 at 3/4,3/4 with extended &copy; chars",
@@ -564,7 +564,7 @@ handleSelectionChanged({selectKey: "Post"});
 		});
 	
 	var labSelect = new LabelSelector ({
-			labels: ["Predevelopment", "Developing", "Modernizing", "Developed","Postdevelopment"],
+			labels: ["Predeveloped", "Developing", "Modernizing", "Developed","Postdeveloped"],
 			layout: "horizontal",
 			itemMargin: {top: 4, bottom: 4, left: 0, right: 0},
 			type: null,

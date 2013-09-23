@@ -375,6 +375,9 @@ pearson.brix.MultiSelectQuestion.prototype.handleSubmitResponse_ = function (res
 
 	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
 
+	// this removes any previous feedback and only shows student the most recent
+	responseDiv.selectAll('div.responses > *').remove();
+
 	// For now just use the helper function to write the response.
 	//SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 	// YSAP - Instead of the SubmitManager (who's agnostic of the rendering mechanism)

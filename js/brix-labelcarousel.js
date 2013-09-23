@@ -12,6 +12,7 @@
  *
  * Created on		Sept 15, 2013
  * @author			Leslie Bondaryk 
+ * @author			Michael Jay Lippert
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -33,8 +34,8 @@ goog.require('pearson.utils.IEventManager');
 	var labelCarouselConfig =
 		{
 			id: "imgvwr1",
-			items: [],
-			labels: [],
+			images: [{}],
+			imagesActualSize: {height: 380, width: 550},
 		};
 });
 
@@ -51,16 +52,16 @@ goog.require('pearson.utils.IEventManager');
  *
  * @param {Object}			config			-The settings to configure this ImageViewer
  * @param {string|undefined}
- * 							config.id		-String to uniquely identify this ImageViewer.
- * 											 if undefined a unique id will be assigned.
+ *							config.id		-String to uniquely identify this ImageViewer.
+ *											if undefined a unique id will be assigned.
  * @param {!Array.<{URI: string, caption: string, selectorLabel: string}>}
- * 							config.images	-The list of info to load the images for the carousel.
+ *							config.images	-The list of info to load the images for the carousel.
  * @param {!pearson.utils.ISize}
- * 							config.imagesActualSize
- * 											-The actual size of all of the images.
+ *							config.imagesActualSize
+ *											-The actual size of all of the images.
  * @param {!pearson.utils.IEventManager}
- * 							eventManager	-allows the bric to publish and subscribe to events
- * 											 required for correct internal operation.
+ *							eventManager	-allows the bric to publish and subscribe to events
+ *											required for correct internal operation.
  *
  ****************************************************************************/
 pearson.brix.LabelCarousel = function (config, eventManager)
@@ -89,10 +90,11 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 	var lblselConfig =
 		{
 			id: this.id + "_labels",
-			labels: config.images.map(function (e) {return e.selectorLabel || '&nbsp;';}),
+			//labels: config.images.map(function (e) {return e.selectorLabel || '&nbsp;';}),
+			labels: config.images.length,
 			layout: "horizontal",
 			type: "numbered",
-			itemMargin: {top: 0, bottom: 0, left: 2, right: 2}
+			itemMargin: {top: 15, bottom: 0, left: 0, right: 0}
 		};
 
 	/**
@@ -215,9 +217,9 @@ pearson.brix.LabelCarousel.prototype.draw = function (container, size)
 
 	// Image goes below carousel with 10 px margin
 	var imageGroup = widgetGroup.append("g")
-		.attr("transform", attrFnVal("translate", 0, selectorHeight + 10));
+		.attr("transform", attrFnVal("translate", 0, selectorHeight + 20));
 
-	this.image.draw(imageGroup, {height: size.height - selectorHeight - 10, width: size.width});
+	this.image.draw(imageGroup, {height: size.height - selectorHeight - 15, width: size.width});
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 

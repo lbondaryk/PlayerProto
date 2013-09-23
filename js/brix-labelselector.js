@@ -26,7 +26,7 @@ goog.require('pearson.utils.IEventManager');
 	var labelSelectorConfig =
 		{
 			id: "crsl1",
-			items: ["foo","bar","thing"],
+			labels: ["foo","bar","thing"],
 			layout: "horizontal",
 			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
 			type: "numbered"
@@ -81,7 +81,7 @@ pearson.brix.LabelSelector = function (config, eventManager)
 	 * The list of label strings presented by the LabelSelector.
 	 * @type {!Array.<string>}
 	 */
-	this.items = config.labels;
+	this.labels = config.labels;
 
 	//this.assignMissingItemKeys_();
 	
@@ -160,10 +160,10 @@ pearson.brix.LabelSelector.autoIdPrefix = "labSel_auto_";
  * Draw this LabelSelector in the given container.
  *
  * @param {!d3.selection}	container	-The container svg element to append
- * 										 this SvgBric element tree to.
+ *										this SvgBric element tree to.
  * @param {!pearson.utils.ISize}
- * 							size		-The size (in pixels) of the area this
- * 										 SvgBric has been allocated.
+ *							size		-The size (in pixels) of the area this
+ *										SvgBric has been allocated.
  ****************************************************************************/
 pearson.brix.LabelSelector.prototype.draw = function(container, size)
 {
@@ -177,68 +177,81 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 	
 	var itemMargin = this.itemMargin;
 	
-	// We don't support anything other than this.layout === "horizontal"
-	
-	// Carve the width up for the n items
-	var itemCnt = this.items.length;
-	// deducting 20 pixels for margins, and preventing divide by 0
-	var labelWidth = (size.width - 20) / (itemCnt ? itemCnt : 1) - (itemMargin.left + itemMargin.right);
-
-	var itemSize = {height: 40,
-					width: labelWidth};
-
-	/**
-	 * function used to place each item into its correct position
-	 * @type {function(*, number):Array.<number>}
-	 */
-	var positionItem =
-		function (d, i)
-		{
-			// these values are done as percentages of the height and width of the container
-			var x = 10 + itemMargin.left + i * (itemMargin.left + itemSize.width + itemMargin.right);
-			var xPerc = x/size.width;
-			var y = itemMargin.top;
-			var yPerc = 1 - y/size.height;
-			return [xPerc, yPerc];
-		};
-
-	
-	/* 
-	// make a group to hold the labels
-	var widgetGroup = container.append("g")
-		.attr("class", "brixLabelSelector")
-		.attr("id", this.id);
-
-
-	// Rect for the background of the carousel
-	widgetGroup
-		.append("rect")
-			.attr("class", "background")
-			.attr("width", size.width)
-			.attr("height", size.height);
-			*/
-
 	var labelItemsLabels = this.labelItems.labels;
 
-	this.items.forEach(
-			function (o, i) { labelItemsLabels[i] = 
+	// We don't support anything other than this.layout === "horizontal"
+
+
+	if (Array.isArray(this.labels)) {
+		// If labels is a set of strings, then divide the width evenly and put the label strings in
+		// Carve the width up for the n items
+		var itemCnt = this.labels.length;
+
+		// deducting 30 pixels for r/l margins, and preventing divide by 0
+		var labelWidth = (size.width - 30) / (itemCnt ? itemCnt : 1) - (itemMargin.left + itemMargin.right);
+		var itemSize = {height: 44,
+					width: labelWidth};
+		/**
+		 * function used to place each item into its correct position
+		 * @type {function(*, number):Array.<number>}
+		 */
+		var positionItem =
+			function (d, i)
+			{
+				// these values are done as percentages of the height and width of the container
+				var x = 15 + itemMargin.left + i * (itemMargin.left + itemSize.width + itemMargin.right);
+				var xPerc = x/size.width;
+				var y = itemMargin.top;
+				var yPerc = 1 - d3.round(y/size.height, 2);
+				return [xPerc, yPerc];
+			};
+
+		this.labels.forEach(
+				function (o, i) { labelItemsLabels[i] = 
 									{
 										content: o,
 										xyPos: positionItem(o, i),
 										width: labelWidth
 									}; 
-							});
+								});
+		} // end if
+
+	else {
+		// if labels is just a count of numerical labels, then spread them out one after the other
+		// packed on the left after a 15 pixel margin
+
+		var itemCnt = this.labels;
+
+		var itemSize = {height: 44,
+					width: 44};
+		/**
+		* function used to place each item into its correct position
+		* @type {function(*, number):Array.<number>}
+		*/
+		var positionItem =
+			function (i)
+			{
+				// these values are done as percentages of the height and width of the container
+				var x = 15 + itemMargin.left + i * (itemMargin.left + itemSize.width + itemMargin.right);
+				var xPerc = x/size.width;
+				var y = itemMargin.top;
+				var yPerc = 1 - d3.round(y/size.height, 2);
+				return [xPerc, yPerc];
+			};
+
+	for (var i = this.labels - 1; i >= 0; i--)
+		{
+			labelItemsLabels[i] =
+					{
+					content: "",
+					xyPos: positionItem(i),
+					width: 0
+					}; 
+		}
+	} // end else
 
 	this.labelItems.draw(container, size);
 
-
-	/* this.labelItems.on('click',
-				  function (d, i)
-				  {
-					  that.selectItemAtIndex(i);
-				  });
-
-				*/
 	this.lastdrawn.widgetGroup = d3.select(this.id);
 
 }; // end of LabelSelector.draw()
@@ -270,66 +283,11 @@ pearson.brix.LabelSelector.prototype.selectItemAtIndex = function (index)
 {
 
 	this.labelItems.lite(index.toString());
-	/* var selectedItemGroup = d3.select(itemGroups[0][index]);
-	if (selectedItemGroup.classed('selected'))
-	{
-		return;
-	}
-
-	itemGroups.classed("selected", false);
-	selectedItemGroup.classed("selected", true);
-	*/
 
 	this.eventManager.publish(this.selectedEventId, {index: index, selectKey: index.toString()});
 };
 
-/* **************************************************************************
- * LabelSelector.itemKeyToIndex                                        */ /**
- *
- * Find the first item in the list of items in this Carousel which has the
- * specified key and return its index. If no item has that key return null.
- * @export
- *
- * @param {string}	key		-The key of the item to find
- *
- * @return {?number} the index of the item in the list of items with the
- * 			specified key.
- *
- ****************************************************************************/
-pearson.brix.LabelSelector.prototype.itemKeyToIndex = function(key)
-{
-	for (var i = 0; i < this.items.length; ++i)
-	{
-		if (this.items[i].key === key)
-		{
-			return i;
-		}
-	};
 
-	return null;
-};
-
-
-/* **************************************************************************
- * LabelSelector.assignMissingItemKeys_                                */ /**
- *
- * Assign a key property value of the index in the item list to any
- * item which doesn't have a key property. This key is used for selection and
- * highlighting.
- * @private
- *
- ****************************************************************************/
-pearson.brix.LabelSelector.prototype.assignMissingItemKeys_ = function ()
-{
-	this.items.forEach(function (item, i)
-					   {
-						   // A falsy key is invalid, set it to the index
-						   if (!item.key)
-						   {
-							   item.key = i.toString();
-						   }
-					   });
-};
 
 /* **************************************************************************
  * LabelSelector.lite                                                  */ /**

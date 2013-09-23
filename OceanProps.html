@@ -167,8 +167,8 @@
 							
 var svgmaps = new SVGContainer({
 		node: d3.select("#oceanTemp"),
-		maxWid: 1000,
-		maxHt: 475
+		maxWid: 1130,
+		maxHt: 500
 	});
 	
 var layers = new ImageViewer({
@@ -218,20 +218,20 @@ var labels1 = new LabelGroup(
 var salImage = new CaptionedImage ({
 				URI: 'img/oceans/oceanSalinity.png',
 				caption: "Ocean Salinity at 0 m (surface)",
-				actualSize: {height: 530, width: 930},
+				actualSize: {height: 537, width: 1018},
 				captionPosition: "below"
 			});
 
 var oxyImage = new CaptionedImage ({
 				URI: 'img/oceans/oceanOxygen.png',
 				caption: "Ocean Oxygen Concentration at 0 m (surface)",
-				actualSize: {height: 530, width: 930},
+				actualSize: {height: 462, width: 874},
 				captionPosition: "below"
 		});
 
-svgmaps.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+svgmaps.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.6, heightPercent: 0.5, widthPercent: 0.35});
 
-svgmaps.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+svgmaps.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.6, heightPercent: 0.5, widthPercent: 0.35});
 
 
 eventManager.subscribe(profiles.selectedEventId, carouselUpdate);
@@ -254,69 +254,6 @@ function dropdownUpdate ()
 }
 
  
-/* configure and draw the SVG container and the graph of the multiple co2 data
-
-	var cont1 = new SVGContainer({
-			node: d3.select("#graph0"),
-			maxWid: 800,
-			maxHt: 500
-		});
-		
-	var lines = new LineGraph({
-			id: "lg0",
-			Data: Data, 
-			type: "lines+points",
-			xAxisFormat: { type: "time",
-						   ticks: 12,
-						   orientation: "bottom",
-						   label: "Year" },
-			yAxisFormat: { type: "linear",
-						   orientation: "left",
-						   label: "CO<sub>2</sub> Concentration (ppm)",
-						    ticks: [305,310,315,320,325],
-						    },
-		},eventManager);	
-			
-	cont1.append(lines, {topPercentOffset: 0.2, leftPercentOffset: 0, heightPercent: 0.8, widthPercent: 0.8});
-	
-// configure and append the legend to the graph
-
-	var legLines = new Legend({
-		xPos: "left", yPos: "top",
-		labels: [
-				{ content: "Ice Floe Stations"},
-				{ content: "Mauna Loa"},
-				{ content: "Aircraft (higher air temperature)"},
-				{ content: "Aircraft (lower air temperature)"}
-				],
-		type: "line"
-	},eventManager);
-	
-	// add markers to the graph
-	var marks = new MarkerGroup(
-		{
-		type: "x",
-		marks: [maunaLoa[0], maunaLoa[11], maunaLoa[23]]
-		}, eventManager);
-		
-	// write the markers onto the graph in the local coordinates, inside the 
-	// data area.  These are designed to slop over the top, that's why the
-	// graph is written to the bottom 80% of SVG area
-	lines.append([marks, legLines]);
-
-
-	
-	
-	
-	
-	
-	eventManager.subscribe(legLines.selectedEventId,
-						   handleHighlight);
-	eventManager.subscribe(lines.selectedEventId,
-						   handleHighlight);
-
-*/
-	
 
 /************************************************************************
 * labelLite			                                            *//**
@@ -1193,8 +1130,8 @@ var Q0Choices = [
 
 	var cont1 = new SVGContainer({
 			node: d3.select("#graphs"),
-			maxWid: 570,
-			maxHt: 600
+			maxWid: 553,
+			maxHt: 640
 		});
 		
 	var temperature = new LineGraph({
@@ -1279,7 +1216,7 @@ var Q0Choices = [
 	var Qoceans = new MultipleChoiceQuestion({
 			questionId: "oceanRegion",
 			question: "Which region stands out as having either the lowest or the highest overall value for each of the data shown?",
-			svgSize: [600,343],
+			svgSize: [553,343],
 			svgBaseBrix: mapLegend,
 			choices: [	
 					{content: "A", xyPos:[0.48, 0.73], width: 0, answerKey: "a01" },

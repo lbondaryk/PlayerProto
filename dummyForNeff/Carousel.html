@@ -33,7 +33,7 @@
 	var svgCont = new SVGContainer({
 			node: d3.select("#carousel0"),
 			maxWid: 570,
-			maxHt: 560
+			maxHt: 490
 		});
 
 	var imgvwr = new LabelCarousel({
@@ -55,7 +55,7 @@
 					//actualSize: {height: 380, width: 570},
 					}),
 				],
-			//imagesActualSize: {height: 200, width: 570},
+			imagesActualSize: {height: 380, width: 570},
 			}, eventManager);
 	
 	svgCont.append(imgvwr);

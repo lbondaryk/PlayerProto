@@ -33,13 +33,14 @@
 
 	var svgCont = new SVGContainer({
 			node: d3.select('#clickImg'),
-			maxWid: 570,
-			maxHt: 420
+			maxWid: 553,
+			maxHt: 400
 		});
 
 	var img = new CaptionedImage({
 					URI: '../img/birthdeath.png',
 					caption: "Example birth and death rates",
+					actualSize: {height: 258, width: 463}
 					}, eventManager);
 	
 	var labSelect = new LabelSelector ({
@@ -48,25 +49,13 @@
 			itemMargin: {top: 4, bottom: 4, left: 1, right: 0},
 			type: null,
 		}, eventManager);
-
-	var newLabels = new LabelGroup(
-		{ 
-		labels: 	
-		  [	
-			{content: "Pre-development", xyPos: [0,0], width: 100},
-			{content: "Developing",	xyPos:[.2,0], width: 85},
-			{content: "Modernizing", xyPos:[.4,0], width: 90},
-			{content:"Developed",	xyPos:[.6,0], width: 85},
-			{content:"Post-development", xyPos:[.8,0], width: 100},
-		  ]
-		}, eventManager);
 		
 	
 	svgCont.append(img, {topPercentOffset: .1, leftPercentOffset: 0, heightPercent: .9, widthPercent: 1});
 	
 	
 	// write the labels onto the image 
-	svgCont.append(labSelect, {topPercentOffset: 0, leftPercentOffset: 0.08, heightPercent: 1, widthPercent: .92});
+	svgCont.append(labSelect, {topPercentOffset: .05, leftPercentOffset: 0.075, heightPercent: 1, widthPercent: .92});
 
 	//make a set of callouts in a table that lights up with the labels.
 	var phases = new Callouts ({

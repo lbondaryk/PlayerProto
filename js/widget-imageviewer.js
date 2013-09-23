@@ -85,7 +85,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 			id: this.id + "_crsl",
 			items: this.items,
 			layout: "horizontal",
-			itemMargin: {top: 6, bottom: 6, left: 6, right: 6},
+			itemMargin: {top: 15, bottom: 0, left: 6, right: 6},
 			presentation: "scaleToFit",
 			scrollMode: "nowrap"
 		};
@@ -211,9 +211,9 @@ pearson.brix.ImageViewer.prototype.draw = function (container, size)
 
 	// Image goes below carousel
 	var imageGroup = widgetGroup.append("g")
-		.attr("transform", attrFnVal("translate", 0, carouselHeight + 10));
+		.attr("transform", attrFnVal("translate", 0, carouselHeight));
 
-	this.image.draw(imageGroup, {height: size.height - carouselHeight - 10, width: size.width});
+	this.image.draw(imageGroup, {height: size.height - carouselHeight - 15, width: size.width});
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 
