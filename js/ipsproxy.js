@@ -45,10 +45,10 @@ pearson.brix.IpsProxy.serverBaseUrl = null;
 
 
 /* **************************************************************************
- * Retrieves sequence node
+ * Retrieves sequence node. The server is health if the callback is called
+ * without error. 
  * @export
  * 
- * @param  {Object}   param     Parameter that containing 
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
@@ -85,7 +85,21 @@ pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
 };
 
 /* **************************************************************************
- * Retrieves sequence node
+ * Retrieves sequence node content.
+ * The input parameter is JSON object of format:
+ * {
+ *   header : {
+ *       "Hub­-Session": <session>,
+ *       "Content­-Type" : "application/vnd.pearson.paf.v1.node+json"
+ *   },
+ *   content : {
+ *        "@context": "http://purl.org/pearson/paf/v1/ctx/core/SequenceNode",
+ *        "@type": "SequenceNode",
+ *        "targetBinding": <binding-id>
+ *   },
+ *   url: <url>,
+ *   method: "POST"
+ *}
  * @export
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
@@ -102,7 +116,17 @@ pearson.brix.IpsProxy.prototype.retrieveSequenceNode = function (param, callback
 };
 
 /* **************************************************************************
- * Posts interaction data to server
+ * Posts interaction data to the Brix server.
+ * The input parameter is JSON object of format
+ * {
+ *  "sequenceNodeKey": "895af0ae2d8aa5bffba54ab0555d7461",
+ *  "timestamp": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+ *  "type": "submission",
+ *  "body": {
+ *    "interactionData": "...some stuff..."
+ *  }
+ * }
+ * 
  * @export
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
@@ -119,8 +143,16 @@ pearson.brix.IpsProxy.prototype.postInteraction = function (param, callback)
 };
 
 /* **************************************************************************
- * Posts submission data to server
- * @export
+ * Posts submission data to the Brix server
+ * The input parameter is JSON object of format
+ * {
+ *  "sequenceNodeKey": "895af0ae2d8aa5bffba54ab0555d7461",
+ *  "timestamp": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+ *  "type": "submission",
+ *  "body": {
+ *    "submissionData": "...some stuff..."
+ *  }
+ * }
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
  *                              to the server as request body. 
@@ -136,7 +168,8 @@ pearson.brix.IpsProxy.prototype.postSubmission = function (param, callback)
 };
 
 /* **************************************************************************
- * Retrieves sequence node
+ * Makes a REST POST request with the provided parameters.
+ * 
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
  *                              to the server as request body. 

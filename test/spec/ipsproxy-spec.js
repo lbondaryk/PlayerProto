@@ -13,7 +13,7 @@
 
 'use strict';
 
-//(function () {
+(function () {
     var expect = chai.expect;
 
     var seqNodeKey = null;
@@ -196,4 +196,4 @@
         });
 
     });
-//});
+})();
