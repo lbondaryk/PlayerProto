@@ -70,7 +70,7 @@
 	pearson.brix.activity = {};
 	var a = pearson.brix.activity;
 
-	// The activity config that defines the brix and cement for this page
+	// The activity config that defines the brix and mortar for this page
 	a.config =
 		{
 			"sequenceNodeKey": "39b0706e-8587-447e-a598-ecc5e9a1b883",
@@ -102,14 +102,55 @@
 									"bricType": "SvgContainer",
 									"config":
 										{
-											"node": d3.select("#imgReactor"),
-											"maxSize": pearson.utils.Size.matchRatioWithHeight(350 - 40, {"height": 310, "width": 680}/*"cimage1"."config"."actualSize"*/),
+											//"node": d3.select("#imgReactor"),
+											//"maxSize": pearson.utils.Size.matchRatioWithHeight(310 + 40, {"height": 310, "width": 680}/*"cimage1"."config"."actualSize"*/),
 										},
 									"configFixup":
+									[
 										{
-											//<[optional] object describing runtime modifications to the config, perhaps
-											//	adding properties referencing a previously created bric>
+											"type": "set-property",
+											"name": "node",
+											"value":
+												{
+													"type": "d3select",
+													"selector": "#imgReactor"
+												}
+										},
+										{
+											"type": "set-property",
+											"name": "maxSize",
+											"value":
+												{
+													"type": "property-of-ref",
+													"domain": "brix",
+													"id": "cimage1",
+													"accessor": "getSizeAt100Pct"
+												}
+												/*
+												{
+													"type": "adjust-size",
+													"newHeight":
+														{
+															"type": "property-of-obj",
+															"obj":
+																{
+																	"type": "property-of-ref",
+																	"domain": "brix",
+																	"id": "cimage1",
+																	"accessor": "getActualSize"
+																},
+															"accessor": "getHeight"
+														},
+													"keepRatioOf":
+														{
+															"type": "property-of-ref",
+															"domain": "brix",
+															"id": "cimage1",
+															"accessor": "getActualSize"
+														},
+												}*/
 										}
+									]
 								},
 								{
 									"bricId": "labels1",
@@ -134,11 +175,11 @@
 										}
 								}
 							],
-						"cementConfig":
+						"mortarConfig":
 							[
-								{
-									"cementId": "<unique id for this cement in this container>",
-									"cementType": "BrixEventHandler",
+								/*{
+									"mortarId": "<unique id for this mortar in this container>",
+									"mortarType": "BrixEventHandler",
 									"config":
 										{
 											"events": ["fixup"],
@@ -150,7 +191,7 @@
 													"params": ["liteKey"]
 												}
 										}
-								}
+								}*/
 							],
 						"hookupActions":
 							[
@@ -158,12 +199,26 @@
 									"actionType": "method-call", /* the method-call handles a lot of the actions needed, but I expect there are other types of actions */
 									"config":
 										{
-											"objectId": "Invoker-GUID",
-											"methodName": "registerObject",
+											"domain": "brix",
+											"id": "cntr1",
+											"methodName": "append",
 											"args":
 												[
-													{ "type": "static", "value": "barChart_GUID" }, /* static args use the value specified here */
-													{ "type": "bric-obj-ref", "id": "barChart_GUID" } /* obj refs are replaced w/ the object created above w/ the specified id */
+													{ "type": "ref", "domain": "brix", "id": "cimage1" },
+													{ "type": "static", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
+												]
+										}
+								},
+								{
+									"actionType": "method-call",
+									"config":
+										{
+											"domain": "brix",
+											"id": "cimage1",
+											"methodName": "append",
+											"args":
+												[
+													{ "type": "ref", "domain": "brix", "id": "labels1" }
 												]
 										}
 								}
@@ -186,14 +241,14 @@
 										}
 								},
 							],
-						"cementConfig":
+						"mortarConfig":
 							[
 								{
-									"cementId": "<unique id for this cement in this container>",
-									"cementType": "BrixEventHandler",
+									"mortarId": "<unique id for this mortar in this container>",
+									"mortarType": "BrixEventHandler",
 									"config":
 										{
-											//... config for cement type specified
+											//... config for mortar type specified
 										}
 								}
 							],

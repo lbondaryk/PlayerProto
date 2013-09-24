@@ -122,5 +122,60 @@ goog.require('goog.object');
 				expect(dummyBric.em).to.equal(dummyEventMgr);
 			});
 		});
+
+		describe('BricLayer.build w/ bric config w/ configFixup', function () {
+			var bricLayer = new BricLayer({}, dummyEventMgr);
+			var bricWorks = bricLayer.getBricWorks();
+			// Add another mold for testing purposes
+			var dummyBricName = '_dummy test bric_'
+			bricWorks.registerMold(dummyBricName, DummyBricCtor);
+
+			var activityConfig = createActivityConfigSkeleton();
+			var dummyBricId = 'test';
+			var dummyBricConfig = {"foo": "any foo will do"};
+
+			var fixupD3Select =
+				{
+					"type": "set-property",
+					"name": "node",
+					"value":
+						{
+							"type": "d3select",
+							"selector": "#target"
+						}
+				};
+
+			var bricConfigWithFixup =
+				{
+					"bricId": dummyBricId, 
+					"bricType": dummyBricName,
+					"config": dummyBricConfig,
+					"configFixup": [fixupD3Select]
+				};
+
+			activityConfig.containerConfig[0].brixConfig.push(bricConfigWithFixup);
+
+			var building = bricLayer.build(activityConfig);
+
+			// the div element w/ id 'target' created before the tests, which will be removed
+			// after the tests.
+			var div;
+
+			before(function () {
+				div = helper.createNewDiv();
+				d3.select(div).attr('id', 'target');
+			});
+
+			after(function () {
+				d3.select(div).remove();
+			});
+
+			it('should set the config property specified w/ a value of the d3 select of the given selector', function () {
+				var dummyBric = building.brix[dummyBricId];
+				expect(dummyBric.cfg).to.have.a.property(fixupD3Select['name']);
+				expect(dummyBric.cfg.node).to.be.an.instanceof(d3.selection);
+				expect(dummyBric.cfg.node).to.deep.equal(d3.select('#target'));
+			});
+		});
     });
 })();
