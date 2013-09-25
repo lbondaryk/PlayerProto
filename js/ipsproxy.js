@@ -117,7 +117,7 @@ pearson.brix.IpsProxy.prototype.retrieveSequenceNode = function (param, callback
 
 /* **************************************************************************
  * Posts interaction data to the Brix server.
- * The input parameter is JSON object of format
+ * The input parameter is JSON object of format:
  * {
  *  "sequenceNodeKey": "895af0ae2d8aa5bffba54ab0555d7461",
  *  "timestamp": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
@@ -144,7 +144,7 @@ pearson.brix.IpsProxy.prototype.postInteraction = function (param, callback)
 
 /* **************************************************************************
  * Posts submission data to the Brix server
- * The input parameter is JSON object of format
+ * The input parameter is JSON object of format:
  * {
  *  "sequenceNodeKey": "895af0ae2d8aa5bffba54ab0555d7461",
  *  "timestamp": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
