@@ -241,6 +241,122 @@ pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
     var config = {};
     goog.object.extend(config, bricConfig['config']);
 
+    this.doConfigFixup(bricConfig['configFixup'], config, building);
+
     building['brix'][id] = bricWorks.createBric(type, config);
 };
 
+/* **************************************************************************
+ * BricLayer.doConfigFixup                                             */ /**
+ *
+ * [Description of doConfigFixup]
+ *
+ * @param {Array.<Object>|undefined}
+ *                  fixupList   -array of fixups to be applied, may be undefined
+ * @param {Object}  config      -the config object that is to be fixed up
+ * @param {Object}  building    -the under construction (by the build method) building
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.doConfigFixup = function (fixupList, config, building)
+{
+    var fixupHandlers = pearson.brix.BricLayer.configFixupHandlers;
+
+    // if there's no list then no fixup is needed.
+    if (fixupList === undefined)
+        return;
+
+    fixupList.forEach(function (fixup)
+            {
+                var fixupType = fixup['type'];
+                if (!(fixupType in fixupHandlers))
+                {
+                    throw new Error("Don't know how to process configFixup type '" + fixupType + "'");
+                }
+
+                var handler = goog.bind(fixupHandlers[fixupType], this, config, building);
+
+                handler(fixup);
+            }, this);
+};
+
+/* **************************************************************************
+ * BricLayer.getDynamicValue                                           */ /**
+ *
+ * [Description of getDynamicValue]
+ *
+ * @param {Object}  building    -the under construction (by the build method) building
+ * @param {Object}  dynamicValueConfig
+ *                              -A dynamicValue config object that defines
+ *                               the desired value.
+ *
+ * @returns {*} The value defined by the dynamicValueConfig
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.getDynamicValue = function (building, dynamicValueConfig)
+{
+    var dynamicValueHandlers = pearson.brix.BricLayer.dynamicValueHandlers;
+
+    var dynValType = dynamicValueConfig['type'];
+    if (!(dynValType in dynamicValueHandlers))
+    {
+        throw new Error("Don't know how to process dynamicValue of type '" + dynValType + "'");
+    }
+
+    var handler = goog.bind(dynamicValueHandlers[dynValType], this, building);
+
+    return handler(dynamicValueConfig);
+};
+
+/**
+ * Functions to process the various types of configFixup.
+ * They must be called as a member of the BricLayer with the config object,
+ * the building (under construction) object and the fixup object.
+ * Note the fixup object is last so a partial function can be constructed
+ * which specifies the 1st 2 arguments.
+ * @type {Object.<string, function(this: pearson.brix.BricLayer, Object, Object, Object)>}
+ */
+pearson.brix.BricLayer.configFixupHandlers =
+{
+    /* **************************************************************************
+     * configFixupHandlers.set-property                                    */ /**
+     *
+     * Function which defines a particular property on the config with a
+     * specified dynamic value.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  config      -the config object that is to be fixed up
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  fixup       -the set-property fixup object
+     *
+     ****************************************************************************/
+    'set-property': function (config, building, fixup)
+    {
+        config[fixup['name']] = this.getDynamicValue(building, fixup['value']);
+    },
+};
+
+/**
+ * Functions to process the various types of dynamicValues.
+ * They must be called as a member of the BricLayer with the building
+ * (under construction) object and the dynamic value config object.
+ * These functions return the desired value.
+ * @type {Object.<string, function(this: pearson.brix.BricLayer, Object, Object):*>}
+ */
+pearson.brix.BricLayer.dynamicValueHandlers =
+{
+    /* **************************************************************************
+     * dynamicValueHandlers.d3select                                       */ /**
+     *
+     * Return the result from calling d3.select with the given selector.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the d3select dynamicValue config object
+     *
+     * @returns {*} The value a specified.
+     ****************************************************************************/
+    'd3select': function (building, dynamicValueConfig)
+    {
+        return d3.select(dynamicValueConfig['selector']);
+    },
+};

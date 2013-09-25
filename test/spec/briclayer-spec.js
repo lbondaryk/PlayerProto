@@ -155,7 +155,7 @@ goog.require('goog.object');
 
             activityConfig.containerConfig[0].brixConfig.push(bricConfigWithFixup);
 
-            var building = bricLayer.build(activityConfig);
+            var building = null;
 
             // the div element w/ id 'target' created before the tests, which will be removed
             // after the tests.
@@ -164,6 +164,7 @@ goog.require('goog.object');
             before(function () {
                 div = helper.createNewDiv();
                 d3.select(div).attr('id', 'target');
+                building = bricLayer.build(activityConfig);
             });
 
             after(function () {

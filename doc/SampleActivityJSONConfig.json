@@ -59,13 +59,14 @@
 						{
 							"bricId":
 								{
-									"description": "",
+									"description": "A string which uniquely identifies this bric out of the set of all brix in the activity",
 									"type": "string",
 									"minLength": 1
 								},
 							"bricType":
 								{
 									"description": "BricTypes enum name used to register the bric with the BricWorks",
+                                    "type": "string",
 									"enum":
 										[
 											"SvgContainer",
@@ -100,10 +101,9 @@
 								},
 							"configFixup":
 								{
-									"description": "config for the bric type specified",
-									<[optional] object describing runtime modifications to the config, perhaps
-										adding properties referencing a previously created bric>
-									"type": "string",
+									"description": "array of fixups that need to be made to the config before using it to construct the bric",
+									"type": "array",
+									"items": { "$ref": "#/definitions/configFixup" }
 								},
 							"state":
 								{
@@ -115,6 +115,69 @@
 									"description": "The answer key defining how to determine if a student's answer is correct, and the various responses that may be returned",
 									"type": "object",
 								},
+						}
+				},
+			"configFixup":
+				{
+					"description": "runtime action to be applied to the config for the associated bric before constructing that bric",
+					"type": "object",
+                    "oneOf":
+                        [
+                            {"$ref": "#/definitions/configFixup-set-property"},
+                        ]
+				},
+			"configFixup-set-property":
+				{
+					"description": "fixup a config by defining a property on that config",
+					"type": "object",
+					"required": ["type", "name", "value"],
+					"properties":
+						{
+                            "type":
+                                {
+                                    "description": "identifies this fixup as setting a property on the config",
+                                    "type": "string",
+                                    "enum": ["set-property"]
+                                },
+                            "name":
+                                {
+                                    "description": "the name of the config property to be set",
+                                    "type": "string"
+                                },
+                            "value":
+                                {
+                                    "description": "a dynamicValue object which describes how to construct the value of the property to be set on the config",
+                                    "$ref": "#/definitions/dynamicValue",
+                                },
+						}
+				},
+            "dynamicValue":
+                {
+                    "description": "describes how to construct a value at runtime which may reference previously constructed objects",
+                    "type": "object"
+                    "oneOf":
+                        [
+                            {"$ref": "#/definitions/dynamicValue-d3select"},
+                        ]
+                },
+			"dynamicValue-d3select":
+				{
+					"description": "",
+					"type": "object",
+					"required": ["type", "selector"],
+					"properties":
+						{
+                            "type":
+                                {
+                                    "description": "identifies this value as a d3 selection",
+                                    "type": "string",
+                                    "enum": ["d3select"]
+                                },
+                            "selector":
+                                {
+                                    "description": "the selector argument to d3.select",
+                                    "type": "string"
+                                },
 						}
 				},
 			"mortarConfig":
