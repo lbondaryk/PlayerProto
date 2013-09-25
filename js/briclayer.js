@@ -7,8 +7,8 @@
  * The BricLayer creates brix and connecting mortar as defined by a
  * master configuration object.
  *
- * Created on		September 10, 2013
- * @author			Michael Jay Lippert
+ * Created on       September 10, 2013
+ * @author          Michael Jay Lippert
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -62,29 +62,29 @@ goog.require('pearson.brix.Slider');
  ****************************************************************************/
 pearson.brix.BricTypes =
 {
-	SVGCONTAINER:			"SvgContainer",
-	BARCHART:				"BarChart",
-	BUTTON:					"Button",
-	CALLOUTS:				"Callouts",
-	CAPTIONEDIMAGE:			"CaptionedImage",
-	CAROUSEL:				"Carousel",
-	CHECKGROUP:				"CheckGroup",
-	IMAGE:					"Image",
-	IMAGEVIEWER:			"ImageViewer",
-	LABELGROUP:				"LabelGroup",
-	LEGEND:					"Legend",
-	LINEGRAPH:				"LineGraph",
-	MARKERGROUP:			"MarkerGroup",
-	MULTIPLECHOICEQUESTION:	"MultipleChoiceQuestion",
-	MULTISELECTQUESTION:	"MultiSelectQuestion",
-	NUMERICINPUT:			"NumericInput",
-	NUMERICQUESTION:		"NumericQuestion",
-	PIECHART:				"PieChart",
-	RADIOGROUP:				"RadioGroup",
-	READOUT:				"Readout",
-	SELECTGROUP:			"SelectGroup",
-	SKETCH:					"Sketch",
-	SLIDER:					"Slider"
+    SVGCONTAINER:           "SvgContainer",
+    BARCHART:               "BarChart",
+    BUTTON:                 "Button",
+    CALLOUTS:               "Callouts",
+    CAPTIONEDIMAGE:         "CaptionedImage",
+    CAROUSEL:               "Carousel",
+    CHECKGROUP:             "CheckGroup",
+    IMAGE:                  "Image",
+    IMAGEVIEWER:            "ImageViewer",
+    LABELGROUP:             "LabelGroup",
+    LEGEND:                 "Legend",
+    LINEGRAPH:              "LineGraph",
+    MARKERGROUP:            "MarkerGroup",
+    MULTIPLECHOICEQUESTION: "MultipleChoiceQuestion",
+    MULTISELECTQUESTION:    "MultiSelectQuestion",
+    NUMERICINPUT:           "NumericInput",
+    NUMERICQUESTION:        "NumericQuestion",
+    PIECHART:               "PieChart",
+    RADIOGROUP:             "RadioGroup",
+    READOUT:                "Readout",
+    SELECTGROUP:            "SelectGroup",
+    SKETCH:                 "Sketch",
+    SLIDER:                 "Slider"
 };
 
 
@@ -95,12 +95,12 @@ pearson.brix.BricTypes =
  *
  * @constructor
  *
- * @param {Object}		config			-The settings to configure this BrixLayer.
- * 										 (there are none right now so this will
- * 										 usually be specified as null or an empty object.)
+ * @param {Object}      config          -The settings to configure this BrixLayer.
+ *                                       (there are none right now so this will
+ *                                       usually be specified as null or an empty object.)
  * @param {!pearson.utils.IEventManager=}
- * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them.
+ *                      eventManager    -The event manager to use for publishing events
+ *                                       and subscribing to them.
  *
  * @classdesc
  * A BricLayer creates brix and connecting mortar as defined by a master
@@ -109,21 +109,21 @@ pearson.brix.BricTypes =
  ****************************************************************************/
 pearson.brix.BricLayer = function (config, eventManager)
 {
-	/**
-	 * The event manager to use to publish (and subscribe to) events for the
-	 * created brix and mortar.
-	 * @private
-	 * @type {!pearson.utils.IEventManager}
-	 */
-	this.eventManager_ = eventManager || new pearson.utils.EventManager();
+    /**
+     * The event manager to use to publish (and subscribe to) events for the
+     * created brix and mortar.
+     * @private
+     * @type {!pearson.utils.IEventManager}
+     */
+    this.eventManager_ = eventManager || new pearson.utils.EventManager();
 
-	/**
-	 * The bricWorks is the factory which builds all brix. It should
-	 * ONLY be accessed using the getBricWorks accessor function.
-	 * @private
-	 * @type {pearson.brix.BricWorks}
-	 */
-	this.bricWorks_ = null;
+    /**
+     * The bricWorks is the factory which builds all brix. It should
+     * ONLY be accessed using the getBricWorks accessor function.
+     * @private
+     * @type {pearson.brix.BricWorks}
+     */
+    this.bricWorks_ = null;
 
 }; // end of BricLayer constructor
 
@@ -137,43 +137,43 @@ pearson.brix.BricLayer = function (config, eventManager)
  ****************************************************************************/
 pearson.brix.BricLayer.prototype.getBricWorks = function ()
 {
-	if (this.bricWorks_)
-	{
-		return this.bricWorks_;
-	}
+    if (this.bricWorks_)
+    {
+        return this.bricWorks_;
+    }
 
-	// 1st time the BricWorks was accessed, so create it.
-	var bricWorks = new pearson.brix.BricWorks(null, this.eventManager_);
+    // 1st time the BricWorks was accessed, so create it.
+    var bricWorks = new pearson.brix.BricWorks(null, this.eventManager_);
 
-	// register all brix
-	var BricTypes = pearson.brix.BricTypes;
-	bricWorks.registerMold(BricTypes.SVGCONTAINER, pearson.brix.SVGContainer);
-	bricWorks.registerMold(BricTypes.BARCHART, pearson.brix.BarChart);
-	bricWorks.registerMold(BricTypes.BUTTON, pearson.brix.Button);
-	bricWorks.registerMold(BricTypes.CALLOUTS, pearson.brix.Callouts);
-	bricWorks.registerMold(BricTypes.CAPTIONEDIMAGE, pearson.brix.CaptionedImage);
-	bricWorks.registerMold(BricTypes.CAROUSEL, pearson.brix.Carousel);
-	bricWorks.registerMold(BricTypes.CHECKGROUP, pearson.brix.CheckGroup);
-	bricWorks.registerMold(BricTypes.IMAGE, pearson.brix.Image);
-	bricWorks.registerMold(BricTypes.IMAGEVIEWER, pearson.brix.ImageViewer);
-	bricWorks.registerMold(BricTypes.LABELGROUP, pearson.brix.LabelGroup);
-	bricWorks.registerMold(BricTypes.LEGEND, pearson.brix.Legend);
-	bricWorks.registerMold(BricTypes.LINEGRAPH, pearson.brix.LineGraph);
-	bricWorks.registerMold(BricTypes.MARKERGROUP, pearson.brix.MarkerGroup);
-	bricWorks.registerMold(BricTypes.MULTIPLECHOICEQUESTION, pearson.brix.MultipleChoiceQuestion);
-	bricWorks.registerMold(BricTypes.MULTISELECTQUESTION, pearson.brix.MultiSelectQuestion);
-	bricWorks.registerMold(BricTypes.NUMERICINPUT, pearson.brix.NumericInput);
-	bricWorks.registerMold(BricTypes.NUMERICQUESTION, pearson.brix.NumericQuestion);
-	bricWorks.registerMold(BricTypes.PIECHART, pearson.brix.PieChart);
-	bricWorks.registerMold(BricTypes.RADIOGROUP, pearson.brix.RadioGroup);
-	bricWorks.registerMold(BricTypes.READOUT, pearson.brix.Readout);
-	bricWorks.registerMold(BricTypes.SELECTGROUP, pearson.brix.SelectGroup);
-	bricWorks.registerMold(BricTypes.SKETCH, pearson.brix.Sketch);
-	bricWorks.registerMold(BricTypes.SLIDER, pearson.brix.Slider);
+    // register all brix
+    var BricTypes = pearson.brix.BricTypes;
+    bricWorks.registerMold(BricTypes.SVGCONTAINER, pearson.brix.SVGContainer);
+    bricWorks.registerMold(BricTypes.BARCHART, pearson.brix.BarChart);
+    bricWorks.registerMold(BricTypes.BUTTON, pearson.brix.Button);
+    bricWorks.registerMold(BricTypes.CALLOUTS, pearson.brix.Callouts);
+    bricWorks.registerMold(BricTypes.CAPTIONEDIMAGE, pearson.brix.CaptionedImage);
+    bricWorks.registerMold(BricTypes.CAROUSEL, pearson.brix.Carousel);
+    bricWorks.registerMold(BricTypes.CHECKGROUP, pearson.brix.CheckGroup);
+    bricWorks.registerMold(BricTypes.IMAGE, pearson.brix.Image);
+    bricWorks.registerMold(BricTypes.IMAGEVIEWER, pearson.brix.ImageViewer);
+    bricWorks.registerMold(BricTypes.LABELGROUP, pearson.brix.LabelGroup);
+    bricWorks.registerMold(BricTypes.LEGEND, pearson.brix.Legend);
+    bricWorks.registerMold(BricTypes.LINEGRAPH, pearson.brix.LineGraph);
+    bricWorks.registerMold(BricTypes.MARKERGROUP, pearson.brix.MarkerGroup);
+    bricWorks.registerMold(BricTypes.MULTIPLECHOICEQUESTION, pearson.brix.MultipleChoiceQuestion);
+    bricWorks.registerMold(BricTypes.MULTISELECTQUESTION, pearson.brix.MultiSelectQuestion);
+    bricWorks.registerMold(BricTypes.NUMERICINPUT, pearson.brix.NumericInput);
+    bricWorks.registerMold(BricTypes.NUMERICQUESTION, pearson.brix.NumericQuestion);
+    bricWorks.registerMold(BricTypes.PIECHART, pearson.brix.PieChart);
+    bricWorks.registerMold(BricTypes.RADIOGROUP, pearson.brix.RadioGroup);
+    bricWorks.registerMold(BricTypes.READOUT, pearson.brix.Readout);
+    bricWorks.registerMold(BricTypes.SELECTGROUP, pearson.brix.SelectGroup);
+    bricWorks.registerMold(BricTypes.SKETCH, pearson.brix.Sketch);
+    bricWorks.registerMold(BricTypes.SLIDER, pearson.brix.Slider);
 
-	this.bricWorks_ = bricWorks;
+    this.bricWorks_ = bricWorks;
 
-	return this.bricWorks_;
+    return this.bricWorks_;
 };
 
 /* **************************************************************************
@@ -182,24 +182,24 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
  * Create all of the brix and mortar as described in the given configuration
  * object.
  *
- * @param {Object}	activityConfig		-Configuration describing the brix and
- * 										 mortar to be created.
+ * @param {Object}  activityConfig      -Configuration describing the brix and
+ *                                       mortar to be created.
  *
  * @returns {Object} an object containing all of the created brix and mortar.
  *
  ****************************************************************************/
 pearson.brix.BricLayer.prototype.build = function (activityConfig)
 {
-	/**
-	 * @dict
-	 */
-	var building = {'info': {}, 'brix': {}, 'mortar': {}};
+    /**
+     * @dict
+     */
+    var building = {'info': {}, 'brix': {}, 'mortar': {}};
 
-	building['info']['seqNodeId'] = activityConfig['sequenceNodeKey'];
+    building['info']['seqNodeId'] = activityConfig['sequenceNodeKey'];
 
-	activityConfig['containerConfig'].forEach(goog.bind(this.buildContainer_, this, building));
+    activityConfig['containerConfig'].forEach(goog.bind(this.buildContainer_, this, building));
 
-	return building;
+    return building;
 };
 
 /* **************************************************************************
@@ -208,17 +208,17 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
  * Build all the brix and mortar specified by the given container config.
  * @private
  *
- * @param {Object}	building		-Object containing everything that's been
- * 									 built so far, and where all the new objects
- * 									 defined in this container are to be put.
- * @param {Object}	containerConfig	-Configuration for all of the brix and connecting
- * 									 mortar in "container", that get rendered
- * 									 as children of a single element (usually a div).
+ * @param {Object}  building        -Object containing everything that's been
+ *                                   built so far, and where all the new objects
+ *                                   defined in this container are to be put.
+ * @param {Object}  containerConfig -Configuration for all of the brix and connecting
+ *                                   mortar in "container", that get rendered
+ *                                   as children of a single element (usually a div).
  *
  ****************************************************************************/
 pearson.brix.BricLayer.prototype.buildContainer_ = function (building, containerConfig)
 {
-	containerConfig['brixConfig'].forEach(goog.bind(this.buildBric_, this, building));
+    containerConfig['brixConfig'].forEach(goog.bind(this.buildBric_, this, building));
 };
 
 /* **************************************************************************
@@ -227,20 +227,20 @@ pearson.brix.BricLayer.prototype.buildContainer_ = function (building, container
  * Build the bric defined by the given configuration.
  * @private
  *
- * @param {Object}	building	-Object containing everything that's been
- * 								 built so far, and where this new bric
- * 								 is to be put.
- * @param {Object}	bricConfig	-Configuration for creating a bric.
+ * @param {Object}  building    -Object containing everything that's been
+ *                               built so far, and where this new bric
+ *                               is to be put.
+ * @param {Object}  bricConfig  -Configuration for creating a bric.
  *
  ****************************************************************************/
 pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
 {
-	var bricWorks = this.getBricWorks();
-	var id = bricConfig['bricId'];
-	var type = bricConfig['bricType'];
-	var config = {};
-	goog.object.extend(config, bricConfig['config']);
+    var bricWorks = this.getBricWorks();
+    var id = bricConfig['bricId'];
+    var type = bricConfig['bricType'];
+    var config = {};
+    goog.object.extend(config, bricConfig['config']);
 
-	building['brix'][id] = bricWorks.createBric(type, config);
+    building['brix'][id] = bricWorks.createBric(type, config);
 };
 
