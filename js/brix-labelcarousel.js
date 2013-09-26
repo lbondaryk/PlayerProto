@@ -2,13 +2,14 @@
  * $Workfile:: brix-labelcarousel.js                                        $
  * *********************************************************************/ /**
  *
- * @fileoverview Implementation of the Label Carousel widget.
+ * @fileoverview Implementation of the Label Carousel bric.
  *
  *
  * The LabelCarousel bric draws the common configuration of a
- * {@link pearson.brix.LabelCarousel} presenting a collection of images with the
- * selected image displayed in an {@link pearson.brix.Image} bric below the
- * LabelSelector {@link pearson.brix.LabelSelector}. Based on ImageViewer.
+ * {@link pearson.brix.LabelSelector} presenting a list of selectable numbered
+ * labels each representing an image to be displayed in an
+ * {@link pearson.brix.Image} bric below the LabelSelector.
+ * The initial implementation was based on ImageViewer.
  *
  * Created on		Sept 15, 2013
  * @author			Leslie Bondaryk 
@@ -42,7 +43,7 @@ goog.require('pearson.utils.IEventManager');
 /* **************************************************************************
  * LabelCarousel                                                       */ /**
  *
- * The ImageViewer draws the common bric configuration of a Label
+ * The LabelCarousel draws the common bric configuration of a Label
  * Selector presenting a collection of images with the selected
  * image displayed in an Image widget below.
  *
@@ -50,10 +51,10 @@ goog.require('pearson.utils.IEventManager');
  * @extends {pearson.brix.SvgBric}
  * @export
  *
- * @param {Object}			config			-The settings to configure this ImageViewer
+ * @param {Object}			config			-The settings to configure this LabelCarousel
  * @param {string|undefined}
- *							config.id		-String to uniquely identify this ImageViewer.
- *											if undefined a unique id will be assigned.
+ *							config.id		-String to uniquely identify this LabelCarousel.
+ *											 if undefined a unique id will be assigned.
  * @param {!Array.<{URI: string, caption: string, selectorLabel: string}>}
  *							config.images	-The list of info to load the images for the carousel.
  * @param {!pearson.utils.ISize}
@@ -61,7 +62,7 @@ goog.require('pearson.utils.IEventManager');
  *											-The actual size of all of the images.
  * @param {!pearson.utils.IEventManager}
  *							eventManager	-allows the bric to publish and subscribe to events
- *											required for correct internal operation.
+ *											 required for correct internal operation.
  *
  ****************************************************************************/
 pearson.brix.LabelCarousel = function (config, eventManager)
@@ -216,6 +217,8 @@ pearson.brix.LabelCarousel.prototype.draw = function (container, size)
  	this.labelSelector.draw(selectorGroup, {height: selectorHeight, width: size.width});
 
 	// Image goes below carousel with 10 px margin
+	// @todo: The constants in this code were changed and the comment was not, and
+	// the constants are no longer consistent, what's going on?!! -mjl
 	var imageGroup = widgetGroup.append("g")
 		.attr("transform", attrFnVal("translate", 0, selectorHeight + 20));
 

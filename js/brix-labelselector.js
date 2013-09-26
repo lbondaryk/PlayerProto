@@ -36,7 +36,7 @@ goog.require('pearson.utils.IEventManager');
 /* **************************************************************************
  * LabelSelector                                                       */ /**
  *
- * The LabelSelector widget draws a collection of labels side by side in an 
+ * The LabelSelector bric draws a collection of labels side by side in an 
  * SVGContainer and allows one of them to be selected.
  *
  * @constructor
@@ -54,14 +54,11 @@ goog.require('pearson.utils.IEventManager');
  *						config.itemMargin
  *										-The margin around each label, note that the
  *										 intra-item gap will be the sum of the left and right margin.
- * @param {string}		config.type 	- 'numbered', 'bullets' or null to auto number or bullet
+ * @param {string}		config.type 	-'numbered', 'bullets' or null to auto number or bullet
  *				
  * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
- *
- * @todo Implement the "vertical" layout -mjl
- * @todo Implement the "scroll" presentation, after we figure out what it means to fit naturally (maybe it means we specify an itemAspectRatio). -mjl
  *
  ****************************************************************************/
 pearson.brix.LabelSelector = function (config, eventManager)
@@ -69,8 +66,6 @@ pearson.brix.LabelSelector = function (config, eventManager)
 	// call the base class constructor
 	goog.base(this);
 
-	var that = this;
-	
 	/**
 	 * A unique id for this instance of the LabelSelector bric
 	 * @type {string}
@@ -98,6 +93,14 @@ pearson.brix.LabelSelector = function (config, eventManager)
 	 */
 	this.itemMargin = config.itemMargin;
 	
+	/**
+	 * the margin around the entire label group of selectors. (in pixels)
+	 * @private
+	 * @const
+	 * @type {{top: number, bottom: number, left: number, right: number}}
+	 */
+	this.selectorMargin_ = {top: 0, bottom: 0, left: 15, right: 15};
+
 	/**
 	 * Should labels have numbers or bullets?
 	 * @type {string}
@@ -160,12 +163,12 @@ pearson.brix.LabelSelector.autoIdPrefix = "labSel_auto_";
  * Draw this LabelSelector in the given container.
  *
  * @param {!d3.selection}	container	-The container svg element to append
- *										this SvgBric element tree to.
+ *										 this SvgBric element tree to.
  * @param {!pearson.utils.ISize}
  *							size		-The size (in pixels) of the area this
- *										SvgBric has been allocated.
+ *										 SvgBric has been allocated.
  ****************************************************************************/
-pearson.brix.LabelSelector.prototype.draw = function(container, size)
+pearson.brix.LabelSelector.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
@@ -173,38 +176,43 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 	// aliases of utility functions for readability
 	var attrFnVal = pearson.brix.utils.attrFnVal;
 
-	var that = this;
-	
-	var itemMargin = this.itemMargin;
-	
 	var labelItemsLabels = this.labelItems.labels;
 
 	// We don't support anything other than this.layout === "horizontal"
 
+	// variables used by positionItem function below
+	var itemSize = {height: 0, width: 0};
 
-	if (Array.isArray(this.labels)) {
-		// If labels is a set of strings, then divide the width evenly and put the label strings in
-		// Carve the width up for the n items
-		var itemCnt = this.labels.length;
+	var labelMargin = this.itemMargin;
+	/** @const @type {number} */
+	var SELECTOR_LEFT_MARGIN = this.selectorMargin_.left;
+	/** @const @type {number} */
+	var Y_PERC = 1 - d3.round(labelMargin.top / size.height, 2);
 
-		// deducting 30 pixels for r/l margins, and preventing divide by 0
-		var labelWidth = (size.width - 30) / (itemCnt ? itemCnt : 1) - (itemMargin.left + itemMargin.right);
-		var itemSize = {height: 44,
-					width: labelWidth};
-		/**
-		 * function used to place each item into its correct position
-		 * @type {function(*, number):Array.<number>}
-		 */
-		var positionItem =
-			function (d, i)
-			{
-				// these values are done as percentages of the height and width of the container
-				var x = 15 + itemMargin.left + i * (itemMargin.left + itemSize.width + itemMargin.right);
-				var xPerc = x/size.width;
-				var y = itemMargin.top;
-				var yPerc = 1 - d3.round(y/size.height, 2);
-				return [xPerc, yPerc];
-			};
+	/**
+	 * function used to place each item into its correct position
+	 * @type {function(*, number):Array.<number>}
+	 */
+	var positionItem =
+		function (d, i)
+		{
+			// these values are done as percentages of the height and width of the container
+			// because the labelgroup is using the default 0-1 x and y scales.
+			var x = SELECTOR_LEFT_MARGIN + labelMargin.left + i * (labelMargin.left + itemSize.width + labelMargin.right);
+			var xPerc = x/size.width;
+			return [xPerc, Y_PERC];
+		};
+
+	if (Array.isArray(this.labels))
+	{
+		// If labels is a set of strings, then divide the width evenly and put the label strings
+		// into the labelgroup bric that will draw the labels.
+
+		// Carve the width up for the n labels (use an arbitrarily picked constant height)
+		var labelCnt = this.labels.length;
+		var selectorWidth = size.width - this.selectorMargin_.left - this.selectorMargin_.right;
+		var labelWidth = selectorWidth / (labelCnt ? labelCnt : 1) - (labelMargin.left + labelMargin.right);
+		itemSize = {height: 44, width: labelWidth};
 
 		this.labels.forEach(
 				function (o, i) { labelItemsLabels[i] = 
@@ -214,41 +222,24 @@ pearson.brix.LabelSelector.prototype.draw = function(container, size)
 										width: labelWidth
 									}; 
 								});
-		} // end if
-
-	else {
+	}
+	else
+	{
 		// if labels is just a count of numerical labels, then spread them out one after the other
 		// packed on the left after a 15 pixel margin
 
-		var itemCnt = this.labels;
+		itemSize = {height: 44, width: 44};
 
-		var itemSize = {height: 44,
-					width: 44};
-		/**
-		* function used to place each item into its correct position
-		* @type {function(*, number):Array.<number>}
-		*/
-		var positionItem =
-			function (i)
-			{
-				// these values are done as percentages of the height and width of the container
-				var x = 15 + itemMargin.left + i * (itemMargin.left + itemSize.width + itemMargin.right);
-				var xPerc = x/size.width;
-				var y = itemMargin.top;
-				var yPerc = 1 - d3.round(y/size.height, 2);
-				return [xPerc, yPerc];
-			};
-
-	for (var i = this.labels - 1; i >= 0; i--)
+		for (var i = this.labels - 1; i >= 0; i--)
 		{
 			labelItemsLabels[i] =
-					{
+				{
 					content: "",
-					xyPos: positionItem(i),
+					xyPos: positionItem("", i),
 					width: 0
-					}; 
+				}; 
 		}
-	} // end else
+	} // end if-else
 
 	this.labelItems.draw(container, size);
 
