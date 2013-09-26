@@ -124,6 +124,14 @@ pearson.brix.Callouts = function (config, eventManager)
 	 */
 	this.selectedEventId = this.calloutsId_ + '_Callout';
 	 	
+	/**
+	 * The event details for this.selectedEventId events
+	 * @typedef {Object} SelectedEventDetails
+	 * @property {number} index		-The 0-based index of the selected item.
+	 * @property {string} selectKey	-The key associated with the selected item.
+	 */
+	var SelectedEventDetails;
+
 }; // end of Callouts constructor
 goog.inherits(pearson.brix.Callouts, pearson.brix.HtmlBric);
 
@@ -215,9 +223,10 @@ pearson.brix.Callouts.prototype.draw = function (container)
 	this.calloutCollection.on('click',
 		function (d, i)
 			{
+                that.lite(d.key);
 				that.eventManager.publish(that.selectedEventId, 
 					//the second argument is the event details.   
-					{selectKey: d.key});
+					{selectKey: d.key, index: i});
 			});
 	
 }; //end Callouts object draw function
