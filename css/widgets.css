@@ -4,13 +4,6 @@
 */
 
 
-/* Add adjustment to allow text resizing */
-html {
-  font-size: 100%;
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%; }
-
-
 /* Images
 ================================================== */
 
@@ -174,22 +167,6 @@ svg g.brixLabel.lit .descLabel
   border: 1px solid #0d65A6;
 }
 
-/* Radio groups
-================================================== */
-div.brixRadioGroup tr>td
-{
-	padding: 0;
-}
-div.brixRadioGroup ol.question-responses tr>td:first-child
-{
-	width: 			5em;
-	text-align: 	right;
-}
-div.brixRadioGroup table.questionTable tr>td:nth-of-type(2)
-{
-	padding-left:	8px;
-}
-
 
 /* Sliders
 ================================================== */
@@ -212,21 +189,233 @@ span.widgetSlider .range
   margin-right: 10px;
 }
 
+/* Radio groups
+================================================== */
+div.brixRadioGroup tr>td
+{
+  padding: 0;
+}
+div.brixRadioGroup table.questionTable
+{
+  margin: 0 0 0 25px;
+}
+div.brixRadioGroup table.questionTable tr>td:first-child
+{
+  text-align:   right;
+}
+div.brixRadioGroup table.questionTable tr>td:nth-of-type(2)
+{
+  padding-left: 8px;
+}
+   
+input[type=radio] {
+    border: 0px;
+    width: 20px;
+    height: 20px;
+}
+
 /* Question blocks
 ================================================== */
 
 div.widgetnumericquestion,
 div.brixMultipleChoiceQuestion 
 {
-  color: 333;
-  background-color: #f4f4f4;
-  border: 1px solid #C37030;
-  text-shadow: 1px 1px 1px #A54314;
-  padding: 0.2em 1.0em;
+ 
+  border: 1px solid #fff;
+  padding: 10px 0;
   margin-bottom: 10px;
   -moz-border-radius: 4px;
   border-radius: 4px;
   cursor: default; 
+}
+
+.brixMultipleChoiceQuestion fieldset 
+{
+  display: inline-block;
+  border: 0;
+  -webkit-margin-start: 2px;
+  -webkit-margin-end: 2px;
+  -webkit-padding-before: 0.35em;
+  -webkit-padding-start: 0.75em;
+  -webkit-padding-end: 0.75em;
+  -webkit-padding-after: 0.625em;
+}
+
+.brixMultipleChoiceQuestion fieldset legend 
+{
+  line-height: 40px;
+  color: #333333;
+  font: bold 21px HelveticaNeue, Helvetica;
+  margin-bottom: 5px; 
+}
+
+.brixMultipleChoiceQuestion label 
+{
+  font: 18px Helvetica;
+  line-height: 30px;
+}
+
+.brixMultipleChoiceQuestion .choiceLabel 
+{
+  font-weight: bold;
+  margin: 0 5px; 
+}
+
+.brixMultipleChoiceQuestion .submit button:disabled
+{
+  opacity: .5;
+}
+
+.brixMultipleChoiceQuestion .submit button
+{
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #006dcc;
+  background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
+  background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -o-linear-gradient(top, #0088cc, #0044cc);
+  background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
+  border-color: #0044cc #0044cc #002a80;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  margin-bottom: 0;
+  margin-left: 20px;
+  font: 14px Helvetica;
+  line-height: 20px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  color: #fff;
+  border-color: #005f80;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  padding: 4px 30px;
+}
+
+.brixMultipleChoiceQuestion .feedback 
+{
+  padding: 20px;
+  font: bold 18px Helvetica;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-transition: bottom 0.3s;
+  -webkit-transition: bottom 0.3s;
+  transition: bottom 0.3s; 
+}
+
+  .brixMultipleChoiceQuestion .feedback .custom-feedback
+{
+  
+  font: 16px Helvetica;
+}
+
+.brixMultipleChoiceQuestion .feedback-correct 
+{
+  background-color: #efefef;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 4px 0 #ddd inset;
+}
+
+
+.brixMultipleChoiceQuestion .feedback-incorrect 
+{
+  box-shadow: 0 4px 0 #ddd inset;
+  border-top: 1px solid #ccc;
+  background-color: #efefef;
+}
+
+
+.brixMultipleChoiceQuestion .feedback-partial 
+{
+  box-shadow: 0 4px 0 #ddd inset;
+  border-top: 1px solid #ccc;
+  background-color: #efefef;
+}
+
+.brixMultipleChoiceQuestion .feedback i 
+{
+  float: left;
+  font-size: 24px;
+  margin-bottom: 30px;
+  margin-right: 15px; 
+}
+
+/*
+ *  Font Awesome 3.0.2
+ *  the iconic font designed for use with Twitter Bootstrap
+ *  -------------------------------------------------------
+ *  The full suite of pictographic icons, examples, and documentation
+ *  can be found at: http://fortawesome.github.com/Font-Awesome/
+ *
+ *  License
+ *  -------------------------------------------------------
+ *  - The Font Awesome font is licensed under the SIL Open Font License - http://scripts.sil.org/OFL
+ *  - Font Awesome CSS, LESS, and SASS files are licensed under the MIT License -
+ *    http://opensource.org/licenses/mit-license.html
+ *  - The Font Awesome pictograms are licensed under the CC BY 3.0 License - http://creativecommons.org/licenses/by/3.0/
+ *  - Attribution is no longer required in Font Awesome 3.0, but much appreciated:
+ *    "Font Awesome by Dave Gandy - http://fortawesome.github.com/Font-Awesome"
+ *
+ *  Contact
+ *  -------------------------------------------------------
+ *  Email: dave@davegandy.com
+ *  Twitter: http://twitter.com/fortaweso_me
+ *  Work: Lead Product Designer @ http://kyruus.com
+ */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url("fonts//fontawesome-webfont.eot?v=3.0.1");
+  src: url("fonts//fontawesome-webfont.eot?#iefix&v=3.0.1") format("embedded-opentype"), url("fonts//fontawesome-webfont.woff?v=3.0.1") format("woff"), url("fonts//fontawesome-webfont.ttf?v=3.0.1") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+/*  Font Awesome styles
+    ------------------------------------------------------- */
+[class^="icon-"],
+[class*=" icon-"] 
+{
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  /* sprites.less reset */
+  display: inline;
+  width: auto;
+  height: auto;
+  line-height: normal;
+  vertical-align: baseline;
+  background-image: none;
+  background-position: 0% 0%;
+  background-repeat: repeat;
+ }
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  text-decoration: inherit;
+  display: inline-block;
+  speak: none; }
+
+.icon-ok-sign:before 
+{
+  content: "\f058"; 
+  color: #468847;
+}
+
+.icon-remove:before 
+{
+  content: "\f05c";
+  color: #b94a48; 
 }
 
 
@@ -236,7 +425,9 @@ table.widgetCallout {
   border-collapse: collapse;
   border-spacing: 0; 
   border: 2px solid #f4f4f4;
-  width: auto; }
+  width: auto; 
+  font: 14px Helvetica;
+  }
 
 table.widgetCallout td {
   vertical-align: top;
@@ -348,23 +539,6 @@ svg g.widgetSketch .shape>text {
 .hanging {
   padding-left: 22px;
   text-indent: -22px; }
-
-
-.feedback {
-  font-weight: 600;
-  border: solid 1px #aaaaaa;
-  -moz-border-radius: 2px;
-  border-radius: 2px;
-  display: block;
-  margin: .2em;
-  padding: 0.3em; }
-
-.correct {
-  color: #C9A0DC; }
-
-.wrong {
-  color: #8C1717; }
-  
  
 
 

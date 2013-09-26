@@ -193,7 +193,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
 	
 	// make a div to hold the radio group
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetRadioGroup")
+		.attr("class", "brixRadioGroup")
 		.attr("id", this.id);
 
 	// We will use a table to provide structure for the radio group
@@ -212,13 +212,8 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
 	var getButtonId = function (d, i) {return that.id + "_btn" + i;};
 
 	var buttonCell = ansRows.append("td");
-	if (this.numberFormat !== "none")
-	{
-		var choiceIndex = this.getChoiceNumberToDisplayFn_();
-
-		buttonCell
-			.text(/** @type {d3DataFunc} */ (function (d, i) {return choiceIndex(i) + ") ";}));
-	}
+	
+	var choiceIndex = this.getChoiceNumberToDisplayFn_();
 
 	buttonCell
 		.append("input")
@@ -232,9 +227,13 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
 	labelCell
 		.append("label")
 			.attr("for", getButtonId)
-			.text(function (d) {return d.content;});
+			.html(function (d, i) {
+				var choiceSeparator = (that.numberFormat != 'none') ? ')' : '';
+				var choiceLabel = '<span class="choiceLabel">' + choiceIndex(i) + choiceSeparator + '</span> ';
+				return  choiceLabel + d.content;
+			});
 	
-	var choiceInputs = widgetGroup.selectAll("div.widgetRadioGroup input[name='" + this.id + "']");
+	var choiceInputs = widgetGroup.selectAll("div.brixRadioGroup input[name='" + this.id + "']");
 	choiceInputs
 		.on("change", function (d)
 				{
@@ -262,7 +261,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.selectedItem = function ()
 {
-	var selectedInputSelector = "div.widgetRadioGroup input[name='" + this.id + "']:checked";
+	var selectedInputSelector = "div.brixRadioGroup input[name='" + this.id + "']:checked";
 	var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
 	return !selectedInput.empty() ? selectedInput.datum() : null;
 };
@@ -279,7 +278,7 @@ pearson.brix.RadioGroup.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 {
-	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetRadioGroup input");
+	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.brixRadioGroup input");
 	var selectedInput = choiceInputs[0][index];
 
 	if (selectedInput.checked)

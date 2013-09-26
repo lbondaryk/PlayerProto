@@ -236,12 +236,12 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 	/**
 	 * The event details for this.submitScoreRequestEventId events
 	 * @typedef {Object} SubmitAnswerRequest
-	 * @property {Iuestion} 		question	-This question widget
-	 * @property {string} 			questionId	-The id which identifies this question to the scoring engine.
-	 * @property {string} 			answerKey	-The answerKey associated with the selected answer.
+	 * @property {Iuestion}		question	-This question widget
+	 * @property {string}			questionId	-The id which identifies this question to the scoring engine.
+	 * @property {string}			answerKey	-The answerKey associated with the selected answer.
 	 * @property {function(Object)}	responseCallback
-	 * 											-[optional] function to call with the response when it is
-	 * 											 returned by the scoring engine.
+	 *											-[optional] function to call with the response when it is
+	 *          								returned by the scoring engine.
 	 */
 	var SubmitAnswerRequest;
 
@@ -300,7 +300,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function ()
 {
-	this.submitButton.setText("Submit Answer");
+	this.submitButton.setText("Submit");
 	this.submitButton.setEnabled(true);
 };
 
@@ -318,10 +318,10 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
 {
 	this.responses.push(responseDetails);
 
-	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
+	var responseDiv = this.lastdrawn.widgetGroup.select('div.feedback');
 
 	// this removes any previous feedback and only shows student the most recent
-	responseDiv.selectAll('div.responses > *').remove();
+	responseDiv.selectAll('div.feedback > *').remove();
 
 	// For now just use the helper function to write the response.
 	pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
@@ -335,7 +335,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
  *
  * @param {!d3.selection}
  *					container	-The container html element to append the
- *								 question element tree to.
+ *     							question element tree to.
  *
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
@@ -347,11 +347,13 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 		.attr("class", "brixMultipleChoiceQuestion")
 		.attr("id", this.id);
 
-	var question = widgetGroup.append("p")
+	var qCont = widgetGroup.append('fieldset');
+
+	var question = qCont.append('legend')
 		.attr("class", "question")
-		.text(this.question);
+		.html(this.question);
 	
-	var choiceWidgetCntr = widgetGroup.append("div")
+	var choiceWidgetCntr = qCont.append("div")
 		.attr("class", "choices")
 		.attr("id", this.id + "_choice_id");
 
@@ -368,12 +370,12 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 
 		if (this.svgBaseBrix)
 		{
-		 	this.svgBaseBrix.append(this.choiceWidget);
-		 	mcSVG.append(this.svgBaseBrix);
+			this.svgBaseBrix.append(this.choiceWidget);
+			mcSVG.append(this.svgBaseBrix);
 		}
 		else
 		{
-			mcSVG.append(this.choiceWidget)
+			mcSVG.append(this.choiceWidget);
 		}
 	}
 	else
@@ -383,8 +385,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 
 	// make a target for feedback when the question is answered
 
-	widgetGroup.append("div")
-		.attr("class", "responses");
+	widgetGroup.append('div')
+		.attr('class', 'feedback');
 
 	// draw the submit button below
 	var submitButtonCntr = widgetGroup.append("div")
