@@ -498,6 +498,14 @@ pearson.brix.CaptionedImage = function (config, eventManager)
 	 * @type {string}
 	 */
 	this.captionPosition = config.captionPosition;
+
+    /**
+     * The full size (in pixels) of the caption.
+     * @note Currently the caption height is hardcoded, eventually we should measure it.
+     * @private
+     * @type {!pearson.utils.ISize}
+     */
+    this.captionSize_ = new pearson.utils.Size(40, this.actualSize.width);
 	
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)
@@ -520,6 +528,22 @@ goog.inherits(pearson.brix.CaptionedImage, pearson.brix.Image);
  * @type {string}
  */
 pearson.brix.CaptionedImage.autoIdPrefix = "cimg_auto_";
+
+/* **************************************************************************
+ * CaptionedImage.getSizeAt100Pct                                      */ /**
+ *
+ * Get the size of this captioned Image at full size. That is the size of the
+ * full size image with the caption below it.
+ * @export
+ *
+ * @returns {!pearson.utils.Size} the size in pixels of this CaptionedImage at
+ *          full size.
+ *
+ ****************************************************************************/
+pearson.brix.CaptionedImage.prototype.getSizeAt100Pct = function ()
+{
+    return new pearson.utils.Size(this.actualSize.height + this.captionSize_.height, this.actualSize.width);
+};
 
 /* **************************************************************************
  * CaptionedImage.draw                                                 */ /**
@@ -551,7 +575,7 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 		.attr("class", "widgetCaptionedImage")
 		.attr("id", this.captionedId_);
 
-	var captionSize = {height: 40, width: size.width};
+	var captionSize = {height: this.captionSize_.height, width: size.width};
 	var imageSize = {height: size.height - captionSize.height, width: size.width};
 	
 	// Draw the image
