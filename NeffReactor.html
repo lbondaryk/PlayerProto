@@ -123,7 +123,7 @@
 												{
 													"type": "property-of-ref",
 													"domain": "brix",
-													"id": "cimage1",
+													"refId": "cimage1",
 													"accessor": "getSizeAt100Pct"
 												}
 												/*
@@ -136,7 +136,7 @@
 																{
 																	"type": "property-of-ref",
 																	"domain": "brix",
-																	"id": "cimage1",
+																	"refId": "cimage1",
 																	"accessor": "getActualSize"
 																},
 															"accessor": "getHeight"
@@ -145,7 +145,7 @@
 														{
 															"type": "property-of-ref",
 															"domain": "brix",
-															"id": "cimage1",
+															"refId": "cimage1",
 															"accessor": "getActualSize"
 														},
 												}*/
@@ -200,11 +200,11 @@
 									"config":
 										{
 											"domain": "brix",
-											"id": "cntr1",
+											"refId": "cntr1",
 											"methodName": "append",
 											"args":
 												[
-													{ "type": "ref", "domain": "brix", "id": "cimage1" },
+													{ "type": "ref", "domain": "brix", "refId": "cimage1" },
 													{ "type": "static", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
 												]
 										}
@@ -214,11 +214,11 @@
 									"config":
 										{
 											"domain": "brix",
-											"id": "cimage1",
+											"refId": "cimage1",
 											"methodName": "append",
 											"args":
 												[
-													{ "type": "ref", "domain": "brix", "id": "labels1" }
+													{ "type": "ref", "domain": "brix", "refId": "labels1" }
 												]
 										}
 								}
@@ -263,7 +263,7 @@
 											"args":
 												[
 													{ "type": "static", "value": "barChart_GUID" }, /* static args use the value specified here */
-													{ "type": "bric-obj-ref", "id": "barChart_GUID" } /* obj refs are replaced w/ the object created above w/ the specified id */
+													{ "type": "bric-obj-ref", "refId": "barChart_GUID" } /* obj refs are replaced w/ the object created above w/ the specified id */
 												]
 										}
 								}

@@ -158,11 +158,12 @@
                     "oneOf":
                         [
                             {"$ref": "#/definitions/dynamicValue-d3select"},
+                            {"$ref": "#/definitions/dynamicValue-property-of-ref"},
                         ]
                 },
 			"dynamicValue-d3select":
 				{
-					"description": "",
+					"description": "a runtime value that is a d3 selection w/ a particular selector",
 					"type": "object",
 					"required": ["type", "selector"],
 					"properties":
@@ -176,6 +177,36 @@
                             "selector":
                                 {
                                     "description": "the selector argument to d3.select",
+                                    "type": "string"
+                                },
+						}
+				},
+			"dynamicValue-property-of-ref":
+				{
+					"description": "a runtime value that is the value of a property (accessed via accessor method) of an object",
+					"type": "object",
+					"required": ["type", "domain", "refId", "accessor"],
+					"properties":
+						{
+                            "type":
+                                {
+                                    "description": "identifies this value as the property of a reference object",
+                                    "type": "string",
+                                    "enum": ["property-of-ref"]
+                                },
+                            "domain":
+                                {
+                                    "description": "A string which identifies a scope in which the refId can be used to identify an existing object.",
+                                    "type": "string"
+                                },
+                            "refId":
+                                {
+                                    "description": "the id that identifies a value in the specified domain.",
+                                    "type": "string"
+                                },
+                            "accessor":
+                                {
+                                    "description": "the name of the accessor method of the object that returns the property value",
                                     "type": "string"
                                 },
 						}

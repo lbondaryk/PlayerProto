@@ -282,7 +282,8 @@ pearson.brix.BricLayer.prototype.doConfigFixup = function (fixupList, config, bu
 /* **************************************************************************
  * BricLayer.getDynamicValue                                           */ /**
  *
- * [Description of getDynamicValue]
+ * Get the value defined by the given dynamic value config, using any objects
+ * created so far by the BricLayer build method as needed.
  *
  * @param {Object}  building    -the under construction (by the build method) building
  * @param {Object}  dynamicValueConfig
@@ -304,6 +305,33 @@ pearson.brix.BricLayer.prototype.getDynamicValue = function (building, dynamicVa
     var handler = goog.bind(dynamicValueHandlers[dynValType], this, building);
 
     return handler(dynamicValueConfig);
+};
+
+/* **************************************************************************
+ * BricLayer.getRefObject                                              */ /**
+ *
+ * Returns the value (usually an object) identified by the given domain/refId.
+ *
+ * @param {Object}  building    -the under construction (by the build method) building
+ * @param {string}  domain      -A string which identifies a scope in which the
+ *                               refId can be used to identify an existing object.
+ * @param {string}  refId       -The id that identifies a value in the specified domain.
+ *
+ * @returns {*} the value defined by the domain/refId.
+ *
+ * @note Currently the domain always refers to a property of the building, but
+ * in the future it may refer to a database, or uri, or something else entirely.
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.getRefObject = function (building, domain, refId)
+{
+    // right now all domains should refer to properties of the building
+    if (!(domain in building))
+    {
+        throw new Error("The domain '" + domain + "' is unknown.");
+    }
+
+    return building[domain][refId];
 };
 
 /**
@@ -358,5 +386,24 @@ pearson.brix.BricLayer.dynamicValueHandlers =
     'd3select': function (building, dynamicValueConfig)
     {
         return d3.select(dynamicValueConfig['selector']);
+    },
+
+    /* **************************************************************************
+     * dynamicValueHandlers.property-of-ref                                */ /**
+     *
+     * Return the value of a property of some specified object (the value may be
+     * returned by an accessor method).
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the property-of-ref dynamicValue config object
+     *
+     * @returns {*} The value a specified.
+     ****************************************************************************/
+    'property-of-ref': function (building, dynamicValueConfig)
+    {
+        var o = this.getRefObject(building, dynamicValueConfig['domain'], dynamicValueConfig['refId']);
+        return o[dynamicValueConfig['accessor']]();
     },
 };

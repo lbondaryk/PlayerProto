@@ -126,13 +126,31 @@ goog.require('goog.object');
         describe('BricLayer.build w/ bric config w/ configFixup', function () {
             var bricLayer = new BricLayer({}, dummyEventMgr);
             var bricWorks = bricLayer.getBricWorks();
-            // Add another mold for testing purposes
+            // Add another couple of molds for testing purposes
             var dummyBricName = '_dummy test bric_'
             bricWorks.registerMold(dummyBricName, DummyBricCtor);
 
+            var DummyRefBricCtor = function (c, e) {this.cfg = c; this.em = e;};
+            DummyRefBricCtor.prototype.getBar = function () {return this.cfg.bar;};
+            var dummyRefBricName = '_dummy test ref bric_'
+            bricWorks.registerMold(dummyRefBricName, DummyRefBricCtor);
+
             var activityConfig = createActivityConfigSkeleton();
+
+            var dummyRefBricId = 'ref-test';
+            var dummyRefBricConfig = {"bar": "any fubar will do"};
+
             var dummyBricId = 'test';
             var dummyBricConfig = {"foo": "any foo will do"};
+
+            var bricConfigToRef =
+                {
+                    "bricId": dummyRefBricId,
+                    "bricType": dummyRefBricName,
+                    "config": dummyRefBricConfig,
+                };
+
+            activityConfig.containerConfig[0].brixConfig.push(bricConfigToRef);
 
             var fixupD3Select =
                 {
@@ -145,12 +163,25 @@ goog.require('goog.object');
                         }
                 };
 
+            var fixupWithBrixRefProperty =
+                {
+                    "type": "set-property",
+                    "name": "maxSize",
+                    "value":
+                        {
+                            "type": "property-of-ref",
+                            "domain": "brix",
+                            "refId": dummyRefBricId,
+                            "accessor": "getBar"
+                        }
+                };
+
             var bricConfigWithFixup =
                 {
                     "bricId": dummyBricId,
                     "bricType": dummyBricName,
                     "config": dummyBricConfig,
-                    "configFixup": [fixupD3Select]
+                    "configFixup": [fixupD3Select, fixupWithBrixRefProperty]
                 };
 
             activityConfig.containerConfig[0].brixConfig.push(bricConfigWithFixup);
@@ -176,6 +207,12 @@ goog.require('goog.object');
                 expect(dummyBric.cfg).to.have.a.property(fixupD3Select['name']);
                 expect(dummyBric.cfg.node).to.be.an.instanceof(d3.selection);
                 expect(dummyBric.cfg.node).to.deep.equal(d3.select('#target'));
+            });
+
+            it('should set the config property specified w/ a value from a previous bric', function () {
+                var dummyBric = building.brix[dummyBricId];
+                expect(dummyBric.cfg).to.have.a.property(fixupWithBrixRefProperty['name']);
+                expect(dummyBric.cfg.maxSize).to.equal("any fubar will do");
             });
         });
     });
