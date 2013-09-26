@@ -15,7 +15,7 @@ svg g.brixImage
 svg g.brixImage>rect.background,
 svg g.brixCaptionedImage>rect.background
 {
-	fill:			#f8f8f8;
+	fill:	#f8f8f8;
 	stroke-width:	0;
 }
 svg g.brixImage>rect.highlight
@@ -199,9 +199,12 @@ div.brixRadioGroup table.questionTable
 {
   margin: 0 0 0 25px;
 }
+
 div.brixRadioGroup table.questionTable tr>td:first-child
 {
   text-align:   right;
+  vertical-align:top;
+  padding-top: 4px; 
 }
 div.brixRadioGroup table.questionTable tr>td:nth-of-type(2)
 {
