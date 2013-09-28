@@ -209,32 +209,37 @@
 						"hookupActions":
 							[
 								{
-									"actionType": "method-call", /* the method-call handles a lot of the actions needed, but I expect there are other types of actions */
-									"config":
-										{
-											"domain": "brix",
-											"refId": "cntr1",
-											"methodName": "append",
-											"args":
-												[
-													{ "type": "ref", "domain": "brix", "refId": "cimage1" },
-													{ "type": "static", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
-												]
-										}
+									"description": "Append the captioned image to the svg container"
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "cimage1" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
+										]
 								},
 								{
-									"actionType": "method-call",
-									"config":
-										{
-											"domain": "brix",
-											"refId": "cimage1",
-											"methodName": "append",
-											"args":
-												[
-													{ "type": "ref", "domain": "brix", "refId": "labels1" }
-												]
-										}
+									"description": "Append the labels to the captioned image"
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cimage1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "labels1" }
+										]
+								},
+								{
+									"description": "Initial condition: select 1st label (note that we may want to use the state field to do this later)"
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "labels1"},
+									"methodName": "lite",
+									"args":
+										[
+											{ "type": "constant", "value": "0" }
+										]
 								}
+
 							]
 					},
 					{
@@ -258,15 +263,8 @@
 													{cols: ["The steam turns the turbine, which is connected to an electricity generator. Power lines distribute the electricity. A typical reactor produces as much as a coal-fired power plant."]},
 													{cols: ["A third supply of water is used to cool the steam so it condenses into water, which is pumped back to the steam generator."]}
 												]
-										},
-									"configFixup":
-										[
-											//{
-												//<[optional] object describing runtime modifications to the config, perhaps
-												//	adding properties referencing a previously created bric>
-											//}
-										]
-								},
+										}
+								}
 							],
 						"mortarConfig":
 							[
@@ -282,18 +280,26 @@
 						"hookupActions":
 							[
 								{
-									"actionType": "method-call", /* the method-call handles a lot of the actions needed, but I expect there are other types of actions */
-									"config":
-										{
-											"objectId": "Invoker-GUID",
-											"methodName": "registerObject",
-											"args":
-												[
-													{ "type": "static", "value": "barChart_GUID" }, /* static args use the value specified here */
-													{ "type": "bric-obj-ref", "refId": "barChart_GUID" } /* obj refs are replaced w/ the object created above w/ the specified id */
-												]
-										}
+									"description": "draw the label table"
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "lbltbl1"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#steps" }
+										]
+								},
+								{
+									"description": "Initial condition: select 1st table row (note that we may want to use the state field to do this later)"
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "lbltbl1"},
+									"methodName": "lite",
+									"args":
+										[
+											{ "type": "constant", "value": "0" }
+										]
 								}
+
 							]
 					}
 				]
@@ -311,23 +317,26 @@
 	a.cntr1 = a.building.brix.cntr1;
 	a.labels1 = a.building.brix.labels1;
 	a.lbltbl1 = a.building.brix.lbltbl1;
-	// code that will be replaced by mortar
-	a.eventManager.subscribe(a.labels1.selectedEventId,
-		function (eventDetails)
-		{
-			a.lbltbl1.lite(eventDetails['selectKey']);
-		});
+	// code that will be replaced by mortar defined in container "imgReactor"
 	a.eventManager.subscribe(a.lbltbl1.selectedEventId,
 		function (eventDetails)
 		{
 			a.labels1.lite(eventDetails['selectKey']);
 		});
-	// code that will be replaced by hookupActions
+	// code that will be replaced by mortar defined in container "steps"
+	a.eventManager.subscribe(a.labels1.selectedEventId,
+		function (eventDetails)
+		{
+			a.lbltbl1.lite(eventDetails['selectKey']);
+		});
+	// code that will be replaced by hookupActions in container "imgReactor"
 	a.cntr1.append(a.cimage1);
 	a.cimage1.append(a.labels1);
+	a.labels1.lite('0');
+	// code that will be replaced by hookupActions in container "steps"
 	a.lbltbl1.draw(d3.select("#steps"));
 	a.lbltbl1.lite('0');
-	a.labels1.lite('0');
+
 /*
 	// EVERYTHING FROM HERE ON will be removed once the config and bricLayer.build
 	// are working. -mjl

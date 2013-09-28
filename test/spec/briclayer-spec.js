@@ -30,7 +30,8 @@ goog.require('goog.object');
                         {
                             "containerId": "container1",
                             "brixConfig": [],
-                            "mortarConfig": []
+                            "mortarConfig": [],
+                            "hookupActions": []
                         }
                     ]
             };
@@ -214,6 +215,65 @@ goog.require('goog.object');
                 expect(dummyBric.cfg).to.have.a.property(fixupWithBrixRefProperty['name']);
                 expect(dummyBric.cfg.maxSize).to.equal("any fubar will do");
             });
+        });
+        describe('BricLayer.build should process hookupActions', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var bricWorks = bricLayer.getBricWorks();
+            // Add another couple of molds for testing purposes
+            var DummyRefBricCtor = function (c, e) {this.cfg = c; this.em = e;};
+            DummyRefBricCtor.prototype.getBar = function () {return this.cfg.bar;};
+            var dummyRefBricName = '_dummy test ref bric_'
+            bricWorks.registerMold(dummyRefBricName, DummyRefBricCtor);
+
+            var activityConfig = createActivityConfigSkeleton();
+
+            var dummyRefBricId = 'ref-test';
+            var dummyRefBricConfig = {"bar": "any fubar will do"};
+
+            var dummyBricId = 'test';
+            var dummyBricConfig = {"foo": "any foo will do"};
+
+            var bricConfigToRef =
+                {
+                    "bricId": dummyRefBricId,
+                    "bricType": dummyRefBricName,
+                    "config": dummyRefBricConfig
+                };
+
+            activityConfig.containerConfig[0].brixConfig.push(bricConfigToRef);
+
+            var methodCallAction1 =
+                {
+                    "type": "method-call",
+                    "instance": {"type": "ref", "domain": "brix", "refId": dummyRefBricId},
+                    "methodName": "doIt",
+                    "args":
+                        [
+                            {"type": "constant", "value": 42},
+                            {"type": "constant", "value": "towel"}
+                        ]
+                };
+
+            var methodCallAction2 =
+                {
+                    "type": "method-call",
+                    "instance": {"type": "ref", "domain": "brix", "refId": dummyRefBricId},
+                    "methodName": "doItAll",
+                    "args":
+                        [
+                            {"type": "constant", "value": [1, 3, 5]}
+                        ]
+                };
+
+            activityConfig.containerConfig[0].hookupActions.push(methodCallAction1);
+            activityConfig.containerConfig[0].hookupActions.push(methodCallAction2);
+
+            var building = null;
+
+            before(function () {
+                building = bricLayer.build(activityConfig);
+            });
+        
         });
     });
 })();
