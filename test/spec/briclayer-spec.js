@@ -124,6 +124,38 @@ goog.require('goog.object');
             });
         });
 
+        describe('BricLayer.build w/ bric config w/ unknown configFixup type', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var bricWorks = bricLayer.getBricWorks();
+            // Add another mold for testing purposes
+            var dummyBricName = '_dummy test bric_'
+            bricWorks.registerMold(dummyBricName, DummyBricCtor);
+
+            var activityConfig = createActivityConfigSkeleton();
+
+            var dummyBricId = 'test';
+            var dummyBricConfig = {"foo": "any foo will do"};
+
+            var fixupUnknown =
+                {
+                    "type": "gobble-d-gook",
+                };
+
+            var bricConfigWithFixup =
+                {
+                    "bricId": dummyBricId,
+                    "bricType": dummyBricName,
+                    "config": dummyBricConfig,
+                    "configFixup": [fixupUnknown]
+                };
+
+            activityConfig.containerConfig[0].brixConfig.push(bricConfigWithFixup);
+
+            it('should throw an exception w/ the name of the unkown config fixup type', function () {
+                expect(goog.bind(bricLayer.build, bricLayer, activityConfig)).to.throw(Error, /gobble-d-gook/);
+            });
+        });
+
         describe('BricLayer.build w/ bric config w/ configFixup', function () {
             var bricLayer = new BricLayer({}, dummyEventMgr);
             var bricWorks = bricLayer.getBricWorks();
@@ -216,6 +248,7 @@ goog.require('goog.object');
                 expect(dummyBric.cfg.maxSize).to.equal("any fubar will do");
             });
         });
+
         describe('BricLayer.build should process hookupActions', function () {
             var bricLayer = new BricLayer({}, dummyEventMgr);
             var bricWorks = bricLayer.getBricWorks();
