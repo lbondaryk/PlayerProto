@@ -80,7 +80,7 @@
 			});
 			
             it('should have the id that was specified in the config', function () {
-                expect(myButton.id).to.equal(configButton.id);
+                expect(myButton.getId()).to.equal(configButton.id);
             });
 
 			it('should have the eventManager given to the constructor', function () {

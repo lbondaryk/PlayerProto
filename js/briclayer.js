@@ -1,0 +1,409 @@
+/* **************************************************************************
+ * $Workfile:: briclayer.js                                                 $
+ * *********************************************************************/ /**
+ *
+ * @fileoverview Implementation of the BricLayer.
+ *
+ * The BricLayer creates brix and connecting mortar as defined by a
+ * master configuration object.
+ *
+ * Created on       September 10, 2013
+ * @author          Michael Jay Lippert
+ *
+ * @copyright (c) 2013 Pearson, All rights reserved.
+ *
+ * **************************************************************************/
+
+goog.provide('pearson.brix.BrixLayer');
+goog.provide('pearson.brix.BricTypes');
+
+goog.require('goog.object');
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.utils.EventManager');
+goog.require('pearson.brix.BricWorks');
+
+// brix
+goog.require('pearson.brix.SVGContainer');
+goog.require('pearson.brix.BarChart');
+goog.require('pearson.brix.Button');
+goog.require('pearson.brix.Callouts');
+goog.require('pearson.brix.CaptionedImage');
+goog.require('pearson.brix.Carousel');
+goog.require('pearson.brix.CheckGroup');
+goog.require('pearson.brix.Image');
+goog.require('pearson.brix.ImageViewer');
+goog.require('pearson.brix.LabelGroup');
+goog.require('pearson.brix.Legend');
+goog.require('pearson.brix.LineGraph');
+goog.require('pearson.brix.MarkerGroup');
+goog.require('pearson.brix.MultipleChoiceQuestion');
+goog.require('pearson.brix.MultiSelectQuestion');
+goog.require('pearson.brix.NumericInput');
+goog.require('pearson.brix.NumericQuestion');
+goog.require('pearson.brix.PieChart');
+goog.require('pearson.brix.RadioGroup');
+goog.require('pearson.brix.Readout');
+goog.require('pearson.brix.SelectGroup');
+goog.require('pearson.brix.Sketch');
+goog.require('pearson.brix.Slider');
+
+// mortar
+// none yet
+
+
+/* **************************************************************************
+ * BricTypes                                                           */ /**
+ *
+ * This is the enumeration of all known bric types that will be registered
+ * with the BricWorks instance of a BricLayer.
+ *
+ * @enum {string}
+ *
+ ****************************************************************************/
+pearson.brix.BricTypes =
+{
+    SVGCONTAINER:           "SvgContainer",
+    BARCHART:               "BarChart",
+    BUTTON:                 "Button",
+    CALLOUTS:               "Callouts",
+    CAPTIONEDIMAGE:         "CaptionedImage",
+    CAROUSEL:               "Carousel",
+    CHECKGROUP:             "CheckGroup",
+    IMAGE:                  "Image",
+    IMAGEVIEWER:            "ImageViewer",
+    LABELGROUP:             "LabelGroup",
+    LEGEND:                 "Legend",
+    LINEGRAPH:              "LineGraph",
+    MARKERGROUP:            "MarkerGroup",
+    MULTIPLECHOICEQUESTION: "MultipleChoiceQuestion",
+    MULTISELECTQUESTION:    "MultiSelectQuestion",
+    NUMERICINPUT:           "NumericInput",
+    NUMERICQUESTION:        "NumericQuestion",
+    PIECHART:               "PieChart",
+    RADIOGROUP:             "RadioGroup",
+    READOUT:                "Readout",
+    SELECTGROUP:            "SelectGroup",
+    SKETCH:                 "Sketch",
+    SLIDER:                 "Slider"
+};
+
+
+/* **************************************************************************
+ * BricLayer                                                           */ /**
+ *
+ * Constructor function for the BricLayer factory.
+ *
+ * @constructor
+ *
+ * @param {Object}      config          -The settings to configure this BrixLayer.
+ *                                       (there are none right now so this will
+ *                                       usually be specified as null or an empty object.)
+ * @param {!pearson.utils.IEventManager=}
+ *                      eventManager    -The event manager to use for publishing events
+ *                                       and subscribing to them.
+ *
+ * @classdesc
+ * A BricLayer creates brix and connecting mortar as defined by a master
+ * configuration object.
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer = function (config, eventManager)
+{
+    /**
+     * The event manager to use to publish (and subscribe to) events for the
+     * created brix and mortar.
+     * @private
+     * @type {!pearson.utils.IEventManager}
+     */
+    this.eventManager_ = eventManager || new pearson.utils.EventManager();
+
+    /**
+     * The bricWorks is the factory which builds all brix. It should
+     * ONLY be accessed using the getBricWorks accessor function.
+     * @private
+     * @type {pearson.brix.BricWorks}
+     */
+    this.bricWorks_ = null;
+
+}; // end of BricLayer constructor
+
+/* **************************************************************************
+ * BricLayer.getBricWorks                                              */ /**
+ *
+ * Get the BricWorks that is used by this BricLayer to create all brix.
+ *
+ * @returns {!pearson.brix.BricWorks}
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.getBricWorks = function ()
+{
+    if (this.bricWorks_)
+    {
+        return this.bricWorks_;
+    }
+
+    // 1st time the BricWorks was accessed, so create it.
+    var bricWorks = new pearson.brix.BricWorks(null, this.eventManager_);
+
+    // register all brix
+    var BricTypes = pearson.brix.BricTypes;
+    bricWorks.registerMold(BricTypes.SVGCONTAINER, pearson.brix.SVGContainer);
+    bricWorks.registerMold(BricTypes.BARCHART, pearson.brix.BarChart);
+    bricWorks.registerMold(BricTypes.BUTTON, pearson.brix.Button);
+    bricWorks.registerMold(BricTypes.CALLOUTS, pearson.brix.Callouts);
+    bricWorks.registerMold(BricTypes.CAPTIONEDIMAGE, pearson.brix.CaptionedImage);
+    bricWorks.registerMold(BricTypes.CAROUSEL, pearson.brix.Carousel);
+    bricWorks.registerMold(BricTypes.CHECKGROUP, pearson.brix.CheckGroup);
+    bricWorks.registerMold(BricTypes.IMAGE, pearson.brix.Image);
+    bricWorks.registerMold(BricTypes.IMAGEVIEWER, pearson.brix.ImageViewer);
+    bricWorks.registerMold(BricTypes.LABELGROUP, pearson.brix.LabelGroup);
+    bricWorks.registerMold(BricTypes.LEGEND, pearson.brix.Legend);
+    bricWorks.registerMold(BricTypes.LINEGRAPH, pearson.brix.LineGraph);
+    bricWorks.registerMold(BricTypes.MARKERGROUP, pearson.brix.MarkerGroup);
+    bricWorks.registerMold(BricTypes.MULTIPLECHOICEQUESTION, pearson.brix.MultipleChoiceQuestion);
+    bricWorks.registerMold(BricTypes.MULTISELECTQUESTION, pearson.brix.MultiSelectQuestion);
+    bricWorks.registerMold(BricTypes.NUMERICINPUT, pearson.brix.NumericInput);
+    bricWorks.registerMold(BricTypes.NUMERICQUESTION, pearson.brix.NumericQuestion);
+    bricWorks.registerMold(BricTypes.PIECHART, pearson.brix.PieChart);
+    bricWorks.registerMold(BricTypes.RADIOGROUP, pearson.brix.RadioGroup);
+    bricWorks.registerMold(BricTypes.READOUT, pearson.brix.Readout);
+    bricWorks.registerMold(BricTypes.SELECTGROUP, pearson.brix.SelectGroup);
+    bricWorks.registerMold(BricTypes.SKETCH, pearson.brix.Sketch);
+    bricWorks.registerMold(BricTypes.SLIDER, pearson.brix.Slider);
+
+    this.bricWorks_ = bricWorks;
+
+    return this.bricWorks_;
+};
+
+/* **************************************************************************
+ * BricLayer.build                                                     */ /**
+ *
+ * Create all of the brix and mortar as described in the given configuration
+ * object.
+ *
+ * @param {Object}  activityConfig      -Configuration describing the brix and
+ *                                       mortar to be created.
+ *
+ * @returns {Object} an object containing all of the created brix and mortar.
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.build = function (activityConfig)
+{
+    /**
+     * @dict
+     */
+    var building = {'info': {}, 'brix': {}, 'mortar': {}};
+
+    building['info']['seqNodeId'] = activityConfig['sequenceNodeKey'];
+
+    activityConfig['containerConfig'].forEach(goog.bind(this.buildContainer_, this, building));
+
+    return building;
+};
+
+/* **************************************************************************
+ * BricLayer.buildContainer_                                           */ /**
+ *
+ * Build all the brix and mortar specified by the given container config.
+ * @private
+ *
+ * @param {Object}  building        -Object containing everything that's been
+ *                                   built so far, and where all the new objects
+ *                                   defined in this container are to be put.
+ * @param {Object}  containerConfig -Configuration for all of the brix and connecting
+ *                                   mortar in "container", that get rendered
+ *                                   as children of a single element (usually a div).
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.buildContainer_ = function (building, containerConfig)
+{
+    containerConfig['brixConfig'].forEach(goog.bind(this.buildBric_, this, building));
+};
+
+/* **************************************************************************
+ * BricLayer.buildBric_                                                */ /**
+ *
+ * Build the bric defined by the given configuration.
+ * @private
+ *
+ * @param {Object}  building    -Object containing everything that's been
+ *                               built so far, and where this new bric
+ *                               is to be put.
+ * @param {Object}  bricConfig  -Configuration for creating a bric.
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
+{
+    var bricWorks = this.getBricWorks();
+    var id = bricConfig['bricId'];
+    var type = bricConfig['bricType'];
+    var config = {};
+    goog.object.extend(config, bricConfig['config']);
+
+    this.doConfigFixup(bricConfig['configFixup'], config, building);
+
+    building['brix'][id] = bricWorks.createBric(type, config);
+};
+
+/* **************************************************************************
+ * BricLayer.doConfigFixup                                             */ /**
+ *
+ * [Description of doConfigFixup]
+ *
+ * @param {Array.<Object>|undefined}
+ *                  fixupList   -array of fixups to be applied, may be undefined
+ * @param {Object}  config      -the config object that is to be fixed up
+ * @param {Object}  building    -the under construction (by the build method) building
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.doConfigFixup = function (fixupList, config, building)
+{
+    var fixupHandlers = pearson.brix.BricLayer.configFixupHandlers;
+
+    // if there's no list then no fixup is needed.
+    if (fixupList === undefined)
+        return;
+
+    fixupList.forEach(function (fixup)
+            {
+                var fixupType = fixup['type'];
+                if (!(fixupType in fixupHandlers))
+                {
+                    throw new Error("Don't know how to process configFixup type '" + fixupType + "'");
+                }
+
+                var handler = goog.bind(fixupHandlers[fixupType], this, config, building);
+
+                handler(fixup);
+            }, this);
+};
+
+/* **************************************************************************
+ * BricLayer.getDynamicValue                                           */ /**
+ *
+ * Get the value defined by the given dynamic value config, using any objects
+ * created so far by the BricLayer build method as needed.
+ *
+ * @param {Object}  building    -the under construction (by the build method) building
+ * @param {Object}  dynamicValueConfig
+ *                              -A dynamicValue config object that defines
+ *                               the desired value.
+ *
+ * @returns {*} The value defined by the dynamicValueConfig
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.getDynamicValue = function (building, dynamicValueConfig)
+{
+    var dynamicValueHandlers = pearson.brix.BricLayer.dynamicValueHandlers;
+
+    var dynValType = dynamicValueConfig['type'];
+    if (!(dynValType in dynamicValueHandlers))
+    {
+        throw new Error("Don't know how to process dynamicValue of type '" + dynValType + "'");
+    }
+
+    var handler = goog.bind(dynamicValueHandlers[dynValType], this, building);
+
+    return handler(dynamicValueConfig);
+};
+
+/* **************************************************************************
+ * BricLayer.getRefObject                                              */ /**
+ *
+ * Returns the value (usually an object) identified by the given domain/refId.
+ *
+ * @param {Object}  building    -the under construction (by the build method) building
+ * @param {string}  domain      -A string which identifies a scope in which the
+ *                               refId can be used to identify an existing object.
+ * @param {string}  refId       -The id that identifies a value in the specified domain.
+ *
+ * @returns {*} the value defined by the domain/refId.
+ *
+ * @note Currently the domain always refers to a property of the building, but
+ * in the future it may refer to a database, or uri, or something else entirely.
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.getRefObject = function (building, domain, refId)
+{
+    // right now all domains should refer to properties of the building
+    if (!(domain in building))
+    {
+        throw new Error("The domain '" + domain + "' is unknown.");
+    }
+
+    return building[domain][refId];
+};
+
+/**
+ * Functions to process the various types of configFixup.
+ * They must be called as a member of the BricLayer with the config object,
+ * the building (under construction) object and the fixup object.
+ * Note the fixup object is last so a partial function can be constructed
+ * which specifies the 1st 2 arguments.
+ * @type {Object.<string, function(this: pearson.brix.BricLayer, Object, Object, Object)>}
+ */
+pearson.brix.BricLayer.configFixupHandlers =
+{
+    /* **************************************************************************
+     * configFixupHandlers.set-property                                    */ /**
+     *
+     * Function which defines a particular property on the config with a
+     * specified dynamic value.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  config      -the config object that is to be fixed up
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  fixup       -the set-property fixup object
+     *
+     ****************************************************************************/
+    'set-property': function (config, building, fixup)
+    {
+        config[fixup['name']] = this.getDynamicValue(building, fixup['value']);
+    },
+};
+
+/**
+ * Functions to process the various types of dynamicValues.
+ * They must be called as a member of the BricLayer with the building
+ * (under construction) object and the dynamic value config object.
+ * These functions return the desired value.
+ * @type {Object.<string, function(this: pearson.brix.BricLayer, Object, Object):*>}
+ */
+pearson.brix.BricLayer.dynamicValueHandlers =
+{
+    /* **************************************************************************
+     * dynamicValueHandlers.d3select                                       */ /**
+     *
+     * Return the result from calling d3.select with the given selector.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the d3select dynamicValue config object
+     *
+     * @returns {*} The value a specified.
+     ****************************************************************************/
+    'd3select': function (building, dynamicValueConfig)
+    {
+        return d3.select(dynamicValueConfig['selector']);
+    },
+
+    /* **************************************************************************
+     * dynamicValueHandlers.property-of-ref                                */ /**
+     *
+     * Return the value of a property of some specified object (the value may be
+     * returned by an accessor method).
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the property-of-ref dynamicValue config object
+     *
+     * @returns {*} The value a specified.
+     ****************************************************************************/
+    'property-of-ref': function (building, dynamicValueConfig)
+    {
+        var o = this.getRefObject(building, dynamicValueConfig['domain'], dynamicValueConfig['refId']);
+        return o[dynamicValueConfig['accessor']]();
+    },
+};

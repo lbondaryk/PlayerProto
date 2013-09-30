@@ -23,6 +23,7 @@ goog.require('pearson.brix.Image');
 goog.require('pearson.brix.CaptionedImage');
 goog.require('pearson.brix.Carousel');
 goog.require('pearson.utils.IEventManager');
+goog.require('pearson.utils.EventManager');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -52,7 +53,7 @@ goog.require('pearson.utils.IEventManager');
  * 											 if undefined a unique id will be assigned.
  * @param {Array.<!pearson.brix.Image>}
  * 							config.items	-The list of Image brix to be presented by the ImageViewer.
- * @param {!pearson.utils.IEventManager}
+ * @param {!pearson.utils.IEventManager=}
  * 							eventManager	-allows the widget to publish and subscribe to events
  * 											 required for correct internal operation.
  *
@@ -119,7 +120,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	 * The event manager to use to publish (and subscribe to) events for this widget
 	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || new pearson.utils.EventManager();
 
 	/**
 	 * The event id published when an item in this carousel is selected.

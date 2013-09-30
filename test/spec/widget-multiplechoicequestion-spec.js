@@ -88,7 +88,7 @@
 			});
 			
             it('should have the id that was specified in the config', function () {
-                expect(myMultipleChoiceQuestion.id).to.equal(configMultipleChoiceQuestion1.id);
+                expect(myMultipleChoiceQuestion.getId()).to.equal(configMultipleChoiceQuestion1.id);
             });
 
 			it('should have a RadioGroup choiceWidget', function () {
@@ -265,7 +265,7 @@
 			});
 			
             it('should have the id that was specified in the config', function () {
-                expect(myMultipleChoiceQuestion.id).to.equal(configMultipleChoiceQuestion1.id);
+                expect(myMultipleChoiceQuestion.getId()).to.equal(configMultipleChoiceQuestion1.id);
             });
 
 			it('should have a SelectGroup choiceWidget', function () {

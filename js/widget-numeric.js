@@ -45,19 +45,27 @@ goog.require('pearson.brix.HtmlBric');
  * @param {htmlString}	config.label	-[DESCRIPTION of config parameter needed]
  * @param {*} 			config.precision
  * 										-[DESCRIPTION of config parameter needed]
+ * @param {!pearson.utils.IEventManager=}
+ * 						eventManager	-The event manager to use for publishing events
+ * 										 and subscribing to them. Currently unused.
  *
  * @classdesc
- * Readout Widget is just a way to display calculated or event-driven text
+ * Readout bric is just a way to display calculated or event-driven text
  * in a page.  This is commonly used for meters, results, tests, updatable text, etc.
  * Formerly done as a text input so you can either display or type into it
  *
  ****************************************************************************/
-pearson.brix.Readout = function (config)
+pearson.brix.Readout = function (config, eventManager)
 {
 	// call the base class constructor
 	goog.base(this);
 
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Readout);
+	/**
+	 * A unique id for this instance of the readout bric
+	 * @private
+	 * @type {string}
+	 */
+	this.readoutId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Readout);
 
 	this.node = config.node;
 	this.startVal = config.startVal;
@@ -83,18 +91,18 @@ pearson.brix.Readout = function (config)
 	.property("value",this.startVal)
 	.attr("align","right")
 	.attr("size",size?size:6)
-	.attr("id",this.id)
+	.attr("id",this.readoutId_)
 	; */
 	
 	this.rootEl.append("span")
 		.attr("class", "dataLabel")
-		.attr("id", this.id)
+		.attr("id", this.readoutId_)
 		.text(this.startVal);
 
 	this.rootEl.append("span").html("&nbsp;" + (this.unit ? this.unit : ""));
 	
 	// TEST: the written text span is the start value
-	window.console.log("text is the startVal:", d3.select("#" + this.id).text() == this.startVal, d3.select("#" + this.id).text());
+	window.console.log("text is the startVal:", d3.select("#" + this.readoutId_).text() == this.startVal, d3.select("#" + this.readoutId_).text());
 
 }; //end Readout widget
 goog.inherits(pearson.brix.Readout, pearson.brix.HtmlBric);
@@ -117,10 +125,10 @@ pearson.brix.Readout.autoIdPrefix = "readout_auto_";
  ****************************************************************************/
 pearson.brix.Readout.prototype.setValue = function (newValue)
 {
-	window.console.log("TODO: called setReadoutValue log", this.id, newValue);
+	window.console.log("TODO: called setReadoutValue log", this.readoutId_, newValue);
 	
 	// The value is kept in the input element which was given an id
-	d3.select("#" + this.id).text(newValue);
+	d3.select("#" + this.readoutId_).text(newValue);
 };
 
 
@@ -134,7 +142,7 @@ pearson.brix.Readout.prototype.setValue = function (newValue)
 pearson.brix.Readout.prototype.getValue = function ()
 {
 	// The value is kept in the input element which was given an id
-	return d3.select("#" + this.id).text();
+	return d3.select("#" + this.readoutId_).text();
 };
 
 /* **************************************************************************

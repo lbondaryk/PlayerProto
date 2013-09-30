@@ -15,7 +15,7 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.legend');
+goog.provide('pearson.brix.Legend');
 
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.SvgBric');

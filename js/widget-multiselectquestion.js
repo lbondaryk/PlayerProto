@@ -19,6 +19,7 @@
 goog.provide('pearson.brix.MultiSelectQuestion');
 
 goog.require('pearson.utils.IEventManager');
+goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.HtmlBric');
 
 // Sample configuration objects for classes defined here
@@ -116,13 +117,13 @@ pearson.brix.Answer;
  *						config.order	-The order in which the choices should be presented.
  *										 either "randomized" or "ordered". Default is
  *										 "randomized" if not specified.
- * @param {!function(Object, !pearson.utils.IEventManager=)}
+ * @param {!function(new:pearson.brix.HtmlBric, Object, !pearson.utils.IEventManager=)}
  * 						config.widget	-The constructor for a widget that presents choices.
  * @param {!Object}		config.widgetConfig
  * 										-The configuration object for the specified widget
  * 										 constructor without the id or choices properties which
  * 										 will be added by this question constructor.
- * @param {!pearson.utils.IEventManager}
+ * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-The event manager to use for publishing events
  * 										 and subscribing to them.
  *
@@ -137,10 +138,11 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 	goog.base(this);
 
 	/**
-	 * A unique id for this instance of the select one question widget
+	 * A unique id for this instance of the multiselect question bric
+	 * @private
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.MultiSelectQuestion);
+	this.msqId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.MultiSelectQuestion);
 
 	/**
 	 * The scoring engine id of this question.
@@ -162,7 +164,7 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 
 
 	/**
-	 * The configuration options for the widget that will display the choices that
+	 * The configuration options for the bric that will display the choices that
 	 * answer this question.
 	 * Add an id and adjust the choices according to the question type and add them
 	 * to the config.
@@ -170,7 +172,7 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 	 */
 	var widgetConfig = config.widgetConfig;
 
-	widgetConfig.id = this.id + "_wdgt";
+	widgetConfig.id = this.msqId_ + "_wdgt";
 
 	var choices = config.choices;
 
@@ -210,7 +212,7 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 	// The configuration options for the submit button
 	var submitBtnConfig =
 	{
-		id: this.id + "_sbmtBtn",
+		id: this.msqId_ + "_sbmtBtn",
 		text: this.buttonPromptText,
 		enabled: false
 	};
@@ -230,10 +232,10 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 	this.responses = [];
 
 	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
+	 * The event manager to use to publish (and subscribe to) events for this bric
 	 * @type {!pearson.utils.IEventManager}
 	 */
-	this.eventManager = eventManager;
+	this.eventManager = eventManager || new pearson.utils.EventManager();
 
 	/**
 	 * The event id published when a choice in this question is selected.
@@ -254,7 +256,7 @@ pearson.brix.MultiSelectQuestion = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.submitScoreRequestEventId = this.id + "_submitAnswerRequest";
+	this.submitScoreRequestEventId = this.msqId_ + "_submitAnswerRequest";
 
 	/**
 	 * The event details for this.submitScoreRequestEventId events
@@ -302,7 +304,6 @@ pearson.brix.MultiSelectQuestion.autoIdPrefix = "msQ_auto_";
  ****************************************************************************/
 pearson.brix.MultiSelectQuestion.prototype.handleSubmitRequested_ = function ()
 {
-	var that = this;
 	var answerKeys = [].map.call(this.choiceWidget.selectedItems(), function(item){
 		return item.answerKey;
 	});
@@ -312,7 +313,7 @@ pearson.brix.MultiSelectQuestion.prototype.handleSubmitRequested_ = function ()
 			question: this,
 			questionId: this.questionId,
 			answerKey: answerKeys,
-			responseCallback: function (responseDetails) { that.handleSubmitResponse_(responseDetails); }
+			responseCallback: goog.bind(this.handleSubmitResponse_, this)
 		};
 
 	this.eventManager.publish(this.submitScoreRequestEventId, submitAnsDetails);
@@ -386,13 +387,13 @@ pearson.brix.MultiSelectQuestion.prototype.handleSubmitResponse_ = function (res
 /* **************************************************************************
  * MultiSelectQuestion.draw                                            */ /**
  *
- * Draw this MultiSelectQuestion in the given container.
+ * @inheritDoc
  * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this MultiSelectQuestion in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container html element to append the
- *								 question element tree to.
- *
+ * @param {!d3.selection}	container	-The container html element to append
+ * 										 this HtmlBric element tree to.
  ****************************************************************************/
 pearson.brix.MultiSelectQuestion.prototype.draw = function (container)
 {
@@ -403,7 +404,7 @@ pearson.brix.MultiSelectQuestion.prototype.draw = function (container)
 	// @todo YSAP I think it's a bad idea to ever write another widget's class. -mjl 9/4/2013
 	var widgetGroup = container.append("div")
 		.attr("class", "widgetMultiSelectQuestion widgetMultipleChoiceQuestion")
-		.attr("id", this.id);
+		.attr("id", this.msqId_);
 
 	var question = widgetGroup.append("p")
 		.attr("class", "question")
@@ -427,13 +428,29 @@ pearson.brix.MultiSelectQuestion.prototype.draw = function (container)
 }; // end of MultiSelectQuestion.draw()
 
 /* **************************************************************************
+ * MultiSelectQuestion.getId                                           */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.MultiSelectQuestion.prototype.getId = function ()
+{
+	return this.msqId_;
+};
+
+/* **************************************************************************
  * MultiSelectQuestion.selectedItems                                   */ /**
  *
  * Return the selected choice(s) in the question or null if nothing has
  * been selected.
  * @export
  *
- * @return {Array.<pearson.brix.Answer>} an array of the choice(s) which
+ * @returns {Array.<pearson.brix.Answer>} an array of the choice(s) which
  * 		are currently selected or null if no choices are selected.
  *
  ****************************************************************************/

@@ -13,9 +13,11 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.BrixWorks');
+goog.provide('pearson.brix.BricWorks');
 
+goog.require('goog.object');
 goog.require('pearson.utils.IEventManager');
+
 
 /* **************************************************************************
  * BricWorks                                                           */ /**
@@ -46,7 +48,7 @@ pearson.brix.BricWorks = function (config, eventManager)
 	/**
 	 * The bricCatalogue is the reference to all of the brix that this BricWorks
 	 * can manufacture.
-	 * @type {Object.<string, function(Object, !pearson.utils.IEventManager=)>}
+	 * @type {Object.<string, function(new:pearson.brix.Bric, Object, !pearson.utils.IEventManager=)>}
 	 * @private
 	 */
 	this.bricCatalogue_ = {};
@@ -58,8 +60,9 @@ pearson.brix.BricWorks = function (config, eventManager)
  *
  * Register the mold (constructor) used to create a bric.
  *
- * @param {string}	bricName	-The name of the bric that the given mold creates.
- * @param {function(Object, !pearson.utils.IEventManager=)}
+ * @param {string}
+ * 					bricName	-The name of the bric that the given mold creates.
+ * @param {function(new:pearson.brix.Bric, Object, !pearson.utils.IEventManager=)}
  * 					bricMold	-A function which creates the named bric.
  *
  * @note This is currently set up for a bricMold to be a constructor. I'm
@@ -71,8 +74,11 @@ pearson.brix.BricWorks = function (config, eventManager)
  ****************************************************************************/
 pearson.brix.BricWorks.prototype.registerMold = function (bricName, bricMold)
 {
-	this.bricCatalogue_[bricName] = bricMold;
+	// only non-empty strings are valid names
+	if (!bricName || !goog.isString(bricName))
+		return;
 
+	this.bricCatalogue_[bricName] = bricMold;
 };
 
 /* **************************************************************************
@@ -89,6 +95,36 @@ pearson.brix.BricWorks.prototype.createBric = function (bricName, config)
 {
 	var bricMold = this.bricCatalogue_[bricName];
 
-	return new bricMold(config, this.eventManager);
+	return bricMold ? new bricMold(config, this.eventManager) : null;
+};
+
+/* **************************************************************************
+ * BricWorks.getMoldCount                                              */ /**
+ *
+ * Get the number of molds that have been successfully registered w/ this
+ * BricWorks. (This method is provided as a testing/debugging aid).
+ *
+ * @returns {number} the number of molds registered w/ this BricWorks
+ *
+ ****************************************************************************/
+pearson.brix.BricWorks.prototype.getMoldCount = function ()
+{
+	return goog.object.getCount(this.bricCatalogue_);
+};
+
+/* **************************************************************************
+ * BricWorks.hasMold                                                   */ /**
+ *
+ * Check whether a bric mold with the specified name has been registered.
+ *
+ * @param {Object}	bricName		-The name of the bric mold to check for.
+ * 
+ * @returns {boolean} true if a mold for a bric w/ that name has been
+ * 		registered otherwise false;
+ *
+ ****************************************************************************/
+pearson.brix.BricWorks.prototype.hasMold = function (bricName)
+{
+	return goog.object.containsKey(this.bricCatalogue_, bricName);
 };
 

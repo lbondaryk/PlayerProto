@@ -76,7 +76,8 @@ var helper = (function () {
 	 * @return {Element} the newly created object element
 	 *
 	 ****************************************************************************/
-	var appendChild = function(id, childNode) {
+	var appendChild = function(id, childNode)
+	{
 		var parentEl = document.getElementById(id);
 		parentEl.appendChild(childNode);
 	};
@@ -90,12 +91,13 @@ var helper = (function () {
 	 * @return {Element} the newly created object element
 	 *
 	 ****************************************************************************/
-	var removeAllChildren = function(node) {
+	var removeAllChildren = function(node)
+	{
 		var myNode = node;
 		while (myNode.firstChild) {
 		    myNode.removeChild(myNode.firstChild);
 		}
-	}
+	};
 
 	/* **************************************************************************
 	 * createNewSvgContainer                                                *//**
