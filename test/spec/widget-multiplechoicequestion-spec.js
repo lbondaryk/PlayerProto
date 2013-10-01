@@ -202,8 +202,12 @@
 						expect(selectEventCount, "select event count").is.equal(prevSelectEventCount);
 						expect(lastSelectEventDetails).to.be.null;
 					});
-
+					
 					it.skip('MANUAL TEST: should publish selectedEventId when selection is made w/ mouse or keyboard', function() {
+					});
+					it.skip('MANUAL TEST: should create a new div with class "feedback" when the button is pressed', function() {
+					});
+					it.skip('MANUAL TEST: multiple attempts should overwrite the feedback div', function() {
 					});
 				});
 
