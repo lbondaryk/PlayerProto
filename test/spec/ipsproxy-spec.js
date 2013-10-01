@@ -25,7 +25,6 @@
             ipsProxy = new pearson.brix.IpsProxy({"baseUrl":"http://localhost:8088"});
 
             ipsProxy.retrieveSequenceNode(testInitializationEnvelope, function(error, result){
-
                 try {
                     expect(error).to.equal(null);
                     expect(result).to.be.an('object');
@@ -194,6 +193,11 @@
                 }
             });
         });
-
     });
+
+    describe('IPC', function () {
+        it('should initialize with different divs', function (done) {
+        });
+    });
+
 })();

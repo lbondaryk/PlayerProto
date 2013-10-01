@@ -6,7 +6,7 @@
  * A test Hub session
  * @type {String}
  */
-var testHubBaseUrl = 'http://hub.paf.pearson.com';
+var testHubBaseUrl = 'http://hub.paf.pearson.com/seqnode';
 
 
 /**
@@ -29,7 +29,7 @@ var testSeqNodeReqMessage = {
          "@type": "SequenceNode",
          "targetBinding": "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/42d2b4f4-46bd-49ee-8f06-47b4421f599b/bindings/0"
     },
-    url: "http://hub.pearson.com/seqnode",
+    url: "http://hub.paf.pearson.com/seqnode",
     method: "POST"
 };
 

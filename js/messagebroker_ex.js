@@ -24,8 +24,7 @@
  		method: (specific to type)
  		payload: (Object)
 
-
- 		#case message, this is what actually sent at EventManager scope
+ 		#case type='message', this is what actually sent at EventManager scope
 		method: (subscribe | unsubscribe | publish ),
 	 	payload:{
 	 		sendTime: <time was sent in unix format>
@@ -33,7 +32,7 @@
 			message: <specific data, usually collection of key-value pairs> 
 	 	}
 
-	 	#case 'resize'
+	 	#case type='view'
 	 	method: "set",
 	 	payload:{
 			width:<w>,
