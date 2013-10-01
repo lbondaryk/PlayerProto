@@ -151,14 +151,16 @@
 						 */
 						var tree =
 							{ name: 'DIV', class: 'brixMultipleChoiceQuestion', children:
-								[ { name: 'P', class: 'question' },
-								  { name: 'DIV', class: 'choices', children:
-									  [ { name: 'DIV', class: 'brixRadioGroup' } ]
-								  },
-								  { name: 'DIV', class: 'submit', children:
+								[	{ name: 'FIELDSET', children:
+									[	{ name: 'LEGEND', class: 'question' },
+										{ name: 'DIV', class: 'choices', children:
+											[ { name: 'DIV', class: 'brixRadioGroup' } ]
+										},
+									],}
+									{ name: 'DIV', class: 'feedback' },
+									{ name: 'DIV', class: 'submit', children:
 									  [ { name: 'DIV', class: 'widgetButton' } ]
-								  },
-								  { name: 'DIV', class: 'responses' }
+									},
 								],
 							};
 
@@ -323,7 +325,7 @@
 							div.choices
 								span.widgetSelectGroup
 							div.submit
-								div.widgetButton
+								div.brixButton
 							div.responses
 						 */
 						var tree =
@@ -333,7 +335,7 @@
 									  [ { name: 'SPAN', class: 'widgetSelectGroup' } ]
 								  },
 								  { name: 'DIV', class: 'submit', children:
-									  [ { name: 'DIV', class: 'widgetButton' } ]
+									  [ { name: 'DIV', class: 'brixButton' } ]
 								  },
 								  { name: 'DIV', class: 'responses' }
 								],

@@ -146,7 +146,7 @@
 							div.choices
 								div.widgetRadioGroup
 							div.submit
-								div.widgetButton
+								div.brixButton
 							div.responses
 						 */
 						var tree =
@@ -156,7 +156,7 @@
 									  [ { name: 'DIV', class: 'widgetCheckGroup' } ]
 								  },
 								  { name: 'DIV', class: 'submit', children:
-									  [ { name: 'DIV', class: 'widgetButton' } ]
+									  [ { name: 'DIV', class: 'brixButton' } ]
 								  },
 								  { name: 'DIV', class: 'responses' }
 								],
@@ -338,7 +338,7 @@
 							div.choices
 								span.widgetSelectGroup
 							div.submit
-								div.widgetButton
+								div.brixButton
 							div.responses
 						 */
 						var tree =
@@ -348,7 +348,7 @@
 									  [ { name: 'SPAN', class: 'widgetSelectGroup' } ]
 								  },
 								  { name: 'DIV', class: 'submit', children:
-									  [ { name: 'DIV', class: 'widgetButton' } ]
+									  [ { name: 'DIV', class: 'brixButton' } ]
 								  },
 								  { name: 'DIV', class: 'responses' }
 								],

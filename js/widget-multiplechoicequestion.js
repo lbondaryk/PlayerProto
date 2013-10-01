@@ -301,7 +301,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function ()
 {
-	this.submitButton.setText("Submit Answer");
+	this.submitButton.setText('Submit');
 	this.submitButton.setEnabled(true);
 };
 
@@ -319,7 +319,10 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
 {
 	this.responses.push(responseDetails);
 
-	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
+	var responseDiv = this.lastdrawn.widgetGroup.select('div.feedback');
+
+	// this removes any previous feedback and only shows student the most recent
+	responseDiv.selectAll('div.feedback > *').remove();
 
 	// For now just use the helper function to write the response.
 	pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
@@ -345,13 +348,16 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 		.attr("class", "brixMultipleChoiceQuestion")
 		.attr("id", this.mcqId_);
 
-	var question = widgetGroup.append("p")
+	var qCont = widgetGroup.append('fieldset');
+
+	var question = qCont.append('legend')
 		.attr("class", "question")
-		.text(this.question);
+		.html(this.question);
 	
-	var choiceWidgetCntr = widgetGroup.append("div")
+	var choiceWidgetCntr = qCont.append("div")
 		.attr("class", "choices")
 		.attr("id", this.mcqId_ + "_choice_id");
+	
 
 	// check if it's an SVG widget with a size, in which case
 	// create 
@@ -366,8 +372,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 
 		if (this.svgBaseBrix)
 		{
-		 	this.svgBaseBrix.append(this.choiceWidget);
-		 	mcSVG.append(this.svgBaseBrix);
+			this.svgBaseBrix.append(this.choiceWidget);
+			mcSVG.append(this.svgBaseBrix);
 		}
 		else
 		{
@@ -379,14 +385,16 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 		this.choiceWidget.draw(choiceWidgetCntr);
 	}
 
+	// make a target for feedback when the question is answered
+
+	widgetGroup.append('div')
+		.attr('class', 'feedback');
+
 	// draw the submit button below
 	var submitButtonCntr = widgetGroup.append("div")
 		.attr("class", "submit");
 
 	this.submitButton.draw(submitButtonCntr);
-
-	widgetGroup.append("div")
-		.attr("class", "responses");
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 
