@@ -539,6 +539,22 @@ pearson.brix.Bric = function ()
 };
 
 /* **************************************************************************
+ * Bric.getId                                                          */ /**
+ *
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.Bric.prototype.getId = function ()
+{
+	// There is no id defined unless the derived class defines one and
+	// overrides this method.
+	return 'override in derived class for real id';
+};
+
+
+/* **************************************************************************
  * HtmlBric                                                            */ /**
  *
  * Base class constructor used only by derived HtmlBric instances.
@@ -556,6 +572,20 @@ pearson.brix.HtmlBric = function ()
 	goog.base(this);
 };
 goog.inherits(pearson.brix.HtmlBric, pearson.brix.Bric);
+
+/* **************************************************************************
+ * HtmlBric.draw                                                       */ /**
+ *
+ * Draw this HtmlBric in the given container (must be an html element).
+ * @abstract
+ *
+ * @param {!d3.selection}	container	-The container html element to append
+ * 										 this HtmlBric element tree to.
+ *
+ ****************************************************************************/
+pearson.brix.HtmlBric.prototype.draw = function (container) {};
+pearson.brix.HtmlBric.prototype.draw = goog.abstractMethod;
+
 
 /* **************************************************************************
  * SvgBric                                                             */ /**
@@ -608,8 +638,10 @@ pearson.brix.SvgBric.prototype.draw = goog.abstractMethod;
  *
  * @param {Object}			config			-The settings to configure this SVGContainer
  * @param {!d3.selection}	config.node		-The parent node for the created svg element
- * @param {number}			config.maxWid	-The maximum width of the svg container (in pixels)
- * @param {number}			config.maxHt	-The maximum width of the svg container (in pixels)
+ * @param {pearson.utils.ISize}
+ * 							config.maxSize	-The maximum size of the svg container (in pixels)
+ * @param {number}			config.maxWid	-(deprecated: use maxSize) The maximum width of the svg container (in pixels)
+ * @param {number}			config.maxHt	-(deprecated: use maxSize) The maximum width of the svg container (in pixels)
  *
  * @note Think about whether the SVGContainer is actually an HtmlBric. -mjl
  *
@@ -626,16 +658,10 @@ pearson.brix.SVGContainer = function (config)
 	this.parentNode = config.node;
 
 	/**
-	 * The maximum width of this svg container (in pixels)
-	 * @type {number}
+	 * The maximum size of this svg container (in pixels)
+	 * @type {!pearson.utils.ISize}
 	 */
-	this.maxWid = config.maxWid;
-
-	/**
-	 * The maximum height of this svg container (in pixels)
-	 * @type {number}
-	 */
-	this.maxHt = config.maxHt;
+	this.maxSize = config.maxSize || {height: config.maxHt, width: config.maxWid};
 
 	// It's easy to specify the node incorrectly, lets call that out right away!
 	if (this.parentNode.empty())
@@ -648,20 +674,22 @@ pearson.brix.SVGContainer = function (config)
 	//maxWid, maxHt: the width and height of the graph region, without margins, integers
 
 	// create the svg element for this container of the appropriate size and scaling
+    var w = this.maxSize.width;
+    var h = this.maxSize.height;
 	/**
 	 * The svg element representing the container in the document
 	 * @type {d3.selection}
 	 */
-	this.svgObj = this.parentNode.append("svg")						// append the new svg element to the parent node
-		.attr("viewBox", "0 0 " + this.maxWid + " " + this.maxHt)	// set its size
-		.attr("preserveAspectRatio", "xMinYMin meet")				// make it scale correctly in single-column or phone layouts
-		.style("max-width", this.maxWid + "px")						// max width works to make it lay out to scale
-		.style("max-height", this.maxHt + "px");					// max height keeps it from forcing whitespace below
-																	//  in most cases, but not on Safari or Android.  This is a documented
-																	//  webkit bug, which they claim they will fix eventually:
-																	//  https://bugs.webkit.org/show_bug.cgi?id=82489
-																	//  A horrible Jquery workaround is documented at
-																	//  http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
+	this.svgObj = this.parentNode.append("svg")				// append the new svg element to the parent node
+		.attr("viewBox", [0, 0, w, h].join(' '))			// set its size
+		.attr("preserveAspectRatio", "xMinYMin meet")		// make it scale correctly in single-column or phone layouts
+		.style("max-width", w + "px")						// max width works to make it lay out to scale
+		.style("max-height", h + "px");						// max height keeps it from forcing whitespace below
+															//  in most cases, but not on Safari or Android.  This is a documented
+															//  webkit bug, which they claim they will fix eventually:
+															//  https://bugs.webkit.org/show_bug.cgi?id=82489
+															//  A horrible Jquery workaround is documented at
+															//  http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
 };
 goog.inherits(pearson.brix.SVGContainer, pearson.brix.Bric);
 
@@ -740,13 +768,13 @@ pearson.brix.SVGContainer.prototype.append_one_ = function (svgWidget, location)
 	}
 	// create a group for the widget to draw into that we can then position
 	var g = this.svgObj.append('g').attr("class", "widget");
-	var h = d3.round(location.heightPercent * this.maxHt);
-	var w = d3.round(location.widthPercent * this.maxWid);
+	var h = d3.round(location.heightPercent * this.maxSize.height);
+	var w = d3.round(location.widthPercent * this.maxSize.width);
 	svgWidget.draw(g, {height: h, width: w});
 	
 	// position the widget
-	var top = d3.round(location.topPercentOffset * this.maxHt);
-	var left = d3.round(location.leftPercentOffset * this.maxWid);
+	var top = d3.round(location.topPercentOffset * this.maxSize.height);
+	var left = d3.round(location.leftPercentOffset * this.maxSize.width);
 	if (top !== 0 || left !== 0)
 	{
 		g.attr('transform', 'translate(' + left + ',' + top + ')');

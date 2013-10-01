@@ -51,137 +51,284 @@
 	<script src="js/eCourse-master.js"></script>    
 	<script src="js/d3.v3.min.js"></script>
     
-	<script src="js/brixlib-compiled.js"></script>
 	<!--
+	<script src="js/brixlib-compiled.js"></script>
+	-->
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
 	<script src="js/eventmanager.js"></script>
-    <script src="js/widget-base.js"></script>
-    <script src="js/widget-image.js"></script>
-    <script src="js/widget-labelgroup.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/widget-base.js"></script>
+	<script src="js/bricworks.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
     <script src="js/widget-callouts.js"></script>
-	-->
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+	<script src="js/briclayer.js"></script>
 
 	<script>
 
+	// Create an object that will contain the objects needed for the activities
+	// on this page.
+	pearson.brix.activity = {};
+	var a = pearson.brix.activity;
 
-
-	//the eventManager is an object that is specific to this page.  A new one
-	//is created for every page, and then passed to the widgets in that page
-	//that must talk to it.
-	var eventManager = new pearson.utils.EventManager();
-
-	// local aliases for convenience
-	var Size = pearson.utils.Size;
-	var SVGContainer = pearson.brix.SVGContainer;
-	var CaptionedImage = pearson.brix.CaptionedImage;
-	var LabelGroup = pearson.brix.LabelGroup;
-	var Callouts = pearson.brix.Callouts;
-	
-	var cimgConfig =
+	// The activity config that defines the brix and mortar for this page
+	a.config =
 		{
-			id: "cimg0n",
-			URI: 'img/reactor.jpg',
-			caption: "Nuclear Reactor Schematic Diagram",
-			actualSize: {height: 310, width: 680},
-			captionPosition: "below"
+			"sequenceNodeKey": "39b0706e-8587-447e-a598-ecc5e9a1b883",
+			"containerConfig":
+				[
+					{
+						"containerId": "imgReactor",
+						"brixConfig":
+							[
+								{
+									"bricId": "cimage1",
+									"bricType": "CaptionedImage",
+									"config":
+										{
+											"id": "cimg0n",
+											"URI": "img/reactor.jpg",
+											"caption": "Nuclear Reactor Schematic Diagram",
+											"actualSize": {"height": 310, "width": 680},
+											"captionPosition": "below"
+										},
+								},
+								{
+									"bricId": "cntr1",
+									"bricType": "SvgContainer",
+									"config":
+										{
+											//"node": d3.select("#imgReactor"),
+											//"maxSize": pearson.utils.Size.matchRatioWithHeight(310 + 40, {"height": 310, "width": 680}/*"cimage1"."config"."actualSize"*/),
+										},
+									"configFixup":
+									[
+										{
+											"type": "set-property",
+											"name": "node",
+											"value":
+												{
+													"type": "d3select",
+													"selector": "#imgReactor"
+												}
+										},
+										{
+											"type": "set-property",
+											"name": "maxSize",
+											"value":
+												{
+													"type": "property-of-ref",
+													"domain": "brix",
+													"refId": "cimage1",
+													"accessor": "getSizeAt100Pct"
+												}
+												/*
+												{
+													"type": "adjust-size",
+													"newHeight":
+														{
+															"type": "property-of-obj",
+															"obj":
+																{
+																	"type": "property-of-ref",
+																	"domain": "brix",
+																	"refId": "cimage1",
+																	"accessor": "getActualSize"
+																},
+															"accessor": "getHeight"
+														},
+													"keepRatioOf":
+														{
+															"type": "property-of-ref",
+															"domain": "brix",
+															"refId": "cimage1",
+															"accessor": "getActualSize"
+														},
+												}*/
+										}
+									]
+								},
+								{
+									"bricId": "labels1",
+									"bricType": "LabelGroup",
+									"config":
+										{
+											"id": "reactorNum",
+											"type": "numbered",
+											"labels": 	
+												[	
+													{"content": "1", "xyPos": [0, 0.22], "width": 0},
+													{"content": "2", "xyPos": [0.05, 0.43], "width": 0},
+													{"content": "3", "xyPos": [0.3, 0.7], "width": 0},
+													{"content": "4", "xyPos": [0.62, 0.65], "width": 0},
+													{"content": "5", "xyPos": [0.66, 0.15], "width": 0}
+												]
+										},
+								}
+							],
+						"mortarConfig":
+							[
+								/*{
+									"mortarId": "<unique id for this mortar in this container>",
+									"mortarType": "BrixEventHandler",
+									"config":
+										{
+											"events": ["fixup"],
+											"action":
+												{
+													"type": "call-method",
+													"bric": "labels1",
+													"method": "lite",
+													"params": ["liteKey"]
+												}
+										}
+								}*/
+							],
+						"hookupActions":
+							[
+								{
+									"description": "Append the captioned image to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "cimage1" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
+										]
+								},
+								{
+									"description": "Append the labels to the captioned image",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cimage1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "labels1" }
+										]
+								},
+								{
+									"description": "Initial condition: select 1st label (note that we may want to use the state field to do this later)",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "labels1"},
+									"methodName": "lite",
+									"args":
+										[
+											{ "type": "constant", "value": "0" }
+										]
+								}
+
+							]
+					},
+					{
+						"containerId": "steps",
+						"brixConfig":
+							[
+								{
+									"bricId": "lbltbl1",
+									"bricType": "Callouts",
+									"config":
+										{
+											id: "callme",
+											show: "all",
+											type: "numbered",
+											headers: ["Nuclear Reactor function"],
+											textBits:
+												[
+													{cols: ["In a closed circuit, (green) water is pumped at high pressure to the reactor core."]},
+													{cols: ["Heat is generated by fission in the fuel rods in the reactor core, which heats the circulating water. Thick layers of concrete and steel or lead contain the reactor core’s radioactivity."]},
+													{cols: [ "In the steam generator, the energy from the heated water is used to boil water from a separate supply. The resulting steam moves through a pipe to a turbine."]},
+													{cols: ["The steam turns the turbine, which is connected to an electricity generator. Power lines distribute the electricity. A typical reactor produces as much as a coal-fired power plant."]},
+													{cols: ["A third supply of water is used to cool the steam so it condenses into water, which is pumped back to the steam generator."]}
+												]
+										}
+								}
+							],
+						"mortarConfig":
+							[
+								{
+									"mortarId": "<unique id for this mortar in this container>",
+									"mortarType": "BrixEventHandler",
+									"config":
+										{
+											//... config for mortar type specified
+										}
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"description": "draw the label table",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "lbltbl1"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#steps" }
+										]
+								},
+								{
+									"description": "Initial condition: select 1st table row (note that we may want to use the state field to do this later)",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "lbltbl1"},
+									"methodName": "lite",
+									"args":
+										[
+											{ "type": "constant", "value": "0" }
+										]
+								}
+
+							]
+					}
+				]
 		};
-	
-	var cntrSize = Size.matchRatioWithHeight(350 - 40, cimgConfig.actualSize);
 
-	var cntrConfig0 = 
+	// create the eventmanager to be used by the created brix, and the
+	// bricLayer which will create them, and then tell the bricLayer to build.
+	a.eventManager = new pearson.utils.EventManager();
+	a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager);
+
+	a.building = a.bricLayer.build(a.config);
+
+	// shorter names
+	a.cimage1 = a.building.brix.cimage1;
+	a.cntr1 = a.building.brix.cntr1;
+	a.labels1 = a.building.brix.labels1;
+	a.lbltbl1 = a.building.brix.lbltbl1;
+	// code that will be replaced by mortar defined in container "imgReactor"
+	a.eventManager.subscribe(a.lbltbl1.selectedEventId,
+		function (eventDetails)
 		{
-			node: d3.select("#imgReactor"),
-			maxSize: cntrSize,
-			maxWid: cntrSize.width, //550,
-			maxHt: 350
-		};
-		
-	var cntr0 = new SVGContainer(cntrConfig0);
-	
-	var cimg0 = new CaptionedImage(cimgConfig, eventManager);
-	
-	cntr0.append(cimg0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 1});
-	
-	//put numbered highlightable bullets on the image
-	var numLabels = new LabelGroup(
+			a.labels1.lite(eventDetails['selectKey']);
+		});
+	// code that will be replaced by mortar defined in container "steps"
+	a.eventManager.subscribe(a.labels1.selectedEventId,
+    function (eventDetails)
 		{
-			id: "reactorNum",
-			type: "numbered",
-			labels: 	
-			[	
-				{content: "1", xyPos: [0, 0.22], width: 0},
-				{content: "2", xyPos: [0.05, 0.43], width: 0},
-				{content: "3", xyPos: [0.3, 0.7], width: 0},
-				{content: "4", xyPos: [0.62, 0.65], width: 0},
-				{content: "5", xyPos: [0.66, 0.15], width: 0}
-			]
-		}, eventManager);
-	
-	cimg0.append(numLabels);
-
-	// Create the callout array, which also emits events so you 
-	//can click on the table row to highlight the labels.  
-	var callEm = new Callouts({
-		id: "callme",
-		show: "all",
-		type: "numbered",
-		headers: ["Nuclear Reactor function" ],
-		textBits: [
-		{cols: ["In a closed circuit, (green) water is pumped at high pressure to the reactor core."]},
-		{cols:[ "Heat is generated by fission in the fuel rods in the reactor core, which heats the circulating water. Thick layers of concrete and steel or lead contain the reactor core’s radioactivity."]},
-		{cols:[ "In the steam generator, the energy from the heated water is used to boil water from a separate supply. The resulting steam moves through a pipe to a turbine."]},
-		{cols:["The steam turns the turbine, which is connected to an electricity generator. Power lines distribute the electricity. A typical reactor produces as much as a coal-fired power plant."]},
-		{cols:[ "A third supply of water is used to cool the steam so it condenses into water, which is pumped back to the steam generator."]}
-		]
-	},eventManager);
-	
-	callEm.draw(d3.select("#steps"));
-	
- 
-
-	// Modify the value of the data for the bar graph when the
-	//numerical input changes.  So, subscribe to the event emitted by inputLevo,
-	//or inputDextro,
-	//and target whatever is identified by the handler in the second argument.
-	//TODO: make these methods of the target widget?
-
-	// Handle changes of the levo and dextro input values
-	eventManager.subscribe(numLabels.selectedEventId,
-						   handleSelectionChanged);
-	eventManager.subscribe(callEm.selectedEventId,
-						   handleSelectionChanged);
-
- 
-//TEST: set the start highlight state of 0 index by calling the 
-//handler with a hard-set index of 0.  This should result in the
-//first label getting highlighted and the first callout being displayed.
-	handleSelectionChanged({selectKey: '0'});
-/************************************************************************
-* handleSelectionChanged                                            *//**
-*
-* handleInputValueChanged is called from the event handler for one of
-* the input widgets when the user changes its value. It updates the
-* given matching input widget's value to match the new value and then
-* updates the bar chart.
-*
-* @param eventDetails			These are the keyed values returned by 
-*								the event, in this case, a selection
-*								(click).
-*************************************************************************/
-	function handleSelectionChanged(eventDetails)
-	{
-		//Handler needs to get written into each page, 
-		//each widget will have it's own way of responding  
-		//LabelLite should be a method of Labels, once Labels
-		//is written as a constructor
-		numLabels.lite(eventDetails.selectKey);
-		callEm.lite(eventDetails.selectKey);
-		
-	}
-	
-
+			a.lbltbl1.lite(eventDetails['selectKey']);
+		});
 	
 	</script>
 </body>

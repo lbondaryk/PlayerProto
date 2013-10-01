@@ -88,7 +88,7 @@
 			});
 			
             it('should have the id that was specified in the config', function () {
-                expect(myMultiSelectQuestion.id).to.equal(configMultiSelectQuestion1.id);
+                expect(myMultiSelectQuestion.getId()).to.equal(configMultiSelectQuestion1.id);
             });
 
 			it('should have a CheckGroup choiceWidget', function () {
@@ -280,7 +280,7 @@
 			});
 			
             it('should have the id that was specified in the config', function () {
-                expect(myMultiSelectQuestion.id).to.equal(configMultiSelectQuestion1.id);
+                expect(myMultiSelectQuestion.getId()).to.equal(configMultiSelectQuestion1.id);
             });
 
 			it('should have a SelectGroup choiceWidget', function () {
