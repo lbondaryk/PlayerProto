@@ -342,7 +342,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 	
 	// make a div to hold the select one question
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetMultipleChoiceQuestion")
+		.attr("class", "brixMultipleChoiceQuestion")
 		.attr("id", this.mcqId_);
 
 	var question = widgetGroup.append("p")

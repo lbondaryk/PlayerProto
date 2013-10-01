@@ -130,18 +130,18 @@
 						expect(myMultipleChoiceQuestion.lastdrawn.container.node()).to.deep.equal(cntrNode);
 					});
 
-					it('should have appended a div element with class \'widgetMultipleChoiceQuestion\' to the container' +
+					it('should have appended a div element with class \'brixMultipleChoiceQuestion\' to the container' +
 					   ' and set the lastdrawn.widgetGroup to that d3 selection', function () {
 						// get the last element of the container
 						var last = d3.select(cntrNode).select(":last-child");
 						expect(last.node().nodeName).to.equal('DIV');
-						expect(last.classed('widgetMultipleChoiceQuestion'), 'has class widgetMultipleChoiceQuestion').to.be.true;
+						expect(last.classed('brixMultipleChoiceQuestion'), 'has class brixMultipleChoiceQuestion').to.be.true;
 						expect(myMultipleChoiceQuestion.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
 					});
 
 					it('should create a div with sections for the question, choices, button and responses', function () {
 						/*
-						 div.widgetMultipleChoiceQuestion
+						 div.brixMultipleChoiceQuestion
 						 	p.question
 							div.choices
 								div.widgetRadioGroup
@@ -150,10 +150,10 @@
 							div.responses
 						 */
 						var tree =
-							{ name: 'DIV', class: 'widgetMultipleChoiceQuestion', children:
+							{ name: 'DIV', class: 'brixMultipleChoiceQuestion', children:
 								[ { name: 'P', class: 'question' },
 								  { name: 'DIV', class: 'choices', children:
-									  [ { name: 'DIV', class: 'widgetRadioGroup' } ]
+									  [ { name: 'DIV', class: 'brixRadioGroup' } ]
 								  },
 								  { name: 'DIV', class: 'submit', children:
 									  [ { name: 'DIV', class: 'widgetButton' } ]
@@ -307,18 +307,18 @@
 						expect(myMultipleChoiceQuestion.lastdrawn.container.node()).to.deep.equal(cntrNode);
 					});
 
-					it('should have appended a div element with class \'widgetMultipleChoiceQuestion\' to the container' +
+					it('should have appended a div element with class \'brixMultipleChoiceQuestion\' to the container' +
 					   ' and set the lastdrawn.widgetGroup to that d3 selection', function () {
 						// get the last element of the container
 						var last = d3.select(cntrNode).select(":last-child");
 						expect(last.node().nodeName).to.equal('DIV');
-						expect(last.classed('widgetMultipleChoiceQuestion'), 'has class widgetMultipleChoiceQuestion').to.be.true;
+						expect(last.classed('brixMultipleChoiceQuestion'), 'has class brixMultipleChoiceQuestion').to.be.true;
 						expect(myMultipleChoiceQuestion.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
 					});
 
 					it('should create a div with sections for the question, choices, button and responses', function () {
 						/*
-						 div.widgetMultipleChoiceQuestion
+						 div.brixMultipleChoiceQuestion
 						 	p.question
 							div.choices
 								span.widgetSelectGroup
@@ -327,7 +327,7 @@
 							div.responses
 						 */
 						var tree =
-							{ name: 'DIV', class: 'widgetMultipleChoiceQuestion', children:
+							{ name: 'DIV', class: 'brixMultipleChoiceQuestion', children:
 								[ { name: 'P', class: 'question' },
 								  { name: 'DIV', class: 'choices', children:
 									  [ { name: 'SPAN', class: 'widgetSelectGroup' } ]
