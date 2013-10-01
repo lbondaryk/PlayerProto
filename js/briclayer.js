@@ -195,7 +195,7 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
      */
     var building = {'info': {}, 'brix': {}, 'mortar': {}};
 
-    building['info']['seqNodeId'] = activityConfig['sequenceNodeKey'];
+    building['info']['sequenceNodeKey'] = activityConfig['sequenceNodeKey'];
 
     activityConfig['containerConfig'].forEach(goog.bind(this.buildContainer_, this, building));
 
