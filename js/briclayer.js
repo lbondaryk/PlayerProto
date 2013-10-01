@@ -218,7 +218,14 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
  ****************************************************************************/
 pearson.brix.BricLayer.prototype.buildContainer_ = function (building, containerConfig)
 {
+    // build brix
     containerConfig['brixConfig'].forEach(goog.bind(this.buildBric_, this, building));
+
+    // build mortar
+
+    // do hookup actions
+    this.doActions_(containerConfig['hookupActions'], building);
+
 };
 
 /* **************************************************************************
@@ -241,15 +248,49 @@ pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
     var config = {};
     goog.object.extend(config, bricConfig['config']);
 
-    this.doConfigFixup(bricConfig['configFixup'], config, building);
+    this.doConfigFixup_(bricConfig['configFixup'], config, building);
 
     building['brix'][id] = bricWorks.createBric(type, config);
 };
 
 /* **************************************************************************
- * BricLayer.doConfigFixup                                             */ /**
+ * BricLayer.doActions_                                                */ /**
  *
- * [Description of doConfigFixup]
+ * Process the list of config fixup actions on the given config object.
+ * @private
+ *
+ * @param {Array.<Object>|undefined}
+ *                  actionList   -array of actions to be done, may be undefined
+ * @param {Object}  building    -the under construction (by the build method) building
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.doActions_ = function (actionList, building)
+{
+    var actionHandlers = pearson.brix.BricLayer.actionHandlers;
+
+    // if there's no list then no action exist to be done.
+    if (actionList === undefined)
+        return;
+
+    actionList.forEach(function (action)
+            {
+                var actionType = action['type'];
+                if (!(actionType in actionHandlers))
+                {
+                    throw new Error("Don't know how to process action type '" + actionType + "'");
+                }
+
+                var handler = goog.bind(actionHandlers[actionType], this, building);
+
+                handler(action);
+            }, this);
+};
+
+/* **************************************************************************
+ * BricLayer.doConfigFixup_                                            */ /**
+ *
+ * Process the list of config fixup actions on the given config object.
+ * @private
  *
  * @param {Array.<Object>|undefined}
  *                  fixupList   -array of fixups to be applied, may be undefined
@@ -257,7 +298,7 @@ pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
  * @param {Object}  building    -the under construction (by the build method) building
  *
  ****************************************************************************/
-pearson.brix.BricLayer.prototype.doConfigFixup = function (fixupList, config, building)
+pearson.brix.BricLayer.prototype.doConfigFixup_ = function (fixupList, config, building)
 {
     var fixupHandlers = pearson.brix.BricLayer.configFixupHandlers;
 
@@ -335,11 +376,43 @@ pearson.brix.BricLayer.prototype.getRefObject = function (building, domain, refI
 };
 
 /**
+ * Functions to process the various types of actions.
+ * They must be called as a member of the BricLayer with the building (under
+ * construction) object and the action object.
+ * @type {Object.<string, function(this: pearson.brix.BricLayer, Object, Object)>}
+ */
+pearson.brix.BricLayer.actionHandlers =
+{
+    /* **************************************************************************
+     * actionHandlers.method-call                                          */ /**
+     *
+     * An action which calls a method of a particular instance object with a
+     * given set of arguments.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  action       -the action object
+     *
+     ****************************************************************************/
+    'method-call': function (building, action)
+    {
+        var instance = this.getDynamicValue(building, action['instance']);
+        var args = action['args'].map(
+               function (dynVal) { return this.getDynamicValue(building, dynVal); },
+               this);
+
+        instance[action['methodName']].apply(instance, args);
+    },
+};
+
+/**
  * Functions to process the various types of configFixup.
  * They must be called as a member of the BricLayer with the config object,
  * the building (under construction) object and the fixup object.
  * Note the fixup object is last so a partial function can be constructed
  * which specifies the 1st 2 arguments.
+ * @note: We may want to make these just generic actions and create a special
+ *        domain for the config object that is being fixed up.
  * @type {Object.<string, function(this: pearson.brix.BricLayer, Object, Object, Object)>}
  */
 pearson.brix.BricLayer.configFixupHandlers =
@@ -372,20 +445,38 @@ pearson.brix.BricLayer.configFixupHandlers =
 pearson.brix.BricLayer.dynamicValueHandlers =
 {
     /* **************************************************************************
-     * dynamicValueHandlers.d3select                                       */ /**
+     * dynamicValueHandlers.constant                                       */ /**
      *
-     * Return the result from calling d3.select with the given selector.
+     * Return the value property from the dynamicValue config.
      *
      * @this {pearson.brix.BricLayer}
      * @param {Object}  building    -the under construction (by the build method) building
      * @param {Object}  dynamicValueConfig
-     *                              -the d3select dynamicValue config object
+     *                              -the constant dynamicValue config object
      *
-     * @returns {*} The value a specified.
+     * @returns {*} The value specified in the config.
      ****************************************************************************/
-    'd3select': function (building, dynamicValueConfig)
+    'constant': function (building, dynamicValueConfig)
     {
-        return d3.select(dynamicValueConfig['selector']);
+        return dynamicValueConfig['value'];
+    },
+
+    /* **************************************************************************
+     * dynamicValueHandlers.ref                                            */ /**
+     *
+     * Return some object specified by domain and id.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the ref dynamicValue config object
+     *
+     * @returns {*} The object/value specified.
+     ****************************************************************************/
+    'ref': function (building, dynamicValueConfig)
+    {
+        var o = this.getRefObject(building, dynamicValueConfig['domain'], dynamicValueConfig['refId']);
+        return o;
     },
 
     /* **************************************************************************
@@ -399,11 +490,28 @@ pearson.brix.BricLayer.dynamicValueHandlers =
      * @param {Object}  dynamicValueConfig
      *                              -the property-of-ref dynamicValue config object
      *
-     * @returns {*} The value a specified.
+     * @returns {*} The value of the property specified.
      ****************************************************************************/
     'property-of-ref': function (building, dynamicValueConfig)
     {
         var o = this.getRefObject(building, dynamicValueConfig['domain'], dynamicValueConfig['refId']);
         return o[dynamicValueConfig['accessor']]();
+    },
+
+    /* **************************************************************************
+     * dynamicValueHandlers.d3select                                       */ /**
+     *
+     * Return the result from calling d3.select with the given selector.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the d3select dynamicValue config object
+     *
+     * @returns {*} The d3 selection specified.
+     ****************************************************************************/
+    'd3select': function (building, dynamicValueConfig)
+    {
+        return d3.select(dynamicValueConfig['selector']);
     },
 };
