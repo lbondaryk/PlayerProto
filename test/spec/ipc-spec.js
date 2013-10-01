@@ -26,21 +26,40 @@
         before(function () {
             eventManager = new pearson.utils.EventManager();
             domHelper = new DomHelper();
-            ipc = new pearson.brix.Ipc(eventManager);
-
-            items = domHelper.scan(); // Where items = [ {assignmentId, itemId, type}, {assignmentId, itemId, type},... ]
-            ipc.init(items); // so the ipc can set up the subscriptions for getting the sequence nodes ids in order to request the config from the sequence node from the IPS
+            ipc = new pearson.brix.Ipc({}, eventManager);
         });
 
 
         it('should scan properly initialize on DIV mode', function () {
             var items = domHelper.scanElements('brix', 'div');
-            ipc
+            ipc.init(items);
+
+            var expectedItems = [
+                {
+                    id: "some_habitat_id1",
+                    itemid: "http://content.api.pearson.com/resources/activity/11001",
+                    assignmentid: "http://content.api.pearson.com/resources/activity/12001",
+                    containerid: "imgReactor",
+                    type: "brix"
+                },
+                {
+                    id: "some_habitat_id2",
+                    itemid: "http://content.api.pearson.com/resources/activity/11002",
+                    assignmentid: "http://content.api.pearson.com/resources/activity/12002",
+                    containerid: "steps",
+                    type: "brix"
+                }
+            ];
+
+            expect(ipc.items).to.deep.equal(expectedItems);
+
+
             
         });
 
 
-        skip('should properly initialize on IFRAME mode', function () {
+
+        it('should properly initialize on IFRAME mode', function () {
             var items = domHelper.scanObjects('brix');
 
             

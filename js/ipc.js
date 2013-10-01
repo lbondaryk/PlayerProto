@@ -48,7 +48,7 @@ pearson.brix.Ipc = function (config, eventManager)
      * @todo - Check if it changes to singleton
      * @type {pearson.brix.BrixLayer}
      */
-    this.bricLayer = new pearson.brix.BrixLayer(brixLayerConfig, eventManager);
+    this.bricLayer = new pearson.brix.BricLayer(brixLayerConfig, eventManager);
 };
 
 /**
@@ -96,11 +96,38 @@ pearson.brix.Ipc.prototype.init = function(items,  opt_containerId)
     this.subscribeInitTopic();
 };
 
-pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (message)
+/**
+ * Must be exactly same as laspaf.js's 
+ * @param  {[type]} message [description]
+ * @return {[type]}         [description]
+ */
+pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 {
-    return "init." + message.assignmenturl 
-        + "." + message.activityurl;
+    return "init." + item.assignmentid
+        + "." + item.itemid;
 };
+
+/**
+ * Message structure as received to the initialization topic 
+ * (message originated from AMS, @see laspaf.js):
+message = {
+    status: <fail | success>
+    sourcemessage: <message when there was error>
+    data: {
+        asrequest: {
+            url:
+            method:
+            header: {
+                "Hub-Session": <data>
+            },
+            content: {
+                "nodeIndex": <index>
+                "targetBinding": <data>
+            }
+        }
+    }
+}
+ */
 
 /** 
  * Subscribes to initialization topic using the assignmentId and itemId
@@ -108,11 +135,19 @@ pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (message)
 pearson.brix.Ipc.prototype.subscribeInitTopic = function()
 {
     var item;
+    var that = this;
     // Iterate through items and subscribe
     for(var i = 0; i < this.items.length; i++)
     {
         item = this.items[i];
-        eventManager.subscribe(getTopicFrom(target), function(seqNodeIdntifier) {
+
+        // topic by virtue of closure
+        var topic = this.activityBindingReplyTopic(item);
+        this.eventManager.subscribe(topic, function(seqNodeIdntifier) {
+            
+            // Unsubscribe as initialization is no longer needed.
+            this.eventManager.unsubscribe(topic, this);
+
             var activityConfig = ipsproxy.retrieveSequenceNode(seqNodeIdntifier, containerId); // Does the AJAX call to IPS
 
             //
