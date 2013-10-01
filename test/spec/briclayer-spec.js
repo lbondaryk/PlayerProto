@@ -152,7 +152,7 @@ goog.require('goog.object');
             activityConfig.containerConfig[0].brixConfig.push(bricConfigWithFixup);
 
             it('should throw an exception w/ the name of the unkown config fixup type', function () {
-                expect(goog.bind(bricLayer.build, bricLayer, activityConfig)).to.throw(Error, /gobble-d-gook/);
+                expect(goog.bind(bricLayer.build, bricLayer, activityConfig)).to.throw(Error, /configFixup.+gobble-d-gook/);
             });
         });
 
@@ -249,12 +249,34 @@ goog.require('goog.object');
             });
         });
 
-        describe('BricLayer.build should process hookupActions', function () {
+        describe('BricLayer.build w/ an unknown hookupAction type', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+
+            var activityConfig = createActivityConfigSkeleton();
+
+            var methodCallAction1 =
+                {
+                    "type": "jump-in-lake",
+                    "instance": {"type": "ref", "domain": "brix", "refId": "foo"},
+                    "methodName": "doIt",
+                };
+
+            activityConfig.containerConfig[0].hookupActions.push(methodCallAction1);
+
+            it('should throw an exception w/ the name of the unkown action type', function () {
+                expect(goog.bind(bricLayer.build, bricLayer, activityConfig)).to.throw(Error, /action.+jump-in-lake/);
+            });
+        });
+
+        describe('BricLayer.build with method call hookup actions', function () {
             var bricLayer = new BricLayer({}, dummyEventMgr);
             var bricWorks = bricLayer.getBricWorks();
             // Add another couple of molds for testing purposes
-            var DummyRefBricCtor = function (c, e) {this.cfg = c; this.em = e;};
-            DummyRefBricCtor.prototype.getBar = function () {return this.cfg.bar;};
+            var DummyRefBricCtor = function (c, e)
+                {this.cfg = c; this.em = e; this.doItArgs = null; this.doItAllArgs = null;};
+            DummyRefBricCtor.prototype.doIt = function () { this.doItArgs = arguments; };
+            DummyRefBricCtor.prototype.doItAll = function () { this.doItAllArgs = arguments; };
+
             var dummyRefBricName = '_dummy test ref bric_'
             bricWorks.registerMold(dummyRefBricName, DummyRefBricCtor);
 
@@ -262,9 +284,6 @@ goog.require('goog.object');
 
             var dummyRefBricId = 'ref-test';
             var dummyRefBricConfig = {"bar": "any fubar will do"};
-
-            var dummyBricId = 'test';
-            var dummyBricConfig = {"foo": "any foo will do"};
 
             var bricConfigToRef =
                 {
@@ -307,6 +326,37 @@ goog.require('goog.object');
                 building = bricLayer.build(activityConfig);
             });
         
+            it('should call the methods on the correct objects w/ the correct arguments', function () {
+                var dummyBric = building.brix[dummyRefBricId];
+                expect(dummyBric.doItArgs).is.not.null;
+                expect(dummyBric.doItArgs.length).to.equal(2);
+                expect(dummyBric.doItArgs[0]).to.equal(42);
+                expect(dummyBric.doItArgs[1]).to.equal('towel');
+
+                expect(dummyBric.doItAllArgs).is.not.null;
+                expect(dummyBric.doItAllArgs.length).to.equal(1);
+                expect(dummyBric.doItAllArgs[0]).to.deep.equal([1, 3, 5]);
+            });
+        });
+
+        describe('BricLayer.build w/ an unknown dynamicValue type', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+
+            var activityConfig = createActivityConfigSkeleton();
+
+            // we'll put the unknown dynamicValue type in an action
+            var methodCallAction1 =
+                {
+                    "type": "method-call",
+                    "instance": {"type": "cant-get-thar", "domain": "brix", "refId": "foo"},
+                    "methodName": "doIt",
+                };
+
+            activityConfig.containerConfig[0].hookupActions.push(methodCallAction1);
+
+            it('should throw an exception w/ the name of the unkown dynamicValue type', function () {
+                expect(goog.bind(bricLayer.build, bricLayer, activityConfig)).to.throw(Error, /dynamicValue.+cant-get-thar/);
+            });
         });
     });
 })();
