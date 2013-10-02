@@ -29,12 +29,12 @@ goog.require("goog.net.XhrIo");
  *
  * @param {Object}      config          - The settings to configure this SelectGroup
  * @param {string|undefined}
- *                      config.baseUrl      - The URL to the IPS server.
+ *                      config.serverBaseUrl - The URL to the IPS server.
  *
  ****************************************************************************/
 pearson.brix.IpsProxy = function (config)
 {
-    this.serverBaseUrl = config.baseUrl;
+    this.serverBaseUrl = config.serverBaseUrl;
 };
 
 /**

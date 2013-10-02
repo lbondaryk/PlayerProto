@@ -41,6 +41,12 @@ pearson.brix.Ipc = function (config, eventManager)
      */
     this.eventManager = eventManager;
 
+    /**
+     * The IpsProxy instance
+     * @type {pearson.brix.IpsProxy}
+     */
+    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl":"http://localhost:8088"});
+
     var brixLayerConfig = null;
 
     /**
@@ -60,8 +66,8 @@ pearson.brix.Ipc.items = [];
 
 /**
  * The container ID is used in the iframe mode.
- * Having a value will make the IPC to retrieve a specific targetId 
- * (aka. containerItem) from the IPS.
+ * Having a value will make the IPC to retrieve a specific conatinerId 
+ * from the IPS.
  * @type {String}
  */
 pearson.brix.Ipc.containerId = null;
@@ -88,12 +94,39 @@ pearson.brix.Ipc.prototype.init = function(items,  opt_containerId)
     this.items = items;
     // Throw error if items is empty; 
 
+    this.subscribeInitTopic();
+
+    var that = this;
     if (opt_containerId)
     {
+        // There should be only one element in the items
+        if (this.items.length != 1)
+        {
+            throw new Error('In the iframe mode, there should only be one item but '
+                + this.items.length + ' were provided');
+        }
+        
+        // This means that we are in Iframe mode
         this.containerId = opt_containerId;
-    }
 
-    this.subscribeInitTopic();
+        // IPS shall also subscribe to "pageLoaded" event that is originated 
+        // from the master page
+        this.eventManager.subscribe('__system_pageLoaded', function(message) {
+
+            for (var i=0; i < that.items.length; i++)
+            {
+                var reqSeqNodeIdentifierMsg = {
+                    type: "requestbinding",
+                    replytopic : that.activityBindingReplyTopic(items[i]),
+                    data : {
+                        assignmenturl: items[i].assignmenturl,
+                        activityurl: items[i].activityurl
+                    }
+                };
+                that.eventManager.publish('AMC', reqSeqNodeIdentifierMsg);
+            }
+        });
+    }
 };
 
 /**
@@ -103,8 +136,8 @@ pearson.brix.Ipc.prototype.init = function(items,  opt_containerId)
  */
 pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 {
-    return "init." + item.assignmentid
-        + "." + item.itemid;
+    return "init." + item.assignmenturl
+        + "." + item.activityurl;
 };
 
 /**
@@ -130,7 +163,8 @@ message = {
  */
 
 /** 
- * Subscribes to initialization topic using the assignmentId and itemId
+ * Subscribes to initialization topic using the assignmentId and activityId 
+ * (formerly known as itemId)
  */
 pearson.brix.Ipc.prototype.subscribeInitTopic = function()
 {
@@ -142,16 +176,35 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function()
         item = this.items[i];
 
         // topic by virtue of closure
-        var topic = this.activityBindingReplyTopic(item);
-        this.eventManager.subscribe(topic, function(seqNodeIdntifier) {
-            
-            // Unsubscribe as initialization is no longer needed.
-            this.eventManager.unsubscribe(topic, this);
+        var currTopic = this.activityBindingReplyTopic(item);
 
-            var activityConfig = ipsproxy.retrieveSequenceNode(seqNodeIdntifier, containerId); // Does the AJAX call to IPS
+        // Anonymous function to create a scope for the currTopic to live as closure.
+        // the topic is used to unsubscribe later 
+        (function(topic) {
+            that.eventManager.subscribe(topic, function(sequenceNodeIdentifier) {
+                
+                // Unsubscribe as initialization is no longer needed.
+                that.eventManager.unsubscribe(topic, this);
 
-            //
-            this.bricLayer.build(activityConfig);
-        });
+                var date = new Date();
+                var seqNodeRequestMessage = {
+                    sequenceNodeIdentifier: sequenceNodeIdentifier,
+                    timestamp: date.toISOString(),
+                    type: "initialization",
+                    body: {
+                    }
+                };
+                // add containerId if exists (e.g. Iframe mode)
+                if (that.containerId)
+                {
+                    seqNodeRequestMessage.body.containerId = that.containerId;
+                }
+
+                var activityConfig = that.ipsProxy.retrieveSequenceNode(seqNodeRequestMessage); // Does the AJAX call to IPS
+
+                // Build the building!
+                that.bricLayer.build(activityConfig);
+            });
+        })(currTopic);
     }
 };

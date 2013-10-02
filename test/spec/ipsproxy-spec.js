@@ -18,11 +18,17 @@
 
     var seqNodeKey = null;
 
+    function endsWith(str, suffix) {
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    }
+
     describe('IPSProxy', function () {
 
         var ipsProxy = null;
         before(function (done) {
-            ipsProxy = new pearson.brix.IpsProxy({"baseUrl":"http://localhost:8088"});
+
+
+            ipsProxy = new pearson.brix.IpsProxy({serverBaseUrl:"http://localhost:8088"});
 
             ipsProxy.retrieveSequenceNode(testInitializationEnvelope, function(error, result){
                 try {
@@ -39,26 +45,20 @@
         });
 
 
-        it('should check health', function (done) {
-            ipsProxy.checkHealth(function(error, result){
-
-                console.log("*ERROR*:"+JSON.stringify(error));
-                console.log("*RESULT*:"+JSON.stringify(result));
-
-                try {
-                    expect(error).to.equal(null);
-                    expect(result).to.be.an('object');
-                    done();
-                }
-                catch (e)
-                {
-                    done(e);
-                }
+        it('should issue AJAX call to /sequencenodes for sequence node retrieval', function (done)
+        {
+            sinon.stub(goog.net.XhrIo, "send", function(url, callback, method, message, headers){
+                expect(endsWith(url, '/sequencenodes')).to.be.true;
+                expect(method).to.equal("POST");
+                expect(headers).to.deep.equal({"Content-Type": "application/json" });
+                callback({
+                    target: {
+                        isSuccess: function(){ return true; },
+                        getResponseJson: function(){ return {data:"dummy"}; },
+                    }
+                });
             });
-        });
 
-
-        it('should retrieve sequence node successfully', function (done) {
             ipsProxy.retrieveSequenceNode(testInitializationEnvelope, function(error, result){
 
                 console.log("*ERROR*:"+JSON.stringify(error));
@@ -74,13 +74,28 @@
                     done(e);
                 }
             });
+
+            goog.net.XhrIo.send.restore();
+
         });
 
 
-        it('should post interaction data successfully', function (done) {
-            var message = helper.cloneObject(testInteractionMessage);
-            message.sequenceNodeKey = seqNodeKey;
-            ipsProxy.postInteraction(message, function(error, result){
+        it('should issue AJAX call to /interactions for posting interaction', function (done)
+        {
+            
+            sinon.stub(goog.net.XhrIo, "send", function(url, callback, method, message, headers){
+                expect(endsWith(url, '/interactions')).to.be.true;
+                expect(method).to.equal("POST");
+                expect(headers).to.deep.equal({"Content-Type": "application/json" });
+                callback({
+                    target: {
+                        isSuccess: function(){ return true; },
+                        getResponseJson: function(){ return {data:"dummy"}; },
+                    }
+                });
+            });
+
+            ipsProxy.postInteraction(testInteractionMessage, function(error, result){
 
                 try {
                     expect(error).to.equal(null);
@@ -92,54 +107,27 @@
                     done(e);
                 }
             });
+
+            goog.net.XhrIo.send.restore();
         });
 
-        it('should return error on interaction when empty sequenceNodeKey is given', function (done) {
-            var message = helper.cloneObject(testInteractionMessage);
-            message.sequenceNodeKey = '';
-            ipsProxy.postInteraction(message, function(error, result){
-
-                try {
-                    expect(result.code).to.equal(404);
-                    done();
-                }
-                catch (e)
-                {
-                    done(e);
-                }
+        it('should issue AJAX call to /submissions for posting submissions', function (done)
+        {
+            
+            sinon.stub(goog.net.XhrIo, "send", function(url, callback, method, message, headers){
+                expect(endsWith(url, '/submissions')).to.be.true;
+                expect(method).to.equal("POST");
+                expect(headers).to.deep.equal({"Content-Type": "application/json" });
+                callback({
+                    target: {
+                        isSuccess: function(){ return true; },
+                        getResponseJson: function(){ return {data:"dummy"}; },
+                    }
+                });
             });
-        });
 
-        it('should return error on interaction when Empty Request Body is given', function (done) {
-            var message = helper.cloneObject(testInteractionMessage);
-            message.sequenceNodeKey = seqNodeKey;
-            message.body = '';
+            ipsProxy.postSubmission(testSubmissionMessage, function(error, result){
 
-            var expectedErrorMessage = 'the value of body must be an object';
-            ipsProxy.postInteraction(message, function(error, result){
-
-                try {
-                    expect(result.code).to.equal(400);
-                    expect(result.message).to.equal(expectedErrorMessage);
-                    done();
-                }
-                catch (e)
-                {
-                    done(e);
-                }
-            });
-        });
-
-        ////////// post Submissions //////////
-        
-        it('should post submission data successfully', function (done) {
-
-            var message = helper.cloneObject(testSubmissionMessage);
-            message.sequenceNodeKey = seqNodeKey;
-            ipsProxy.postSubmission(message, function(error, result){
-
-                console.log("*EX.ERROR*:"+JSON.stringify(error));
-                console.log("*EX.RESULT*:"+JSON.stringify(result));
                 try {
                     expect(error).to.equal(null);
                     expect(result).to.be.an('object');
@@ -150,53 +138,8 @@
                     done(e);
                 }
             });
-        });
 
-        it('should return error on submission when empty sequenceNodeKey is given', function (done) {
-            var message = helper.cloneObject(testSubmissionMessage);
-            message.sequenceNodeKey = '';
-            ipsProxy.postSubmission(message, function(error, result){
-
-                console.log("*EX.ERROR*:"+JSON.stringify(error));
-                console.log("*EX.RESULT*:"+JSON.stringify(result));
-
-                try {
-                    expect(result.code).to.equal(404);
-                    done();
-                }
-                catch (e)
-                {
-                    done(e);
-                }
-            });
-        });
-
-        it('should return error on submission when Empty Request Body is given', function (done) {
-            var message = helper.cloneObject(testSubmissionMessage);
-            message.sequenceNodeKey = seqNodeKey;
-            message.body = '';
-
-            var expectedErrorMessage = 'the value of body must be an object';
-            ipsProxy.postSubmission(message, function(error, result){
-
-                console.log("*EX.ERROR*:"+JSON.stringify(error));
-                console.log("*EX.RESULT*:"+JSON.stringify(result));
-
-                try {
-                    expect(result.code).to.equal(400);
-                    expect(result.message).to.equal(expectedErrorMessage);
-                    done();
-                }
-                catch (e)
-                {
-                    done(e);
-                }
-            });
-        });
-    });
-
-    describe('IPC', function () {
-        it('should initialize with different divs', function (done) {
+            goog.net.XhrIo.send.restore();
         });
     });
 

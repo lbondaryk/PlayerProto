@@ -15,6 +15,8 @@
 	<!-- function created by David Bau to allow seeding Math.random -->
 	<!-- downloaded from github https://github.com/davidbau/seedrandom -->
 	<script src="lib/seedrandom.js"></script>
+    <!-- mocking framework -->
+    <script src="lib/sinon-1.7.3.js"></script>
 
     <!-- include source files here... -->
     <script src="../js/d3.v3.min.js"></script>
@@ -56,6 +58,10 @@
     <script src="../js/widget-slider.js"></script>
 	<script src="../js/briclayer.js"></script>
 
+    <script src="../js/domhelper.js"></script>
+    <script src="../js/ipsproxy.js"></script>
+    <script src="../js/ipc.js"></script>
+
 	<!-- local helper functions -->
     <script src="helper.js"></script>
 
@@ -73,6 +79,11 @@
     <script src="spec/widget-sketch-spec.js"></script>
     <script src="spec/submitmanager-spec.js"></script>
 	<script src="spec/widget-barchart-spec.js"></script>
+
+    <script src="testmessages-ips.js"></script>
+    <script src="spec/domhelper-spec.js"></script>
+    <script src="spec/ipsproxy-spec.js"></script>
+    <script src="spec/ipc-spec.js"></script>
     <script>mocha.run()</script>
 </body>
 </html>

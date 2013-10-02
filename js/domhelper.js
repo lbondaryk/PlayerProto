@@ -1,19 +1,19 @@
 /**
  * @fileoverview Document Model Helper class
  * 
- * The DomHelper object 
  * PENDING: 
  * - "all-loaded" event trigger
- * - scanning to get data attributes as array of objects
  */
 
 
 /**
  * DomHelper
+ * 
  * The DomHelper abstracts the DOM manipulation including element scanning and
  * element attribute setting (e.g. resizing).
  * 
  * @constructor
+ * @export
  *
  */
 var DomHelper = function(options) {
@@ -47,6 +47,7 @@ DomHelper.prototype.dispose = function ()
  *
  * Caches the (i)frames for faster access. The MessageBroker uses this to hold
  * information such as subscriberHandler.
+ * @export
  *
  * @param {String} classAttr		The class for selecting the object element 
  * 									to be converted. (i.e. 'bric')
@@ -62,14 +63,28 @@ DomHelper.prototype.cacheFrames = function(classAttr)
 	//[].forEach.call(this.framesList, function(selectedFrame) {
 	for (var i = 0; i < this.framesList.length; i++){
 		_self.setFrameCustomParams(i,  {node: this.framesList[i]});
-	};
+	}
 };
 
+/**
+ * Sets user defined parameters to the (i)frame object
+ * 
+ * @param {int} index    The index in the array that represent the cache 
+ * @param {Object} value The value of the payload to associate with the (i)frame
+ * 
+ * @param {[type]} value [description]
+ */
 DomHelper.prototype.setFrameCustomParams = function(index, value)
 {
 	this.frameCustomParams[index] = value;
-}
+};
 
+/** 
+ * Gets the user defined parameters given the (i)frame object
+ * 
+ * @param  {Window} windowObj The reference of the iframe
+ * @return {[type]}           They payload value associated with this iframe
+ */
 DomHelper.prototype.getFrameCustomParams = function(windowObj)
 {
 	var index = -1;
@@ -81,12 +96,18 @@ DomHelper.prototype.getFrameCustomParams = function(windowObj)
 	}
 	if (index > -1)
 		return this.frameCustomParams[index];
-}
+};
 
+/** 
+ * Gets the user defined parameters given the (i)frame index
+ * 
+ * @param  {Window} windowObj The reference of the iframe
+ * @return {[type]}           They payload value associated with this iframe
+ */
 DomHelper.prototype.getFrameCustomParamsByIndex = function(index)
 {
 	return this.frameCustomParams[index];
-}
+};
 
 /**
  * DomHelper.resize
@@ -130,7 +151,7 @@ function buildQueryStringFromParams(objectNode)
 		return acc + encodeURIComponent(name) + '=' + encodeURIComponent(value);
 	}, '');
 	return queryString;
-};
+}
 
 /**
  * DomHelper.convertObjectToIframeElement
@@ -140,7 +161,7 @@ function buildQueryStringFromParams(objectNode)
  * @param {String} classAttr		The class for selecting the object element to be converted. (i.e. 'bric')
  *
  */
-DomHelper.prototype.convertObjectToIframeElement = function (classAttr) 
+DomHelper.prototype.convertObjectToIframeElement = function (classAttr)
 {
 	// Turn the <object> tags into <iframe> tags to work around webkit bug https://bugs.webkit.org/show_bug.cgi?id=75395.
 	// Also append parameters to iframe url so they're accessible to the iframe implementation.
@@ -185,11 +206,12 @@ DomHelper.prototype.scanElements = function (classAttr, opt_nodeType)
 	for (var i = 0; i < matches.length; i++)
 	{
 		var entry = {};
+		/* Shall the ID be added as well?
 		var id = matches[i].getAttribute('id');
 		if (id)
 		{
 			entry.id = id;
-		}
+		}*/
 		// Iterate over the dat-* attributes
 		var dataset = matches[i].dataset;
 		for (var prop in dataset)
@@ -222,11 +244,12 @@ DomHelper.prototype.scanObjects = function (classAttr)
 	{
 		var entry = {};
 		
+		/* Shall the ID be added as well?
 		var id = matches[i].getAttribute('id');
 		if (id)
 		{
 			entry.id = id;
-		}
+		}*/
 
 		var params = matches[i].getElementsByTagName('param');
 		for (var j = 0; j < params.length; j++)

@@ -43,7 +43,7 @@ var testInitializationEnvelope = {
     timestamp: "2013-09-17T06:44Z",
     type: "initialization",
     body: {
-        targetID: "thingy123"
+        containerId: "thingy123"
     }
 };
 
