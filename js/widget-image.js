@@ -4,8 +4,8 @@
  *
  * @fileoverview Implementation of the Image and CaptionedImage brix.
  *
- * The Image widget draws a scaled image in an SVGContainer.
- * The CaptionedImage widget draws a caption next to an Image.
+ * The Image bric draws a scaled image in an SVGContainer.
+ * The CaptionedImage bric draws a caption above or below an Image.
  *
  * Created on		May 04, 2013
  * @author			Leslie Bondaryk
@@ -144,9 +144,10 @@ pearson.brix.Image = function (config, eventManager)
 
 	/**
 	 * The scale functions set explicitly for this Image using setScale.
-	 * Image doesn't use scale functions, but they may get used in a widget chain.
-	 * Otherwise a data extent of [0,1] will be mapped to the given
-	 * container area.
+	 * Image doesn't use scale functions, but they may get used in a brixStac, such
+	 * as an image behind a graph or labels on top of an image.  
+	 * A default data extent of [0,1] will be mapped to the given
+	 * container area, allowing location on the image to be specified in % of height/width
 	 * @private
 	 * @type Object
 	 * @property {function(number): number}

@@ -37,13 +37,13 @@ svg g.brixCaptionedImage div.brixCaption
   background-color: #f8f8f8;
 } 
 
-svg g.widgetCarousel>rect.background
+svg g.brixCarousel>rect.background
 
 {
 	fill:	#f8f8f8;
 }
 
-svg g.widgetCarousel>g.widgetItem>rect.selection
+svg g.brixCarousel>g.brixItem>rect.selection
 {
 	fill:			#fff;
 	fill-opacity:	0.0;
@@ -52,7 +52,7 @@ svg g.widgetCarousel>g.widgetItem>rect.selection
 	stroke-opacity:	0.0;	
 }
 
-svg g.widgetCarousel>g.widgetItem.selected>rect.selection
+svg g.brixCarousel>g.brixItem.selected>rect.selection
 {
 	fill-opacity:	0.3;
 	stroke-opacity:	1;	

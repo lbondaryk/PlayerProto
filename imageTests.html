@@ -117,13 +117,10 @@
 			captionPosition: "below"
 		};
 		
-	var cntrSize = Size.matchRatioWithHeight(450 - 40, {height: 960, width: 1280});
 	var cntrConfig0 = 
 		{
 			node: d3.select("#widgetTarget0"),
-			maxSize: Size.matchRatioWithHeight(450 - 40, {height: 960, width: 1280}),
-			maxWid: cntrSize.width, //550,
-			maxHt: 450
+			maxSize: {width: 477, height: 450}
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
@@ -249,8 +246,7 @@
 	var cntrConfig4 = 
 		{
 			node: d3.select("#widgetTarget1bn"),
-			maxWid: 450,
-			maxHt: 450
+			maxSize: {width: 477, height: 477}
 		};
 
 	var cntr4 = new SVGContainer(cntrConfig4);

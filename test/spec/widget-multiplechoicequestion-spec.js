@@ -146,7 +146,7 @@
 							div.choices
 								div.widgetRadioGroup
 							div.submit
-								div.widgetButton
+								div.brixButton
 							div.responses
 						 */
 						var tree =
@@ -156,12 +156,12 @@
 										{ name: 'DIV', class: 'choices', children:
 											[ { name: 'DIV', class: 'brixRadioGroup' } ]
 										},
-									],}
+									]},
 									{ name: 'DIV', class: 'feedback' },
 									{ name: 'DIV', class: 'submit', children:
-									  [ { name: 'DIV', class: 'widgetButton' } ]
+									  [ { name: 'DIV', class: 'brixButton' } ]
 									},
-								],
+								]
 							};
 
 						helper.expectElementTree(myMultipleChoiceQuestion.lastdrawn.widgetGroup, tree);
@@ -325,24 +325,27 @@
 					it('should create a div with sections for the question, choices, button and responses', function () {
 						/*
 						 div.brixMultipleChoiceQuestion
-						 	p.question
-							div.choices
-								span.widgetSelectGroup
+						 	fieldset
+						 		legend.question
+								div.choices
+								span.brixSelectGroup
 							div.submit
 								div.brixButton
 							div.responses
 						 */
 						var tree =
 							{ name: 'DIV', class: 'brixMultipleChoiceQuestion', children:
-								[ { name: 'P', class: 'question' },
-								  { name: 'DIV', class: 'choices', children:
-									  [ { name: 'SPAN', class: 'widgetSelectGroup' } ]
-								  },
+								[ { name: 'FIELDSET', children:
+									[ 
+									{ name: 'LEGEND', class: 'question' },
+									{ name: 'DIV', class: 'choices', children:  [ { name: 'SPAN', class: 'widgetSelectGroup' } ] 
+									}
+									]},
+								  { name: 'DIV', class: 'feedback' },
 								  { name: 'DIV', class: 'submit', children:
 									  [ { name: 'DIV', class: 'brixButton' } ]
-								  },
-								  { name: 'DIV', class: 'responses' }
-								],
+								  }
+								]
 							};
 
 						helper.expectElementTree(myMultipleChoiceQuestion.lastdrawn.widgetGroup, tree);
