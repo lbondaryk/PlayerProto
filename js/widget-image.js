@@ -20,6 +20,7 @@ goog.provide('pearson.brix.CaptionedImage');
 
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.SvgBric');
+goog.require('pearson.brix.ILightable');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -59,6 +60,7 @@ goog.require('pearson.brix.SvgBric');
  *
  * @constructor
  * @extends {pearson.brix.SvgBric}
+ * @implements {pearson.brix.ILightable}
  * @export
  *
  * @param {Object}		config			-The settings to configure this Image

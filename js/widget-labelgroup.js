@@ -18,6 +18,7 @@
 goog.provide('pearson.brix.LabelGroup');
 
 goog.require('pearson.brix.SvgBric');
+goog.require('pearson.brix.ILightable');
 goog.require('pearson.utils.IEventManager');
 
 // Sample Label constructor configuration
@@ -70,6 +71,7 @@ pearson.brix.LabelConfig;
  *
  * @constructor
  * @extends {pearson.brix.SvgBric}
+ * @implements {pearson.brix.ILightable}
  * @export
  *
  * @param {Object}		config			-The settings to configure this LabelGroup

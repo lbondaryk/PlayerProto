@@ -19,6 +19,8 @@
 goog.provide('pearson.brix.Callouts');
 
 goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.HtmlBric');
+goog.require('pearson.brix.ILightable');
 
 // Sample Callout constructor configuration
 (function()
@@ -71,6 +73,7 @@ pearson.brix.CalloutItem;
  *
  * @constructor
  * @extends {pearson.brix.HtmlBric}
+ * @implements {pearson.brix.ILightable}
  * @export
  *
  * @param {Object}		config			-The settings to configure this widget
