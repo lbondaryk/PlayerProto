@@ -1,5 +1,5 @@
 /* **************************************************************************
- * $Workfile:: ipsproxy.js                                           $
+ * $Workfile:: ipsproxy.js                                                  $
  * *********************************************************************/ /**
  *
  * @fileoverview Abstracts the communication with IPS.
@@ -19,7 +19,7 @@ goog.require("goog.net.XhrIo");
 
 
 /* **************************************************************************
- * IpsProxy                                                         */ /**
+ * IpsProxy                                                            */ /**
  *
  * The IPSProxy encapsulates series of methods that wraps around AJAX calls
  * to remote IPS.
@@ -52,7 +52,6 @@ pearson.brix.IpsProxy.serverBaseUrl = null;
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- * @return {[type]}
  */
 pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
 {
@@ -77,10 +76,6 @@ pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
         callback(error, result);
     };
 
-    // Another way of requesting is creating an XhrIo instance
-    // passing it to goog event listner as
-    // goog.events.listenOnce(xhr, goog.net.EventType.COMPLETE, function(e) {...}
-    // and the do the actual send on the instance.
     goog.net.XhrIo.send(this.serverBaseUrl + '/healthInfo', ajaxCallback, 'GET');
 };
 
@@ -104,11 +99,9 @@ pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
  *                              to the server as request body. 
- *                               
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- * @return {[type]}
  */
 pearson.brix.IpsProxy.prototype.retrieveSequenceNode = function (param, callback)
 {
@@ -131,11 +124,9 @@ pearson.brix.IpsProxy.prototype.retrieveSequenceNode = function (param, callback
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
  *                              to the server as request body. 
- *                               
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- * @return {[type]}
  */
 pearson.brix.IpsProxy.prototype.postInteraction = function (param, callback)
 {
@@ -177,7 +168,6 @@ pearson.brix.IpsProxy.prototype.postSubmission = function (param, callback)
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- * @return {[type]}
  */
 pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
 {

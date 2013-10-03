@@ -1,12 +1,32 @@
 /* **************************************************************************
- * $Workfile:: ipc.js                                           $
+ * $Workfile:: ipc.js                                                       $
  * *********************************************************************/ /**
  *
- * @fileoverview The Brix Item Player Client.
+ * @fileoverview The Brix Item Player Client (IPC).
  *
- * The IPC is responsible of retrieving containerConfig and instantiating 
- * brix configured within the containerConfig.
-
+ * The IPC is responsible listening for AMC for initialization message,
+ * retrieving containerConfig information and instantiating brix defined 
+ * in the containerConfig.
+ *
+ * Message structure as received from the AMC through EventManager 
+ * message = {
+ *     status: <fail | success>
+ *     sourcemessage: <message when there was error>
+ *     data: {
+ *         asrequest: {
+ *             url: <url>
+ *             method: <GET | POST>
+ *             header: {
+ *                 "Hub-Session": <data>
+ *             },
+ *             content: {
+ *                 "nodeIndex": <index>
+ *                 "targetBinding": <data>
+ *             }
+ *         }
+ *     }
+ * }
+ * The 'asrequest' field represents the sequenceNodeIdentifier
  *
  * Created on       Sept 30, 2013
  * @author          Young-Suk Ahn
@@ -31,6 +51,9 @@ goog.require("pearson.brix.BrixLayer");
  * @export
  *
  * @param {Object}      config          - The settings to configure this SelectGroup
+ * @param {!pearson.utils.IEventManager}
+ *                      eventManager    -The event manager to use for publishing events
+ *                                       and subscribing to them.
  *
  ****************************************************************************/
 pearson.brix.Ipc = function (config, eventManager)
@@ -52,15 +75,15 @@ pearson.brix.Ipc = function (config, eventManager)
     /**
      * The BrixLayer instance
      * @todo - Check if it changes to singleton
-     * @type {pearson.brix.BrixLayer}
+     * @type {!pearson.brix.BrixLayer}
      */
     this.bricLayer = new pearson.brix.BricLayer(brixLayerConfig, eventManager);
 };
 
 /**
- * Array of {assignmentId=<val>, itemid=<val>, type=<val>}
+ * Array of {assignmenturl=<val>, activityurl=<val>, type=<val>}
  * 
- * @type {Array.<Object>} items
+ * @type {!Array.<Object>} items
  */
 pearson.brix.Ipc.items = [];
 
@@ -68,15 +91,9 @@ pearson.brix.Ipc.items = [];
  * The container ID is used in the iframe mode.
  * Having a value will make the IPC to retrieve a specific conatinerId 
  * from the IPS.
- * @type {String}
+ * @type {string}
  */
 pearson.brix.Ipc.containerId = null;
-
-/** 
- * Initialization
- * @params items array of {assignemntId, itemId, type}
- * @param target is used in iframe mode, otherwise null (pesude code for deafult param).
- */
 
 /**
  * Initializes the IPC depending on the different parameters are passed.
@@ -85,14 +102,20 @@ pearson.brix.Ipc.containerId = null;
  * the optional opt_containerId is not defined (or null).
  * In firame-mode, there is only one single item and opt_containerId is passed
  * with the containerId for that particular iframe.
+ * @export
  * 
- * @param  {Array.<Object>} items           Array of {assignmentId=<val>, itemid=<val>, type=<val>}
- * @param  {string=}        opt_containerId In iframe mode, the containerId.
+ * @param  {!Array.<Object>} items            Array of {assignmentId=<val>, itemid=<val>, type=<val>}
+ * @param  {string=}         opt_containerId  The containerId that this IPC is
+ *                                            handling. Only in iframe mode.
+ *                                            Should be undefined (or null) in div mode.
  */
-pearson.brix.Ipc.prototype.init = function(items,  opt_containerId)
+pearson.brix.Ipc.prototype.init = function(items, opt_containerId)
 {
+    if (!items || items.length == 0)
+    {
+        throw new Error('Items should be valid array.');
+    }
     this.items = items;
-    // Throw error if items is empty; 
 
     this.subscribeInitTopic();
 
@@ -102,8 +125,8 @@ pearson.brix.Ipc.prototype.init = function(items,  opt_containerId)
         // There should be only one element in the items
         if (this.items.length != 1)
         {
-            throw new Error('In the iframe mode, there should only be one item but '
-                + this.items.length + ' were provided');
+            throw new Error('In the iframe mode, there should be only one item but '
+                + this.items.length + ' were provided.');
         }
         
         // This means that we are in Iframe mode
@@ -130,40 +153,27 @@ pearson.brix.Ipc.prototype.init = function(items,  opt_containerId)
 };
 
 /**
+ * Returns the topic name for the init event subscription.
  * Must be exactly same as laspaf.js's 
- * @param  {[type]} message [description]
- * @return {[type]}         [description]
+ * 
+ * @param  {Object} message  An object that represents an item.
+ *                           assignmenturl and activityurl properties are required.
+ * 
+ * @return {string}          The topic name
  */
 pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 {
+    if (!item.assignmenturl || !item.activityurl)
+    {
+        throw new Error('Invalid argument required properties "assignmenturl" or "activityurl" not found.');
+    }
     return "init." + item.assignmenturl
         + "." + item.activityurl;
 };
 
-/**
- * Message structure as received to the initialization topic 
- * (message originated from AMS, @see laspaf.js):
-message = {
-    status: <fail | success>
-    sourcemessage: <message when there was error>
-    data: {
-        asrequest: {
-            url:
-            method:
-            header: {
-                "Hub-Session": <data>
-            },
-            content: {
-                "nodeIndex": <index>
-                "targetBinding": <data>
-            }
-        }
-    }
-}
- */
 
 /** 
- * Subscribes to initialization topic using the assignmentId and activityId 
+ * Subscribes to initialization topic using the provided item(s) information 
  * (formerly known as itemId)
  */
 pearson.brix.Ipc.prototype.subscribeInitTopic = function()
@@ -179,11 +189,11 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function()
         var currTopic = this.activityBindingReplyTopic(item);
 
         // Anonymous function to create a scope for the currTopic to live as closure.
-        // the topic is used to unsubscribe later 
+        // the topic is used to unsubscribe in the following lines
         (function(topic) {
             that.eventManager.subscribe(topic, function(sequenceNodeIdentifier) {
                 
-                // Unsubscribe as initialization is no longer needed.
+                // Unsubscribe, initialization is no longer needed.
                 that.eventManager.unsubscribe(topic, this);
 
                 var date = new Date();
@@ -191,8 +201,7 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function()
                     sequenceNodeIdentifier: sequenceNodeIdentifier,
                     timestamp: date.toISOString(),
                     type: "initialization",
-                    body: {
-                    }
+                    body: {}
                 };
                 // add containerId if exists (e.g. Iframe mode)
                 if (that.containerId)
