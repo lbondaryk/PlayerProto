@@ -125,11 +125,37 @@
 				},
 			"mortarConfig":
 				{
-					"description": "",
+					"description": "configuration of a particular mortar.",
 					"type": "object",
-					"required": [],
+					"required": ["mortarId", "mortarType", "config"],
 					"properties":
 						{
+							"mortarId":
+								{
+									"description": "A string which uniquely identifies this mortar out of the set of all mortars in the activity",
+									"type": "string",
+									"minLength": 1
+								},
+							"mortarType":
+								{
+									"description": "MortarTypes enum name used to register the mortar with the BricWorks",
+                                    "type": "string",
+									"enum":
+										[
+											"Hilite"
+										],
+								},
+							"config":
+								{
+									"description": "config for the mortar type specified",
+									"type": "object",
+								},
+							"configFixup":
+								{
+									"description": "array of fixups that need to be made to the config before using it to construct the mortar",
+									"type": "array",
+									"items": { "$ref": "#/definitions/configFixup" }
+								},
 						}
 				},
 			"configFixup":
