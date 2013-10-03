@@ -204,7 +204,7 @@ div.brixRadioGroup table.questionTable tr>td:first-child
 {
   text-align:   right;
   vertical-align:top;
-  padding-top: 4px; 
+  padding-top: 5px; 
 }
 div.brixRadioGroup table.questionTable tr>td:nth-of-type(2)
 {
@@ -327,6 +327,7 @@ div.brixMultipleChoiceQuestion
   background-color: #efefef;
   border-top: 1px solid #ccc;
   box-shadow: 0 4px 0 #ddd inset;
+  padding: 20px;
 }
 
 
@@ -335,6 +336,7 @@ div.brixMultipleChoiceQuestion
   box-shadow: 0 4px 0 #ddd inset;
   border-top: 1px solid #ccc;
   background-color: #efefef;
+  padding: 20px;
 }
 
 
@@ -343,6 +345,7 @@ div.brixMultipleChoiceQuestion
   box-shadow: 0 4px 0 #ddd inset;
   border-top: 1px solid #ccc;
   background-color: #efefef;
+  padding: 20px;
 }
 
 .brixMultipleChoiceQuestion .feedback i 
