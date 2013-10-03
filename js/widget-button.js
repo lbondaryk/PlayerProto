@@ -173,6 +173,7 @@ pearson.brix.Button.prototype.setText = function (text)
 
 	if (textChanged && this.lastdrawn.widgetGroup)
 	{
+		window.console.log('button: text was changed to: "' + this.text_ + '".');
 		this.redraw();
 	}
 };
@@ -207,6 +208,7 @@ pearson.brix.Button.prototype.setEnabled = function (newEnableState)
 
 	if (stateChanged && this.lastdrawn.widgetGroup)
 	{
+		window.console.log('button: enabled state was changed to ' + this.enabled_ + '.');
 		this.redraw();
 	}
 };

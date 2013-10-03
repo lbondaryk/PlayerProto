@@ -237,6 +237,8 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
 	choiceInputs
 		.on("change", function (d)
 				{
+					window.console.log('RadioGroup: onChange publishing "' + that.selectedEventId +
+								       '" topic with selectKey "' + d.answerKey + '".');
 					that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey});
 				});
 	

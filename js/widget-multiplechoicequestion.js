@@ -300,6 +300,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function ()
 {
+	window.console.log('MCQ: handling answer selected');
 	this.submitButton.setText("Submit");
 	this.submitButton.setEnabled(true);
 };
