@@ -430,6 +430,7 @@ table.widgetCallout {
   border: 2px solid #f4f4f4;
   width: auto; 
   font: 14px Helvetica;
+  margin-bottom: 15px;
   }
 
 table.widgetCallout td {
@@ -700,15 +701,15 @@ svg g .stroke11 {
 svg g.brixBarChart .bar,
 svg g.widgetLegend rect,
 svg g.bricPieChart path {
-  opacity: 0.8; 
+  opacity: 0.7; 
   }
 
-svg g.brixBarChart .lit rect,
+svg g.brixBarChart .lit .bar,
 svg g.widgetLegend .lit rect,
 svg g.bricPieChart path .lit  {
   opacity: 1;
   stroke-width: 2;
-  stroke: #107aca;
+  stroke: #999;
   }
 
 

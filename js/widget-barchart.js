@@ -582,6 +582,8 @@ pearson.brix.BarChart.prototype.lite = function(liteKey)
 	var allBars = this.lastdrawn.bars;
 	allBars
 		.classed("lit", false);
+
+	allBars.selectAll('rect').attr('transform', 'scale(1,1)');
 		
 	//var allSeries = this.lastdrawn.series;
 	//allSeries
@@ -596,6 +598,8 @@ pearson.brix.BarChart.prototype.lite = function(liteKey)
 	// Highlight the labels w/ the matching key
 	barsToLite
 		.classed("lit", true);
+
+	barsToLite.selectAll('rect').transition().attr('transform', 'scale(1,1.1)');
 
 	if (barsToLite.empty())
 	{
