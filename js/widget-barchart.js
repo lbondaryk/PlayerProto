@@ -299,7 +299,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	this.childBrix.beforeData.forEach(this.drawBric_, this);
 
 	var graph = axesDrawn.group.append("g") //make a group to hold bars
-		.attr("class","widgetBarChart").attr("id", barsId);
+		.attr("class","brixBarChart").attr("id", barsId);
 
 	
 	this.lastdrawn.graph = graph;

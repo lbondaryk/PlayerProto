@@ -697,18 +697,18 @@ svg g .stroke11 {
   
 /* bars, pie wedges and points
 ================================================== */
-svg g.widgetBarChart rect,
-svg g.widgetLegend rect 
+svg g.brixBarChart .bar,
+svg g.widgetLegend rect,
 svg g.bricPieChart path {
   opacity: 0.8; 
   }
 
-svg g.widgetBarChart rect .lit
-svg g.widgetLegend rect .lit
+svg g.brixBarChart .lit rect,
+svg g.widgetLegend .lit rect,
 svg g.bricPieChart path .lit  {
   opacity: 1;
-  stroke-width: 1;
-  stroke: #8063c7;
+  stroke-width: 2;
+  stroke: #107aca;
   }
 
 
