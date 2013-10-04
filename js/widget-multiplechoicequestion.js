@@ -278,7 +278,8 @@ pearson.brix.MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function ()
 {
-	var that = this;
+	window.console.log('MCQ: handling submit requested');
+
 	var submitAnsDetails =
 		{
 			question: this,
@@ -317,12 +318,15 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function (
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (responseDetails)
 {
+	window.console.log('MCQ: handling submit response');
+
 	this.responses.push(responseDetails);
 
 	var responseDiv = this.lastdrawn.widgetGroup.select('div.feedback');
 
 	// this removes any previous feedback and only shows student the most recent
-	responseDiv.selectAll('div.feedback > *').remove();
+    var prevFeedback = this.lastdrawn.widgetGroup.selectAll('div.feedback > *');
+    prevFeedback.remove();
 
 	// For now just use the helper function to write the response.
 	pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
