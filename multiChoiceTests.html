@@ -66,13 +66,18 @@
 
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/brixlib-compiled.js"></script>
 	<!--
+	<script src="js/brixlib-compiled.js"></script>
+	-->
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
 	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
 	<script src="js/widget-base.js"></script>
+	<script src="js/widget-prototype-axes.js"></script>
     <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
     <script src="js/widget-imageviewer.js"></script>
@@ -84,10 +89,6 @@
 	<script src="js/widget-radiogroup.js"></script>
 	<script src="js/widget-button.js"></script>
 	<script src="js/widget-multiplechoicequestion.js"></script>
-	<script src="js/fakeactivitydb.js"></script>
-	<script src="js/answerman.js"></script>
-	<script src="js/submitmanager.js"></script>
-	-->
 
 	<script src="js/widget-selectgroup.js"></script>
 	<script src="js/widget-linegraph.js"></script>
@@ -101,6 +102,7 @@
 	var RadioGroup = pearson.brix.RadioGroup;
 	var AnswerMan = pearson.brix.AnswerMan;
 	var SubmitManager = pearson.brix.SubmitManager;
+	var LineGraph = pearson.brix.LineGraph;
 	
 
 	var submitManager = new SubmitManager(eventManager, new AnswerMan());
