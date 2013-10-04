@@ -233,7 +233,9 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
 				return  choiceLabel + d.content;
 			});
 	
-	var choiceInputs = widgetGroup.selectAll("div.brixRadioGroup input[name='" + this.id + "']");
+    //@note This selector broke w/ the chrome update of 10/3/2013
+	//var choiceInputs = widgetGroup.selectAll("div.brixRadioGroup input[name='" + this.id + "']");
+	var choiceInputs = widgetGroup.selectAll("input[name='" + this.id + "']");
 	choiceInputs
 		.on("change", function (d)
 				{
