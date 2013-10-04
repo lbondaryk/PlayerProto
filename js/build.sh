@@ -61,6 +61,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=answermanpolling.js
 	--input=briclayer.js
 	--input=bricworks.js
+	--input=domhelper.js
 	--input=eventmanager.js
 	--input=fakeactivitydb.js
 	--input=submitmanager.js

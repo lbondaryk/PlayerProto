@@ -16,6 +16,7 @@
 (function () {
     var expect = chai.expect;
 
+    var ipsProxyConfig = {serverBaseUrl:"http://localhost:8088"};
     var seqNodeKey = null;
 
     function endsWith(str, suffix) {
@@ -27,10 +28,9 @@
         var ipsProxy = null;
         before(function (done) {
 
-
-            ipsProxy = new pearson.brix.IpsProxy({serverBaseUrl:"http://localhost:8088"});
-
+            ipsProxy = new pearson.brix.IpsProxy(ipsProxyConfig);
             ipsProxy.retrieveSequenceNode(testInitializationEnvelope, function(error, result){
+console.log('%%%%%' + result);
                 try {
                     expect(error).to.equal(null);
                     expect(result).to.be.an('object');
@@ -118,14 +118,14 @@
                 expect(endsWith(url, '/submissions')).to.be.true;
                 expect(method).to.equal("POST");
                 expect(headers).to.deep.equal({"Content-Type": "application/json" });
-                callback({
+                var mockResult = {
                     target: {
                         isSuccess: function(){ return true; },
                         getResponseJson: function(){ return {data:"dummy"}; },
                     }
-                });
+                };
+                callback(mockResult);
             });
-
             ipsProxy.postSubmission(testSubmissionMessage, function(error, result){
 
                 try {

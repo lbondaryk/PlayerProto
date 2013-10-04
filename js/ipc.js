@@ -64,11 +64,16 @@ pearson.brix.Ipc = function (config, eventManager)
      */
     this.eventManager = eventManager;
 
+    if (!config.ipsBaseUrl)
+    {
+        throw new Error('IPS server URL not provided.');
+    }
+    
     /**
      * The IpsProxy instance
      * @type {pearson.brix.IpsProxy}
      */
-    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl":"http://localhost:8088"});
+    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl":config.ipsBaseUrl});
 
     var brixLayerConfig = null;
 
@@ -100,7 +105,7 @@ pearson.brix.Ipc.containerId = null;
  * The different parameters defines the mode: div or iframe.
  * In div-mode, the items contains an array of possibly multiple items, and 
  * the optional opt_containerId is not defined (or null).
- * In firame-mode, there is only one single item and opt_containerId is passed
+ * In iframe-mode, there is only one single item and opt_containerId is passed
  * with the containerId for that particular iframe.
  * @export
  * 
@@ -111,7 +116,7 @@ pearson.brix.Ipc.containerId = null;
  */
 pearson.brix.Ipc.prototype.init = function(items, opt_containerId)
 {
-    if (!items || items.length == 0)
+    if (!items || items.length === 0)
     {
         throw new Error('Items should be valid array.');
     }

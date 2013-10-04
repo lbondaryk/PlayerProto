@@ -23,7 +23,7 @@
 			var rxMessageCtr = 0;
 
 			// EventManager with no argument defaults to publishToMessageBroer = true
-            var eventManager = new pearson.utils.EventManager();
+            var eventManager = new pearson.utils.EventManager(true);
 
 
 			window.onload = function() {
@@ -56,9 +56,6 @@
 				// Checking double subscription on MessageBroker
 				eventManager.subscribe(subscribeTopic + "NoRx", noRxHandler);
 				eventManager.unsubscribe(subscribeTopic + "NoRx", noRxHandler);
-
-
-				noRxHandler
 
 		        eventManager.listenBroker();
 

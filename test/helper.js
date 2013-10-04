@@ -28,8 +28,8 @@ var helper = (function () {
      * createNewDiv will append a new div element to the document body and
      * return that div.
      *
-     * @param {Array.<Object>=} opt_attribs Array of name value pair for the attributes
-     * @param {Array.<Object>=} opt_data     rray of name value pair for the dataset
+     * @param {Object=} opt_attribs Array of name value pair for the attributes
+     * @param {Object=} opt_data     rray of name value pair for the dataset
      *
      * @return {Element}       the newly created div element
      *
@@ -67,7 +67,7 @@ var helper = (function () {
      * @param {DOM} containerEl        The element which the new node will be appended as child
      * @param {string} classAttrVal    Value for the class attribute
      * @param {string} dataAttrVal     Value for the data attribute
-     * @param {Array.<Object>=}        Array of name value pair for the params
+     * @param {<Object>=} opt_params   Array of name value pair for the params
      * @return {Element} the newly created object element
      *
      ****************************************************************************/

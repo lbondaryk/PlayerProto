@@ -10,11 +10,11 @@
 (function () {
     var expect = chai.expect;
 
-    var domHelper;
+    var DomHelper = pearson.utils.DomHelper;
 
     describe('IPC', function () {
 
-        var domHelper = null;
+        var ipcConfig = {ipsBaseUrl:"http://localhost:8088"};
 
         // For the creation of test divs
         var divAttrs = [
@@ -49,7 +49,6 @@
         before(function () {
             div1 = helper.createNewDiv(divAttrs[0], expectedItems[0]);
             div2 = helper.createNewDiv(divAttrs[1], expectedItems[1]);
-            domHelper = new DomHelper();
         });
 
         after(function () {
@@ -62,8 +61,8 @@
 
         it('should properly initialize by subscribing to init topics (div & iframe mode)', function () {
             var eventManager = new pearson.utils.EventManager();
-            var ipc = new pearson.brix.Ipc({}, eventManager);
-            var items = domHelper.scanElements('brix', 'div');
+            var ipc = new pearson.brix.Ipc(ipcConfig, eventManager);
+            var items = DomHelper.scanElements('brix', 'div');
 
             // Both should be set to true after init();
             var topicsSubscribed = [false,false];
@@ -89,8 +88,8 @@
 
         it('should handle init messages (div & iframe mode)', function () {
             var eventManager = new pearson.utils.EventManager();
-            var ipc = new pearson.brix.Ipc({}, eventManager);
-            var items = domHelper.scanElements('brix', 'div');
+            var ipc = new pearson.brix.Ipc(ipcConfig, eventManager);
+            var items = DomHelper.scanElements('brix', 'div');
             
             // Both should be set to true after init();
             var topicsUnsubscribed = [false,false];
@@ -141,7 +140,7 @@
 
         it('should publish to AMC requesting sequence node identifier (iframe mode only)', function () {
             var eventManager = new pearson.utils.EventManager();
-            var ipc = new pearson.brix.Ipc({}, eventManager);
+            var ipc = new pearson.brix.Ipc(ipcConfig, eventManager);
             var items = [ expectedItems[0] ];
             
             var itemChecklist = [false,false];

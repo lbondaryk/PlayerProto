@@ -45,8 +45,7 @@ pearson.brix.IpsProxy.serverBaseUrl = null;
 
 
 /* **************************************************************************
- * Retrieves sequence node. The server is health if the callback is called
- * without error. 
+ * Returns the server health status if the callback is called without error. 
  * @export
  * 
  * @param  {Function} callback  Function that is called when the async operation
@@ -177,7 +176,7 @@ pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
 
         var error = null;
         var result = null;
-
+console.log("###"+result);
         if (xhr.isSuccess()) {
             var response = xhr.getResponseJson();
             result = response;

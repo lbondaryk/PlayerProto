@@ -52,7 +52,7 @@ var iframeMessageCounter = {};
 
         it('should initialize the list of bricIframes with 3 iframes: 2 brix iframes and 1 resize iframe', function () {
             // @todo: find out what's the correct method for bricIframeMap
-            expect(Object.keys(messageBroker.domHelper.frameCustomParams).length).to.equal(3);
+            expect(Object.keys(messageBroker.iframeCollection.frameCustomParams).length).to.equal(3);
         });
 
         // Each brix iframe publishes 2 messages: 1 is consumed by subscribers 

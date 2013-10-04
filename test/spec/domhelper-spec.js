@@ -16,9 +16,11 @@
 (function () {
     var expect = chai.expect;
 
+    var DomHelper = pearson.utils.DomHelper;
+
     describe('DomHelper', function () {
 
-        var domHelper = null;
+        //var DomHelper = DomHelper;
 
         var divAttrs = [
             {
@@ -55,8 +57,6 @@
 
             helper.createNewObject(containerDiv, 'brix', null, expectedItems[0]);
             helper.createNewObject(containerDiv, 'brix', null, expectedItems[1]);
-
-            domHelper = new DomHelper();
         });
         after(function () {
             // Remove the crated divs and objects
@@ -67,14 +67,14 @@
         });
 
         it('should scan divs of class \'brix\'', function () {
-            var items = domHelper.scanElements('brix', 'div');
+            var items = DomHelper.scanElements('brix', 'div');
 
             expect(items).to.deep.equal(expectedItems);
         });
 
 
         it('should scan objects of class brix', function () {
-            var items = domHelper.scanObjects('brix');
+            var items = DomHelper.scanObjects('brix');
 
             expect(items).to.deep.equal(expectedItems);
         });

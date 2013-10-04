@@ -128,7 +128,6 @@
                 setTimeout(function(){
                     console.log("## Waiting for a while until all messages being sent.");
                     done();
-                    console.log("## Finished waiting for all messages being sent.");
              
                 }, 1000);
             });
