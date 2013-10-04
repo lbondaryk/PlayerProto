@@ -553,9 +553,9 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 		.attr("class", "brixCaptionedImage")
 		.attr("id", this.captioned_id);
 
-	// caption height is hard set to 40, but this will need to be dynamically measured -lb
+	// caption height is hard set to 80, but this will need to be dynamically measured -lb
 	// 15 pixel margin left and right is hard set
-	var captionSize = {height: 40, width: size.width - 2 * leftRightMargin};
+	var captionSize = {height: 80, width: size.width - 2 * leftRightMargin};
 
 	// putting in a 15 pixel margin on either side of the image rectangle, and 
 	// slice off height for the caption.  This isn't the image actualsize, it's the
