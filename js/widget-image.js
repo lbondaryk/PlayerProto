@@ -505,7 +505,7 @@ pearson.brix.CaptionedImage = function (config, eventManager)
      * @private
      * @type {!pearson.utils.ISize}
      */
-    this.captionSize_ = new pearson.utils.Size(80, this.actualSize.width);
+    this.captionSize_ = new pearson.utils.Size(40, this.actualSize.width);
 	
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)

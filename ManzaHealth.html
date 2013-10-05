@@ -64,44 +64,37 @@
 	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
-	
 	<script src="js/brixlib-compiled.js"></script>
-	
 
 	<!--
-	<script src="../closure/closure-library/closure/goog/base.js"></script>
-	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
-	<script src="js/eventmanager.js"></script>
-	<script src="js/submitmanager.js"></script>
-	<script src="js/answerman.js"></script>
-	<script src="js/fakeactivitydb.js"></script>
-
-	
 	<script src="js/widget-base.js"></script>
-	<script src="js/widget-prototype-axes.js"></script>
+	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-slider.js"></script>
     <script src="js/widget-callouts.js"></script>
     <script src="js/widget-legend.js"></script>
-     !-->
-	
-    
+    <script src="js/widget-numeric.js"></script>
+	<script src="js/eventmanager.js"></script>
+    !-->
 
 <script>
 // local aliases for convenience
-var Size = pearson.utils.Size;
-var SVGContainer = pearson.brix.SVGContainer;
-var Callouts = pearson.brix.Callouts;
-var BarChart = pearson.brix.BarChart;
-var Legend = pearson.brix.Legend;
-
-
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var Callouts = pearson.brix.Callouts;
+	var BarChart = pearson.brix.BarChart;
+	var Legend = pearson.brix.Legend;
+	var Button = pearson.brix.Button;
+	var Slider = pearson.brix.Slider;
+	var Readout = pearson.brix.Readout;
 	 
-var EventManager = pearson.utils.EventManager;
-var SubmitManager = pearson.brix.SubmitManager;
-var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
-var SelectGroup = pearson.brix.SelectGroup;
-
+	var EventManager = pearson.utils.EventManager;
+	var SubmitManager = pearson.brix.SubmitManager;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var SelectGroup = pearson.brix.SelectGroup;
+	var sign = pearson.brix.utils.sign;
 
 var eventManager = new EventManager();
 var submitManager = new SubmitManager(eventManager);
