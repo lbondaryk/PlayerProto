@@ -355,14 +355,14 @@ goog.require('goog.object');
             building = bricLayer.build(activityConfig);
 
             it('should set the config property specified w/ a value of the constant given', function () {
-                var dummyMortar = building.brix[dummyMortarId];
+                var dummyMortar = building.mortar[dummyMortarId];
                 expect(dummyMortar.cfg).to.have.a.property(fixupConstant['name']);
                 expect(dummyMortar.cfg.node).to.equal('#target');
             });
 
             it('should set the config property specified w/ a reference to the previous mortar', function () {
-                var dummyMortar = building.brix[dummyMortarId];
-                var dummyRefMortar = building.brix[dummyRefMortarId];
+                var dummyMortar = building.mortar[dummyMortarId];
+                var dummyRefMortar = building.mortar[dummyRefMortarId];
                 expect(dummyMortar.cfg).to.have.a.property(fixupWithMortarRefProperty['name']);
                 expect(dummyMortar.cfg.glue).to.be.an.instanceOf(DummyRefMortarCtor);
                 expect(dummyMortar.cfg.glue).to.equal(dummyRefMortar);

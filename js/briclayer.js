@@ -242,10 +242,10 @@ pearson.brix.BricLayer.prototype.buildContainer_ = function (building, container
     containerConfig['brixConfig'].forEach(goog.bind(this.buildBric_, this, building));
 
     // build mortar
+    containerConfig['mortarConfig'].forEach(goog.bind(this.buildMortar_, this, building));
 
     // do hookup actions
     this.doActions_(containerConfig['hookupActions'], building);
-
 };
 
 /* **************************************************************************
@@ -271,6 +271,31 @@ pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
     this.doConfigFixup_(bricConfig['configFixup'], config, building);
 
     building['brix'][id] = bricWorks.createBric(type, config);
+};
+
+/* **************************************************************************
+ * BricLayer.buildMortar_                                              */ /**
+ *
+ * Build the mortar defined by the given configuration.
+ * @private
+ *
+ * @param {Object}  building        -Object containing everything that's been
+ *                                   built so far, and where this new mortar
+ *                                   is to be put.
+ * @param {Object}  mortarConfig    -Configuration for creating a mortar.
+ *
+ ****************************************************************************/
+pearson.brix.BricLayer.prototype.buildMortar_ = function (building, mortarConfig)
+{
+    var bricWorks = this.getBricWorks();
+    var id = mortarConfig['mortarId'];
+    var type = mortarConfig['mortarType'];
+    var config = {};
+    goog.object.extend(config, mortarConfig['config']);
+
+    this.doConfigFixup_(mortarConfig['configFixup'], config, building);
+
+    building['mortar'][id] = bricWorks.createMortar(type, config);
 };
 
 /* **************************************************************************
