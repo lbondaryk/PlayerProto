@@ -1,5 +1,5 @@
 /* **************************************************************************
- * brix-image-spec.js                                                  $
+ * brix-image-spec.js                                                       $
  * **********************************************************************//**
  *
  * @fileoverview image and captioned image brix unit tests
@@ -18,8 +18,8 @@
   	var expect = chai.expect;
 
 	var EventManager = pearson.utils.EventManager;
-	var Carousel = pearson.brix.Carousel;
 	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
 
 
     describe('Images wif and wifout captions: you want fries with that?', function () {
@@ -27,14 +27,12 @@
 
         describe('Creating an image bric', function () {
 			var configImg =
-				[
-					{
-						id: 'foo',
-						URI: 'img/test1.jpg',
-						caption: "The seasons",
-						actualSize: {height: 366, width: 443}
-					},
-				];
+                {
+                    id: 'foo',
+                    URI: 'img/test1.jpg',
+                    caption: "The seasons",
+                    actualSize: {height: 366, width: 443}
+                };
 			var myImage = null;
 			
 			before(function () {
@@ -42,7 +40,8 @@
 			});
 			
             it('should have the id specified in the config', function () {
-                expect(myImage.id).to.equal(configImg.id);
+                // we're testing a private member here
+                expect(myImage.imageId_).to.equal(configImg.id);
             });
 
 			it('should have an uninitialized lastdrawn property', function () {
@@ -82,8 +81,8 @@
 						expect(myImage.lastdrawn.size).to.deep.equal(sizeArg);
 					});
 
-					it('should have appended a group element with class \'brixImage\' to the container' +
-					   'and set the lastdrawn.widgetGroup to that d3 selection', function () {
+					it('should have appended a group element with class "brixImage" to the container' +
+					   ' and set the lastdrawn.widgetGroup to that d3 selection', function () {
 						// get the last element of the container
 						// note: this uses internal knowledge of SVGContainer.append which may change. -mjl
 						var last = cntr.svgObj.select("g.brix:last-child :last-child");
@@ -102,10 +101,13 @@
 						 */
 						var tree =
 							{ name: 'g', class: 'brixImage', children:
-								[ 
-								{ name: 'rect', class: 'background'},
-								{ name: 'image', children: [ { name: 'desc' } ] },
-								{ name: 'rect', class: 'highlight'} ],
+								[
+                                    { name: 'rect', class: 'background' },
+                                    { name: 'image', children:
+                                        [ { name: 'desc' } ]
+                                    },
+                                    { name: 'rect', class: 'highlight' }
+                                ],
 							};
 
 						helper.expectElementTree(myImage.lastdrawn.widgetGroup, tree);

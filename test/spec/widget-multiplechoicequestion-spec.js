@@ -142,25 +142,26 @@
 					it('should create a div with sections for the question, choices, button and responses', function () {
 						/*
 						 div.brixMultipleChoiceQuestion
-						 	p.question
-							div.choices
-								div.widgetRadioGroup
+                            fieldset
+						 	    legend.question
+							    div.choices
+								    div.brixRadioGroup
+							div.feedback
 							div.submit
 								div.brixButton
-							div.responses
 						 */
 						var tree =
 							{ name: 'DIV', class: 'brixMultipleChoiceQuestion', children:
-								[	{ name: 'FIELDSET', children:
-									[	{ name: 'LEGEND', class: 'question' },
+								[ { name: 'FIELDSET', children:
+									[ { name: 'LEGEND', class: 'question' },
 										{ name: 'DIV', class: 'choices', children:
 											[ { name: 'DIV', class: 'brixRadioGroup' } ]
 										},
-									]},
-									{ name: 'DIV', class: 'feedback' },
-									{ name: 'DIV', class: 'submit', children:
+									] },
+								  { name: 'DIV', class: 'feedback' },
+								  { name: 'DIV', class: 'submit', children:
 									  [ { name: 'DIV', class: 'brixButton' } ]
-									},
+								  },
 								]
 							};
 
@@ -203,11 +204,13 @@
 						expect(lastSelectEventDetails).to.be.null;
 					});
 					
+					it.skip('TODO TEST: should create a new div with class "feedback" when the button is pressed', function() {
+					});
+					it.skip('TODO TEST: multiple attempts should overwrite the feedback div', function() {
+					});
 					it.skip('MANUAL TEST: should publish selectedEventId when selection is made w/ mouse or keyboard', function() {
-					});
-					it.skip('MANUAL TEST: should create a new div with class "feedback" when the button is pressed', function() {
-					});
-					it.skip('MANUAL TEST: multiple attempts should overwrite the feedback div', function() {
+                        // this has to be a manual test because manipulating the real keyboard and mouse
+                        // cannot be automated.
 					});
 				});
 
@@ -325,26 +328,26 @@
 					it('should create a div with sections for the question, choices, button and responses', function () {
 						/*
 						 div.brixMultipleChoiceQuestion
-						 	fieldset
-						 		legend.question
-								div.choices
-								span.brixSelectGroup
+                            fieldset
+						 	    legend.question
+							    div.choices
+								    span.widgetSelectGroup
+							div.feedback
 							div.submit
 								div.brixButton
-							div.responses
 						 */
 						var tree =
 							{ name: 'DIV', class: 'brixMultipleChoiceQuestion', children:
 								[ { name: 'FIELDSET', children:
-									[ 
-									{ name: 'LEGEND', class: 'question' },
-									{ name: 'DIV', class: 'choices', children:  [ { name: 'SPAN', class: 'widgetSelectGroup' } ] 
-									}
-									]},
+									[ { name: 'LEGEND', class: 'question' },
+										{ name: 'DIV', class: 'choices', children:
+											[ { name: 'SPAN', class: 'widgetSelectGroup' } ]
+										},
+									] },
 								  { name: 'DIV', class: 'feedback' },
 								  { name: 'DIV', class: 'submit', children:
 									  [ { name: 'DIV', class: 'brixButton' } ]
-								  }
+								  },
 								]
 							};
 

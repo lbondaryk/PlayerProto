@@ -69,7 +69,8 @@ goog.require('pearson.brix.HtmlBric');
  * select one (or more of them).
  *
  * @typedef {Object} pearson.brix.Answer
- * @property {htmlString}	content		-The content of the answer, which presents the
+ * @property {htmlString}
+ *                      content     -The content of the answer, which presents the
  * 									 meaning of the answer.
  * @property {string}	response	-The response is presented to the user when
  * 									 they choose this answer.
@@ -211,10 +212,10 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
 	/** @type {d3DataFunc} */
 	var getButtonId = function (d, i) {return that.id + "_btn" + i;};
 
-	var buttonCell = ansRows.append("td");
-	
 	var choiceIndex = this.getChoiceNumberToDisplayFn_();
+	var choiceSeparator = (this.numberFormat != 'none') ? ')' : '';
 
+	var buttonCell = ansRows.append("td");
 	buttonCell
 		.append("input")
 			.attr("id", getButtonId)
@@ -223,22 +224,21 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
 			.attr("value", function (d) {return d.answerKey;});
 
 	var labelCell = ansRows.append("td");
-
-	var choiceSeparator = (that.numberFormat != 'none') ? ')' : '';
-
 	labelCell
 		.append("label")
 			.attr("for", getButtonId)
-			.html(function (d, i) {
-				var choiceLabel = '<span class="choiceLabel">' + choiceIndex(i) + choiceSeparator + '</span> ';
-				return  choiceLabel + d.content;
-			});
+			.html(function (d, i)
+                  {
+                      var choiceLabel = '<span class="choiceLabel">' +
+                                        choiceIndex(i) + choiceSeparator + '</span> ';
+                      return  choiceLabel + d.content;
+                  });
 	
-	var choiceInputs = widgetGroup.selectAll("div.brixRadioGroup input[name='" + this.id + "']");
+	var choiceInputs = widgetGroup.selectAll("input[name='" + this.id + "']");
 	choiceInputs
-		.on("change", function (d)
+		.on("change", function (d, i)
 				{
-					that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey});
+					that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey, index: i});
 				});
 	
 	this.lastdrawn.widgetGroup = widgetGroup;
@@ -262,7 +262,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.selectedItem = function ()
 {
-	var selectedInputSelector = "div.brixRadioGroup input[name='" + this.id + "']:checked";
+	var selectedInputSelector = "input[name='" + this.id + "']:checked";
 	var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
 	return !selectedInput.empty() ? selectedInput.datum() : null;
 };
@@ -279,7 +279,7 @@ pearson.brix.RadioGroup.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 {
-	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.brixRadioGroup input");
+	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("input");
 	var selectedInput = choiceInputs[0][index];
 
 	if (selectedInput.checked)

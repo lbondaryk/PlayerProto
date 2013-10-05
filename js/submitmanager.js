@@ -256,7 +256,7 @@ pearson.brix.SubmitManager.appendResponseWithDefaultFormatting = function (conta
 
 	// display the results of the submission in the given container
 	container.append("div")
-		.attr('class', ['feedback', responseFormat[ansType].responseClass].join(" "))
+		.attr('class', responseFormat[ansType].responseClass)
 		.html(responseHtml);
 };
 
