@@ -13,6 +13,9 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+//goog.require('goog.debug.Logger');
+//goog.require('goog.debug.Logger.Level');
+
 goog.provide('pearson.brix.IpsProxy');
 
 goog.require("goog.net.XhrIo");
@@ -41,8 +44,9 @@ pearson.brix.IpsProxy = function (config)
  * The server base url
  * @type {String}
  */
-pearson.brix.IpsProxy.serverBaseUrl = null;
+pearson.brix.IpsProxy.prototype.serverBaseUrl = null;
 
+//pearson.brix.IpsProxy.prototype.logger = goog.debug.Logger.getLogger('example.Child');
 
 /* **************************************************************************
  * Returns the server health status if the callback is called without error. 
@@ -176,7 +180,6 @@ pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
 
         var error = null;
         var result = null;
-console.log("###"+result);
         if (xhr.isSuccess()) {
             var response = xhr.getResponseJson();
             result = response;
@@ -193,6 +196,8 @@ console.log("###"+result);
     };
 
     var message = JSON.stringify(param);
+
+    console.log('IpsProxy calling server[' + url + '] :' + message);
 
     // Another way of requesting is creating an XhrIo instance
     // passing it to goog event listner as

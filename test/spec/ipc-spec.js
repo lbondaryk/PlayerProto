@@ -31,14 +31,14 @@
         // For the creation of test divs, as well as testing the expected json from scan method 
         var expectedItems = [
             {
-                activityurl: "http://content.api.pearson.com/resources/activity/11001",
                 assignmenturl: "http://content.api.pearson.com/resources/activity/12001",
+                activityurl: "http://content.api.pearson.com/resources/activity/11001",
                 containerid: "imgReactor",
                 type: "brix",
             },
             {
-                activityurl: "http://content.api.pearson.com/resources/activity/11002",
                 assignmenturl: "http://content.api.pearson.com/resources/activity/12002",
+                activityurl: "http://content.api.pearson.com/resources/activity/11002",
                 containerid: "steps",
                 type: "brix",
             }
@@ -58,6 +58,25 @@
             bodyEl.removeChild(div2);
         });
 
+
+        it('should correctly normalize list of items', function () {
+            var itemsWithDuplicateTopics = helper.cloneObject(expectedItems);
+            itemsWithDuplicateTopics.push({
+                assignmenturl: "http://content.api.pearson.com/resources/activity/12001",
+                activityurl: "http://content.api.pearson.com/resources/activity/11001",
+                containerid: "sliderReactor",
+                type: "brix"
+            });
+            var eventManager = new pearson.utils.EventManager();
+            var ipc = new pearson.brix.Ipc(ipcConfig, eventManager);
+            var normalized = ipc.normalizeByTopic(itemsWithDuplicateTopics);
+
+            console.log("**NORM:" + JSON.stringify(normalized));
+
+            expect(normalized.length).to.equal(2);
+            expect(normalized[0]).to.not.have.property('containerid');
+            expect(normalized[1]).to.have.property('containerid');
+        });
 
         it('should properly initialize by subscribing to init topics (div & iframe mode)', function () {
             var eventManager = new pearson.utils.EventManager();

@@ -8,7 +8,7 @@
  * retrieving containerConfig information and instantiating brix defined 
  * in the containerConfig.
  *
- * Message structure as received from the AMC through EventManager 
+ * Message structure as received By IPC from the AMC through EventManager 
  * message = {
  *     status: <fail | success>
  *     sourcemessage: <message when there was error>
@@ -75,14 +75,14 @@ pearson.brix.Ipc = function (config, eventManager)
      */
     this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl":config.ipsBaseUrl});
 
-    var brixLayerConfig = null;
+    var bricLayerConfig = null;
 
     /**
      * The BrixLayer instance
      * @todo - Check if it changes to singleton
      * @type {!pearson.brix.BrixLayer}
      */
-    this.bricLayer = new pearson.brix.BricLayer(brixLayerConfig, eventManager);
+    this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager);
 };
 
 /**
@@ -107,6 +107,11 @@ pearson.brix.Ipc.containerId = null;
  * the optional opt_containerId is not defined (or null).
  * In iframe-mode, there is only one single item and opt_containerId is passed
  * with the containerId for that particular iframe.
+ * 
+ * IMPORTANT: The Ipc.init() should be called prior AMC's initialization.
+ *            This is because IPC mus have subscribed before AMC publishes
+ *            init messages.
+ *             
  * @export
  * 
  * @param  {!Array.<Object>} items            Array of {assignmentId=<val>, itemid=<val>, type=<val>}
@@ -114,13 +119,13 @@ pearson.brix.Ipc.containerId = null;
  *                                            handling. Only in iframe mode.
  *                                            Should be undefined (or null) in div mode.
  */
-pearson.brix.Ipc.prototype.init = function(items, opt_containerId)
+pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
 {
     if (!items || items.length === 0)
     {
         throw new Error('Items should be valid array.');
     }
-    this.items = items;
+    this.items = this.normalizeByTopic(items);
 
     this.subscribeInitTopic();
 
@@ -139,7 +144,7 @@ pearson.brix.Ipc.prototype.init = function(items, opt_containerId)
 
         // IPS shall also subscribe to "pageLoaded" event that is originated 
         // from the master page
-        this.eventManager.subscribe('__system_pageLoaded', function(message) {
+        this.eventManager.subscribe('__system_pageLoaded', function (message) {
 
             for (var i=0; i < that.items.length; i++)
             {
@@ -155,6 +160,54 @@ pearson.brix.Ipc.prototype.init = function(items, opt_containerId)
             }
         });
     }
+};
+
+/**
+ * Returns the array where the redundant topic combination are removed.
+ * For example array has:
+ * [{assignmenturl="A", activityurl="B", containerid="rector"}
+ * ,{assignmenturl="A", activityurl="B", containerid="step"}
+ * ,{assignmenturl="A", activityurl="C", containerid="slider"}]
+ * Then the array is merged as
+ * [{assignmenturl="A", activityurl="B"}
+ * ,{assignmenturl="A", activityurl="C", containerid="slider"}]
+ * Notice that the repeated combination of assignmenturl="A", activityurl="B" were
+ * merged into one.
+ * This will guarantee that the bricLayer calls build() only once per same sequence node.
+ * 
+ * @param  {!Array.<Object>} items  Array of {assignmentId=<val>, itemid=<val>, type=<val>}
+ * @return {!Array.<Object>}        Normalized array.
+ */
+pearson.brix.Ipc.prototype.normalizeByTopic = function (items)
+{
+    // Dictionary to check for duplicates
+    var dictionary = {};
+
+    var result = [];
+    for (var i=0; i < items.length; i++)
+    {
+        var topic = this.activityBindingReplyTopic(items[i]);
+        var entryDic = dictionary[topic];
+        if (entryDic)
+        {
+            if (entryDic.counter == 1)
+            {
+                // From the first element, remove the attributes other than those used for topics
+                result[entryDic.firstIndex] = {
+                    assignmenturl: result[entryDic.firstIndex].assignmenturl,
+                    activityurl: result[entryDic.firstIndex].activityurl
+                };
+            }
+            entryDic.counter++;
+        }
+        else
+        {
+            // It not found in the dictionary, push to the result array
+            dictionary[topic] = {firstIndex: result.length, counter:1};
+            result.push(items[i]);
+        }
+    }
+    return result;
 };
 
 /**
@@ -181,7 +234,7 @@ pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
  * Subscribes to initialization topic using the provided item(s) information 
  * (formerly known as itemId)
  */
-pearson.brix.Ipc.prototype.subscribeInitTopic = function()
+pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
 {
     var item;
     var that = this;
@@ -196,28 +249,47 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function()
         // Anonymous function to create a scope for the currTopic to live as closure.
         // the topic is used to unsubscribe in the following lines
         (function(topic) {
-            that.eventManager.subscribe(topic, function(sequenceNodeIdentifier) {
+            that.eventManager.subscribe(topic, function(initMessage) {
                 
-                // Unsubscribe, initialization is no longer needed.
-                that.eventManager.unsubscribe(topic, this);
-
-                var date = new Date();
-                var seqNodeRequestMessage = {
-                    sequenceNodeIdentifier: sequenceNodeIdentifier,
-                    timestamp: date.toISOString(),
-                    type: "initialization",
-                    body: {}
-                };
-                // add containerId if exists (e.g. Iframe mode)
-                if (that.containerId)
+                if (initMessage.status != 'success')
                 {
-                    seqNodeRequestMessage.body.containerId = that.containerId;
+                    console.log("initMessage returned error status. " + JSON.stringify(initMessage.sourcemessage));
                 }
+                else
+                {
+                    // Unsubscribe, initialization is no longer needed.
+                    that.eventManager.unsubscribe(topic, this);
 
-                var activityConfig = that.ipsProxy.retrieveSequenceNode(seqNodeRequestMessage); // Does the AJAX call to IPS
+                    var date = new Date();
+                    var seqNodeRequestMessage = {
+                        sequenceNodeIdentifier: initMessage.data.asrequest,
+                        timestamp: date.toISOString(),
+                        type: "initialization",
+                        body: {}
+                    };
+                    // add containerId if exists (e.g. Iframe mode)
+                    if (that.containerId)
+                    {
+                        seqNodeRequestMessage.body.containerId = that.containerId;
+                    }
 
-                // Build the building!
-                that.bricLayer.build(activityConfig);
+                    that.ipsProxy.retrieveSequenceNode(seqNodeRequestMessage, function (error, result){
+                        // Build the building!
+                        if (error)
+                        {
+                            // Handle server error
+                            console.log("ERROR on retrieveSequenceNode: "+ JSON.stringify(error));
+                        }
+                        else
+                        {
+                            // in the absence of error, result is containerConfig
+console.log("** ContainerConfig: "+JSON.stringify(result.data.containerConfig));
+                            that.bricLayer.build(result.data.containerConfig);
+                        }
+                    }); // Does the AJAX call to IPS
+
+                }
+                
             });
         })(currTopic);
     }

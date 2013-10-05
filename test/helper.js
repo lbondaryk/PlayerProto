@@ -238,7 +238,7 @@ var helper = (function () {
      ****************************************************************************/
     var cloneObject = function cloneObject(obj)
     {
-    return JSON.parse(JSON.stringify(obj));
+        return JSON.parse(JSON.stringify(obj));
     };
 
     return {
