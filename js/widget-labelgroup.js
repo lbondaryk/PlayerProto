@@ -222,7 +222,7 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
 	var numLabels = this.labels.length;
 
 	var labelsContainer = container.append("g") //make a group to hold labels
-		.attr("class", "widgetLabelGroup")
+		.attr("class", "brixLabelGroup")
 		.attr("id", this.id);
 		
 	this.lastdrawn.widgetGroup = labelsContainer;
@@ -238,14 +238,14 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
 	
 	// bind the label group collection to the label data
 	// the collection is used to highlight and unhighlight
-	var labelCollection = labelsContainer.selectAll("g.widgetLabel").data(this.labels);
+	var labelCollection = labelsContainer.selectAll("g.brixLabel").data(this.labels);
 	
 	// on the enter selection (create new ones from data labels) make
 	// the groups. This is useful in case you want to pack more than just the
 	// text label into the graup with the same relative positioning.  
 	labelCollection.enter()
 		.append("g")
-		.attr("class","widgetLabel");
+		.attr("class","brixLabel");
 		
 	//on redraw, get rid of any series which now have no data
 	labelCollection.exit().remove();  
@@ -285,13 +285,13 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
 				.html(function (d) { return d.content; }); //make the label
 
 	// bullets type just puts big black circle markers on key areas of a diagram
-	// a precursor to hotspot answertypes
+	// a precursor to hotspot answertypes - the 44 pixel square is a UX spec
 	if (this.type != "none")
 	{
 		labelCollection.append("rect")
 			//.attr("class", "numSteps")
-			.attr("height", 26)
-			.attr("width", 26)
+			.attr("height", 44)
+			.attr("width", 44)
 			.attr("x", 4)
 			.attr("y", 4);
 	}
@@ -306,8 +306,10 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
 		var choiceIndex = this.getChoiceNumberToDisplayFn_();
 
 		labelCollection.append("text")
-			.attr("x", 17)
-			.attr("y", 18)
+		// the 25 and 27 serve to attractively center the text on the square on Chrome,
+		// might need to be adjusted for other browsers
+			.attr("x", 25)
+			.attr("y", 27)
 			.attr("text-anchor", "middle")
 			.attr("alignment-baseline", "middle")
 			.text(function (d, i) {return choiceIndex(i);});
@@ -320,7 +322,7 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
 					that.lite(d.key);
 				});
 				
-	this.lastdrawn.labelCollection = labelsContainer.selectAll("g.widgetLabel");
+	this.lastdrawn.labelCollection = labelsContainer.selectAll("g.brixLabel");
 
 }; // end of LabelGroup.draw()
 

@@ -147,6 +147,7 @@ textChunks.draw(d3.select("#optionsOff"));
 			id: "cimg0n",
 			URI: 'img/reactor.jpg',
 			caption: "Nuclear Reactor Schematic Diagram",
+			actualSize: {height: 310, width: 680},
 			captionPosition: "below"
 		};
 	
@@ -201,12 +202,13 @@ callEm.draw(d3.select("#numbered"));
 			id: "endoBody1",
 			URI: 'img/endocrineSystem.jpg',
 			caption: "Human Glands",
-			captionPosition: "below"
+			captionPosition: "below",
+			actualSize: {height: 500, width: 430}
 		};
 	
 	var svg5 = new SVGContainer({
 			node: d3.select("#Endocrine"),
-			maxWid: 500, //550,
+			maxWid: 553, //550,
 			maxHt: 620
 		});
 		
@@ -219,15 +221,15 @@ callEm.draw(d3.select("#numbered"));
 		{id: "secrete",
 		labels: 	
 		  [
-		{content: "Hypothalamus", xyPos: [0,1], width: 120	},
-		{key: "Pituitary", content: "Pituitary gland" , xyPos: [0,.8], width: 100	},
-		{key: "Pineal", content: "Pineal gland (epiphysis)", xyPos: [.15,.75], width: 100	},
-		{key: "Thyroid", content: "Thyroid gland", xyPos: [.5,.98], width: 100},
-		{key: "Parathyroid", content: "Parathyroid gland", xyPos: [.8,.9], width: 90},
-		{key: "Adrenal", content: "Adrenal (surparenal)", xyPos: [.78,.8], width: 90},
-		{key: "Pancreas", content: "Pancreas", xyPos: [.82,.55], width: 100},
-		{key: "Ovaries", content: "Ovaries", xyPos: [.65,.45], width: 70},
-		{key: "Testes", content: "Testicles", xyPos: [.7,.1], width: 80}
+		{content: "Hypothalamus", xyPos: [.01,.98], width: 120	},
+		{key: "Pituitary", content: "Pituitary gland" , xyPos: [0,.8], width: 110	},
+		{key: "Pineal", content: "Pineal gland (epiphysis)", xyPos: [.15,.75], width: 110	},
+		{key: "Thyroid", content: "Thyroid gland", xyPos: [.5,.98], width: 110},
+		{key: "Parathyroid", content: "Parathyroid gland", xyPos: [.8,.9], width: 110},
+		{key: "Adrenal", content: "Adrenal (surparenal)", xyPos: [.78,.8], width: 110},
+		{key: "Pancreas", content: "Pancreas", xyPos: [.8,.51], width: 110},
+		{key: "Ovaries", content: "Ovaries", xyPos: [.65,.37], width: 110},
+		{key: "Testes", content: "Testicles", xyPos: [.7,.05], width: 110}
 		]
 	}, eventManager);
 	

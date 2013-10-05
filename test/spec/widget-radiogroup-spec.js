@@ -117,18 +117,18 @@
 						expect(myRadioGroup.lastdrawn.container.node()).to.deep.equal(cntrNode);
 					});
 
-					it('should have appended a div element with class \'widgetRadioGroup\' to the container' +
+					it('should have appended a div element with class \'brixRadioGroup\' to the container' +
 					   ' and set the lastdrawn.widgetGroup to that d3 selection', function () {
 						// get the last element of the container
 						var last = d3.select(cntrNode).select(":last-child");
 						expect(last.node().nodeName).to.equal('DIV');
-						expect(last.classed('widgetRadioGroup'), 'has class widgetRadioGroup').to.be.true;
+						expect(last.classed('brixRadioGroup'), 'has class brixRadioGroup').to.be.true;
 						expect(myRadioGroup.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
 					});
 
 					it('should create a table w/ a row for each choice', function () {
 						/*
-						 div.widgetRadioGroup
+						 div.brixRadioGroup
 						 	table.questionTable
 								tbody
 									foreach choice
@@ -139,7 +139,7 @@
 												label
 						 */
 						var tree =
-							{ name: 'DIV', class: 'widgetRadioGroup', children:
+							{ name: 'DIV', class: 'brixRadioGroup', children:
 								[ { name: 'TABLE', class: 'questionTable', children:
 										[ { name: 'TBODY',
 											foreach: { items: configRadioGroup.choices,

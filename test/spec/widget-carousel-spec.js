@@ -155,19 +155,19 @@
 					it('should set the lastdrawn container and size properties to the values passed in', function () {
 						// get the last element of the container
 						// note: this uses internal knowledge of SVGContainer.append which may change. -mjl
-						var cntrArg = cntr.svgObj.select("g.widget:last-child");
+						var cntrArg = cntr.svgObj.select("g.brix:last-child");
 						var sizeArg = {height: 300, width: 400};
 						expect(myCarousel.lastdrawn.container.node()).to.deep.equal(cntrArg.node());
 						expect(myCarousel.lastdrawn.size).to.deep.equal(sizeArg);
 					});
 
-					it('should have appended a group element with class \'widgetCarousel\' to the container' +
+					it('should have appended a group element with class \'brixCarousel\' to the container' +
 					   ' and set the lastdrawn.widgetGroup to that d3 selection', function () {
 						// get the last element of the container
 						// note: this uses internal knowledge of SVGContainer.append which may change. -mjl
-						var last = cntr.svgObj.select("g.widget:last-child :last-child");
+						var last = cntr.svgObj.select("g.brix:last-child :last-child");
 						expect(last.node().nodeName).to.equal('g');
-						expect(last.classed('widgetCarousel')).to.be.true;
+						expect(last.classed('brixCarousel')).to.be.true;
 						expect(myCarousel.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
 					});
 

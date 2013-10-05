@@ -160,7 +160,7 @@ var helper = (function () {
 
 		if (treeDescr.children)
 		{
-			var childElements = topElement.node().children;
+			var childElements = getChildren_(topElement.node());
 			for (var i = 0; i < treeDescr.children.length; ++i)
 			{
 				expectElementTree(d3.select(childElements[i]), treeDescr.children[i]);
@@ -176,6 +176,39 @@ var helper = (function () {
 			};
 		}
 	};
+
+    /* **************************************************************************
+     * getChildren_                                                        */ /**
+     *
+     * Private helper function work around the bug in Chrome where SVGElements
+     * which are supposed to implement Element properties and methods, don't
+     * implement the children property.
+     * @private
+     *
+     * @param {Element} element     -The element whose child element collection
+     *                               is to be returned.
+     *
+     * @returns {Array|HTMLCollection} ordered list of the child elements
+     *
+     ****************************************************************************/
+    var getChildren_ = function (element)
+    {
+        if (element.children)
+        {
+            return element.children;
+        }
+
+        // Workaround bug in Chrome where SVG elements don't implement the children property
+        var childElements = [];
+
+        for (var e = element.firstElementChild; e !== null; e = e.nextElementSibling)
+        {
+            childElements.push(e);
+        }
+
+        return childElements;
+    };
+    
 
 	/* **************************************************************************
 	 * expectElement                                                        *//**

@@ -217,21 +217,21 @@ pearson.brix.SubmitManager.appendResponseWithDefaultFormatting = function (conta
 	var responseFormat = {
 			correct: {
 				icon: "icon-ok-sign",
-				answerPrefix: "Congratulations, your answer, ",
-				answerSuffix:  ", is correct. ",
-				responseClass: "alert-success"
+				answerPrefix: 'Correct. "',
+				answerSuffix:  '" is the right answer. ',
+				responseClass: 'feedback-correct'
 			},
 			incorrect: {
 				icon: "icon-remove",
-				answerPrefix: "Sorry, your answer, ",
-				answerSuffix:  ", is not correct. ",
-				responseClass: "alert-error"
+				answerPrefix: 'Incorrect. "',
+				answerSuffix:  '" is not the right answer.',
+				responseClass: "feedback-incorrect"
 			},
 			partial: {
 				icon: "icon-adjust",
-				answerPrefix: "Your answer, ",
-				answerSuffix:  ", is partially correct. ",
-				responseClass: "alert-info"
+				answerPrefix: 'Partial credit. "',
+				answerSuffix:  '" is partially correct. ',
+				responseClass: "feedback-partial"
 			},
 			unknown: {
 				icon: "icon-adjust",
@@ -252,11 +252,11 @@ pearson.brix.SubmitManager.appendResponseWithDefaultFormatting = function (conta
 				responseFormat[ansType].answerPrefix +
 				(responseDetails.submission || "") +
 				(responseFormat[ansType].answerSuffix || "") + " " +
-				(responseDetails.response || "");
+				('<div class="custom-feedback">' + responseDetails.response + '</div>' || "");
 
 	// display the results of the submission in the given container
 	container.append("div")
-		.attr("class", ["alert", responseFormat[ansType].responseClass].join(" "))
+		.attr('class', responseFormat[ansType].responseClass)
 		.html(responseHtml);
 };
 

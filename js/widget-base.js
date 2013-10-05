@@ -767,7 +767,7 @@ pearson.brix.SVGContainer.prototype.append_one_ = function (svgWidget, location)
 		location = {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 1};
 	}
 	// create a group for the widget to draw into that we can then position
-	var g = this.svgObj.append('g').attr("class", "widget");
+	var g = this.svgObj.append('g').attr("class", "brix");
 	var h = d3.round(location.heightPercent * this.maxSize.height);
 	var w = d3.round(location.widthPercent * this.maxSize.width);
 	svgWidget.draw(g, {height: h, width: w});

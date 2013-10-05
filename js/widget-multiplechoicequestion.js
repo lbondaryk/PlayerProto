@@ -103,7 +103,7 @@ pearson.brix.Answer;
  * 										 if undefined a unique id will be assigned.
  * @param {string}		config.questionId
  * 										-Scoring engine Id of this question
- * @param {string}		config.question	-The question being posed to the user which should
+ * @param {htmlString}	config.question	-The question being posed to the user which should
  * 										 be answered by choosing one of the presented choices.
  * @param {!Array.<!pearson.brix.Answer>}
  *						config.choices	-The list of choices (answers) to be presented
@@ -148,12 +148,12 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 
 	/**
 	 * The question text.
-	 * @type {string}
+	 * @type {htmlString}
 	 */
 	this.question = config.question;
 
 	/**
-	 * The configuration options for the widget that will display the choices that
+	 * The configuration options for the bric that will display the choices that
 	 * answer this question.
 	 * Add an id and adjust the choices according to the question type and add them
 	 * to the config.
@@ -180,7 +180,7 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 	widgetConfig.choices = choices;
 
 	/**
-	 * The widget used to present the choices that may be selected to answer
+	 * The bric used to present the choices that may be selected to answer
 	 * this question.
 	 * @type {!pearson.brix.HtmlBric}
 	 */
@@ -195,7 +195,7 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 	};
 
 	/**
-	 * The button widget which allows the answer to the question to be submitted
+	 * The button bric which allows the answer to the question to be submitted
 	 * for scoring.
 	 * @type {!pearson.brix.Button}
 	 */
@@ -209,7 +209,7 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 	this.responses = [];
 
 	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
+	 * The event manager to use to publish (and subscribe to) events for this bric
 	 * @type {!pearson.utils.IEventManager}
 	 */
 	this.eventManager = eventManager || new pearson.utils.EventManager();
@@ -280,6 +280,8 @@ pearson.brix.MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function ()
 {
+	window.console.log('MCQ: handling submit requested');
+
 	var submitAnsDetails =
 		{
 			question: this,
@@ -301,7 +303,9 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function ()
 {
-	this.submitButton.setText("Submit Answer");
+    window.console.log('MCQ: handling answer selected');
+
+	this.submitButton.setText('Submit');
 	this.submitButton.setEnabled(true);
 };
 
@@ -317,9 +321,15 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function (
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (responseDetails)
 {
+	window.console.log('MCQ: handling submit response');
+
 	this.responses.push(responseDetails);
 
-	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
+	var responseDiv = this.lastdrawn.widgetGroup.select('div.feedback');
+
+	// this removes any previous feedback and only shows student the most recent
+    var prevFeedback = this.lastdrawn.widgetGroup.selectAll('div.feedback > *');
+    prevFeedback.remove();
 
 	// For now just use the helper function to write the response.
 	pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
@@ -342,16 +352,20 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 	
 	// make a div to hold the select one question
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetMultipleChoiceQuestion")
+		.attr("class", "brixMultipleChoiceQuestion")
 		.attr("id", this.mcqId_);
 
-	var question = widgetGroup.append("p")
+    // use a fieldset (although w/o a form) to group the question and choices
+	var qCntr = widgetGroup.append('fieldset');
+
+	var question = qCntr.append('legend')
 		.attr("class", "question")
-		.text(this.question);
+		.html(this.question);
 	
-	var choiceWidgetCntr = widgetGroup.append("div")
+	var choiceWidgetCntr = qCntr.append("div")
 		.attr("class", "choices")
 		.attr("id", this.mcqId_ + "_choice_id");
+	
 
 	// check if it's an SVG widget with a size, in which case
 	// create 
@@ -366,8 +380,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 
 		if (this.svgBaseBrix)
 		{
-		 	this.svgBaseBrix.append(this.choiceWidget);
-		 	mcSVG.append(this.svgBaseBrix);
+			this.svgBaseBrix.append(this.choiceWidget);
+			mcSVG.append(this.svgBaseBrix);
 		}
 		else
 		{
@@ -379,14 +393,15 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 		this.choiceWidget.draw(choiceWidgetCntr);
 	}
 
+	// make a target for feedback when the question is answered
+	widgetGroup.append('div')
+		.attr('class', 'feedback');
+
 	// draw the submit button below
 	var submitButtonCntr = widgetGroup.append("div")
 		.attr("class", "submit");
 
 	this.submitButton.draw(submitButtonCntr);
-
-	widgetGroup.append("div")
-		.attr("class", "responses");
 
 	this.lastdrawn.widgetGroup = widgetGroup;
 
