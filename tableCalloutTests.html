@@ -144,7 +144,6 @@ textChunks.draw(d3.select("#optionsOff"));
 
 	var cimgConfig0 =
 		{
-			id: "cimg0n",
 			URI: 'img/reactor.jpg',
 			caption: "Nuclear Reactor Schematic Diagram",
 			actualSize: {height: 310, width: 680},
@@ -154,9 +153,7 @@ textChunks.draw(d3.select("#optionsOff"));
 	var cntrConfig0 = 
 		{
 			node: d3.select("#imgReactor"),
-			//maxSize: cntrSize,
-			maxWid: 680, //550,
-			maxHt: 350
+			maxSize: {width: 680, height: 390}
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
@@ -208,8 +205,7 @@ callEm.draw(d3.select("#numbered"));
 	
 	var svg5 = new SVGContainer({
 			node: d3.select("#Endocrine"),
-			maxWid: 553, //550,
-			maxHt: 620
+			maxSize: {width: 477, height: 650}
 		});
 		
 	var glands = new CaptionedImage(imgContBodyCfg);

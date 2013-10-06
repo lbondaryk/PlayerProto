@@ -235,33 +235,29 @@ for (i = 0; i < dataPts; i++)
 		{ 
 			URI: 'img/FG12_5_3.jpg',
 			caption: "Examples of ecological footprints",
+			actualSize: {width: 600, height: 400}
 		}
 	);
 	
 	var svg0 = new SVGContainer(
 		{node: d3.select("#widgetTarget0"),
-		//maxSize not yet used, but should be, so that the container gets sized to match
-		//the image not the other way round
-		//maxSize: Size.matchRatioWithHeight(440, ecofoot.actualSize),
-		maxWid: 550,
-		//adding 40px to make room for the caption
-		maxHt: 300
+		maxSize: {width: 477, height: 350}
 		}
 	);
 		
 	
 	var ecoLabels = new LabelGroup({
 		labels: 	
-		  [	
-			{content: "United States",	xyPos: [0,.2], width: 150},
-			{content: "European Union",	xyPos:[0.45,0.2], width: 100},
+		   [	
+			{content: "United States",	xyPos: [0,.2], width: 180},
+			{content: "European Union",	xyPos:[0.36,0.2], width: 180},
 			{content: "Afghanistan", xyPos:[0.8,0.2], 
 			//scale on the image is 0 to 1, so I want this label to be 8/10 of the way across, 
 			//and 1/5 from the bottom, so xyPos is 80% and 20%
-			width: 120	},
-			{content:"23 Acres/person",	xyPos:[0,1], width: 100},
-			{content:"11.5 acres/person", xyPos:[0.45,.7], width: 100	},
-			{content:"1 acre/ person", xyPos:[0.7,0.5], width: 80}
+			width: 180	},
+			{content:"23 Acres/person",	xyPos:[0,1], width: 180},
+			{content:"11.5 acres/person", xyPos:[0.36,.7], width: 180	},
+			{content:"1 acre/ person", xyPos:[0.7,0.5], width: 180}
 		  ]
 		});
 	
@@ -271,10 +267,9 @@ for (i = 0; i < dataPts; i++)
 	
 	
 	//	<div id="newBruce"><p>1. Graph with Labels</p></div>
-	var newCont = new SVGContainer(
-		{node: d3.select("#newBruce"),
-		maxWid: 500,
-		maxHt: 400
+	var newCont = new SVGContainer({
+		node: d3.select("#newBruce"),
+		maxSize: {width: 477, height: 380}
 		}
 	);
 	
@@ -341,8 +336,7 @@ for (i = 0; i < dataPts; i++)
 	// <div id="oceans"><p>1a. alpha labels on image carousel</p></div>
 	var svg3D = new SVGContainer({
 		node: d3.select("#oceans"),
-		maxWid: 550,
-		maxHt: 440
+		maxSize: {width: 477, height: 420}
 	});
 	
 	var layers = new ImageViewer({

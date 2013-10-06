@@ -201,6 +201,8 @@ pearson.brix.Image.prototype.draw = function (container, size)
 	this.lastdrawn.URI = this.URI;
 	this.lastdrawn.caption = this.caption;
 
+	var imgSize = this.actualSize;
+
 	this.setLastdrawnScaleFns2ExplicitOrDefault_(size);
 	
 	// make a group to hold the image
@@ -213,20 +215,23 @@ pearson.brix.Image.prototype.draw = function (container, size)
 		.append("rect")
 			.attr("class", "background")
 			.attr("width", size.width)
-			.attr("height", size.height);	 
+			.attr("height", size.height);
 	
 	// Draw the image itself
 	imageGroup
 		.append("image")
 			.attr("xlink:href", this.URI)
 			.attr("preserveAspectRatio", this.preserveAspectRatio)
-			.attr("width", size.width)
-			.attr("height", size.height)
+			// images should scale down if the container is smaller than actual size, but should not
+			// scale up (their actual size should be their maximum size). 
+			.attr("width", imgSize.width > size.width ? size.width : imgSize.width)
+			.attr("height", imgSize.height > size.height ? size.height : imgSize.height)
 			.append("desc")
 				.text(this.caption);
 
-	// Rect to highlight this image when needed	
-	var hilightWidth = 6;
+	// Rect to highlight this image when needed	will get a box with
+	// stroke of 2 px on each side.
+	var hilightWidth = 4;
 	imageGroup
 		.append("rect")
 			.attr("class", "highlight")
@@ -505,7 +510,7 @@ pearson.brix.CaptionedImage = function (config, eventManager)
      * @private
      * @type {!pearson.utils.ISize}
      */
-    this.captionSize_ = new pearson.utils.Size(40, this.actualSize.width);
+    this.captionSize_ = new pearson.utils.Size(80, this.actualSize.width);
 	
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)

@@ -30,13 +30,14 @@
 											<span class="setTitle"></span>
 					</h2>
 		 			<div class="lc_ec_leading">
-						<div id="widgetTarget0"><p>0. Single image</p></div>
-						<div id="widgetTarget1n"><p>1. Multiple images in 2 Carousels the top one gets lite events, the bottom isn't subscribed, but does get clicks. In top, 3rd and 5th have same key.</p></div>
-						<div id="widgetTarget2n"><p>2. Image with graph overlay on local coordinate system (set by data in graph)</p></div>
+						<div id="soloImage"><p>0. Single image will draw exactly it's given actualSize dimensions unless the container is smaller in either dimension than it's size, in which case it will scale down proportionally.</p></div>
+						<div id="widgetTarget0"><p>1. Single captioned image</p></div>
+						<div id="widgetTarget1n"><p>2. Multiple images in 2 Carousels the top one gets lite events, the bottom isn't subscribed, but does get clicks. In top, 3rd and 5th have same key.</p></div>
+						<div id="widgetTarget2n"><p>3. Image with graph overlay on local coordinate system (set by data in graph)</p></div>
 				</div>
 				<div class="lc_ec_trailing">
-					<div id="widgetTarget50"><p>3. Three scaled images in grid</p></div>
-					<div id="widgetTarget1bn"><p>4. ImageViewer widget (carousel and image viewer and caption combined) and associated callouts. ImageViewer can also be controlled with a slider.</p>
+					<div id="widgetTarget50"><p>4. Three scaled images in grid</p></div>
+					<div id="widgetTarget1bn"><p>5. ImageViewer widget (carousel and image viewer and caption combined) and associated callouts. ImageViewer can also be controlled with a slider.</p>
 						<span id="slider1"></span>
                 	</div>
                 	<div id="calls"></div>
@@ -104,23 +105,35 @@
 		{	x: 91.0,	y: 1.75},
 		{	x: 92.9,	y: 1.86}
 		]; // array of line data
+//<div id="widgetTarget0"><p>0. Solo image</p></div>
 		
+var svgImg = new SVGContainer({
+		node: d3.select("#soloImage"),
+		maxSize: {width: 477, height: 300}
+	});
+var image200 = new Image({
+			URI: 'img/squaresTest.png',
+			caption: "Squares 200x200 px in a 300 x 477w box",
+			actualSize: {height: 200, width: 200},
+	});
 	
-//<div id="widgetTarget0"><p>0. Single image</p></div>
+	svgImg.append(image200);
+
+//<div id="widgetTarget0"><p>1. Single image</p></div>
 
 	var cimgConfig0 =
 		{
 			//id: "cimg0n",
-			URI: 'img/ch4_1.jpg',
-			caption: "The Whitewater-Baldy Complex wildfire.",
-			actualSize: {height: 960, width: 1280},
+			URI: 'img/squaresTest.png',
+			caption: "Squares 200x200 px in a 300 x 477w box",
+			actualSize: {height: 200, width: 200},
 			captionPosition: "below"
 		};
 		
 	var cntrConfig0 = 
 		{
 			node: d3.select("#widgetTarget0"),
-			maxSize: {width: 477, height: 450}
+			maxSize: {width: 477, height: 300}
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
