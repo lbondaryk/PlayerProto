@@ -124,8 +124,11 @@
                 }
             });
             // Stubing the ipsProxy to return a test SequenceNode's targetActivity.
-            sinon.stub(ipc.ipsProxy, "retrieveSequenceNode", function(seqNodeIdntifier, containerId){
-                return testSeqNodeBody.targetActivity;
+            sinon.stub(ipc.ipsProxy, "retrieveSequenceNode", function(seqNodeIdntifier, callback){
+                var result = {
+                    data: testSeqNodeBody.targetActivity
+                };
+                callback(null, result);
             });
 
             // Mocking the BrickLayer to count the invocations to 'build' method.

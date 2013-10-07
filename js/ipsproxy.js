@@ -87,8 +87,8 @@ pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
  * The input parameter is JSON object of format:
  * {
  *   header : {
- *       "Hub­-Session": <session>,
- *       "Content­-Type" : "application/vnd.pearson.paf.v1.node+json"
+ *       "Hub-Session": <session>,
+ *       "Content-Type" : "application/vnd.pearson.paf.v1.node+json"
  *   },
  *   content : {
  *        "@context": "http://purl.org/pearson/paf/v1/ctx/core/SequenceNode",

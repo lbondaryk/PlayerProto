@@ -17,12 +17,15 @@ var testHubSession = 'HUB_SESSION';
 
 /**
  * A test (valid) sequence node request message
+ * Copy of strange specimen (there is an invisible character before the character '-':
+ * "Hub­-Session": testHubSession,
+ * "Content­-Type" : "application/vnd.pearson.paf.v1.node+json"
  * @type {Object}
  */
 var testSeqNodeReqMessage = {
     header : {
-        "Hub­-Session": testHubSession,
-        "Content­-Type" : "application/vnd.pearson.paf.v1.node+json"
+        "Hub-Session": this.testHubSession,
+        "Content-Type" : "application/vnd.pearson.paf.v1.node+json"
     },
     content : {
          "@context": "http://purl.org/pearson/paf/v1/ctx/core/SequenceNode",

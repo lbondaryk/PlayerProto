@@ -30,7 +30,6 @@
 
             ipsProxy = new pearson.brix.IpsProxy(ipsProxyConfig);
             ipsProxy.retrieveSequenceNode(testInitializationEnvelope, function(error, result){
-console.log('%%%%%' + result);
                 try {
                     expect(error).to.equal(null);
                     expect(result).to.be.an('object');

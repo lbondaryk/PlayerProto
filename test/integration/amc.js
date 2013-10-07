@@ -202,8 +202,16 @@
 				}
 				
 				var asreq =  {
+					/* Original
+					"Hub-Session" : hubsession,
+					"Content-Type" : "application/vnd.pearson.paf.v1.node+json",
+					*/
+					/* Copied from Schema
+					"Hub­-Session" : hubsession,
+						"Content­-Type" : "application/vnd.pearson.paf.v1.node+json",
+					*/
 					header : {
-						"Hub­-Session" : hubsession,
+						"Hub-Session" : hubsession,
 						"Content-Type" : "application/vnd.pearson.paf.v1.node+json",
 					},
 					content : {
@@ -258,7 +266,7 @@
 			var sr = new PAF.SessionService(context._lasPafURL);
 			sr.getSequenceNode ({
 					header : {
-						"Hub­-Session" : message.data.hubsession
+						"Hub-Session" : message.data.hubsession
 					},
 					content : (message.data.getseqnodedata) ? message.data.getseqnodedata : {
 						nodeIndex : message.data.nodeindex,
