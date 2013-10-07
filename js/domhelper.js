@@ -7,7 +7,11 @@
  * DomHelper class contains utility functions to  query and manipulate and 
  * DOM objects. 
  *
- * Created on       March 18, 2013
+ * @note currently there is no DomHelper class, it's just a namespace.
+ * By the way I've seen it used, it looks like perhaps it should be a
+ * class, if so, we need to make it one. -mjl
+ *
+ * Created on       August 14, 2013
  * @author          Young Suk Ahn Park
  *
  * **************************************************************************/

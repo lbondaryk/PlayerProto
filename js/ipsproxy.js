@@ -13,6 +13,7 @@
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
 goog.provide('pearson.brix.IpsProxy');
 
 goog.require("goog.net.XhrIo");
@@ -34,6 +35,10 @@ goog.require("goog.net.XhrIo");
  ****************************************************************************/
 pearson.brix.IpsProxy = function (config)
 {
+    /**
+     * The URL to the IPS server.
+     * @type {string|undefined}
+     */
     this.serverBaseUrl = config.serverBaseUrl;
 };
 
@@ -45,13 +50,15 @@ pearson.brix.IpsProxy.serverBaseUrl = null;
 
 
 /* **************************************************************************
+ * IpsProxy.checkHealth                                                */ /**
+ *
  * Returns the server health status if the callback is called without error. 
  * @export
  * 
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- */
+ ****************************************************************************/
 pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
 {
 
@@ -79,6 +86,8 @@ pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
 };
 
 /* **************************************************************************
+ * IpsProxy.retrieveSequenceNode                                       */ /**
+ *
  * Retrieves sequence node content.
  * The input parameter is JSON object of format:
  * {
@@ -93,7 +102,7 @@ pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
  *   },
  *   url: <url>,
  *   method: "POST"
- *}
+ * }
  * @export
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
@@ -101,13 +110,15 @@ pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- */
+ ****************************************************************************/
 pearson.brix.IpsProxy.prototype.retrieveSequenceNode = function (param, callback)
 {
     this.postMessage_(this.serverBaseUrl + '/sequencenodes', param, callback);
 };
 
 /* **************************************************************************
+ * IpsProxy.postInteraction                                            */ /**
+ *
  * Posts interaction data to the Brix server.
  * The input parameter is JSON object of format:
  * {
@@ -126,13 +137,15 @@ pearson.brix.IpsProxy.prototype.retrieveSequenceNode = function (param, callback
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- */
+ ****************************************************************************/
 pearson.brix.IpsProxy.prototype.postInteraction = function (param, callback)
 {
     this.postMessage_(this.serverBaseUrl + '/sequencenodes/' + param.sequenceNodeKey + '/interactions', param, callback);
 };
 
 /* **************************************************************************
+ * IpsProxy.postSubmission                                             */ /**
+ *
  * Posts submission data to the Brix server
  * The input parameter is JSON object of format:
  * {
@@ -151,15 +164,17 @@ pearson.brix.IpsProxy.prototype.postInteraction = function (param, callback)
  *                              is completed. The signature should be:
  *                              fn(error, result).
  * @return {[type]}
- */
+ ****************************************************************************/
 pearson.brix.IpsProxy.prototype.postSubmission = function (param, callback)
 {
     this.postMessage_(this.serverBaseUrl + '/sequencenodes/' + param.sequenceNodeKey + '/submissions', param, callback);
 };
 
 /* **************************************************************************
+ * IpsProxy.postMessage_                                               */ /**
+ *
  * Makes a REST POST request with the provided parameters.
- * 
+ * @private
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
  *                              to the server as request body. 
@@ -167,7 +182,7 @@ pearson.brix.IpsProxy.prototype.postSubmission = function (param, callback)
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- */
+ ****************************************************************************/
 pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
 {
     var xhr = new goog.net.XhrIo();
@@ -176,8 +191,9 @@ pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
 
         var error = null;
         var result = null;
-console.log("###"+result);
-        if (xhr.isSuccess()) {
+        window.console.log("###"+result);
+        if (xhr.isSuccess())
+        {
             var response = xhr.getResponseJson();
             result = response;
         }

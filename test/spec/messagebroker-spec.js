@@ -3,7 +3,7 @@
  *
  * The unit test for MessageBroker requires use of iframes.
  * Due to iframe javascript loading requirements, the test must be run from
- * page hoseted on a webserver, running directly from file will result in 
+ * page hosted on a webserver, running directly from file will result in 
  * Javascript loading error in the Console.
  *
  * @author Young-Suk Ahn Park 

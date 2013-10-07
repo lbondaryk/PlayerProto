@@ -1,4 +1,7 @@
-/**
+/* **************************************************************************
+ * $Workfile:: messagebroker.js                                             $
+ * *********************************************************************/ /**
+ *
  * @fileoverview Implementation of the MessageBroker
 
  * MessageBroker is the component that lives in the master document (html) and 
@@ -40,71 +43,101 @@
  * }
  *
  *
- * Created on       March 18, 2013
+ * Created on       July 11, 2013
  * @author          Young Suk Ahn Park
  *
- */
-
-goog.require('pearson.utils.EventManager');
-goog.require('pearson.utils.DomHelper');
+ * @copyright (c) 2013 Pearson, All rights reserved.
+ *
+ * **************************************************************************/
 
 goog.provide('pearson.utils.FrameCollection');
 goog.provide('pearson.utils.MessageBroker');
 
-/**
- * IframeCollection
- * 
+goog.require('goog.Disposable');
+goog.require('pearson.utils.EventManager');
+goog.require('pearson.utils.DomHelper');
+
+/* **************************************************************************
+ * IframeCollection                                                    */ /**
+ *
+ * Constructor function for IframeCollection instances.
+ *
+ * @constructor
+ * @extends {goog.Disposable}
+ * @export
+ *
+ * @classdesc
  * Abstract Data Type that specifically contains iframes.
  * This class serves as caching mechanism for the brix iframes. The collection
  * contains the iframe's  window object reference as well as payload with
  * the DOM node of the iframe. 
- * 
- * @constructor
- * @export
  *
- */
-pearson.utils.IframeCollection = function() {
+ * @note Young Suk, This class doesn't look abstract to me -mjl
+ *
+ ****************************************************************************/
+pearson.utils.IframeCollection = function ()
+{
+    // call the base class constructor
+    goog.base(this);
+
+    /**
+     * List of (i)frames as obtained by the querySelectorAll(). 
+     * @type {Array.<Object>}
+     */
+    this.framesList = null;
+
+    /**
+     * Array of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
+     * @type {Array.<{node: Element, subscribeHandler: Function}>}
+     */
+    this.frameCustomParams = [];
+
 };
-
-
-/**
- * List of (i)frames as obtained by the querySelectorAll(). 
- * @type {Array.<Object>}
- */
-pearson.utils.IframeCollection.prototype.framesList = null;
-
-/**
- * Array of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
- * @type {Array.<Object>}
- */
-pearson.utils.IframeCollection.prototype.frameCustomParams = [];
+goog.inherits(pearson.utils.IframeCollection, goog.Disposable);
 
 /* **************************************************************************
- * pearson.utils.IframeCollection.dispose                              */ /**
+ * IframeCollection.disposeInternal                                    */ /**
+ *
+ * Deletes or nulls out any references to COM objects, DOM nodes, or other
+ * disposable objects. Classes that extend {@code goog.Disposable}
+ * should override this method. Not reentrant.
+ * To avoid calling it twice, it must only be called from the
+ * subclass' {@code disposeInternal} method. Everywhere else the public
+ * {@code dispose} method must be used. 
  *
  * Releases used resources: the list of iframe references
- */
-pearson.utils.IframeCollection.prototype.dispose = function ()
+ * @override
+ * @protected
+ ****************************************************************************/
+pearson.utils.IframeCollection.prototype.disposeInternal = function ()
 {
+    goog.base(this, 'disposeInternal');
+
     this.frameCustomParams = null;
 };
 
 /* **************************************************************************
- * pearson.utils.IframeCollection.cacheFrames                          */ /**
+ * IframeCollection.cacheFrames                                        */ /**
  *
  * Caches the (i)frames for faster access. The MessageBroker uses this to hold
- * information such as subscriberHandler.
+ * information such as subscribeHandler.
  *
  * @param {String} classAttr        The class for selecting the object element 
  *                                  to be converted. (i.e. 'bric')
  * 
- */
-pearson.utils.IframeCollection.prototype.cacheFrames = function(classAttr)
+ ****************************************************************************/
+pearson.utils.IframeCollection.prototype.cacheFrames = function (classAttr)
 {
-    this.framesList = document.querySelectorAll("iframe." + classAttr); // 
+    this.framesList = document.querySelectorAll("iframe." + classAttr);
 
     // Converting list into map. The map entry contains node and subscribeHandler
-    for (var i = 0; i < this.framesList.length; i++){
+    // @note: I don't see the subscribeHandler in the object, and this isn't really
+    //        a map (as in an associative array) it's an array of records
+    //        in which case may I suggest this code?
+    //        this.frameCustomParams = this.framesList.map(function (e) { return {node: e}; });
+    //        -mjl
+    for (var i = 0; i < this.framesList.length; i++)
+    {
         this.setFrameCustomParams(i,  {node: this.framesList[i]});
     }
 };
@@ -114,27 +147,30 @@ pearson.utils.IframeCollection.prototype.cacheFrames = function(classAttr)
  * 
  * Sets user defined parameters to the (i)frame object
  * 
- * @param {int} index    The index in the array that represent the cache 
- * @param {Object} value The value of the payload to associate with the (i)frame
+ * @param {number} index    The index in the array that represent the cache 
+ * @param {Object} value    The value of the payload to associate with the (i)frame
  * 
- */
-pearson.utils.IframeCollection.prototype.setFrameCustomParams = function(index, value)
+ ****************************************************************************/
+pearson.utils.IframeCollection.prototype.setFrameCustomParams = function (index, value)
 {
     this.frameCustomParams[index] = value;
 };
 
 /* **************************************************************************
- * pearson.utils.IframeCollection.getFrameCustomParams                 */ /**
+ * IframeCollection.getFrameCustomParams                               */ /**
  * 
  * Gets the user defined parameters given the (i)frame object
  * 
  * @param  {Window} windowObj The reference of the iframe
- * @return {Object}           They payload value associated with this iframe
- */
-pearson.utils.IframeCollection.prototype.getFrameCustomParams = function(windowObj)
+ *
+ * @return {Object} They payload value associated with this iframe
+ ****************************************************************************/
+pearson.utils.IframeCollection.prototype.getFrameCustomParams = function (windowObj)
 {
-    for (var i = 0; i < this.framesList.length; i++){
-        if (windowObj === this.framesList[i].contentWindow) {
+    for (var i = 0; i < this.framesList.length; i++)
+    {
+        if (windowObj === this.framesList[i].contentWindow)
+        {
             return this.frameCustomParams[i];
         }
     }
@@ -142,14 +178,15 @@ pearson.utils.IframeCollection.prototype.getFrameCustomParams = function(windowO
 };
 
 /* **************************************************************************
- * pearson.utils.IframeCollection.getFrameCustomParamsByIndex          */ /**
+ * IframeCollection.getFrameCustomParamsByIndex                        */ /**
  * 
  * Gets the user defined parameters given the (i)frame index
  * 
- * @param  {int} index The index in the array of iframesß
- * @return {Object}    They payload value associated with this iframe
- */
-pearson.utils.IframeCollection.prototype.getFrameCustomParamsByIndex = function(index)
+ * @param  {number} index The index in the array of iframes
+ *
+ * @return {Object} They payload value associated with this iframe
+ ****************************************************************************/
+pearson.utils.IframeCollection.prototype.getFrameCustomParamsByIndex = function (index)
 {
     return this.frameCustomParams[index];
 };
@@ -158,37 +195,50 @@ pearson.utils.IframeCollection.prototype.getFrameCustomParamsByIndex = function(
  * pearson.utils.IframeCollection.resize                               */ /**
  *
  * Resizes the iframe node to a specific dimension.
- * @todo: Check that all user agents (browsers) that we intent to support
- *        behaves correctly.
+ * @todo: Check that all user agents (browsers) that we intend to support
+ *        behave correctly.
  *
- * @param {Window} window       The window (iframe) object to be resized.
- * @param {Object} dimension    The object that contains width and height attributes.
+ * @param {Window}  window      The window (iframe) object to be resized.
+ * @param {pearson.utils.ISize}
+ *                  dimension   The object that contains width and height attributes.
  * 
- */
+ ****************************************************************************/
 pearson.utils.IframeCollection.prototype.resize = function (window, dimension)
 {
     var frameEntry =  this.getFrameCustomParams(window);
 
-    if (frameEntry) {
+    if (frameEntry)
+    {
         var frameObject = frameEntry.node;
         frameObject.style.width = dimension.width + 'px';
         frameObject.style.height = dimension.height + 'px';
     }
 };
 
-/**
- * MessageBroker 
- * @constructor
+/* **************************************************************************
+ * MessageBroker                                                       */ /**
  *
+ * Constructor function for MessageBroker instances.
+ *
+ * @constructor
+ * @extends {goog.Disposable}
+ * @export
+ *
+ * @param {Object}		config			-The settings to configure this MessageBroker
+ * @param {!pearson.utils.DomHelper=}
+ * 						domHelper	    -A DOM helper which provides useful utilities
+ * 						                 to manipulate the DOM.
+ *
+ * @classdesc
  * The MessageBroker is the messaging component that bridges the EventManagers
  * in the iframes.
  * The constructor registers the three default channel handlers
- * 
- * @param {Object} config           The configuration
- * @param {pearson.utils.DomHelper} opt_domHelper The DomHelper class
- */
-pearson.utils.MessageBroker = function(config, opt_domHelper)
+ *
+ ****************************************************************************/
+pearson.utils.MessageBroker = function (config, domHelper)
 {
+    // call the base class constructor
+    goog.base(this);
 
     // Auto call to the initialization method disabled 
     // favoring the use of MessageBroker as singleton.
@@ -196,20 +246,29 @@ pearson.utils.MessageBroker = function(config, opt_domHelper)
 
     // If DomHelper is not explicitly provided, create a default one.
     // @todo: if not created, then it should not dispose either.
-    if (opt_domHelper === undefined) {
-        this.domHelper = pearson.utils.DomHelper;
-    } else {
-        this.domHelper = opt_domHelper;
-    }
+    /**
+     * Flag whether this.domHelper was supplied or not, so we know if
+     * we should dispose of it.
+     * @private
+     * @type {boolean}
+     */
+    this.domHelperWasProvided_ = domHelper ? true : false;
+
+    /**
+     * The DomHelper this message broker will use when needed.
+     * @type {pearson.utils.DomHelper}
+     */
+    this.domHelper = domHelper !== undefined ? domHelper : pearson.utils.DomHelper;
 
     this.iframeCollection = new pearson.utils.IframeCollection();
 
 
     // Register the two default Channel Handlers
     var _self = this;
-    this.channelHandlers['message'] = function(evt) {
-
-        if (evt.data.method === 'publish') {
+    this.channelHandlers['message'] = function (evt)
+    {
+        if (evt.data.method === 'publish')
+        {
             _self.bricMessageCounter++;
             _self.publish(evt.data.payload.topic, evt);
         }
@@ -223,11 +282,14 @@ pearson.utils.MessageBroker = function(config, opt_domHelper)
         }
     };
 
-    this.channelHandlers['view'] = function(evt) {
+    this.channelHandlers['view'] = function (evt)
+    {
         _self.resizeMessageCounter++;
         _self.iframeCollection.resize(evt.source, evt.data.payload);
     };
-};
+    
+}; // end of MessageBroker constructor
+goog.inherits(pearson.utils.MessageBroker, goog.Disposable);
 
 
 /**
@@ -289,24 +351,25 @@ pearson.utils.MessageBroker.prototype.channelHandlers = {};
  */
 pearson.utils.MessageBroker.prototype.pubSub = new pearson.utils.EventManager(false);
 
-/**
- * MessageBroker.log
+/* **************************************************************************
+ * MessageBroker.log                                                   */ /**
  *
  * Logs messages to the console.
  * In order to actually output log message, the logLevel must be greater or equal than the argument level 
  *
- * @param {int} level       The level of the current message 
+ * @param {number} level    The level of the current message 
  * @param {String} message  The actual message.
- */
+ ****************************************************************************/
 pearson.utils.MessageBroker.prototype.log = function (level, message)
 {
-    if (this.logLevel >= level) {
-        console.log("[MB] " + message);
+    if (this.logLevel >= level)
+    {
+        window.console.log("[MB] " + message);
     }
 };
 
-/**
- * MessageBroker.initialize
+/* **************************************************************************
+ * MessageBroker.initialize                                            */ /**
  *
  * The initialization does:
  * 1. registers the channelDispater to the windowEventListener
@@ -315,10 +378,11 @@ pearson.utils.MessageBroker.prototype.log = function (level, message)
  *
  * @param {Object} options      Options (logLevel: {int}) .
  * 
- */
+ ****************************************************************************/
 pearson.utils.MessageBroker.prototype.initialize = function (options)
 {
-    if (options !== undefined) {
+    if (options !== undefined)
+    {
         if (options.logLevel !== undefined)
             this.logLevel = options.logLevel;
     }
@@ -327,12 +391,16 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
     var _self = this;
     // Function defined here so we can access the this pointer
     // (aliased as _self)
-    var _channelDispatcher = function(evt) {
+    var _channelDispatcher = function(evt)
+    {
         _self.log(5, "Message Received: " + evt.data);
         var chanHandler = _self.channelHandlers[evt.data.type];
-        if (chanHandler) {
+        if (chanHandler)
+        {
             chanHandler(event);
-        } else {
+        }
+        else
+        {
             _self.log(3, "Channel Handler for '" + evt.data.type +"' not found, ignoring!");
         }
     };
@@ -353,13 +421,13 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
     this.log(1, "MessageBroker initialized.");
 };
 
-/**
- * MessageBroker.dispose
+/* **************************************************************************
+ * MessageBroker.internalDispose                                       */ /**
  *
  * Unregister the message event listener, and
  * releases used references (the list of iframes), and 
- */
-pearson.utils.MessageBroker.prototype.dispose = function ()
+ ****************************************************************************/
+pearson.utils.MessageBroker.prototype.internalDispose = function ()
 {
     // Disable Channel Dispatcher
     window.removeEventListener('message', this.channelDispatcher);
@@ -371,8 +439,8 @@ pearson.utils.MessageBroker.prototype.dispose = function ()
     this.log(1, "MessageBroker disposed (listeners removed).");
 };
 
-/**
- * MessageBroker.subscribe
+/* **************************************************************************
+ * MessageBroker.subscribe                                             */ /**
  *
  * Subscribes a window to a specific topic.
  *
@@ -381,13 +449,14 @@ pearson.utils.MessageBroker.prototype.dispose = function ()
  * @return {boolean}        True if subscribed, false otherwise 
  *                          (May not be subscribed if is not part of the item)
  * 
- */
+ ****************************************************************************/
 pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
 {
 
     var frameEntry = this.iframeCollection.getFrameCustomParams(windowsObj);
 
-    if (frameEntry === undefined) {
+    if (frameEntry === undefined)
+    {
         return false;
     } 
 
@@ -396,17 +465,20 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
     // Reuse the same handle for an iframe
     var subscribeHandler = frameEntry['subscribeHandler'];
 
-    if(!subscribeHandler)
+    if (!subscribeHandler)
     {
-        subscribeHandler = function(evt) {
-            if ( frameEntry.node.contentWindow === evt.source) {
+        subscribeHandler = function(evt)
+        {
+            if ( frameEntry.node.contentWindow === evt.source)
+            {
                 _self.log(5, "Skipping the iframe where the message was originated.");
                 return;
             }
             _self.log(5, "Posting message to an iframe");
             // Sending the entire message as is
             frameEntry.node.contentWindow.postMessage(evt.data, '*');
-        }
+        };
+
         frameEntry['subscribeHandler'] = subscribeHandler;
     }
 
@@ -416,8 +488,8 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
     return true;
 };
 
-/**
- * MessageBroker.unsubscribe
+/* **************************************************************************
+ * MessageBroker.unsubscribe                                           */ /**
  *
  * Subscribes a window to a specific topic.
  *
@@ -426,18 +498,19 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
  * @return {boolean}        True if subscribed, false otherwise 
  *                          (May not be subscribed if is not part of the item)
  * 
- */
+ ****************************************************************************/
 pearson.utils.MessageBroker.prototype.unsubscribe = function (topic, windowsObj)
 {
     var frameEntry = this.iframeCollection.getFrameCustomParams(windowsObj);
 
-    if (frameEntry === undefined) {
+    if (frameEntry === undefined)
+    {
         return false;
     }
 
     var subscribeHandler = frameEntry['subscribeHandler'];
 
-    if(!subscribeHandler)
+    if (!subscribeHandler)
     {
         return false;
     }
@@ -448,15 +521,15 @@ pearson.utils.MessageBroker.prototype.unsubscribe = function (topic, windowsObj)
     return true;
 };
 
-/**
- * MessageBroker.publish
+/* **************************************************************************
+ * MessageBroker.publish                                               */ /**
  *
  * Publishes message to the rest of iframes subscribed to the specified topic.
  *
  * @param {String} topic        The topic to publish the message.
  * @param {Object} message      The message to be published.
  * 
- */
+ ****************************************************************************/
 pearson.utils.MessageBroker.prototype.publish = function (topic, evt)
 {
     this.log(4, "Publishing message: " + JSON.stringify(evt.data.payload));

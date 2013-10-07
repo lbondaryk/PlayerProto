@@ -4,9 +4,11 @@
  *
  * @fileoverview The Brix Item Player Client (IPC).
  *
- * The IPC is responsible listening for AMC for initialization message,
- * retrieving containerConfig information and instantiating brix defined 
- * in the containerConfig.
+ * The IPC is responsible listening for an initialization message that
+ * is expected to be published by the AMC (Activity Manager Client),
+ * using information in that message to retrieve brix configuration
+ * specific to it's container (either the whole document or a container
+ * iframe) and instantiating the brix defined in that configuration.
  *
  * Message structure as received from the AMC through EventManager 
  * message = {
@@ -43,14 +45,15 @@ goog.require("pearson.brix.BrixLayer");
 /* **************************************************************************
  * Ipc                                                                 */ /**
  *
- * The IPC listens for AMC's sequenceNodeIdentifier. Upon receipt of the 
- * sequenceNodeIdentifier, it retrieves the brix' containerConfig from IPS and 
- * instantiates and wires the brix and mortars using the BrixLayer.
+ * The IPC (Item Player Client) listens for AMC's (Activity Manager Client)
+ * sequenceNodeIdentifier. Upon receipt of the sequenceNodeIdentifier,
+ * it retrieves the brix' containerConfig from IPS and 
+ * instantiates and wires the brix and mortars using the BricLayer.
  *
  * @constructor
  * @export
  *
- * @param {Object}      config          - The settings to configure this SelectGroup
+ * @param {Object}      config          - The settings to configure the Ipc
  * @param {!pearson.utils.IEventManager}
  *                      eventManager    -The event manager to use for publishing events
  *                                       and subscribing to them.
@@ -58,31 +61,31 @@ goog.require("pearson.brix.BrixLayer");
  ****************************************************************************/
 pearson.brix.Ipc = function (config, eventManager)
 {
-    /**
-     * The event manager to use to publish (and subscribe to) events for this widget
-     * @type {!pearson.utils.IEventManager}
-     */
-    this.eventManager = eventManager;
-
     if (!config.ipsBaseUrl)
     {
         throw new Error('IPS server URL not provided.');
     }
     
     /**
+     * The event manager to use to publish (and subscribe to) events
+     * @type {!pearson.utils.IEventManager}
+     */
+    this.eventManager = eventManager;
+
+    /**
      * The IpsProxy instance
      * @type {pearson.brix.IpsProxy}
      */
-    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl":config.ipsBaseUrl});
+    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl": config.ipsBaseUrl});
 
-    var brixLayerConfig = null;
+    var bricLayerConfig = null;
 
     /**
-     * The BrixLayer instance
+     * The BricLayer instance
      * @todo - Check if it changes to singleton
-     * @type {!pearson.brix.BrixLayer}
+     * @type {!pearson.brix.BricLayer}
      */
-    this.bricLayer = new pearson.brix.BricLayer(brixLayerConfig, eventManager);
+    this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager);
 };
 
 /**
@@ -100,7 +103,9 @@ pearson.brix.Ipc.items = [];
  */
 pearson.brix.Ipc.containerId = null;
 
-/**
+/* **************************************************************************
+ * Ipc.init                                                            */ /**
+ *
  * Initializes the IPC depending on the different parameters are passed.
  * The different parameters defines the mode: div or iframe.
  * In div-mode, the items contains an array of possibly multiple items, and 
@@ -113,8 +118,8 @@ pearson.brix.Ipc.containerId = null;
  * @param  {string=}         opt_containerId  The containerId that this IPC is
  *                                            handling. Only in iframe mode.
  *                                            Should be undefined (or null) in div mode.
- */
-pearson.brix.Ipc.prototype.init = function(items, opt_containerId)
+ ****************************************************************************/
+pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
 {
     if (!items || items.length === 0)
     {
@@ -157,7 +162,9 @@ pearson.brix.Ipc.prototype.init = function(items, opt_containerId)
     }
 };
 
-/**
+/* **************************************************************************
+ * Ipc.activityBindingReplyTopic                                       */ /**
+ *
  * Returns the topic name for the init event subscription.
  * Must be exactly same as laspaf.js's 
  * 
@@ -165,7 +172,7 @@ pearson.brix.Ipc.prototype.init = function(items, opt_containerId)
  *                           assignmenturl and activityurl properties are required.
  * 
  * @return {string}          The topic name
- */
+ ****************************************************************************/
 pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 {
     if (!item.assignmenturl || !item.activityurl)
@@ -177,11 +184,13 @@ pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 };
 
 
-/** 
+/* **************************************************************************
+ * Ipc.subscribeInitTopic                                              */ /**
+ *
  * Subscribes to initialization topic using the provided item(s) information 
  * (formerly known as itemId)
- */
-pearson.brix.Ipc.prototype.subscribeInitTopic = function()
+ ****************************************************************************/
+pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
 {
     var item;
     var that = this;
