@@ -42,6 +42,7 @@ goog.require('goog.object');
     describe('BricLayer: who do ya call when you need a brix house? BricLayer!', function () {
         var dummyEventMgr = {publish: function () {}, subscribe: function () {}, unsubscribe: function () {}};
         var DummyBricCtor = function (c, e) {this.cfg = c; this.em = e;};
+        var DummyMortarCtor = function (c, e) {this.cfg = c; this.em = e;};
 
         var bricLayer = new BricLayer({}, dummyEventMgr);
 
@@ -91,7 +92,7 @@ goog.require('goog.object');
             var bricWorks = bricLayer.getBricWorks();
             // Add another mold for testing purposes
             var dummyBricName = '_dummy test bric_'
-            bricWorks.registerMold(dummyBricName, DummyBricCtor);
+            bricWorks.registerBricMold(dummyBricName, DummyBricCtor);
 
             var activityConfig = createActivityConfigSkeleton();
             var dummyBricId = 'test';
@@ -129,7 +130,7 @@ goog.require('goog.object');
             var bricWorks = bricLayer.getBricWorks();
             // Add another mold for testing purposes
             var dummyBricName = '_dummy test bric_'
-            bricWorks.registerMold(dummyBricName, DummyBricCtor);
+            bricWorks.registerBricMold(dummyBricName, DummyBricCtor);
 
             var activityConfig = createActivityConfigSkeleton();
 
@@ -161,12 +162,12 @@ goog.require('goog.object');
             var bricWorks = bricLayer.getBricWorks();
             // Add another couple of molds for testing purposes
             var dummyBricName = '_dummy test bric_'
-            bricWorks.registerMold(dummyBricName, DummyBricCtor);
+            bricWorks.registerBricMold(dummyBricName, DummyBricCtor);
 
             var DummyRefBricCtor = function (c, e) {this.cfg = c; this.em = e;};
             DummyRefBricCtor.prototype.getBar = function () {return this.cfg.bar;};
             var dummyRefBricName = '_dummy test ref bric_'
-            bricWorks.registerMold(dummyRefBricName, DummyRefBricCtor);
+            bricWorks.registerBricMold(dummyRefBricName, DummyRefBricCtor);
 
             var activityConfig = createActivityConfigSkeleton();
 
@@ -249,6 +250,125 @@ goog.require('goog.object');
             });
         });
 
+        describe('BricLayer.build with static mortar config', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var bricWorks = bricLayer.getBricWorks();
+            // Add another mix for testing purposes
+            var dummyMortarName = '_dummy test mortar_'
+            bricWorks.registerMortarMix(dummyMortarName, DummyMortarCtor);
+
+            var activityConfig = createActivityConfigSkeleton();
+            var dummyMortarId = 'test';
+            var dummyMortarConfig = {"foo": "any foo will do"};
+
+            var staticMortarConfig =
+                {
+                    "mortarId": dummyMortarId,
+                    "mortarType": dummyMortarName,
+                    "config": dummyMortarConfig
+                };
+
+            activityConfig.containerConfig[0].mortarConfig.push(staticMortarConfig);
+
+            var building = bricLayer.build(activityConfig);
+
+            it('should create the mortar as a property of the mortar object with a property name of the mortarId', function () {
+                expect(building.mortar).to.have.a.property(dummyMortarId);
+                expect(building.mortar[dummyMortarId]).to.be.an.instanceOf(DummyMortarCtor);
+            });
+
+            it('should build the mortar with an exact copy of the static config', function () {
+                var dummyMortar = building.mortar[dummyMortarId];
+                // the exact config obj from the activity config should not be passed to the ctor.
+                expect(dummyMortar.cfg).to.not.equal(dummyMortarConfig);
+                // the config obj should be identical to the activity config
+                expect(dummyMortar.cfg).to.deep.equal(dummyMortarConfig);
+                // the eventmanager the BricLayer was created with is passed to the bric ctor.
+                expect(dummyMortar.em).to.equal(dummyEventMgr);
+            });
+        });
+
+        describe('BricLayer.build w/ mortar config w/ configFixup', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var bricWorks = bricLayer.getBricWorks();
+            // Add another couple of mixes for testing purposes
+            var dummyMortarName = '_dummy test mortar_'
+            bricWorks.registerMortarMix(dummyMortarName, DummyMortarCtor);
+
+            var DummyRefMortarCtor = function (c, e) {this.cfg = c; this.em = e;};
+            DummyRefMortarCtor.prototype.getBar = function () {return this.cfg.bar;};
+            var dummyRefMortarName = '_dummy test ref mortar_'
+            bricWorks.registerMortarMix(dummyRefMortarName, DummyRefMortarCtor);
+
+            var activityConfig = createActivityConfigSkeleton();
+
+            var dummyRefMortarId = 'ref-test';
+            var dummyRefMortarConfig = {"bar": "any fubar will do"};
+
+            var dummyMortarId = 'test';
+            var dummyMortarConfig = {"foo": "any foo will do"};
+
+            var mortarConfigToRef =
+                {
+                    "mortarId": dummyRefMortarId,
+                    "mortarType": dummyRefMortarName,
+                    "config": dummyRefMortarConfig,
+                };
+
+            activityConfig.containerConfig[0].mortarConfig.push(mortarConfigToRef);
+
+            var fixupConstant =
+                {
+                    "type": "set-property",
+                    "name": "node",
+                    "value":
+                        {
+                            "type": "constant",
+                            "value": "#target"
+                        }
+                };
+
+            var fixupWithMortarRefProperty =
+                {
+                    "type": "set-property",
+                    "name": "glue",
+                    "value":
+                        {
+                            "type": "ref",
+                            "domain": "mortar",
+                            "refId": dummyRefMortarId
+                        }
+                };
+
+            var mortarConfigWithFixup =
+                {
+                    "mortarId": dummyMortarId,
+                    "mortarType": dummyMortarName,
+                    "config": dummyMortarConfig,
+                    "configFixup": [fixupConstant, fixupWithMortarRefProperty]
+                };
+
+            activityConfig.containerConfig[0].mortarConfig.push(mortarConfigWithFixup);
+
+            var building = null;
+
+            building = bricLayer.build(activityConfig);
+
+            it('should set the config property specified w/ a value of the constant given', function () {
+                var dummyMortar = building.mortar[dummyMortarId];
+                expect(dummyMortar.cfg).to.have.a.property(fixupConstant['name']);
+                expect(dummyMortar.cfg.node).to.equal('#target');
+            });
+
+            it('should set the config property specified w/ a reference to the previous mortar', function () {
+                var dummyMortar = building.mortar[dummyMortarId];
+                var dummyRefMortar = building.mortar[dummyRefMortarId];
+                expect(dummyMortar.cfg).to.have.a.property(fixupWithMortarRefProperty['name']);
+                expect(dummyMortar.cfg.glue).to.be.an.instanceOf(DummyRefMortarCtor);
+                expect(dummyMortar.cfg.glue).to.equal(dummyRefMortar);
+            });
+        });
+
         describe('BricLayer.build w/ an unknown hookupAction type', function () {
             var bricLayer = new BricLayer({}, dummyEventMgr);
 
@@ -278,7 +398,7 @@ goog.require('goog.object');
             DummyRefBricCtor.prototype.doItAll = function () { this.doItAllArgs = arguments; };
 
             var dummyRefBricName = '_dummy test ref bric_'
-            bricWorks.registerMold(dummyRefBricName, DummyRefBricCtor);
+            bricWorks.registerBricMold(dummyRefBricName, DummyRefBricCtor);
 
             var activityConfig = createActivityConfigSkeleton();
 

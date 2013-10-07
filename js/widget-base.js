@@ -17,10 +17,10 @@ goog.provide('pearson.brix.utils');
 goog.provide('pearson.utils');
 goog.provide('pearson.utils.Rect');
 goog.provide('pearson.utils.Size');
-goog.provide('pearson.brix.IWidget');
 goog.provide('pearson.brix.Bric');
 goog.provide('pearson.brix.SvgBric');
 goog.provide('pearson.brix.HtmlBric');
+goog.provide('pearson.brix.ILightable');
 goog.provide('pearson.brix.SVGContainer');
 
 /**
@@ -413,25 +413,16 @@ pearson.utils.Size.matchRatioWithWidth = function (desiredWidth, desiredRatio)
 /* **************************************************************************
  * IWidget                                                             */ /**
  *
+ * This was the 1st attempt at defining a widget interface, it should become
+ * subsumed by other interfaces and base classes. It remains here until
+ * that process is completed. -mjl
+ *
  * IWidget defines the methods and properties that are expected to exist
  * on all widgets defined by this library.
  * @interface
  ****************************************************************************/
 pearson.brix.IWidget = function () {};
  
-/* **************************************************************************
- * IWidget.draw                                                        */ /**
- *
- * Render the widget into the given svg container at the given pixel size.
- *
- * @param {!d3.selection}
- *					container	-The container svg element to append the widget element tree to.
- * @param {pearson.utils.ISize}
- * 					size		-The size in pixels for the widget
- *
- ****************************************************************************/
-pearson.brix.IWidget.prototype.draw = function (container, size) {};
-
 /* **************************************************************************
  * IWidget.redraw                                                      */ /**
  *
@@ -456,19 +447,6 @@ pearson.brix.IWidget.prototype.redraw = function () {};
  *								 to the pixel offset into the data area.
  ****************************************************************************/
 pearson.brix.IWidget.prototype.setScale = function (xScale, yScale) {};
-
-/* **************************************************************************
- * IWidget.lite                                                        */ /**
- *
- * Highlight the area identified by the given key, unlighting all other
- * liteable areas.
- * Note that how the individual widget associates a given key with a particular
- * area is up to the widget implementation.
- *
- * @param {string}	liteKey	-The key associated with the area to be highlighted.
- *
- ****************************************************************************/
-pearson.brix.IWidget.prototype.lite = function (liteKey) {};
 
 /* **************************************************************************
  * IWidget.xScale                                                      */ /**
@@ -517,6 +495,27 @@ pearson.brix.SVGContainerConfig = function ()
 	 */
 	this.maxHt = 0;
 };
+
+/* **************************************************************************
+ * ILightable                                                          */ /**
+ *
+ * An ILightable bric supports the 'lite' method to highlight the element of
+ * the bric that is associated with a given liteKey.
+ * @interface
+ ****************************************************************************/
+pearson.brix.ILightable = function () {};
+ 
+/* **************************************************************************
+ * ILightable.lite                                                     */ /**
+ *
+ * Highlight the element identified by the given key, unhighlighting any
+ * previously highlighted elements.
+ *
+ * @param {string}	liteKey	-The key associated with the area to be highlighted.
+ *
+ ****************************************************************************/
+pearson.brix.ILightable.prototype.lite = function (liteKey) {};
+
 
 /* **************************************************************************
  * Abstract Base Classes
