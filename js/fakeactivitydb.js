@@ -396,7 +396,19 @@ pearson.brix.test.activities =
 				response:  "More length impedes electrons, making it harder to pass charge.",
 				}
 		},
-
+	"homicide": { 
+		"question": "Does the difference in insurance rates explain the high mortality rate from homicide for African Americans?",
+		"answer000": {
+				content: "Yes",
+				score: 1,
+				response:  "Wow, that's a surprise."
+				},
+		"answer001": {
+				content: "No",
+				score: 1,
+				response:   "This does seem more likely, doesn't it?",
+				},
+		},
 	// Chad's questions
 	"pop200": { 
 		"question": "Based on the graph, what average population growth rate looks like the best predictor of population increases over the past 200 years",

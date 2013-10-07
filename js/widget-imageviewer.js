@@ -193,7 +193,7 @@ pearson.brix.ImageViewer.prototype.draw = function (container, size)
 	
 	// make a group to hold the imageviewer
 	var widgetGroup = container.append("g")
-		.attr("class", "widgetImageViewer")
+		.attr("class", "brixImageViewer")
 		.attr("id", this.id);
 
 	// Rect for the background of the image viewer

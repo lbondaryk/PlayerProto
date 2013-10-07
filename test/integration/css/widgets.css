@@ -1,61 +1,69 @@
 /*
-* Axes, markers, ticks, and other graph styling
+* Axes, markers, ticks, carousel, image, and other brix styling
 * required for San/Van.
 */
-
-/* highlights                                      
-===================================================*/
 
 
 /* Images
 ================================================== */
-svg g.widgetImage>rect.background
+
+svg g.brixImage
 {
-	fill:			#efefef;
+  margin: 0;
+}
+
+svg g.brixImage>rect.background,
+svg g.brixCaptionedImage>rect.background
+{
+	fill:	#f8f8f8;
 	stroke-width:	0;
 }
-svg g.widgetImage>rect.highlight
+svg g.brixImage>rect.highlight
 {
 	fill: none;
 	fill-opacity:	0.0;
-	stroke-opacity:	0.0;	
+	stroke-opacity:	0.0;	s
 }
-svg g.widgetImage.lit>rect.highlight
+svg g.brixImage.lit>rect.highlight
 {
 	fill-opacity:	0.0;
 	stroke:			blue;
 	stroke-opacity:	0.8;	
 }
 
-svg g.widgetCaptionedImage div.widgetImageCaption
+svg g.brixCaptionedImage div.brixCaption
 {
-	text-align:		center;
+	font: 16px Helvetica;
+  background-color: #f8f8f8;
+} 
+
+svg g.brixCarousel>rect.background
+
+{
+	fill:	#f8f8f8;
 }
 
-svg g.widgetCarousel>rect.background
+svg g.brixCarousel>g.brixItem>rect.selection
 {
-	fill:			#4f00ef;
+	fill:			#fff;
 	fill-opacity:	0.0;
-}
-
-svg g.widgetCarousel>g.widgetItem>rect.selection
-{
-	fill:			#4f00ef;
-	fill-opacity:	0.0;
-	stroke:			blue;
+	stroke:		#999;
+  stroke-width: 1;
 	stroke-opacity:	0.0;	
 }
 
-svg g.widgetCarousel>g.widgetItem.selected>rect.selection
+svg g.brixCarousel>g.brixItem.selected>rect.selection
 {
-	fill-opacity:	0.1;
-	stroke-opacity:	0.8;	
+	fill-opacity:	0.3;
+	stroke-opacity:	1;	
 }
 
-svg g.widgetImageViewer>rect.background
+svg g.brixImageViewer>rect,
+svg g.brixLabelCarousel>rect 
 {
-	fill-opacity:	0.0;
-	stroke-width:	0;
+	fill:	#f8f8f8;
+	stroke-width:	1;
+  stroke: #f0f0f0;
 }
 
 /* Markers
@@ -114,63 +122,49 @@ svg g.bricMarkers .markerLabel
 
 /* Labels
 ================================================== */
-svg g.widgetLabel>rect
+svg g.brixLabel>rect
 {
-	fill:			black;
-	stroke:		#e4e4e4;
-	stroke-width:	2;
+	fill:			#f8f8f8;
+	stroke:		#c0c0c0;
+	stroke-width:	1;
 }
-svg g.widgetLabel.lit>rect
+svg g.brixLabel.lit>rect
 {
-	fill:			#F05A24;
-	stroke:		#e4e4e4;
+	fill:			#107aca;
+	stroke:		#0d65a6;
 }
-svg g.widgetLabel>text
+svg g.brixLabel>text
 {
-	fill:			white;
-  font: Helvetica bold 13px;
+	fill:			#4d4d4d;
+  font: bold 20px Helvetica;
+  margin: 50px;
 }
-svg g.widgetLabel.lit>text
+svg g.brixLabel.lit>text
 {
 	fill:			#f4f4f4;
 }
 
-svg g.widgetLabel .descLabel
+svg g.brixLabel .descLabel
 {
-  color: 666;
-  font: Helvetica 9pt;
-  border: 1px solid #e4e4e4;
-  background-color: #f7f7f7;
+  color: 4d4d4d;
+  font: 16px Helvetica;
+  border: 1px solid #c0c0c0;
+  background-color: #f8f8f8;
   padding: 8px 10px 7px;
 
 }
 
-svg g.widgetLabel .bullets
+svg g.brixLabel .bullets
 {
-  padding: 8px 10px 7px 35px;
+  padding: 8px 7px 6px 52px;
+  min-height: 35px;
 }
 
-svg g.widgetLabel.lit .descLabel
+svg g.brixLabel.lit .descLabel
 {
 	color: #f4f4f4;
-	background-color: #ff7747;
-  border: 1px solid #e4e4e4;;
-}
-
-/* Radio groups
-================================================== */
-div.widgetRadioGroup tr>td
-{
-	padding: 0;
-}
-div.widgetRadioGroup table.questionTable tr>td:first-child
-{
-	width: 			5em;
-	text-align: 	right;
-}
-div.widgetRadioGroup table.questionTable tr>td:nth-of-type(2)
-{
-	padding-left:	8px;
+	background-color: #107aca;
+  border: 1px solid #0d65A6;
 }
 
 
@@ -195,29 +189,235 @@ span.widgetSlider .range
   margin-right: 10px;
 }
 
+/* Radio groups
+================================================== */
+div.brixRadioGroup tr>td
+{
+  padding: 0;
+}
+div.brixRadioGroup table.questionTable
+{
+  margin: 0 0 0 25px;
+}
+
+div.brixRadioGroup table.questionTable tr>td:first-child
+{
+  text-align:   right;
+  vertical-align:top;
+  padding-top: 5px; 
+}
+div.brixRadioGroup table.questionTable tr>td:nth-of-type(2)
+{
+  padding-left: 8px;
+}
+   
+input[type=radio] {
+    border: 0px;
+    width: 20px;
+    height: 20px;
+}
+
 /* Question blocks
 ================================================== */
 
 div.widgetnumericquestion,
-div.widgetMultipleChoiceQuestion 
+div.brixMultipleChoiceQuestion 
 {
-  color: 333;
-  background-color: #f4f4f4;
-  border: 1px solid #C37030;
-  text-shadow: 1px 1px 1px #A54314;
-  padding: 0.2em 1.0em;
+ 
+  border: 1px solid #fff;
+  padding: 10px 0;
   margin-bottom: 10px;
   -moz-border-radius: 4px;
   border-radius: 4px;
   cursor: default; 
 }
 
+.brixMultipleChoiceQuestion fieldset 
+{
+  display: inline-block;
+  border: 0;
+  -webkit-margin-start: 2px;
+  -webkit-margin-end: 2px;
+  -webkit-padding-before: 0.35em;
+  -webkit-padding-start: 0.75em;
+  -webkit-padding-end: 0.75em;
+  -webkit-padding-after: 0.625em;
+}
+
+.brixMultipleChoiceQuestion fieldset legend 
+{
+  line-height: 40px;
+  color: #333333;
+  font: bold 21px HelveticaNeue, Helvetica;
+  margin-bottom: 5px; 
+}
+
+.brixMultipleChoiceQuestion label 
+{
+  font: 18px Helvetica;
+  line-height: 30px;
+}
+
+.brixMultipleChoiceQuestion .choiceLabel 
+{
+  font-weight: bold;
+  margin: 0 5px; 
+}
+
+.brixMultipleChoiceQuestion .submit button:disabled
+{
+  opacity: .5;
+}
+
+.brixButton button
+{
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #006dcc;
+  background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
+  background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -o-linear-gradient(top, #0088cc, #0044cc);
+  background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
+  border-color: #0044cc #0044cc #002a80;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  margin-bottom: 0;
+  margin-left: 20px;
+  font: 14px Helvetica;
+  line-height: 20px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  color: #fff;
+  border-color: #005f80;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  padding: 4px 30px;
+}
+
+.brixMultipleChoiceQuestion .feedback
+{
+  padding: 20px;
+  font: bold 18px Helvetica;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-transition: bottom 0.3s;
+  -webkit-transition: bottom 0.3s;
+  transition: bottom 0.3s; 
+}
+
+.brixMultipleChoiceQuestion .feedback .custom-feedback
+{
+  font: 16px Helvetica;
+}
+
+.brixMultipleChoiceQuestion .feedback .feedback-correct,
+.brixMultipleChoiceQuestion .feedback .feedback-incorrect,
+.brixMultipleChoiceQuestion .feedback .feedback-partial
+{
+  background-color: #efefef;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 4px 0 #ddd inset;
+  padding: 20px;
+}
+
+.brixMultipleChoiceQuestion .feedback i
+{
+  float: left;
+  font-size: 24px;
+  margin-bottom: 30px;
+  margin-right: 15px;
+}
+
+/*
+ *  Font Awesome 3.0.2
+ *  the iconic font designed for use with Twitter Bootstrap
+ *  -------------------------------------------------------
+ *  The full suite of pictographic icons, examples, and documentation
+ *  can be found at: http://fortawesome.github.com/Font-Awesome/
+ *
+ *  License
+ *  -------------------------------------------------------
+ *  - The Font Awesome font is licensed under the SIL Open Font License - http://scripts.sil.org/OFL
+ *  - Font Awesome CSS, LESS, and SASS files are licensed under the MIT License -
+ *    http://opensource.org/licenses/mit-license.html
+ *  - The Font Awesome pictograms are licensed under the CC BY 3.0 License - http://creativecommons.org/licenses/by/3.0/
+ *  - Attribution is no longer required in Font Awesome 3.0, but much appreciated:
+ *    "Font Awesome by Dave Gandy - http://fortawesome.github.com/Font-Awesome"
+ *
+ *  Contact
+ *  -------------------------------------------------------
+ *  Email: dave@davegandy.com
+ *  Twitter: http://twitter.com/fortaweso_me
+ *  Work: Lead Product Designer @ http://kyruus.com
+ */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url("fonts//fontawesome-webfont.eot?v=3.0.1");
+  src: url("fonts//fontawesome-webfont.eot?#iefix&v=3.0.1") format("embedded-opentype"), url("fonts//fontawesome-webfont.woff?v=3.0.1") format("woff"), url("fonts//fontawesome-webfont.ttf?v=3.0.1") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+/*  Font Awesome styles
+    ------------------------------------------------------- */
+[class^="icon-"],
+[class*=" icon-"] 
+{
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  /* sprites.less reset */
+  display: inline;
+  width: auto;
+  height: auto;
+  line-height: normal;
+  vertical-align: baseline;
+  background-image: none;
+  background-position: 0% 0%;
+  background-repeat: repeat;
+ }
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  text-decoration: inherit;
+  display: inline-block;
+  speak: none; }
+
+.icon-ok-sign:before 
+{
+  content: "\f058"; 
+  color: #468847;
+}
+
+.icon-remove:before 
+{
+  content: "\f05c";
+  color: #b94a48; 
+}
+
 
 /* tables of callouts/data
 ================================================== */
 table.widgetCallout {
+  border-collapse: collapse;
+  border-spacing: 0; 
   border: 2px solid #f4f4f4;
-  width: auto; }
+  width: auto; 
+  font: 14px Helvetica;
+  margin-bottom: 15px;
+  }
 
 table.widgetCallout td {
   vertical-align: top;
@@ -231,13 +431,13 @@ table.widgetCallout thead>tr td {
   border-bottom: 2px solid #f4f4f4;
   padding-bottom: 3px;
   font-weight: bold; 
-  text-align: right;}
+  text-align: left;}
   
 
 table tr.widgetCallout.lit 
 {
 	color:#1d456e;
-	border-left: 4px solid #F05A24;
+	border-left: 4px solid #107aca;
 	background-color: #f4f4f4;
 }
 
@@ -283,7 +483,7 @@ svg g.widgetSketch .shape.hot {
 }
 
 svg g.widgetSketch .shape.lit {
-	fill: #F05A24;
+	fill: #107aca;
 	stroke: #1d95ae;
 	stroke-width:3;
 	opacity: 0.5;
@@ -329,23 +529,6 @@ svg g.widgetSketch .shape>text {
 .hanging {
   padding-left: 22px;
   text-indent: -22px; }
-
-
-.feedback {
-  font-weight: 600;
-  border: solid 1px #aaaaaa;
-  -moz-border-radius: 2px;
-  border-radius: 2px;
-  display: block;
-  margin: .2em;
-  padding: 0.3em; }
-
-.correct {
-  color: #C9A0DC; }
-
-.wrong {
-  color: #8C1717; }
-  
  
 
 
@@ -379,22 +562,22 @@ svg g.widgetSketch .shape>text {
 	
 /* Axes
 ================================================== */
-.widget .axis path,
-.widget .axis line,
-.widget .axis circle {
+g.brix .axis path,
+g.brix .axis line,
+g.brix .axis circle {
   fill: none;
   stroke: #bbbbbb; 
   shapeRendering: crisp-edges;
   stroke-width: 1;
 }
 
-.widget .axis text {
+g.brix .axis text {
   font: bold .7em/1.5em;
   color: #008496; 
 }
 
 
-.widget .axis .descLabel {
+g.brix .axis .descLabel {
   border: solid 1px #5bafe4;
   -moz-border-radius: 2px;
   border-radius: 2px;
@@ -501,18 +684,18 @@ svg g .stroke11 {
   
 /* bars, pie wedges and points
 ================================================== */
-svg g.widgetBarChart rect,
-svg g.widgetLegend rect 
+svg g.brixBarChart .bar,
+svg g.widgetLegend rect,
 svg g.bricPieChart path {
-  opacity: 0.8; 
+  opacity: 0.7; 
   }
 
-svg g.widgetBarChart rect .lit
-svg g.widgetLegend rect .lit
+svg g.brixBarChart .lit .bar,
+svg g.widgetLegend .lit rect,
 svg g.bricPieChart path .lit  {
   opacity: 1;
-  stroke-width: 1;
-  stroke: #8063c7;
+  stroke-width: 2;
+  stroke: #999;
   }
 
 

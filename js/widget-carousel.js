@@ -209,7 +209,7 @@ pearson.brix.Carousel.prototype.draw = function(container, size)
 	
 	// make a group to hold the carousel
 	var widgetGroup = container.append("g")
-		.attr("class", "widgetCarousel")
+		.attr("class", "brixCarousel")
 		.attr("id", this.id);
 
 	// Rect for the background of the carousel
@@ -220,11 +220,11 @@ pearson.brix.Carousel.prototype.draw = function(container, size)
 			.attr("height", size.height);
 
 	// Create a group for each item then draw the item in that group
-	var itemGroups = widgetGroup.selectAll("g.widgetItem").data(this.items);
+	var itemGroups = widgetGroup.selectAll("g.brixItem").data(this.items);
 	
 	itemGroups.enter()
 		.append("g")
-			.attr("class", "widgetItem")
+			.attr("class", "brixItem")
 			.each(function (d)
 				  {
 					  d.draw(d3.select(this), itemSize);
@@ -281,7 +281,7 @@ pearson.brix.Carousel.prototype.redraw = function ()
  ****************************************************************************/
 pearson.brix.Carousel.prototype.selectedItem = function ()
 {
-	return this.lastdrawn.widgetGroup.select("g.widgetItem.selected").datum();
+	return this.lastdrawn.widgetGroup.select("g.brixItem.selected").datum();
 };
 
 /* **************************************************************************
@@ -296,7 +296,7 @@ pearson.brix.Carousel.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.Carousel.prototype.selectItemAtIndex = function (index)
 {
-	var itemGroups = this.lastdrawn.widgetGroup.selectAll("g.widgetItem");
+	var itemGroups = this.lastdrawn.widgetGroup.selectAll("g.brixItem");
 	var selectedItemGroup = d3.select(itemGroups[0][index]);
 	if (selectedItemGroup.classed('selected'))
 	{

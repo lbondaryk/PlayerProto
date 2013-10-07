@@ -110,22 +110,22 @@
 						expect(myButton.lastdrawn.container.node()).to.deep.equal(cntrNode);
 					});
 
-					it('should have appended a div element with class \'widgetButton\' to the container' +
+					it('should have appended a div element with class \'brixButton\' to the container' +
 					   ' and set the lastdrawn.widgetGroup to that d3 selection', function () {
 						// get the last element of the container
 						var last = d3.select(cntrNode).select(":last-child");
 						expect(last.node().nodeName).to.equal('DIV');
-						expect(last.classed('widgetButton'), 'has class widgetButton').to.be.true;
+						expect(last.classed('brixButton'), 'has class brixButton').to.be.true;
 						expect(myButton.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
 					});
 
 					it('should create a table w/ a row for each choice', function () {
 						/*
-						 div.widgetButton
+						 div.brixButton
 						 	button[type='button']
 						 */
 						var tree =
-							{ name: 'DIV', class: 'widgetButton', children:
+							{ name: 'DIV', class: 'brixButton', children:
 								[ { name: 'BUTTON'
 								} ],
 							};

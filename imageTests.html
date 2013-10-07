@@ -53,14 +53,15 @@
 	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/brixlib-compiled.js"></script>
-
 	<!--
+	<script src="js/brixlib-compiled.js"></script>
+	-->
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
 	<script src="js/eventmanager.js"></script>
 	<script src="js/widget-base.js"></script>
+	<script src="js/widget-prototype-axes.js"></script>
     <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
     <script src="js/widget-imageviewer.js"></script>
@@ -69,7 +70,7 @@
     <script src="js/widget-numeric.js"></script>
 	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-slider.js"></script>
-	-->
+
 	
 	
 
@@ -112,17 +113,14 @@
 			//id: "cimg0n",
 			URI: 'img/ch4_1.jpg',
 			caption: "The Whitewater-Baldy Complex wildfire.",
-			//actualSize: {height: 960, width: 1280}
-//			captionPosition: "below"
+			actualSize: {height: 960, width: 1280},
+			captionPosition: "below"
 		};
 		
-	var cntrSize = Size.matchRatioWithHeight(450 - 40, {height: 960, width: 1280});
 	var cntrConfig0 = 
 		{
 			node: d3.select("#widgetTarget0"),
-			maxSize: Size.matchRatioWithHeight(450 - 40, {height: 960, width: 1280}),
-			maxWid: cntrSize.width, //550,
-			maxHt: 450
+			maxSize: {width: 477, height: 450}
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
@@ -248,8 +246,7 @@
 	var cntrConfig4 = 
 		{
 			node: d3.select("#widgetTarget1bn"),
-			maxWid: 450,
-			maxHt: 450
+			maxSize: {width: 477, height: 477}
 		};
 
 	var cntr4 = new SVGContainer(cntrConfig4);
@@ -342,13 +339,10 @@
 
 	//	<div id="widgetTarget70"><p>Images in grid</p></div>
 		
-	var cntrSize = Size.matchRatioWithHeight(300, {height: 300, width: 800});
-	var bigCntrCnfg = 
+		var bigCntrCnfg = 
 		{
 			node: d3.select("#widgetTarget50"),
-			maxSize: 800,
-			maxWid: cntrSize.width, //550,
-			maxHt: 300
+			maxSize: {height: 200, width: 447},
 		};
 		
 	var contTrio = new SVGContainer(bigCntrCnfg);

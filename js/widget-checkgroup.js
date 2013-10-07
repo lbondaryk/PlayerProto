@@ -257,7 +257,7 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
 			.attr("for", getButtonId)
 			.text(function (d) {return d.content;});
 	
-	var choiceInputs = widgetGroup.selectAll("div.widgetCheckGroup input[name='" + this.id + "']");
+	var choiceInputs = widgetGroup.selectAll("input[name='" + this.id + "']");
 
 	// The reason I am using 'click' instead of 'chance' event is because preventDefault() work 
 	// on 'change' event and not on 'change'
@@ -317,7 +317,7 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.CheckGroup.prototype.selectedInputs_ = function ()
 {
-	var selectedInputsSelector = "div.widgetCheckGroup input[name='" + this.id + "']:checked";
+	var selectedInputsSelector = "input[name='" + this.id + "']:checked";
 	return this.lastdrawn.widgetGroup.selectAll(selectedInputsSelector);
 };
 
@@ -359,7 +359,7 @@ pearson.brix.CheckGroup.prototype.selectItemAtIndex = function (index)
 		return;
 	}
 
-	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetCheckGroup input");
+	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("input");
 	var selectedInput = choiceInputs[0][index];
 
 	if (selectedInput.checked)
@@ -388,7 +388,7 @@ pearson.brix.CheckGroup.prototype.selectItemAtIndex = function (index)
  ****************************************************************************/
 pearson.brix.CheckGroup.prototype.unselectItemAtIndex = function (index)
 {
-	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetCheckGroup input");
+	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("input");
 	var selectedInput = choiceInputs[0][index];
 
 	if (!selectedInput.checked)

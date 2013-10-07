@@ -131,7 +131,7 @@ pearson.brix.Button.prototype.draw = function (container)
 	
 	// make a div to hold the radio group
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetButton")
+		.attr("class", "brixButton")
 		.attr("id", this.buttonId_);
 
 	var button = widgetGroup.append("button")

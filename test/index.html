@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="lib/mocha/mocha.css">
 </head>
 <body>
+    <div>If the test fails, try compiling the lib folder with ./build.sh =)</div>
     <div id="mocha"></div>
     <script src="lib/mocha/mocha.js"></script>
     <script>mocha.setup('bdd')</script>
@@ -34,6 +35,7 @@
 	<script src="../js/answerman.js"></script>
 	<script src="../js/submitmanager.js"></script>
 	<script src="../js/widget-base.js"></script>
+    <script src="../js/mortar-base.js"></script>
 	<script src="../js/bricworks.js"></script>
     <script src="../js/widget-numeric.js"></script>
     <script src="../js/widget-legend.js"></script>
@@ -56,6 +58,7 @@
     <script src="../js/widget-multiselectquestion.js"></script>
     <script src="../js/widget-numericquestion.js"></script>
     <script src="../js/widget-slider.js"></script>
+    <script src="../js/mortar-hilite.js"></script>
 	<script src="../js/briclayer.js"></script>
 
     <script src="../js/domhelper.js"></script>
@@ -66,11 +69,13 @@
     <script src="helper.js"></script>
 
     <!-- include spec files here... -->
+
     <script src="spec/widget-base-spec.js"></script>
     <script src="spec/bricworks-spec.js"></script>
     <script src="spec/briclayer-spec.js"></script>
-    <script src="spec/widget-linegraph-spec.js"></script>
+    <script src="spec/brix-image-spec.js"></script>
     <script src="spec/widget-carousel-spec.js"></script>
+    <script src="spec/widget-linegraph-spec.js"></script>
     <script src="spec/widget-button-spec.js"></script>
     <script src="spec/widget-selectgroup-spec.js"></script>
     <script src="spec/widget-radiogroup-spec.js"></script>
@@ -79,6 +84,7 @@
     <script src="spec/widget-sketch-spec.js"></script>
     <script src="spec/submitmanager-spec.js"></script>
 	<script src="spec/widget-barchart-spec.js"></script>
+    <script src="spec/mortar-hilite-spec.js"></script>
 
     <script src="testmessages-ips.js"></script>
     <script src="spec/domhelper-spec.js"></script>

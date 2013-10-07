@@ -299,7 +299,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	this.childBrix.beforeData.forEach(this.drawBric_, this);
 
 	var graph = axesDrawn.group.append("g") //make a group to hold bars
-		.attr("class","widgetBarChart").attr("id", barsId);
+		.attr("class","brixBarChart").attr("id", barsId);
 
 	
 	this.lastdrawn.graph = graph;
@@ -582,6 +582,8 @@ pearson.brix.BarChart.prototype.lite = function(liteKey)
 	var allBars = this.lastdrawn.bars;
 	allBars
 		.classed("lit", false);
+
+	allBars.selectAll('rect').attr('transform', 'scale(1,1)');
 		
 	//var allSeries = this.lastdrawn.series;
 	//allSeries
@@ -596,6 +598,8 @@ pearson.brix.BarChart.prototype.lite = function(liteKey)
 	// Highlight the labels w/ the matching key
 	barsToLite
 		.classed("lit", true);
+
+	barsToLite.selectAll('rect').transition().attr('transform', 'scale(1,1.1)');
 
 	if (barsToLite.empty())
 	{

@@ -51,9 +51,8 @@
 	<script src="js/eCourse-master.js"></script>    
 	<script src="js/d3.v3.min.js"></script>
     
-	<!--
 	<script src="js/brixlib-compiled.js"></script>
-	-->
+	<!--
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
@@ -61,6 +60,7 @@
 	<script src="js/fakeactivitydb.js"></script>
 	<script src="js/answerman.js"></script>
 	<script src="js/submitmanager.js"></script>
+    <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
 	<script src="js/bricworks.js"></script>
     <script src="js/widget-numeric.js"></script>
@@ -84,7 +84,9 @@
     <script src="js/widget-multiselectquestion.js"></script>
     <script src="js/widget-numericquestion.js"></script>
     <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-hilite.js"></script>
 	<script src="js/briclayer.js"></script>
+	-->
 
 	<script>
 
@@ -124,51 +126,51 @@
 											//"maxSize": pearson.utils.Size.matchRatioWithHeight(310 + 40, {"height": 310, "width": 680}/*"cimage1"."config"."actualSize"*/),
 										},
 									"configFixup":
-									[
-										{
-											"type": "set-property",
-											"name": "node",
-											"value":
-												{
-													"type": "d3select",
-													"selector": "#imgReactor"
-												}
-										},
-										{
-											"type": "set-property",
-											"name": "maxSize",
-											"value":
-												{
-													"type": "property-of-ref",
-													"domain": "brix",
-													"refId": "cimage1",
-													"accessor": "getSizeAt100Pct"
-												}
-												/*
-												{
-													"type": "adjust-size",
-													"newHeight":
-														{
-															"type": "property-of-obj",
-															"obj":
-																{
-																	"type": "property-of-ref",
-																	"domain": "brix",
-																	"refId": "cimage1",
-																	"accessor": "getActualSize"
-																},
-															"accessor": "getHeight"
-														},
-													"keepRatioOf":
-														{
-															"type": "property-of-ref",
-															"domain": "brix",
-															"refId": "cimage1",
-															"accessor": "getActualSize"
-														},
-												}*/
-										}
-									]
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "node",
+                                                "value":
+                                                    {
+                                                        "type": "d3select",
+                                                        "selector": "#imgReactor"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "maxSize",
+                                                "value":
+                                                    {
+                                                        "type": "property-of-ref",
+                                                        "domain": "brix",
+                                                        "refId": "cimage1",
+                                                        "accessor": "getSizeAt100Pct"
+                                                    }
+                                                    /*
+                                                    {
+                                                        "type": "adjust-size",
+                                                        "newHeight":
+                                                            {
+                                                                "type": "property-of-obj",
+                                                                "obj":
+                                                                    {
+                                                                        "type": "property-of-ref",
+                                                                        "domain": "brix",
+                                                                        "refId": "cimage1",
+                                                                        "accessor": "getActualSize"
+                                                                    },
+                                                                "accessor": "getHeight"
+                                                            },
+                                                        "keepRatioOf":
+                                                            {
+                                                                "type": "property-of-ref",
+                                                                "domain": "brix",
+                                                                "refId": "cimage1",
+                                                                "accessor": "getActualSize"
+                                                            },
+                                                    }*/
+                                            }
+                                        ]
 								},
 								{
 									"bricId": "labels1",
@@ -190,21 +192,30 @@
 							],
 						"mortarConfig":
 							[
-								/*{
-									"mortarId": "<unique id for this mortar in this container>",
-									"mortarType": "BrixEventHandler",
+								{
+									"mortarId": "hilite1",
+									"mortarType": "Hilite",
 									"config":
 										{
-											"events": ["fixup"],
-											"action":
-												{
-													"type": "call-method",
-													"bric": "labels1",
-													"method": "lite",
-													"params": ["liteKey"]
-												}
-										}
-								}*/
+											"eventDetailsProperty": "selectKey"
+										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                // This value type will have to change to lookup a bric type's particular event id
+                                                // for now I've hardcoded that event id (topic).
+                                                // this is the lbltbl1's selectedEventId
+                                                "value": { "type": "constant", "value": "callme_Callout" }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "labels1" }
+                                            }
+                                        ]
+								}
 							],
 						"hookupActions":
 							[
@@ -269,12 +280,28 @@
 						"mortarConfig":
 							[
 								{
-									"mortarId": "<unique id for this mortar in this container>",
-									"mortarType": "BrixEventHandler",
+									"mortarId": "hilite2",
+									"mortarType": "Hilite",
 									"config":
 										{
-											//... config for mortar type specified
-										}
+											"eventDetailsProperty": "selectKey"
+										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                // This value type will have to change to lookup a bric type's particular event id
+                                                // for now I've hardcoded that event id (topic).
+                                                // this is the labels1's selectedEventId
+                                                "value": { "type": "constant", "value": "reactorNum_labelSelected" }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "lbltbl1" }
+                                            }
+                                        ]
 								}
 							],
 						"hookupActions":
@@ -311,25 +338,30 @@
 	a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager);
 
 	a.building = a.bricLayer.build(a.config);
-
+/*
 	// shorter names
 	a.cimage1 = a.building.brix.cimage1;
 	a.cntr1 = a.building.brix.cntr1;
 	a.labels1 = a.building.brix.labels1;
 	a.lbltbl1 = a.building.brix.lbltbl1;
 	// code that will be replaced by mortar defined in container "imgReactor"
-	a.eventManager.subscribe(a.lbltbl1.selectedEventId,
-		function (eventDetails)
-		{
-			a.labels1.lite(eventDetails['selectKey']);
-		});
+    var hilite1Config =
+        {
+            "topic": "callme_Callout",
+            "eventDetailsProperty": "selectKey",
+            "targetBric": a.building.brix["labels1"]
+        };
+    a.building.mortar.hilite1 = new pearson.brix.mortar.Hilite(hilite1Config, a.eventManager);
+
 	// code that will be replaced by mortar defined in container "steps"
-	a.eventManager.subscribe(a.labels1.selectedEventId,
-    function (eventDetails)
-		{
-			a.lbltbl1.lite(eventDetails['selectKey']);
-		});
-	
+    var hilite2Config =
+        {
+            "topic": "reactorNum_labelSelected",
+            "eventDetailsProperty": "selectKey",
+            "targetBric": a.building.brix["lbltbl1"]
+        };
+    a.building.mortar.hilite2 = new pearson.brix.mortar.Hilite(hilite2Config, a.eventManager);
+*/
 	</script>
 </body>
 </html>

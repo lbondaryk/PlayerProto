@@ -4,8 +4,8 @@
  *
  * @fileoverview Implementation of the Image and CaptionedImage brix.
  *
- * The Image widget draws a scaled image in an SVGContainer.
- * The CaptionedImage widget draws a caption next to an Image.
+ * The Image bric draws a scaled image in an SVGContainer.
+ * The CaptionedImage bric draws a caption above or below an Image.
  *
  * Created on		May 04, 2013
  * @author			Leslie Bondaryk
@@ -20,6 +20,7 @@ goog.provide('pearson.brix.CaptionedImage');
 
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.SvgBric');
+goog.require('pearson.brix.ILightable');
 
 // Sample configuration objects for classes defined here
 (function()
@@ -52,13 +53,14 @@ goog.require('pearson.brix.SvgBric');
 /* **************************************************************************
  * Image                                                               */ /**
  *
- * The Image widget draws an image in an SVGContainer.
+ * The Image bric draws an image in an SVGContainer.
  *
  * The Image is frequently used by other brix, or drawn under other
- * brix such as LabelGroups.
+ * brix such as LabelGroups or graphs.
  *
  * @constructor
  * @extends {pearson.brix.SvgBric}
+ * @implements {pearson.brix.ILightable}
  * @export
  *
  * @param {Object}		config			-The settings to configure this Image
@@ -144,9 +146,10 @@ pearson.brix.Image = function (config, eventManager)
 
 	/**
 	 * The scale functions set explicitly for this Image using setScale.
-	 * Image doesn't use scale functions, but they may get used in a widget chain.
-	 * Otherwise a data extent of [0,1] will be mapped to the given
-	 * container area.
+	 * Image doesn't use scale functions, but they may get used in a brixStac, such
+	 * as an image behind a graph or labels on top of an image.  
+	 * A default data extent of [0,1] will be mapped to the given
+	 * container area, allowing location on the image to be specified in % of height/width
 	 * @private
 	 * @type Object
 	 * @property {function(number): number}
@@ -204,7 +207,7 @@ pearson.brix.Image.prototype.draw = function (container, size)
 	
 	// make a group to hold the image
 	var imageGroup = container.append("g")
-		.attr("class", "widgetImage")
+		.attr("class", "brixImage")
 		.attr("id", this.imageId_);
 
 	// Rect for the background of the viewbox in case the image doesn't fill it
@@ -212,8 +215,7 @@ pearson.brix.Image.prototype.draw = function (container, size)
 		.append("rect")
 			.attr("class", "background")
 			.attr("width", size.width)
-			.attr("height", size.height)
-			.attr("fill", "#efefef");	// TODO: move this to css selector: 'g.widgetImage>rect' -mjl
+			.attr("height", size.height);	 
 	
 	// Draw the image itself
 	imageGroup
@@ -572,7 +574,7 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 
 	// make a group to hold the image
 	var widgetGroup = container.append("g")
-		.attr("class", "widgetCaptionedImage")
+		.attr("class", "brixCaptionedImage")
 		.attr("id", this.captionedId_);
 
 	var captionSize = {height: this.captionSize_.height, width: size.width};
@@ -592,7 +594,7 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 			.append("xhtml:body")
 				.style("margin", "0px")		// this interior body shouldn't inherit margins from page body
 				.append("div")
-					.attr("class", "widgetImageCaption")
+					.attr("class", "brixImageCaption")
 					.html(this.caption);
 
 	// position the caption
