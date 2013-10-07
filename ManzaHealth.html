@@ -170,6 +170,16 @@ var legBar = new Legend({
 
 groupGraph.append(legBar);
 
+var graphReadout = new Callouts({
+	headers: [ whites[3].y, whites[2].y, whites[1].y, whites[0].y ],
+	textBits: [
+		{cols: [ whites[3].x, whites[2].x, whites[1].x, whites[0].x ]},
+		{cols: [ blacks[3].x, blacks[2].x, blacks[1].x, blacks[0].x ]},
+		{cols: [ hispanics[3].x, hispanics[2].x, hispanics[1].x, hispanics[0].x ]},
+		{cols: [ asians[3].x, asians[2].x, asians[1].x, asians[0].x ]}
+	],
+	},eventManager);
+
 var insTable = new Callouts({
 	show: "all",
 	headers: ["Race", "Uninsured Rate (%)" ],
@@ -181,7 +191,10 @@ var insTable = new Callouts({
 	],
 	},eventManager);
 	
+	
 insTable.draw(d3.select("#table0"));
+
+graphReadout.draw(d3.select("#table0"));
 	
 eventManager.subscribe(insTable.selectedEventId, liteUp);
 eventManager.subscribe(groupGraph.selectedEventId, liteUp);
@@ -194,22 +207,31 @@ function liteUp (liteKey)
 		groupGraph.lite(liteKey.selectKey);
 		insTable.lite(liteKey.selectKey);
 		legBar.lite(liteKey.selectKey);
+		graphReadout.lite(liteKey.selectKey);
 	}
 
 var Q0Choices = [
 		{
-			content: "Yes, some homicides might not be fatal if health care were available.",
+			content: "differing socioeconomic and environmental conditions",
 			answerKey: "answer000"
 		},
 		{
-			content: "No, that's a different socioeconomic indicator.",
+			content: "availability/affordability of insurance",
 			answerKey: "answer001"
+		},
+		{
+			content: "barriers to health literacy",
+			answerKey: "answer002"
+		},
+		{
+			content: "linguistic barriers",
+			answerKey: "answer003"
 		},
 		];
 
 var Q0 = new MultipleChoiceQuestion({
-			questionId: "homicide",
-			question: "Does the difference in insurance rates explain the high mortality rate from homicide for African Americans?",
+			questionId: "mortality",
+			question: "Disparities in health exist among racial groups because of ",
 			choices: Q0Choices,
 			order: "randomized",
 			widget: SelectGroup,
