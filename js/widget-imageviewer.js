@@ -53,6 +53,9 @@ goog.require('pearson.utils.EventManager');
  * 											 if undefined a unique id will be assigned.
  * @param {Array.<!pearson.brix.Image>}
  * 							config.items	-The list of Image brix to be presented by the ImageViewer.
+ *
+ * @param {Integer} 		config.displayWidth 
+ *        									-The intended width of the imageviewer
  * @param {!pearson.utils.IEventManager=}
  * 							eventManager	-allows the widget to publish and subscribe to events
  * 											 required for correct internal operation.
@@ -97,6 +100,15 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	 */
 	this.carousel = new pearson.brix.Carousel(crslConfig, eventManager);
 
+	/**
+     * Column width (in pixels) which is the full size display, with margins.
+     * @note This sets the width at which captions display at full font size.
+     * If not set, the default is for a two-column layout with even column widths.
+     * @private
+     * @type {integer}
+     */
+    this.displayWidth_ = config.displayWidth || 477;
+
 	// We may want to eventually support an empty image, but for now
 	// we'll just copy the 1st image into the display image.
 	var cimgConfig =
@@ -104,6 +116,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 			id: this.id + "_cimg",
 			URI: this.items[0].URI,
 			caption: this.items[0].caption,
+			displayWidth: this.displayWidth_,
 			preserveAspectRatio: this.items[0].preserveAspectRatio,
 			actualSize: this.items[0].actualSize,
 			captionPosition: "below"
@@ -197,11 +210,14 @@ pearson.brix.ImageViewer.prototype.draw = function (container, size)
 		.attr("id", this.id);
 
 	// Rect for the background of the image viewer
-	widgetGroup
+	// I'm commenting this out because it interferes with the caption height
+	// sizing logic and is not required for the newest UX designs - lb
+	/* widgetGroup
 		.append("rect")
 			.attr("class", "background")
 			.attr("width", size.width)
 			.attr("height", size.height);
+			*/
 
 	// calculate the optimum carousel height for the given width, but don't let
 	// it be greater than 20% of the total height of this ImageViewer.

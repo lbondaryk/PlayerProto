@@ -15,7 +15,8 @@ svg g.brixImage
 svg g.brixImage>rect.background 
 {
 	fill: #fff;
-	stroke-width:	0;
+	stroke-width: 1;
+  stroke: #cbcbcb;
 }
 
 svg g.brixCaptionedImage>rect.background
