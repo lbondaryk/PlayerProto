@@ -125,7 +125,7 @@ var image200 = new Image({
 		{
 			//id: "cimg0n",
 			URI: 'img/squaresTest.png',
-			caption: "Squares 200x200 px in a 300 x 477w box",
+			caption: "Squares 200x200 px in a 300 x 477w box - the image is stretched because it's a square that is narrower than the displayWidth but it's still in proportion.  If the production editor or the bricLayer doesn't make the svg tall enough, it'll clip.",
 			actualSize: {height: 200, width: 200},
 			captionPosition: "below"
 		};
@@ -133,7 +133,7 @@ var image200 = new Image({
 	var cntrConfig0 = 
 		{
 			node: d3.select("#widgetTarget0"),
-			maxSize: {width: 477, height: 300}
+			maxSize: {width: 477, height: 620}
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
@@ -259,7 +259,7 @@ var image200 = new Image({
 	var cntrConfig4 = 
 		{
 			node: d3.select("#widgetTarget1bn"),
-			maxSize: {width: 477, height: 477}
+			maxSize: {width: 477, height: 557}
 		};
 
 	var cntr4 = new SVGContainer(cntrConfig4);
@@ -355,35 +355,36 @@ var image200 = new Image({
 		var bigCntrCnfg = 
 		{
 			node: d3.select("#widgetTarget50"),
-			maxSize: {height: 200, width: 447},
+			maxSize: {height: 270, width: 477},
 		};
 		
 	var contTrio = new SVGContainer(bigCntrCnfg);
 	var oneOfThree = new CaptionedImage({
-			id: "oneofthree",
+			displayWidth: 477/3,
 			URI:'img/ch4_2.jpg',
 			caption: "Aerial image near downtown West Liberty, Kentucky.",
 			actualSize: {height: 500, width: 500}
 			});
 			
 	var twoOfThree = new CaptionedImage({
-			id: "twoofthree",
+			displayWidth: 477/3,
+			captionPosition: 'above',
 			URI:'img/ch4_3.jpg',
-			caption: "Withering Iowa corn.",
+			caption: "Withering corn",
 			actualSize: {height: 500, width: 500}
 			});
 	
 			
 	var threeOfThree = new CaptionedImage({
-			id: "threeofthree",
+			displayWidth: 477/3,
 			URI:'img/ch4_4.jpg',
 			caption: "Seaside, NJ, after Hurricane Sandy",
 			actualSize: {height: 500, width: 500}
 			});
 			
-	contTrio.append(oneOfThree, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.33});
-	contTrio.append(twoOfThree, {topPercentOffset: 0, leftPercentOffset: 0.34, heightPercent: 1, widthPercent: 0.33});
-	contTrio.append(threeOfThree, {topPercentOffset: 0, leftPercentOffset: 0.68, heightPercent: 1, widthPercent: 0.33});
+	contTrio.append(oneOfThree, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.3});
+	contTrio.append(twoOfThree, {topPercentOffset: 0, leftPercentOffset: 0.35, heightPercent: 1, widthPercent: 0.3});
+	contTrio.append(threeOfThree, {topPercentOffset: 0, leftPercentOffset: 0.7, heightPercent: 1, widthPercent: 0.3});
 	
 	
 </script>

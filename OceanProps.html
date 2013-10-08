@@ -197,7 +197,7 @@ var layers = new ImageViewer({
 			],
 	}, eventManager);
 
-svgmaps.append(layers, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.6});
+svgmaps.append(layers, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.47});
 							
 var labels1 = new LabelGroup(
 		{type: "latin-upper",
@@ -217,21 +217,23 @@ var labels1 = new LabelGroup(
 
 var salImage = new CaptionedImage ({
 				URI: 'img/oceans/oceanSalinity.png',
-				caption: "Ocean Salinity at 0 m (surface)",
+				displayWidth: 300,
+				caption: "Ocean Salinity at surface",
 				actualSize: {height: 530, width: 930},
 				captionPosition: "below"
 			});
 
 var oxyImage = new CaptionedImage ({
 				URI: 'img/oceans/oceanOxygen.png',
-				caption: "Ocean Oxygen Concentration at 0 m (surface)",
+				displayWidth: 300,
+				caption: "Oxygen Concentration at surface",
 				actualSize: {height: 530, width: 930},
 				captionPosition: "below"
 		});
 
-svgmaps.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+svgmaps.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.45, widthPercent: 0.35});
 
-svgmaps.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+svgmaps.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.45, widthPercent: 0.35});
 
 
 eventManager.subscribe(profiles.selectedEventId, carouselUpdate);

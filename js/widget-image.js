@@ -224,8 +224,14 @@ pearson.brix.Image.prototype.draw = function (container, size)
 			.attr("preserveAspectRatio", this.preserveAspectRatio)
 			// images should scale down if the container is smaller than actual size, but should not
 			// scale up (their actual size should be their maximum size). 
-			.attr("width", imgSize.width > size.width ? size.width : imgSize.width)
-			.attr("height", imgSize.height > size.height ? size.height : imgSize.height)
+			//.attr("width", imgSize.width > size.width ? size.width : imgSize.width)
+			//.attr("height", imgSize.height > size.height ? size.height : imgSize.height)
+			// Because of preserveAspectRatio, the actual size of the image is used to scale
+			// proportionally (magically read by the browser somehow).  So, if the container is not
+			// the same h/w proportions as the image, it will stretch or shrink to fit into the 
+			// dimension nearest the actual size corresponding dimension. 
+			.attr("width", size.width)
+			.attr("height", size.height)
 			.append("desc")
 				.text(this.caption);
 
@@ -335,7 +341,7 @@ pearson.brix.Image.prototype.changeImage = function (uri, caption)
  * Image.setScale                                                      */ /**
  *
  * Called to preempt the normal scale definition which is done when the
- * widget is drawn. This is usually called in order to force one widget
+ * bric is drawn. This is usually called in order to force one widget
  * to use the scaling/data area calculated by another widget.
  *
  * @param {function(number): number}
@@ -464,13 +470,15 @@ pearson.brix.Image.prototype.setLastdrawnScaleFns2ExplicitOrDefault_ = function 
  * 						config.id		-String to uniquely identify this CaptionedImage.
  * 										 if undefined a unique id will be assigned.
  * @param {string}		config.URI		-The URI of the image resource to be displayed.
- * @param {string}		config.caption	-The caption for the image.
+ * @param {htmlString}	config.caption	-The caption for the image.
  * @param {string}		config.preserveAspectRatio
  *										-Specify how to treat the relationship between
  *										 the actual aspect ratio of the image and the
  *										 area it is to be drawn in.
  * @param {Size}		config.actualSize
  *										-The actual height and width in pixels of the image.
+ * @param {integer}		config.displayWidth
+ *										-The column width in pixels for this bric when displayed.
  * @param {string}		config.key		-Association key used to determine if this
  *										 image should be highlighted.
  * @param {string}		config.captionPosition
@@ -504,13 +512,22 @@ pearson.brix.CaptionedImage = function (config, eventManager)
 	 */
 	this.captionPosition = config.captionPosition;
 
+ 	/**
+     * Column width (in pixels) which is the full size display, with margins.
+     * @note This sets the width at which captions display at full font size.
+     * If not set, the default is for a two-column layout with even column widths.
+     * @private
+     * @type {integer}
+     */
+    this.displayWidth_ = config.displayWidth || 477;
+	
     /**
      * The full size (in pixels) of the caption.
      * @note Currently the caption height is hardcoded, eventually we should measure it.
      * @private
      * @type {!pearson.utils.ISize}
      */
-    this.captionSize_ = new pearson.utils.Size(80, this.actualSize.width);
+    this.captionSize_ = new pearson.utils.Size(80, this.displayWidth_);
 	
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)
@@ -568,46 +585,87 @@ pearson.brix.CaptionedImage.prototype.getSizeAt100Pct = function ()
 pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 {
 	this.captioned_lastdrawn.container = container;
-	this.captioned_lastdrawn.size = size;
+	
 	this.captioned_lastdrawn.URI = this.URI;
 	this.captioned_lastdrawn.caption = this.caption;
 
 	// aliases of utility functions for readability
 	var attrFnVal = pearson.brix.utils.attrFnVal;
+	var marginSize = 10;
 
 	// make a group to hold the image
 	var widgetGroup = container.append("g")
 		.attr("class", "brixCaptionedImage")
 		.attr("id", this.captionedId_);
 
-	var captionSize = {height: this.captionSize_.height, width: size.width};
-	var imageSize = {height: size.height - captionSize.height, width: size.width};
-	
-	// Draw the image
-	var imageGroup = widgetGroup.append("g");
-	goog.base(this, 'draw', imageGroup, imageSize);	
+	// captioned images take the whole container height and subtract the caption height 
+	// to leave the available image window height.  Eventually we need to invert this logic
+	// so the image height (after any proportional scaling due to displayWidth) + measured
+	// caption height is used to fixup the container height.
+
+	var captionSize = {height: this.captionSize_.height , width: this.captionSize_.width};
+
+	// Rect for the background of the captioned viewbox
+	var backgroundGroup = widgetGroup
+		.append("rect")
+			.attr("class", "background")
+	//  shrunk by two and translated down and over 1 so you can see the 1 px outline
+			.attr('transform', attrFnVal('translate', 1, 1))
+			.attr("width", this.displayWidth_ - 2)
+			.attr("height", size.height);
 	
 	// Draw the caption
 	var captionGroup = widgetGroup.append("g");
 
-	captionGroup
+	var forObject = captionGroup
 		.append("foreignObject")
 			.attr("width", captionSize.width)
-			.attr("height", captionSize.height)
-			.append("xhtml:body")
-				.style("margin", "0px")		// this interior body shouldn't inherit margins from page body
+			.attr("height", captionSize.height);
+
+	forObject.append("xhtml:body")
+	// this interior body shouldn't inherit margins from page body
+				.style("margin", "0px")
 				.append("div")
 					.attr("class", "brixImageCaption")
 					.html(this.caption);
 
+	// measure the caption height, and reset the associated sizes to match what was rendered
+	captionSize.height = captionGroup.select('.brixImageCaption').node().offsetHeight;
+	this.captionSize_.height = this.captionSize_.height + 2 * marginSize;
+	forObject.attr('height', captionSize.height);
+
+	
+	// Subtract the margin from either side of the image display width to get the
+	// width of the image viewbox.  The image will proportionally size itself.  The max
+	// height left for the viewbox should be proportioned to the image, and the caption
+	// spaced above or below that. It's currently up to the user to size the SVG to show all
+	// of this, but eventually we'd like the BricLayer to correct any truncation. -lb
+	var aspectRatio = this.actualSize.height/this.actualSize.width;
+	var viewboxWidth = this.displayWidth_ - 2 * marginSize;
+
+	var imageSize = {height: aspectRatio * viewboxWidth, width: this.displayWidth_ - 2 * marginSize};
+
+	// reset the size of the background box to match
+	backgroundGroup.attr('height', imageSize.height + 2 * marginSize);
+
+	this.captioned_lastdrawn.size = {width: this.displayWidth_, height: imageSize.height + this.captionSize_.height};
+
+	// Draw the image
+	var imageGroup = widgetGroup.append("g")
+			.attr('transform', attrFnVal('translate', marginSize, marginSize));
+	goog.base(this, 'draw', imageGroup, imageSize);
+
+
 	// position the caption
 	if (this.captionPosition === "above")
 	{
-		imageGroup.attr("transform", attrFnVal("translate", 0, captionSize.height));
+		imageGroup.attr("transform", attrFnVal("translate", marginSize, captionSize.height + marginSize));
+		backgroundGroup.attr("transform", attrFnVal("translate", 0, captionSize.height));
+
 	}
 	else // assume below
 	{
-		captionGroup.attr("transform", attrFnVal("translate", 0, imageSize.height));
+		captionGroup.attr("transform", attrFnVal("translate", 0, imageSize.height + 2 * marginSize));
 	}
 	
 	this.captioned_lastdrawn.widgetGroup = widgetGroup;
