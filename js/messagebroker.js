@@ -50,7 +50,7 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.utils.FrameCollection');
+goog.provide('pearson.utils.IframeCollection');
 goog.provide('pearson.utils.MessageBroker');
 
 goog.require('goog.Disposable');
@@ -82,13 +82,13 @@ pearson.utils.IframeCollection = function ()
 
     /**
      * List of (i)frames as obtained by the querySelectorAll(). 
-     * @type {Array.<Object>}
+     * @type {Array.<Element>}
      */
     this.framesList = null;
 
     /**
      * Array of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
-     * @type {Array.<{node: Element, subscribeHandler: Function}>}
+     * @type {Array.<{node: Element, subscribeHandler: function(Object)}>}
      */
     this.frameCustomParams = [];
 
@@ -131,24 +131,20 @@ pearson.utils.IframeCollection.prototype.cacheFrames = function (classAttr)
     this.framesList = document.querySelectorAll("iframe." + classAttr);
 
     // Converting list into map. The map entry contains node and subscribeHandler
-    // @note: I don't see the subscribeHandler in the object, and this isn't really
-    //        a map (as in an associative array) it's an array of records
-    //        in which case may I suggest this code?
-    //        this.frameCustomParams = this.framesList.map(function (e) { return {node: e}; });
-    //        -mjl
     for (var i = 0; i < this.framesList.length; i++)
     {
-        this.setFrameCustomParams(i,  {node: this.framesList[i]});
+        this.setFrameCustomParams(i, {node: this.framesList[i], subscribeHandler: null});
     }
 };
 
 /* **************************************************************************
- * pearson.utils.IframeCollection.setFrameCustomParams                 */ /**
+ * IframeCollection.setFrameCustomParams                               */ /**
  * 
  * Sets user defined parameters to the (i)frame object
  * 
- * @param {number} index    The index in the array that represent the cache 
- * @param {Object} value    The value of the payload to associate with the (i)frame
+ * @param {number}  index   The index in the array that represent the cache 
+ * @param {{node: Element, subscribeHandler: function(Object)}
+ *                  value   The value of the payload to associate with the (i)frame
  * 
  ****************************************************************************/
 pearson.utils.IframeCollection.prototype.setFrameCustomParams = function (index, value)
@@ -307,26 +303,26 @@ pearson.utils.MessageBroker.prototype.iframeCollection = null;
 /**
  * The log level. Higher the number higher the log detail.
  * 0=no logging, 1=ERROR 2=WARN, 3=INFO. 4=DEBUG, 5=TRACE
- * @type {int}
+ * @type {number}
  */
 pearson.utils.MessageBroker.prototype.logLevel = 0; // by default, no logging
 
 /**
  * The Number of bric messages received. Primarily for testing purpose.
- * @type {int}
+ * @type {number}
  */
 pearson.utils.MessageBroker.prototype.bricMessageCounter = 0;
 
 /**
  * The Number of resize messages received. Primarily for testing purpose.
- * @type {int}
+ * @type {number}
  */
 pearson.utils.MessageBroker.prototype.resizeMessageCounter = 0;
 
 /**
  * The function attached to the windows event. Dispatches the incoming messages
  * into appropriate channels.
- * @type {function}
+ * @type {Function}
  */
 pearson.utils.MessageBroker.prototype.channelDispatcher = null;
 
@@ -338,7 +334,7 @@ pearson.utils.MessageBroker.prototype.channelDispatcher = null;
  * 'topic' - to handler topic subscription/unsubscription,
  * 'resize' - to handle windows resize.
  * It can later be extended by adding new function pointers that process channel messages.
- * @type {function[]}
+ * @type {Array.<Function>}
  */
 pearson.utils.MessageBroker.prototype.channelHandlers = {};
 
@@ -347,7 +343,7 @@ pearson.utils.MessageBroker.prototype.channelHandlers = {};
  * The internal PubSub object.
  * The pubSub object must have publish, subscribe an unsubscribe methods.
  * Currently is an instance of EventManager to handle topics.
- * @type {Object}
+ * @type {!pearson.utils.IEventManager}
  */
 pearson.utils.MessageBroker.prototype.pubSub = new pearson.utils.EventManager(false);
 
@@ -358,7 +354,7 @@ pearson.utils.MessageBroker.prototype.pubSub = new pearson.utils.EventManager(fa
  * In order to actually output log message, the logLevel must be greater or equal than the argument level 
  *
  * @param {number} level    The level of the current message 
- * @param {String} message  The actual message.
+ * @param {string} message  The actual message.
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.log = function (level, message)
 {
@@ -372,7 +368,7 @@ pearson.utils.MessageBroker.prototype.log = function (level, message)
  * MessageBroker.initialize                                            */ /**
  *
  * The initialization does:
- * 1. registers the channelDispater to the windowEventListener
+ * 1. registers the channelDispatcher to the windowEventListener
  * 2. Converts object nodes to iframe nodes
  * 3. Caches the iframe nodes in the DOM Helper
  *
@@ -397,7 +393,7 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
         var chanHandler = _self.channelHandlers[evt.data.type];
         if (chanHandler)
         {
-            chanHandler(event);
+            chanHandler(evt);
         }
         else
         {
@@ -442,25 +438,23 @@ pearson.utils.MessageBroker.prototype.internalDispose = function ()
 /* **************************************************************************
  * MessageBroker.subscribe                                             */ /**
  *
- * Subscribes a window to a specific topic.
+ * Subscribes a window (iframe) to a specific topic.
  *
- * @param {String} topic    The topic to subscribe to.
- * @param {Windows} evt     The windows object to subscribe.
- * @return {boolean}        True if subscribed, false otherwise 
- *                          (May not be subscribed if is not part of the item)
+ * @param {string}  topic       The topic to subscribe to.
+ * @param {Windows} windowsObj  The windows object to subscribe.
+ *
+ * @return {boolean} True if subscribed, false otherwise 
+ *                   (May not be subscribed if is not part of the item)
  * 
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
 {
-
     var frameEntry = this.iframeCollection.getFrameCustomParams(windowsObj);
 
     if (frameEntry === undefined)
     {
         return false;
     } 
-
-    var _self = this;
 
     // Reuse the same handle for an iframe
     var subscribeHandler = frameEntry['subscribeHandler'];
@@ -471,10 +465,10 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
         {
             if ( frameEntry.node.contentWindow === evt.source)
             {
-                _self.log(5, "Skipping the iframe where the message was originated.");
+                this.log(5, "Skipping the iframe where the message was originated.");
                 return;
             }
-            _self.log(5, "Posting message to an iframe");
+            this.log(5, "Posting message to an iframe");
             // Sending the entire message as is
             frameEntry.node.contentWindow.postMessage(evt.data, '*');
         };
@@ -482,7 +476,7 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
         frameEntry['subscribeHandler'] = subscribeHandler;
     }
 
-    this.pubSub.subscribe(topic, subscribeHandler);
+    this.pubSub.subscribe(topic, goog.bind(subscribeHandler, this));
     this.log(2, "Frame '"+ frameEntry.node.src +"' subscribed to topic: [" + topic + "]");
 
     return true;
@@ -493,10 +487,11 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
  *
  * Subscribes a window to a specific topic.
  *
- * @param {String} topic    The topic to subscribe to.
+ * @param {string}  topic   The topic to subscribe to.
  * @param {Windows} evt     The windows object to subscribe.
- * @return {boolean}        True if subscribed, false otherwise 
- *                          (May not be subscribed if is not part of the item)
+ *
+ * @return {boolean} True if subscribed, false otherwise 
+ *                   (May not be subscribed if is not part of the item)
  * 
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.unsubscribe = function (topic, windowsObj)

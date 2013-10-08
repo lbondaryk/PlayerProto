@@ -53,10 +53,11 @@ goog.require("pearson.brix.BrixLayer");
  * @constructor
  * @export
  *
- * @param {Object}      config          - The settings to configure the Ipc
+ * @param {Object}      config            -The settings to configure the Ipc
+ * @param {string}      config.ipsBaseUrl -The base url to access IPS w/ AJAX
  * @param {!pearson.utils.IEventManager}
- *                      eventManager    -The event manager to use for publishing events
- *                                       and subscribing to them.
+ *                      eventManager      -The event manager to use for publishing events
+ *                                         and subscribing to them.
  *
  ****************************************************************************/
 pearson.brix.Ipc = function (config, eventManager)
@@ -73,10 +74,26 @@ pearson.brix.Ipc = function (config, eventManager)
     this.eventManager = eventManager;
 
     /**
-     * The IpsProxy instance
+     * The IpsProxy used by this Ipc to communicate w/ the IPS
      * @type {pearson.brix.IpsProxy}
      */
     this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl": config.ipsBaseUrl});
+
+    /**
+     * List of activity identification records used to obtain the sequence node id
+     * from the AMC.
+     * 
+     * @type {!Array.<{assignmenturl: string, activityurl: string, type: (string|undefined)}>}
+     */
+    this.items = [];
+
+    /**
+     * The container ID is used in the iframe mode.
+     * Having a value will make the IPC to retrieve a specific conatinerId 
+     * from the IPS.
+     * @type {?string}
+     */
+    this.containerId = null;
 
     var bricLayerConfig = null;
 
@@ -87,21 +104,6 @@ pearson.brix.Ipc = function (config, eventManager)
      */
     this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager);
 };
-
-/**
- * Array of {assignmenturl=<val>, activityurl=<val>, type=<val>}
- * 
- * @type {!Array.<Object>} items
- */
-pearson.brix.Ipc.items = [];
-
-/**
- * The container ID is used in the iframe mode.
- * Having a value will make the IPC to retrieve a specific conatinerId 
- * from the IPS.
- * @type {string}
- */
-pearson.brix.Ipc.containerId = null;
 
 /* **************************************************************************
  * Ipc.init                                                            */ /**
@@ -168,7 +170,7 @@ pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
  * Returns the topic name for the init event subscription.
  * Must be exactly same as laspaf.js's 
  * 
- * @param  {Object} message  An object that represents an item.
+ * @param  {Object} item     An object that represents an item.
  *                           assignmenturl and activityurl properties are required.
  * 
  * @return {string}          The topic name

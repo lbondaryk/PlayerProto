@@ -163,7 +163,6 @@ pearson.brix.IpsProxy.prototype.postInteraction = function (param, callback)
  * @param  {Function} callback  Function that is called when the async operation
  *                              is completed. The signature should be:
  *                              fn(error, result).
- * @return {[type]}
  ****************************************************************************/
 pearson.brix.IpsProxy.prototype.postSubmission = function (param, callback)
 {

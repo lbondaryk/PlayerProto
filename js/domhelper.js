@@ -19,14 +19,14 @@
 goog.provide('pearson.utils.DomHelper');
 
 /* **************************************************************************
- * pearson.utils.IframeCollection.buildQueryStringFromParams           */ /**
+ * DomHelper.buildQueryStringFromParams                                */ /**
  *
- * Builds and returns a queryString from <param> tags inside of the provided 
- * <object> element node. 
+ * Builds and returns a queryString from &amp;param> tags inside of the provided 
+ * &amp;object> element node. 
  *
- * @param  {Node} objectNode   The object node that will be changed to iframe, and contains the params.
+ * @param  {Element} objectNode   The object node that will be changed to iframe, and contains the params.
  *
- * @return {[type]}            The query string as: <param1>=<value1>&<param2>=<value2>...
+ * @return {string} The query string as: [param1]=[value1]&[param2]=[value2]...
  */
 pearson.utils.DomHelper.buildQueryStringFromParams = function (objectNode)
 {
