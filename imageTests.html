@@ -41,6 +41,7 @@
 						<span id="slider1"></span>
                 	</div>
                 	<div id="calls"></div>
+                	<div id="neff3Numbers"><p><br>6. Three images same size with LabelSelector.</p></div>
 				</div>
 			</div>
 		</section>
@@ -71,6 +72,8 @@
     <script src="js/widget-numeric.js"></script>
 	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-slider.js"></script>
+	<script src="js/brix-labelselector.js"></script>
+	<script src="js/brix-labelcarousel.js"></script>
 
 	
 	
@@ -88,6 +91,7 @@
 	var Callouts = pearson.brix.Callouts;
 	var LineGraph = pearson.brix.LineGraph;
 	var Slider = pearson.brix.Slider;
+	var LabelCarousel = pearson.brix.LabelCarousel;
 	
 	var lineData = [
 		{	x: 0,	y: -3.1},
@@ -385,6 +389,37 @@ var image200 = new Image({
 	contTrio.append(oneOfThree, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.3});
 	contTrio.append(twoOfThree, {topPercentOffset: 0, leftPercentOffset: 0.33, heightPercent: 1, widthPercent: 0.3});
 	contTrio.append(threeOfThree, {topPercentOffset: 0, leftPercentOffset: 0.66, heightPercent: 1, widthPercent: 0.3});
+
+	//6. Three images same size with LabelSelector.
+	var neffCont2 = new SVGContainer({
+			node: d3.select("#neff3Numbers"),
+			maxWid: 477,
+			maxHt: 490
+		});
+	
+	var imgCrsl = new LabelCarousel({
+			images:
+				[
+					{
+						URI: 'img/Neff/Neff_12.6.3_S1.jpg',
+						caption: "70% more food",
+						
+					},
+					{
+						URI: 'img/Neff/Neff_12.6.3_S2.jpg',
+						caption: "200% more energy",
+						
+					},
+					{
+						URI: 'img/Neff/Neff_12.6.3_S3.jpg',
+						caption: "80% more water for agriculture",
+						
+					},
+				],
+			imagesActualSize: {height: 380, width: 570},
+			}, eventManager);
+
+	neffCont2.append(imgCrsl);
 	
 	
 </script>
