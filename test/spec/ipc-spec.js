@@ -17,7 +17,7 @@
         var ipcConfig = {ipsBaseUrl:"http://localhost:8088"};
 
         // For the creation of test divs
-        var divAttrs = [
+        var drixDivAttrs = [
             {
                 id: "some_habitat_id1",
                 class: "brix"
@@ -44,11 +44,27 @@
             }
         ];
 
+        var nonBrixDivAttrs = [
+            {
+                id: "some_habitat_id45",
+                class: "papaya"
+            }
+        ];
+        var notExpectedItems = [
+            {
+                assignmenturl: "http://content.api.pearson.com/resources/activity/92001",
+                activityurl: "http://content.api.pearson.com/resources/activity/91001",
+                containerid: "imgReactor",
+                type: "brix",
+            }];
+
+
         
-        var div1, div2;
+        var div1, div2, div3;
         before(function () {
-            div1 = helper.createNewDiv(divAttrs[0], expectedItems[0]);
-            div2 = helper.createNewDiv(divAttrs[1], expectedItems[1]);
+            div1 = helper.createNewDiv(drixDivAttrs[0], expectedItems[0]);
+            div2 = helper.createNewDiv(drixDivAttrs[1], expectedItems[1]);
+            div3 = helper.createNewDiv(nonBrixDivAttrs[0], notExpectedItems[0]);
         });
 
         after(function () {
@@ -56,6 +72,7 @@
             var bodyEl = document.getElementsByTagName('body')[0];
             bodyEl.removeChild(div1);
             bodyEl.removeChild(div2);
+            bodyEl.removeChild(div3);
         });
 
 
@@ -74,8 +91,9 @@
             console.log("**NORM:" + JSON.stringify(normalized));
 
             expect(normalized.length).to.equal(2);
+            expect(normalized[0].assignmenturl).to.equal(expectedItems[0].assignmenturl);
             expect(normalized[0]).to.not.have.property('containerid');
-            expect(normalized[1]).to.have.property('containerid');
+            expect(normalized[1].containerid).to.equal(expectedItems[1].containerid);
         });
 
         it('should properly initialize by subscribing to init topics (div & iframe mode)', function () {
@@ -84,7 +102,7 @@
             var items = DomHelper.scanElements('brix', 'div');
 
             // Both should be set to true after init();
-            var topicsSubscribed = [false,false];
+            var topicsSubscribed = [false,false, false];
 
             sinon.stub(eventManager, 'subscribe', function(topic, handler){
                 // This stub method marks subscribed topics.
@@ -101,7 +119,7 @@
             ipc.init(items);
 
             expect(ipc.items).to.deep.equal(expectedItems);
-            expect(topicsSubscribed).to.deep.equal([true, true]);
+            expect(topicsSubscribed).to.deep.equal([true, true, false]);
         });
 
 
@@ -111,7 +129,7 @@
             var items = DomHelper.scanElements('brix', 'div');
             
             // Both should be set to true after init();
-            var topicsUnsubscribed = [false,false];
+            var topicsUnsubscribed = [false,false, false];
             // Stubing the EM to monitor the unsubscription.
             sinon.stub(eventManager, 'unsubscribe', function(topic, handler){
                 // This stub method marks unsubscribed topics.
@@ -153,7 +171,7 @@
                 eventManager.publish(currTopic, initMessage);
             }
             
-            expect(topicsUnsubscribed).to.deep.equal([true, true]);
+            expect(topicsUnsubscribed).to.deep.equal([true, true, false]);
 
             // Verifying the expectation set in the mock object
             mockBrickLayer.verify();
@@ -165,7 +183,7 @@
             var ipc = new pearson.brix.Ipc(ipcConfig, eventManager);
             var items = [ expectedItems[0] ];
             
-            var itemChecklist = [false,false];
+            var itemChecklist = [false, false, false];
             // Stubing the EM to monitor the publishing.
             var originalPublishMethod = eventManager.publish;
             sinon.stub(eventManager, 'publish', function(topic, message)
@@ -176,7 +194,7 @@
                     // We want this message to actually go through the real behavior
                     // to trigger the event (AMC topic) what we are actually interested.
                     originalPublishMethod.call(eventManager, topic, message);
-                    return; // ignore the 
+                    return; // Do not continue with the rest of stub.
                 }
                 expect(topic).to.equal('AMC');
 
@@ -193,7 +211,8 @@
             ipc.init(items, "dummyContainerId");
             eventManager.publish('__system_pageLoaded');
 
-            expect(itemChecklist).to.deep.equal([true, false]);
+            // In iframe mode, only one item (activity) is provided to the IPC
+            expect(itemChecklist).to.deep.equal([true, false, false]);
         });
     });
 

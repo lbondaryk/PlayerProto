@@ -7,7 +7,11 @@
  * DomHelper class contains utility functions to  query and manipulate and 
  * DOM objects. 
  *
- * Created on       March 18, 2013
+ * @note currently there is no DomHelper class, it's just a namespace.
+ * By the way I've seen it used, it looks like perhaps it should be a
+ * class, if so, we need to make it one. -mjl
+ *
+ * Created on       August 14, 2013
  * @author          Young Suk Ahn Park
  *
  * **************************************************************************/
@@ -15,14 +19,14 @@
 goog.provide('pearson.utils.DomHelper');
 
 /* **************************************************************************
- * pearson.utils.IframeCollection.buildQueryStringFromParams           */ /**
+ * DomHelper.buildQueryStringFromParams                                */ /**
  *
- * Builds and returns a queryString from <param> tags inside of the provided 
- * <object> element node. 
+ * Builds and returns a queryString from &amp;param> tags inside of the provided 
+ * &amp;object> element node. 
  *
- * @param  {Node} objectNode   The object node that will be changed to iframe, and contains the params.
+ * @param  {Element} objectNode   The object node that will be changed to iframe, and contains the params.
  *
- * @return {[type]}            The query string as: <param1>=<value1>&<param2>=<value2>...
+ * @return {string} The query string as: [param1]=[value1]&[param2]=[value2]...
  */
 pearson.utils.DomHelper.buildQueryStringFromParams = function (objectNode)
 {

@@ -26,21 +26,10 @@
     describe('IPSProxy', function () {
 
         var ipsProxy = null;
-        before(function (done) {
+
+        before(function () {
 
             ipsProxy = new pearson.brix.IpsProxy(ipsProxyConfig);
-            ipsProxy.retrieveSequenceNode(testInitializationEnvelope, function(error, result){
-                try {
-                    expect(error).to.equal(null);
-                    expect(result).to.be.an('object');
-                    seqNodeKey = result.data.sequenceNodeKey;
-                    done();
-                }
-                catch (e)
-                {
-                    done(e);
-                }
-            });
         });
 
 

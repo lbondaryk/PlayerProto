@@ -4,9 +4,11 @@
  *
  * @fileoverview The Brix Item Player Client (IPC).
  *
- * The IPC is responsible listening for AMC for initialization message,
- * retrieving containerConfig information and instantiating brix defined 
- * in the containerConfig.
+ * The IPC is responsible listening for an initialization message that
+ * is expected to be published by the AMC (Activity Manager Client),
+ * using information in that message to retrieve brix configuration
+ * specific to it's container (either the whole document or a container
+ * iframe) and instantiating the brix defined in that configuration.
  *
  * Message structure as received By IPC from the AMC through EventManager 
  * message = {
@@ -43,64 +45,69 @@ goog.require("pearson.brix.BrixLayer");
 /* **************************************************************************
  * Ipc                                                                 */ /**
  *
- * The IPC listens for AMC's sequenceNodeIdentifier. Upon receipt of the 
- * sequenceNodeIdentifier, it retrieves the brix' containerConfig from IPS and 
- * instantiates and wires the brix and mortars using the BrixLayer.
+ * The IPC (Item Player Client) listens for AMC's (Activity Manager Client)
+ * sequenceNodeIdentifier. Upon receipt of the sequenceNodeIdentifier,
+ * it retrieves the brix' containerConfig from IPS and 
+ * instantiates and wires the brix and mortars using the BricLayer.
  *
  * @constructor
  * @export
  *
- * @param {Object}      config          - The settings to configure this SelectGroup
+ * @param {Object}      config            -The settings to configure the Ipc
+ * @param {string}      config.ipsBaseUrl -The base url to access IPS w/ AJAX
  * @param {!pearson.utils.IEventManager}
- *                      eventManager    -The event manager to use for publishing events
- *                                       and subscribing to them.
+ *                      eventManager      -The event manager to use for publishing events
+ *                                         and subscribing to them.
  *
  ****************************************************************************/
 pearson.brix.Ipc = function (config, eventManager)
 {
-    /**
-     * The event manager to use to publish (and subscribe to) events for this widget
-     * @type {!pearson.utils.IEventManager}
-     */
-    this.eventManager = eventManager;
-
     if (!config.ipsBaseUrl)
     {
         throw new Error('IPS server URL not provided.');
     }
     
     /**
-     * The IpsProxy instance
+     * The event manager to use to publish (and subscribe to) events
+     * @type {!pearson.utils.IEventManager}
+     */
+    this.eventManager = eventManager;
+
+    /**
+     * The IpsProxy used by this Ipc to communicate w/ the IPS
      * @type {pearson.brix.IpsProxy}
      */
-    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl":config.ipsBaseUrl});
+    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl": config.ipsBaseUrl});
+
+    /**
+     * List of activity identification records used to obtain the sequence node id
+     * from the AMC.
+     * 
+     * @type {!Array.<{assignmenturl: string, activityurl: string, type: (string|undefined)}>}
+     */
+    this.items = [];
+
+    /**
+     * The container ID is used in the iframe mode.
+     * Having a value will make the IPC to retrieve a specific conatinerId 
+     * from the IPS.
+     * @type {?string}
+     */
+    this.containerId = null;
 
     var bricLayerConfig = null;
 
     /**
-     * The BrixLayer instance
+     * The BricLayer instance
      * @todo - Check if it changes to singleton
-     * @type {!pearson.brix.BrixLayer}
+     * @type {!pearson.brix.BricLayer}
      */
     this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager);
 };
 
-/**
- * Array of {assignmenturl=<val>, activityurl=<val>, type=<val>}
- * 
- * @type {!Array.<Object>} items
- */
-pearson.brix.Ipc.items = [];
-
-/**
- * The container ID is used in the iframe mode.
- * Having a value will make the IPC to retrieve a specific conatinerId 
- * from the IPS.
- * @type {string}
- */
-pearson.brix.Ipc.containerId = null;
-
-/**
+/* **************************************************************************
+ * Ipc.init                                                            */ /**
+ *
  * Initializes the IPC depending on the different parameters are passed.
  * The different parameters defines the mode: div or iframe.
  * In div-mode, the items contains an array of possibly multiple items, and 
@@ -118,7 +125,7 @@ pearson.brix.Ipc.containerId = null;
  * @param  {string=}         opt_containerId  The containerId that this IPC is
  *                                            handling. Only in iframe mode.
  *                                            Should be undefined (or null) in div mode.
- */
+ ****************************************************************************/
 pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
 {
     if (!items || items.length === 0)
@@ -162,7 +169,9 @@ pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
     }
 };
 
-/**
+/* **************************************************************************
+ * Ipc.normalizeByTopic                                                */ /**
+ *
  * Returns the array where the redundant topic combination are removed.
  * For example array has:
  * [{assignmenturl="A", activityurl="B", containerid="rector"}
@@ -177,7 +186,7 @@ pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
  * 
  * @param  {!Array.<Object>} items  Array of {assignmentId=<val>, itemid=<val>, type=<val>}
  * @return {!Array.<Object>}        Normalized array.
- */
+ ****************************************************************************/
 pearson.brix.Ipc.prototype.normalizeByTopic = function (items)
 {
     // Dictionary to check for duplicates
@@ -210,15 +219,17 @@ pearson.brix.Ipc.prototype.normalizeByTopic = function (items)
     return result;
 };
 
-/**
+/* **************************************************************************
+ * Ipc.activityBindingReplyTopic                                       */ /**
+ *
  * Returns the topic name for the init event subscription.
  * Must be exactly same as laspaf.js's 
  * 
- * @param  {Object} message  An object that represents an item.
+ * @param  {Object} item     An object that represents an item.
  *                           assignmenturl and activityurl properties are required.
  * 
  * @return {string}          The topic name
- */
+ ****************************************************************************/
 pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 {
     if (!item.assignmenturl || !item.activityurl)
@@ -230,10 +241,12 @@ pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 };
 
 
-/** 
+/* **************************************************************************
+ * Ipc.subscribeInitTopic                                              */ /**
+ *
  * Subscribes to initialization topic using the provided item(s) information 
  * (formerly known as itemId)
- */
+ ****************************************************************************/
 pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
 {
     var item;
@@ -253,7 +266,7 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
                 
                 if (initMessage.status != 'success')
                 {
-                    console.log("initMessage returned error status. " + JSON.stringify(initMessage.sourcemessage));
+                    window.console.log("initMessage returned error status. " + JSON.stringify(initMessage.sourcemessage));
                 }
                 else
                 {
@@ -278,12 +291,11 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
                         if (error)
                         {
                             // Handle server error
-                            console.log("ERROR on retrieveSequenceNode: "+ JSON.stringify(error));
+                            window.console.log("ERROR on retrieveSequenceNode: "+ JSON.stringify(error));
                         }
                         else
                         {
                             // in the absence of error, result is containerConfig
-console.log("** ContainerConfig: "+JSON.stringify(result.data.containerConfig));
                             that.bricLayer.build(result.data.containerConfig);
                         }
                     }); // Does the AJAX call to IPS
