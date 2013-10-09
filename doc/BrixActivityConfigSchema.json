@@ -19,7 +19,12 @@
 					"type": "array",
 					"minItems": 1,
 					"items": { "$ref": "#/definitions/containerConfig" }
-				}
+				},
+                "description":
+                    {
+                        "description": "A descriptive comment about this activity",
+                        "type": "string"
+                    }
 		},
 	"definitions":
 		{
@@ -54,6 +59,11 @@
 									"type": "array",
 									"items": { "$ref": "#/definitions/action" }
 								},
+                            "description":
+                                {
+                                    "description": "A descriptive comment about the contents of this container",
+                                    "type": "string"
+                                }
 						}
 				},
 			"brixConfig":
@@ -121,6 +131,11 @@
 									"description": "The answer key defining how to determine if a student's answer is correct, and the various responses that may be returned",
 									"type": "object",
 								},
+                            "description":
+                                {
+                                    "description": "A descriptive comment about the brix defined here",
+                                    "type": "string"
+                                }
 						}
 				},
 			"mortarConfig":
@@ -156,6 +171,11 @@
 									"type": "array",
 									"items": { "$ref": "#/definitions/configFixup" }
 								},
+                            "description":
+                                {
+                                    "description": "A descriptive comment about the mortar defined here",
+                                    "type": "string"
+                                }
 						}
 				},
 			"configFixup":
@@ -190,6 +210,11 @@
                                     "description": "a dynamicValue object which describes how to construct the value of the property to be set on the config",
                                     "$ref": "#/definitions/dynamicValue",
                                 },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this config fixup",
+                                    "type": "string"
+                                }
 						}
 				},
             "dynamicValue":
@@ -220,6 +245,11 @@
                                     "description": "the selector argument to d3.select",
                                     "type": "string"
                                 },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
 						}
 				},
 			"dynamicValue-ref":
@@ -243,6 +273,11 @@
                             "refId":
                                 {
                                     "description": "the id that identifies an object/value in the specified domain.",
+                                    "type": "string"
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
                                     "type": "string"
                                 }
 						}
@@ -275,6 +310,11 @@
                                     "description": "the name of the accessor method of the object that returns the property value",
                                     "type": "string"
                                 },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
 						}
 				},
 			"dynamicValue-constant":
@@ -294,6 +334,11 @@
                                 {
                                     "description": "the constant value which can be any JSON value"
                                 },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
 						}
 				},
 			"action":

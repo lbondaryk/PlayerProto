@@ -98,10 +98,12 @@
 	// The activity config that defines the brix and mortar for this page
 	a.config =
 		{
+			"description": "The Neff Reactor activity, w/ labels on an image, along w/ an associated label table",
 			"sequenceNodeKey": "39b0706e-8587-447e-a598-ecc5e9a1b883",
 			"containerConfig":
 				[
 					{
+						"description": "This 'imgReactor' container contains the image and overlaying labelgroup",
 						"containerId": "imgReactor",
 						"brixConfig":
 							[
@@ -146,29 +148,6 @@
                                                         "refId": "cimage1",
                                                         "accessor": "getSizeAt100Pct"
                                                     }
-                                                    /*
-                                                    {
-                                                        "type": "adjust-size",
-                                                        "newHeight":
-                                                            {
-                                                                "type": "property-of-obj",
-                                                                "obj":
-                                                                    {
-                                                                        "type": "property-of-ref",
-                                                                        "domain": "brix",
-                                                                        "refId": "cimage1",
-                                                                        "accessor": "getActualSize"
-                                                                    },
-                                                                "accessor": "getHeight"
-                                                            },
-                                                        "keepRatioOf":
-                                                            {
-                                                                "type": "property-of-ref",
-                                                                "domain": "brix",
-                                                                "refId": "cimage1",
-                                                                "accessor": "getActualSize"
-                                                            },
-                                                    }*/
                                             }
                                         ]
 								},
@@ -207,7 +186,11 @@
                                                 // This value type will have to change to lookup a bric type's particular event id
                                                 // for now I've hardcoded that event id (topic).
                                                 // this is the lbltbl1's selectedEventId
-                                                "value": { "type": "constant", "value": "callme_Callout" }
+												"value":
+													{
+														"type": "constant",
+														"value": "callme_Callout"
+													}
                                             },
                                             {
                                                 "type": "set-property",
@@ -254,6 +237,7 @@
 							]
 					},
 					{
+						"description": "The 'steps' container contains the label table",
 						"containerId": "steps",
 						"brixConfig":
 							[
@@ -294,7 +278,11 @@
                                                 // This value type will have to change to lookup a bric type's particular event id
                                                 // for now I've hardcoded that event id (topic).
                                                 // this is the labels1's selectedEventId
-                                                "value": { "type": "constant", "value": "reactorNum_labelSelected" }
+												"value":
+													{
+														"type": "constant",
+														"value": "reactorNum_labelSelected"
+													}
                                             },
                                             {
                                                 "type": "set-property",
