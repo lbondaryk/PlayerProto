@@ -47,7 +47,7 @@ var iframeMessageCounter = {};
             // Clean up test modifications to the DOM
             helper.removeAllChildren(containerDiv);
             // Releasing reference and registered event listeners in the Message Bro 
-            messageBroker.dispose();
+            messageBroker.disposeInternal();
         });
 
         it('should initialize the list of bricIframes with 3 iframes: 2 brix iframes and 1 resize iframe', function () {

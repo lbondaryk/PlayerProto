@@ -1,12 +1,5 @@
 /*****************************************************************************
- * Unit test for IpsProxy making AJAX calls to the server.
- *
- * This test is integration test and is meant to run while IPS server is up.
- *
- * If you are getting error in the Browser console saying: 
- * "XMLHttpRequest cannot load http://localhost:8088/sequencenodes/. 
- * Origin null is not allowed by Access-Control-Allow-Origin"
- * 
+ * Unit test for DomHelper
  *
  * @author Young-Suk Ahn Park 
  */
@@ -66,10 +59,19 @@
             helper.removeAllChildren(containerDiv);
         });
 
+        it.skip('should build query string from params', function () {
+            //buildQueryStringFromParams
+        });
+
+        it.skip('should convertObjectToIframeElement', function () {
+            //convertObjectToIframeElement
+        });
+
         it('should scan divs of class \'brix\'', function () {
             var items = DomHelper.scanElements('brix', 'div');
 
             expect(items).to.deep.equal(expectedItems);
+            // @todo: Verify that divs with other classes are not included 
         });
 
 
@@ -77,6 +79,7 @@
             var items = DomHelper.scanObjects('brix');
 
             expect(items).to.deep.equal(expectedItems);
+            // @todo: Verify that objects with other classes are not included
         });
 
         

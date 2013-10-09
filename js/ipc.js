@@ -236,8 +236,7 @@ pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
     {
         throw new Error('Invalid argument required properties "assignmenturl" or "activityurl" not found.');
     }
-    return "init." + item.assignmenturl
-        + "." + item.activityurl;
+    return "init." + item.assignmenturl + "." + item.activityurl;
 };
 
 

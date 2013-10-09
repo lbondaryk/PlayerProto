@@ -78,7 +78,7 @@ goog.require('pearson.utils.DomHelper');
 pearson.utils.IframeCollection = function ()
 {
     // call the base class constructor
-    goog.base(this);
+    //goog.base(this);
 
     /**
      * List of (i)frames as obtained by the querySelectorAll(). 
@@ -93,7 +93,7 @@ pearson.utils.IframeCollection = function ()
     this.frameCustomParams = [];
 
 };
-goog.inherits(pearson.utils.IframeCollection, goog.Disposable);
+//goog.inherits(pearson.utils.IframeCollection, goog.Disposable);
 
 /* **************************************************************************
  * IframeCollection.disposeInternal                                    */ /**
@@ -111,7 +111,7 @@ goog.inherits(pearson.utils.IframeCollection, goog.Disposable);
  ****************************************************************************/
 pearson.utils.IframeCollection.prototype.disposeInternal = function ()
 {
-    goog.base(this, 'disposeInternal');
+    //goog.base(this, 'disposeInternal');
 
     this.frameCustomParams = null;
 };
@@ -234,7 +234,7 @@ pearson.utils.IframeCollection.prototype.resize = function (window, dimension)
 pearson.utils.MessageBroker = function (config, domHelper)
 {
     // call the base class constructor
-    goog.base(this);
+    //goog.base(this);
 
     // Auto call to the initialization method disabled 
     // favoring the use of MessageBroker as singleton.
@@ -285,7 +285,7 @@ pearson.utils.MessageBroker = function (config, domHelper)
     };
     
 }; // end of MessageBroker constructor
-goog.inherits(pearson.utils.MessageBroker, goog.Disposable);
+//goog.inherits(pearson.utils.MessageBroker, goog.Disposable);
 
 
 /**
@@ -418,19 +418,19 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
 };
 
 /* **************************************************************************
- * MessageBroker.internalDispose                                       */ /**
+ * MessageBroker.disposeInternal                                       */ /**
  *
  * Unregister the message event listener, and
  * releases used references (the list of iframes), and 
  ****************************************************************************/
-pearson.utils.MessageBroker.prototype.internalDispose = function ()
+pearson.utils.MessageBroker.prototype.disposeInternal = function ()
 {
     // Disable Channel Dispatcher
     window.removeEventListener('message', this.channelDispatcher);
 
     this.pubSub = null;
 
-    this.iframeCollection.dispose();
+    this.iframeCollection.disposeInternal();
     //this.iframeCollection = null;
     this.log(1, "MessageBroker disposed (listeners removed).");
 };
@@ -530,6 +530,4 @@ pearson.utils.MessageBroker.prototype.publish = function (topic, evt)
     this.log(4, "Publishing message: " + JSON.stringify(evt.data.payload));
     this.pubSub.publish(topic, evt);
 };
-
-
 

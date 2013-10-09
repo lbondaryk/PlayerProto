@@ -10,6 +10,8 @@
  * @note currently there is no DomHelper class, it's just a namespace.
  * By the way I've seen it used, it looks like perhaps it should be a
  * class, if so, we need to make it one. -mjl
+ * [ysa] Planning to change into class that accept as constructor param the 
+ * document to associate with this DomHelper (similar to http://docs.closure-library.googlecode.com/git/class_goog_dom_DomHelper.html)
  *
  * Created on       August 14, 2013
  * @author          Young Suk Ahn Park
@@ -21,10 +23,10 @@ goog.provide('pearson.utils.DomHelper');
 /* **************************************************************************
  * DomHelper.buildQueryStringFromParams                                */ /**
  *
- * Builds and returns a queryString from &amp;param> tags inside of the provided 
- * &amp;object> element node. 
+ * Builds and returns a queryString from &lt;param&gt; tags inside of the provided 
+ * &lt;object&gt; element node. 
  *
- * @param  {Element} objectNode   The object node that will be changed to iframe, and contains the params.
+ * @param {Element} objectNode   -The object node that will be changed to iframe, and contains the params.
  *
  * @return {string} The query string as: [param1]=[value1]&[param2]=[value2]...
  */
@@ -41,12 +43,13 @@ pearson.utils.DomHelper.buildQueryStringFromParams = function (objectNode)
     return queryString;
 };
 
-/**
- * DomHelper.convertObjectToIframeElement
+/* **************************************************************************
+ * DomHelper.convertObjectToIframeElement                              */ /**
  *
  * Converts the object element to iframe element. (As the function name implies) 
  *
- * @param {String} classAttr        The class for selecting the object element to be converted. (i.e. 'bric')
+ * @param {string} classAttr       -The class for selecting the object element
+ *                                  to be converted. (i.e. 'bric')
  *
  */
 pearson.utils.DomHelper.convertObjectToIframeElement = function (classAttr)
@@ -75,7 +78,9 @@ pearson.utils.DomHelper.convertObjectToIframeElement = function (classAttr)
     });
 };
 
-/**
+/* **************************************************************************
+ * DomHelper.scanElements                                              */ /**
+ * 
  * Scans objects with particular class attribute and return an
  * array of objects composed o data-* attributes.
  * For example <div class="bric" data-id="MyID" data-server-url="http://xyz.com" data-index="34" />
@@ -117,18 +122,21 @@ pearson.utils.DomHelper.scanElements = function (classAttr, opt_nodeType)
     return result;
 };
 
-/**
+/* **************************************************************************
+ * DomHelper.scanObjects                                              */ /**
+ * 
  * Scans objects with particular class attribute and return an
  * array of objects composed o parameters.
  * For example:
  * <object class="bric">
- *     <param anme="" value="">
- *     <param anme="" value="">
+ *     <param name="" value="">
+ *     <param name="" value="">
  * </object>
  * 
- * @param  {string} classAttr The HTML class that should match for scanning
+ * @param  {string} classAttr   -The HTML class that should match for scanning
  * 
- * @return {Array.<Object>}           [description]
+ * @return {Array.<Object>}      Array of objects where each object represents an entry
+ *                               composed of dataset name value pair.
  */
 pearson.utils.DomHelper.scanObjects = function (classAttr)
 {
