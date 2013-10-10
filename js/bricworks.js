@@ -144,6 +144,35 @@ pearson.brix.BricWorks.prototype.createMortar = function (mortarName, config)
 };
 
 /* **************************************************************************
+ * BricWorks.getBricTopic                                              */ /**
+ *
+ * Get the topic an instance of the named bric type would publish for the
+ * requested event.
+ *
+ * @param {string}	bricName	-The name of the bric that publishes the event
+ * @param {string}	eventName	-The name of the event published
+ * @param {string}	instanceId	-The ID that was or will be given to the instance
+ *                               of the bric that is publishing the event
+ *
+ * @returns {string} The topic of the event published by the described bric.
+ *
+ * @throws {Error} Will throw an error if the bric class doesn't support the
+ *                 getting topics or that event is unknown or the topic can't
+ *                 be returned for some other reason.
+ ****************************************************************************/
+pearson.brix.BricWorks.prototype.getBricTopic = function (bricName, eventName, instanceId)
+{
+	var bricMold = this.bricCatalogue_[bricName];
+    
+    if (!('getEventTopic' in bricMold))
+    {
+        throw new Error(bricName + "brix do not support the static method 'getEventTopic'");
+    }
+
+    return bricMold['getEventTopic'](eventName, instanceId);
+};
+
+/* **************************************************************************
  * BricWorks.getMoldCount                                              */ /**
  *
  * Get the number of bric molds that have been successfully registered w/ this
