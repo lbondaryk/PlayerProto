@@ -128,7 +128,6 @@
                 setTimeout(function(){
                     console.log("## Waiting for a while until all messages being sent.");
                     done();
-                    console.log("## Finished waiting for all messages being sent.");
              
                 }, 1000);
             });
@@ -138,7 +137,7 @@
                 // Clean up test modifications to the DOM
                 helper.removeAllChildren(containerDiv);
                 // Releasing reference and registered event listeners in the Message Bro 
-                messageBroker.dispose();
+                messageBroker.disposeInternal();
             });
 
             it('Handler ALPHA should have received 2 message', function () {

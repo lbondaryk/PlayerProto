@@ -3,7 +3,7 @@
  *
  * The unit test for MessageBroker requires use of iframes.
  * Due to iframe javascript loading requirements, the test must be run from
- * page hoseted on a webserver, running directly from file will result in 
+ * page hosted on a webserver, running directly from file will result in 
  * Javascript loading error in the Console.
  *
  * @author Young-Suk Ahn Park 
@@ -29,6 +29,7 @@ var iframeMessageCounter = {};
             var resizeNode = helper.createNewObject(containerDiv, "bric", "iframe_resize.html");
 
             messageBroker = new pearson.utils.MessageBroker();
+            // The initialize() converts the objects into iframes, triggering message flow from child iframes.
             messageBroker.initialize({logLevel:4});
             console.log("## MessageBroker instantiated & inited.");
 
@@ -47,22 +48,22 @@ var iframeMessageCounter = {};
             // Clean up test modifications to the DOM
             helper.removeAllChildren(containerDiv);
             // Releasing reference and registered event listeners in the Message Bro 
-            messageBroker.dispose();
+            messageBroker.disposeInternal();
         });
 
         it('should initialize the list of bricIframes with 3 iframes: 2 brix iframes and 1 resize iframe', function () {
             // @todo: find out what's the correct method for bricIframeMap
-            expect(Object.keys(messageBroker.domHelper.frameCustomParams).length).to.equal(3);
+            expect(Object.keys(messageBroker.iframeCollection.frameCustomParams).length).to.equal(3);
         });
 
         // Each brix iframe publishes 2 messages: 1 is consumed by subscribers 
         // another one is discarded because the handler was unsubscribed
         it('should have received 4 bric messages: 2 consumed, 2 uncomsumed', function () {
-            expect(messageBroker.bricMessageCounter).to.equal(4);
+            expect(messageBroker.messageEventCounter).to.equal(4);
         });
 
         it('should have received 1 resize messages', function () {
-            expect(messageBroker.resizeMessageCounter).to.equal(1);
+            expect(messageBroker.viewEventCounter).to.equal(1);
 
             var reziedNode = containerDiv.getElementsByTagName("iframe")[2];
             expect(reziedNode.style.width).to.equal("150px");

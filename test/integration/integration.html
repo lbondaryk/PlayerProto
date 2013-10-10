@@ -1,0 +1,45 @@
+<!doctype html>
+<!-- 
+    This is a staging test html so I can isolate and try out (temporarily) 
+    before putting in index.html 
+    -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Mocha Spec Runner</title>
+    <link rel="stylesheet" href="../lib/mocha/mocha.css">
+</head>
+<body>
+    <p>Integration will require to have the Brix (test) Server up</p>
+    <pre>[BrixServer]$ make testsvr</pre>
+
+    <div id="mocha"></div>
+    <script src="../lib/mocha/mocha.js"></script>
+    <script>mocha.setup('bdd')</script>
+    <!-- assertion framework -->
+    <script src="../lib/chai.js"></script>
+    <script>var expect = chai.expect</script>
+	<!-- function created by David Bau to allow seeding Math.random -->
+	<!-- downloaded from github https://github.com/davidbau/seedrandom -->
+	<script src="../lib/seedrandom.js"></script>
+	<!-- local helper functions -->
+
+    <!-- include source files here... -->
+    <script src="../../js/d3.v3.min.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/deps.js"></script>
+
+    <script src="../../js/eventmanager.js"></script>
+    <script src="../../js/widget-base.js"></script>
+    <script src="../../js/ipsproxy.js"></script>
+
+    <script src="../helper.js"></script>
+    <!-- include spec files here... -->
+    <script src="../testmessages-ips.js"></script>
+    <script src="ipsproxy-int.js"></script>
+    
+    <script>
+    mocha.run()
+    </script>
+</body>
+</html>
