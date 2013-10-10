@@ -87,7 +87,8 @@ pearson.utils.IframeCollection = function ()
     this.framesList = null;
 
     /**
-     * Array of cached (i)frames. Contains {node: <pointer to iframe>, subscribeHandler:<function to pubsub handler>}
+     * Array of objects that holds information associated to the frames. 
+     * Contains {node: [<]reference to the iframe], subscribeHandler: [function that handles the received message]}
      * @type {Array.<{node: Element, subscribeHandler: function(Object)}>}
      */
     this.frameCustomParams = [];
@@ -117,7 +118,7 @@ pearson.utils.IframeCollection.prototype.disposeInternal = function ()
 };
 
 /* **************************************************************************
- * IframeCollection.cacheFrames                                        */ /**
+ * IframeCollection.loadFrames                                        */ /**
  *
  * Caches the (i)frames for faster access. The MessageBroker uses this to hold
  * information such as subscribeHandler.
@@ -126,11 +127,11 @@ pearson.utils.IframeCollection.prototype.disposeInternal = function ()
  *                                  to be converted. (i.e. 'bric')
  * 
  ****************************************************************************/
-pearson.utils.IframeCollection.prototype.cacheFrames = function (classAttr)
+pearson.utils.IframeCollection.prototype.loadFrames = function (classAttr)
 {
     this.framesList = document.querySelectorAll("iframe." + classAttr);
 
-    // Converting list into map. The map entry contains node and subscribeHandler
+    // Also maintain an array that holds further information associated with  
     for (var i = 0; i < this.framesList.length; i++)
     {
         this.setFrameCustomParams(i, {node: this.framesList[i], subscribeHandler: null});
@@ -250,102 +251,97 @@ pearson.utils.MessageBroker = function (config, domHelper)
      */
     this.domHelperWasProvided_ = domHelper ? true : false;
 
+
+    /**
+     * The log level. Higher the number higher the log detail.
+     * 0=no logging, 1=ERROR 2=WARN, 3=INFO. 4=DEBUG, 5=TRACE
+     * @todo: change to goog.Logger
+     * @type {number}
+     */
+    this.logLevel = 0; // by default, no logging
+
     /**
      * The DomHelper this message broker will use when needed.
      * @type {pearson.utils.DomHelper}
      */
     this.domHelper = domHelper !== undefined ? domHelper : pearson.utils.DomHelper;
 
+    /**
+     * The IFrameContainer. This object is used for the cache of frames.
+     * @type {IframeCollection}
+     */
     this.iframeCollection = new pearson.utils.IframeCollection();
+
+    /**
+     * The Number of bric messages received. Primarily for testing purpose.
+     * @type {number}
+     */
+    this.messageEventCounter = 0;
+
+    /**
+     * The Number of resize messages received. Primarily for testing purpose.
+     * @type {number}
+     */
+    this.viewEventCounter = 0;
+
+    /**
+     * The function attached to the windows event. Dispatches the incoming events
+     * into appropriate channels.
+     * @private
+     * @type {Function}
+     */
+    this.channelDispatcher_ = null;
+
+
+    /**
+     * The map that contains channel handlers. Channel handlers are analogous to Commands in the Command pattern.
+     * Currently there are two default channels: 
+     * 'message' - to handle messages events including subscription, unsubscription, and publishing
+     * 'view' - to handler view events, mainly resize.
+     * It can later be extended by adding new function pointers that process channel messages.
+     * @type {Array.<Function>}
+     */
+    this.channelHandlers = {};
+
+
+    /**
+     * The PubSub used internally to subscribe iframes and handle messages.
+     * The pubSub object must have publish, subscribe an unsubscribe methods.
+     * Currently is an instance of EventManager. Notice the constructor 
+     * argument is false since it must not propagate the message to parent window. 
+     * @type {!pearson.utils.IEventManager}
+     */
+    this.pubSub = new pearson.utils.EventManager(false);
 
 
     // Register the two default Channel Handlers
-    var _self = this;
+    var that = this;
     this.channelHandlers['message'] = function (evt)
     {
         if (evt.data.method === 'publish')
         {
-            _self.bricMessageCounter++;
-            _self.publish(evt.data.payload.topic, evt);
+            that.messageEventCounter++;
+            that.publish(evt.data.payload.topic, evt);
         }
         else if (evt.data.method === 'subscribe')
         {
-            _self.subscribe(evt.data.payload.topic, evt.source);
+            that.subscribe(evt.data.payload.topic, evt.source);
         }
         else if (evt.data.method === 'unsubscribe')
         {
-            _self.unsubscribe(evt.data.payload.topic, evt.source);
+            that.unsubscribe(evt.data.payload.topic, evt.source);
         }
     };
 
     this.channelHandlers['view'] = function (evt)
     {
-        _self.resizeMessageCounter++;
-        _self.iframeCollection.resize(evt.source, evt.data.payload);
+        that.viewEventCounter++;
+        that.iframeCollection.resize(evt.source, evt.data.payload);
     };
     
 }; // end of MessageBroker constructor
 //goog.inherits(pearson.utils.MessageBroker, goog.Disposable);
 
-
-/**
- * The DOM helper. This object is used to access DOM elemements.
- * @type {DomHelper}
- */
-pearson.utils.MessageBroker.prototype.domHelper = null;
-
-/**
- * The IFrameContainer. This object is used for the cache of frames.
- * @type {IframeCollection}
- */
-pearson.utils.MessageBroker.prototype.iframeCollection = null;
-
-/**
- * The log level. Higher the number higher the log detail.
- * 0=no logging, 1=ERROR 2=WARN, 3=INFO. 4=DEBUG, 5=TRACE
- * @type {number}
- */
-pearson.utils.MessageBroker.prototype.logLevel = 0; // by default, no logging
-
-/**
- * The Number of bric messages received. Primarily for testing purpose.
- * @type {number}
- */
-pearson.utils.MessageBroker.prototype.bricMessageCounter = 0;
-
-/**
- * The Number of resize messages received. Primarily for testing purpose.
- * @type {number}
- */
-pearson.utils.MessageBroker.prototype.resizeMessageCounter = 0;
-
-/**
- * The function attached to the windows event. Dispatches the incoming messages
- * into appropriate channels.
- * @type {Function}
- */
-pearson.utils.MessageBroker.prototype.channelDispatcher = null;
-
-
-/**
- * The map that contains channel handlers. Channel handlers are analogous to Commands in the Command pattern.
- * Currently there are three default channels: 
- * 'bricevent' - to handle item (bric) messages, 
- * 'topic' - to handler topic subscription/unsubscription,
- * 'resize' - to handle windows resize.
- * It can later be extended by adding new function pointers that process channel messages.
- * @type {Array.<Function>}
- */
-pearson.utils.MessageBroker.prototype.channelHandlers = {};
-
-
-/**
- * The internal PubSub object.
- * The pubSub object must have publish, subscribe an unsubscribe methods.
- * Currently is an instance of EventManager to handle topics.
- * @type {!pearson.utils.IEventManager}
- */
-pearson.utils.MessageBroker.prototype.pubSub = new pearson.utils.EventManager(false);
 
 /* **************************************************************************
  * MessageBroker.log                                                   */ /**
@@ -372,7 +368,8 @@ pearson.utils.MessageBroker.prototype.log = function (level, message)
  * 2. Converts object nodes to iframe nodes
  * 3. Caches the iframe nodes in the DOM Helper
  *
- * @param {Object} options      Options (logLevel: {int}) .
+ * @param {Object} options           Options.
+ * @param {number=} options.logLevel The log level.
  * 
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.initialize = function (options)
@@ -387,7 +384,7 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
     var _self = this;
     // Function defined here so we can access the this pointer
     // (aliased as _self)
-    var _channelDispatcher = function(evt)
+    this.channelDispatcher_ = function(evt)
     {
         _self.log(5, "Message Received: " + evt.data);
         var chanHandler = _self.channelHandlers[evt.data.type];
@@ -401,19 +398,16 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
         }
     };
 
-    // We'd like to keep the pointer to the handler function 
-    // to be able to unregister later.
-    this.channelDispatcher = _channelDispatcher;
 
     // Listen to messages events
-    window.addEventListener('message', this.channelDispatcher);
+    window.addEventListener('message', this.channelDispatcher_);
 
     // Shall the host application do this manually??
     // Conversion of the Object to Iframe must come after the addEventListener.
     this.domHelper.convertObjectToIframeElement('bric');
 
-    // Cache the iframes
-    this.iframeCollection.cacheFrames('bric');
+    // Load iframes wich the specified class name
+    this.iframeCollection.loadFrames('bric');
     this.log(1, "MessageBroker initialized.");
 };
 
@@ -426,7 +420,7 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
 pearson.utils.MessageBroker.prototype.disposeInternal = function ()
 {
     // Disable Channel Dispatcher
-    window.removeEventListener('message', this.channelDispatcher);
+    window.removeEventListener('message', this.channelDispatcher_);
 
     this.pubSub = null;
 
@@ -454,9 +448,10 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
     if (frameEntry === undefined)
     {
         return false;
-    } 
+    }
 
-    // Reuse the same handle for an iframe
+    // If message hanlder exists for this particular ifrmae, reuse it
+    // This will avoid multiple subscription of the same iframe
     var subscribeHandler = frameEntry['subscribeHandler'];
 
     if (!subscribeHandler)
@@ -491,7 +486,8 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
  * @param {Windows} evt     The windows object to subscribe.
  *
  * @return {boolean} True if subscribed, false otherwise 
- *                   (May not be subscribed if is not part of the item)
+ *                   (The unsubscription will return false if this particular 
+ *                   was never subscirbed)
  * 
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.unsubscribe = function (topic, windowsObj)
