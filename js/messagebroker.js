@@ -7,11 +7,9 @@
  * MessageBroker is the component that lives in the master document (html) and 
  * serves as a middleware that relays messages between iframes.
  *
- * There are three channels of events handled based on messageType.
- * 1. The 'bricevent' channel  will forward the message to the internal EvenManager, 
- *    that will in turn propagate to the subscribed iframes.
- * 2. The 'resize' channel will handle resizing.
- * 3. The 'topic' channel will handle subscription and unsubscription.
+ * There are two channels of events handled based on message type.
+ * - 'message': to handle messages events including subscription, unsubscription, and publishing
+ * - 'view':    to handler view events, mainly resize.
  *
  * Topic based messaging (channel 2) is implemented by EventManager.
  *
@@ -88,7 +86,7 @@ pearson.utils.IframeCollection = function ()
 
     /**
      * Array of objects that holds information associated to the frames. 
-     * Contains {node: [<]reference to the iframe], subscribeHandler: [function that handles the received message]}
+     * Contains {node: [reference to the iframe], subscribeHandler: [function that handles the received message]}
      * @type {Array.<{node: Element, subscribeHandler: function(Object)}>}
      */
     this.frameCustomParams = [];
@@ -120,8 +118,8 @@ pearson.utils.IframeCollection.prototype.disposeInternal = function ()
 /* **************************************************************************
  * IframeCollection.loadFrames                                        */ /**
  *
- * Caches the (i)frames for faster access. The MessageBroker uses this to hold
- * information such as subscribeHandler.
+ * Loads the (i)frames of a specific class. These (i)frames are hosts brix.
+ * The MessageBroker uses references to these (i)frames to send messages.
  *
  * @param {String} classAttr        The class for selecting the object element 
  *                                  to be converted. (i.e. 'bric')
@@ -141,7 +139,8 @@ pearson.utils.IframeCollection.prototype.loadFrames = function (classAttr)
 /* **************************************************************************
  * IframeCollection.setFrameCustomParams                               */ /**
  * 
- * Sets user defined parameters to the (i)frame object
+ * Sets user defined parameters to the (i)frame object. The parameter is used
+ * to hold message handler function for subscription.
  * 
  * @param {number}  index   The index in the array that represent the cache 
  * @param {{node: Element, subscribeHandler: function(Object)}
@@ -177,7 +176,7 @@ pearson.utils.IframeCollection.prototype.getFrameCustomParams = function (window
 /* **************************************************************************
  * IframeCollection.getFrameCustomParamsByIndex                        */ /**
  * 
- * Gets the user defined parameters given the (i)frame index
+ * Gets the user defined parameters given the (i)frame index.
  * 
  * @param  {number} index The index in the array of iframes
  *
@@ -221,15 +220,14 @@ pearson.utils.IframeCollection.prototype.resize = function (window, dimension)
  * @extends {goog.Disposable}
  * @export
  *
- * @param {Object}		config			-The settings to configure this MessageBroker
+ * @param {Object}      config          -The settings to configure this MessageBroker
  * @param {!pearson.utils.DomHelper=}
- * 						domHelper	    -A DOM helper which provides useful utilities
- * 						                 to manipulate the DOM.
+ *                      domHelper       -A DOM helper which provides useful utilities
+ *                                       to manipulate the DOM.
  *
  * @classdesc
  * The MessageBroker is the messaging component that bridges the EventManagers
  * in the iframes.
- * The constructor registers the three default channel handlers
  *
  ****************************************************************************/
 pearson.utils.MessageBroker = function (config, domHelper)
@@ -366,10 +364,10 @@ pearson.utils.MessageBroker.prototype.log = function (level, message)
  * The initialization does:
  * 1. registers the channelDispatcher to the windowEventListener
  * 2. Converts object nodes to iframe nodes
- * 3. Caches the iframe nodes in the DOM Helper
+ * 3. Loads the bric iframes to the IfraemCollection
  *
- * @param {Object} options           Options.
- * @param {number=} options.logLevel The log level.
+ * @param {Object}  options           Options.
+ * @param {number=} options.logLevel  The log level.
  * 
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.initialize = function (options)
@@ -438,7 +436,8 @@ pearson.utils.MessageBroker.prototype.disposeInternal = function ()
  * @param {Windows} windowsObj  The windows object to subscribe.
  *
  * @return {boolean} True if subscribed, false otherwise 
- *                   (May not be subscribed if is not part of the item)
+ *                   (If the windows is not part of the loaded iframe, it will
+ *                   not be subscribed, and thus return false.)
  * 
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
@@ -487,7 +486,7 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
  *
  * @return {boolean} True if subscribed, false otherwise 
  *                   (The unsubscription will return false if this particular 
- *                   was never subscirbed)
+ *                   iframe was never subscribed)
  * 
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.unsubscribe = function (topic, windowsObj)
