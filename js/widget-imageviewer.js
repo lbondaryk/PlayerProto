@@ -83,7 +83,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	// configuration simpler.
 	var crslConfig =
 		{
-			id: this.id + "_crsl",
+			id: this.id + '_crsl',
 			items: this.items,
 			layout: "horizontal",
 			itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
@@ -101,7 +101,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	// we'll just copy the 1st image into the display image.
 	var cimgConfig =
 		{
-			id: this.id + "_cimg",
+			id: this.id + '_cimg',
 			URI: this.items[0].URI,
 			caption: this.items[0].caption,
 			preserveAspectRatio: this.items[0].preserveAspectRatio,
@@ -127,7 +127,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.selectedEventId = this.carousel.selectedEventId;
+	this.selectedEventId = pearson.brix.ImageViewer.getEventTopic('selected', this.id);
 	
 	/**
 	 * The event details for this.selectedEventId events
@@ -136,16 +136,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
 	 */
 	var SelectedEventDetails;
 
-	// event handler that connects the carousel selection to changing and redrawing
-	// the image below.
-	var handleCarouselSelection = function (eventDetails)
-	{
-		that.image.changeImage(that.carousel.selectedItem().URI,
-							   that.carousel.selectedItem().caption);
-		that.image.redraw();
-	};
-
-	eventManager.subscribe(this.carousel.selectedEventId, handleCarouselSelection);
+	eventManager.subscribe(this.carousel.selectedEventId, goog.bind(this.handleCarouselSelection_, this));
 
 	/**
 	 * Information about the last drawn instance of this image (from the draw method)
@@ -166,6 +157,63 @@ goog.inherits(pearson.brix.ImageViewer, pearson.brix.SvgBric);
  * @type {string}
  */
 pearson.brix.ImageViewer.autoIdPrefix = "imgvwr_auto_";
+
+/* **************************************************************************
+ * ImageViewer.getEventTopic (static)                                  */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * ImageViewer bric with the specified id.
+ * @export
+ *
+ * @param {string}	eventName		-The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}	instanceId		-The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of ImageViewer with the given
+ *                   instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.ImageViewer.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+	        return pearson.brix.Carousel.getEventTopic('selected', instanceId + '_crsl');
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by ImageViewer brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
+
+/* **************************************************************************
+ * ImageViewer.handleCarouselSelection_                                */ /**
+ *
+ * Handle selections in the carousel by changing and redrawing the main
+ * image.
+ * @private
+ *
+ * @param {Object}	eventDetails	-The details about the selection event
+ *
+ ****************************************************************************/
+pearson.brix.ImageViewer.prototype.handleCarouselSelection_ = function (eventDetails)
+{
+    this.image.changeImage(this.carousel.selectedItem().URI,
+                           this.carousel.selectedItem().caption);
+    this.image.redraw();
+};
 
 /* **************************************************************************
  * ImageViewer.draw                                                    */ /**

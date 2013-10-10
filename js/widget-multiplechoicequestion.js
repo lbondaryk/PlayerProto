@@ -233,7 +233,7 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.submitScoreRequestEventId = this.mcqId_ + "_submitAnswerRequest";
+	this.submitScoreRequestEventId = pearson.brix.MultipleChoiceQuestion.getEventTopic('submitScoreRequest', this.mcqId_);
 
 	/**
 	 * The event details for this.submitScoreRequestEventId events
@@ -269,6 +269,51 @@ goog.inherits(pearson.brix.MultipleChoiceQuestion, pearson.brix.HtmlBric);
  * @type {string}
  */
 pearson.brix.MultipleChoiceQuestion.autoIdPrefix = "mcQ_auto_";
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.getEventTopic (static)                       */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * MultipleChoiceQuestion bric with the specified id.
+ * @export
+ *
+ * @param {string}	eventName		-The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}	instanceId		-The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of MultipleChoiceQuestion with the given
+ *                   instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            throw new Error("The requested event '" + eventName + "' can only be determined at runtime. The implementation of MultipleChoiceQuestion will need to be changed if this topic is required");
+        },
+
+        'submitScoreRequest': function (instanceId)
+        {
+	        return instanceId + '_submitAnswerRequest';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by MultipleChoiceQuestion brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
 
 /* **************************************************************************
  * MultipleChoiceQuestion.handleSubmitRequested_                       */ /**

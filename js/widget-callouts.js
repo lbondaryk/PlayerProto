@@ -125,7 +125,7 @@ pearson.brix.Callouts = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.selectedEventId = this.calloutsId_ + '_Callout';
+	this.selectedEventId = pearson.brix.Callouts.getEventTopic('selected', this.calloutsId_);
 	 	
 	/**
 	 * The event details for this.selectedEventId events
@@ -144,6 +144,46 @@ goog.inherits(pearson.brix.Callouts, pearson.brix.HtmlBric);
  * @type {string}
  */
 pearson.brix.Callouts.autoIdPrefix = "callout_auto_";
+
+/* **************************************************************************
+ * Callouts.getEventTopic (static)                                     */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * Callouts bric with the specified id.
+ * @export
+ *
+ * @param {string}	eventName		-The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}	instanceId		-The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of Callouts with the given
+ *                   instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.Callouts.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+	        return instanceId + '_Callout';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by Callouts brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
 
 /* **************************************************************************
  * Callouts.draw                                                       */ /**

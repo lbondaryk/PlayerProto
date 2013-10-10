@@ -81,34 +81,7 @@
 								},
 							"bricType":
 								{
-									"description": "BricTypes enum name used to register the bric with the BricWorks",
-                                    "type": "string",
-									"enum":
-										[
-											"SvgContainer",
-											"BarChart",
-											"Button",
-											"Callouts",
-											"CaptionedImage",
-											"Carousel",
-											"CheckGroup",
-											"Image",
-											"ImageViewer",
-											"LabelGroup",
-											"Legend",
-											"LineGraph",
-											"MarkerGroup",
-											"MultipleChoiceQuestion",
-											"MultiSelectQuestion",
-											"NumericInput",
-											"NumericQuestion",
-											"PieChart",
-											"RadioGroup",
-											"Readout",
-											"SelectGroup",
-											"Sketch",
-											"Slider"
-										],
+                                    "$ref": "#/definitions/bricType"
 								},
 							"config":
 								{
@@ -252,6 +225,40 @@
                                 }
 						}
 				},
+			"dynamicValue-brix-topic":
+				{
+					"description": "get the topic that will be used by a particular bric instance to publish a named event, this is not a runtime value",
+					"type": "object",
+					"required": ["type", "bricType", "instanceId", "eventName"],
+					"properties":
+						{
+                            "type":
+                                {
+                                    "description": "identifies this value as a d3 selection",
+                                    "type": "string",
+                                    "enum": ["brix-topic"]
+                                },
+							"bricType":
+								{
+                                    "$ref": "#/definitions/bricType"
+								},
+                            "instanceId":
+                                {
+                                    "description": "the id that was or will be given to the bric instance in its config",
+                                    "type": "string"
+                                },
+                            "eventName":
+                                {
+                                    "description": "the name of the event that is published by the specified bric type",
+                                    "type": "string"
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
+						}
+				},
 			"dynamicValue-ref":
 				{
 					"description": "a runtime value that is a reference to an existing object (or the value of an existing simple value type)",
@@ -386,6 +393,37 @@
                                 }
 						}
 				},
+            "bricType":
+                {
+                    "description": "BricTypes enum name used to register the bric with the BricWorks",
+                    "type": "string",
+                    "enum":
+                        [
+                            "SvgContainer",
+                            "BarChart",
+                            "Button",
+                            "Callouts",
+                            "CaptionedImage",
+                            "Carousel",
+                            "CheckGroup",
+                            "Image",
+                            "ImageViewer",
+                            "LabelGroup",
+                            "Legend",
+                            "LineGraph",
+                            "MarkerGroup",
+                            "MultipleChoiceQuestion",
+                            "MultiSelectQuestion",
+                            "NumericInput",
+                            "NumericQuestion",
+                            "PieChart",
+                            "RadioGroup",
+                            "Readout",
+                            "SelectGroup",
+                            "Sketch",
+                            "Slider"
+                        ],
+                },
 			"foo":
 				{
 					"description": "",

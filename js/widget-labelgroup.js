@@ -100,9 +100,10 @@ pearson.brix.LabelGroup = function (config, eventManager)
 
 	/**
 	 * A unique id for this instance of the labelgroup widget
+     * @private
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelGroup);
+	this.lblgrpId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelGroup);
 
 	/**
 	 * Array of traces to be graphed, where each trace is an array of points and each point is an
@@ -147,7 +148,7 @@ pearson.brix.LabelGroup = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.selectedEventId = this.id + '_labelSelected';
+	this.selectedEventId = pearson.brix.LabelGroup.getEventTopic('selected', this.lblgrpId_);
 	
 	/**
 	 * The event details for this.selectedEventId events
@@ -180,7 +181,7 @@ pearson.brix.LabelGroup = function (config, eventManager)
 		{
 			container: null,
 			size: {height: 0, width: 0},
-			labelsId: this.id + 'Labels',
+			labelsId: this.lblgrpId_ + 'Labels',
 			widgetGroup: null,
 			xScale: null,
 			yScale: null,
@@ -194,7 +195,47 @@ goog.inherits(pearson.brix.LabelGroup, pearson.brix.SvgBric);
  * @const
  * @type {string}
  */
-pearson.brix.LabelGroup.autoIdPrefix = "lblg_auto_";
+pearson.brix.LabelGroup.autoIdPrefix = 'lblg_auto_';
+
+/* **************************************************************************
+ * LabelGroup.getEventTopic (static)                                   */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * LabelGroup bric with the specified id.
+ * @export
+ *
+ * @param {string}	eventName		-The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}	instanceId		-The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of LabelGroup with the given
+ *                   instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.LabelGroup.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+	        return instanceId + '_labelSelected';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by LabelGroup brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
 
 /* **************************************************************************
  * LabelGroup.draw                                                     */ /**
@@ -225,7 +266,7 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
 
 	var labelsContainer = container.append("g") //make a group to hold labels
 		.attr("class", "brixLabelGroup")
-		.attr("id", this.id);
+		.attr("id", this.lblgrpId_);
 		
 	this.lastdrawn.widgetGroup = labelsContainer;
 
@@ -395,7 +436,7 @@ pearson.brix.LabelGroup.prototype.lite = function (liteKey)
 
 	if (labelsToLite.empty())
 	{
-		window.console.log("No key '" + liteKey + "' in Labels group " + this.id );
+		window.console.log("No key '" + liteKey + "' in Labels group " + this.lblgrpId_ );
 	}
 }; // end of LabelGroup.lite()
 

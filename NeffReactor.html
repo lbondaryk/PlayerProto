@@ -166,7 +166,7 @@
 													{"content": "4", "xyPos": [0.62, 0.65], "width": 0},
 													{"content": "5", "xyPos": [0.66, 0.15], "width": 0}
 												]
-										},
+										}
 								}
 							],
 						"mortarConfig":
@@ -188,8 +188,10 @@
                                                 // this is the lbltbl1's selectedEventId
 												"value":
 													{
-														"type": "constant",
-														"value": "callme_Callout"
+														"type": "brix-topic",
+														"bricType": "Callouts",
+														"instanceId": "callme",
+														"eventName": "selected"
 													}
                                             },
                                             {
@@ -280,8 +282,10 @@
                                                 // this is the labels1's selectedEventId
 												"value":
 													{
-														"type": "constant",
-														"value": "reactorNum_labelSelected"
+														"type": "brix-topic",
+														"bricType": "LabelGroup",
+														"instanceId": "reactorNum",
+														"eventName": "selected"
 													}
                                             },
                                             {

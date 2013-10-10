@@ -544,6 +544,29 @@ pearson.brix.BricLayer.dynamicValueHandlers =
     },
 
     /* **************************************************************************
+     * dynamicValueHandlers.brix-topic                                     */ /**
+     *
+     * Return the topic that would be published by an instance of a bric with
+     * the given instance ID for the specified named event.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the brix-topic dynamicValue config object
+     *
+     * @returns {string} The topic string the bric publishes for the named event.
+     ****************************************************************************/
+    'brix-topic': function (building, dynamicValueConfig)
+    {
+        var bricType = dynamicValueConfig['bricType'];
+        var instanceId = dynamicValueConfig['instanceId'];
+        var eventName = dynamicValueConfig['eventName'];
+        var bricWorks = this.getBricWorks();
+
+        return bricWorks.getBricTopic(bricType, eventName, instanceId);
+    },
+
+    /* **************************************************************************
      * dynamicValueHandlers.d3select                                       */ /**
      *
      * Return the result from calling d3.select with the given selector.
