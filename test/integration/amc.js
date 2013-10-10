@@ -202,14 +202,6 @@
 				}
 				
 				var asreq =  {
-					/* Original
-					"Hub-Session" : hubsession,
-					"Content-Type" : "application/vnd.pearson.paf.v1.node+json",
-					*/
-					/* Copied from Schema
-					"Hub­-Session" : hubsession,
-						"Content­-Type" : "application/vnd.pearson.paf.v1.node+json",
-					*/
 					header : {
 						"Hub-Session" : hubsession,
 						"Content-Type" : "application/vnd.pearson.paf.v1.node+json",
@@ -220,7 +212,7 @@
 						nodeIndex : binding.bindingIndex + 1,
 						targetBinding : binding["@id"]
 					},
-					url : (param.asRequestForAms === true ? (param.lasPafSeqNodeUrl) : 
+					url : (param.asRequestForAms === true ? (param.lasPafBaseUrl) : 
 						activitySeq.getNodeCollection()),
 					method : "POST"
 				};

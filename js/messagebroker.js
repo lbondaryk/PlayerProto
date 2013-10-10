@@ -51,7 +51,11 @@
 goog.provide('pearson.utils.IframeCollection');
 goog.provide('pearson.utils.MessageBroker');
 
+// Must include goog/diposable/disposable.js
 goog.require('goog.Disposable');
+goog.require('goog.debug.Logger');
+goog.require('goog.debug.Logger.Level');
+
 goog.require('pearson.utils.EventManager');
 goog.require('pearson.utils.DomHelper');
 
@@ -76,7 +80,7 @@ goog.require('pearson.utils.DomHelper');
 pearson.utils.IframeCollection = function ()
 {
     // call the base class constructor
-    //goog.base(this);
+    goog.base(this);
 
     /**
      * List of (i)frames as obtained by the querySelectorAll(). 
@@ -92,7 +96,7 @@ pearson.utils.IframeCollection = function ()
     this.frameCustomParams = [];
 
 };
-//goog.inherits(pearson.utils.IframeCollection, goog.Disposable);
+goog.inherits(pearson.utils.IframeCollection, goog.Disposable);
 
 /* **************************************************************************
  * IframeCollection.disposeInternal                                    */ /**
@@ -110,7 +114,7 @@ pearson.utils.IframeCollection = function ()
  ****************************************************************************/
 pearson.utils.IframeCollection.prototype.disposeInternal = function ()
 {
-    //goog.base(this, 'disposeInternal');
+    goog.base(this, 'disposeInternal');
 
     this.frameCustomParams = null;
 };
@@ -249,14 +253,12 @@ pearson.utils.MessageBroker = function (config, domHelper)
      */
     this.domHelperWasProvided_ = domHelper ? true : false;
 
-
     /**
-     * The log level. Higher the number higher the log detail.
-     * 0=no logging, 1=ERROR 2=WARN, 3=INFO. 4=DEBUG, 5=TRACE
-     * @todo: change to goog.Logger
-     * @type {number}
-     */
-    this.logLevel = 0; // by default, no logging
+    * A logger to help debugging 
+    * @type {goog.debug.Logger}
+    * @private
+    */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.utils.MessageBroker');
 
     /**
      * The DomHelper this message broker will use when needed.
@@ -338,25 +340,8 @@ pearson.utils.MessageBroker = function (config, domHelper)
     };
     
 }; // end of MessageBroker constructor
-//goog.inherits(pearson.utils.MessageBroker, goog.Disposable);
+goog.inherits(pearson.utils.MessageBroker, goog.Disposable);
 
-
-/* **************************************************************************
- * MessageBroker.log                                                   */ /**
- *
- * Logs messages to the console.
- * In order to actually output log message, the logLevel must be greater or equal than the argument level 
- *
- * @param {number} level    The level of the current message 
- * @param {string} message  The actual message.
- ****************************************************************************/
-pearson.utils.MessageBroker.prototype.log = function (level, message)
-{
-    if (this.logLevel >= level)
-    {
-        window.console.log("[MB] " + message);
-    }
-};
 
 /* **************************************************************************
  * MessageBroker.initialize                                            */ /**
@@ -384,7 +369,7 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
     // (aliased as _self)
     this.channelDispatcher_ = function(evt)
     {
-        _self.log(5, "Message Received: " + evt.data);
+        _self.logger_.fine("Message Received: " + evt.data);
         var chanHandler = _self.channelHandlers[evt.data.type];
         if (chanHandler)
         {
@@ -392,7 +377,7 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
         }
         else
         {
-            _self.log(3, "Channel Handler for '" + evt.data.type +"' not found, ignoring!");
+            _self.logger_.warning("Channel Handler for '" + evt.data.type +"' not found, ignoring!");
         }
     };
 
@@ -406,7 +391,7 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
 
     // Load iframes wich the specified class name
     this.iframeCollection.loadFrames('bric');
-    this.log(1, "MessageBroker initialized.");
+    this.logger_.config("MessageBroker initialized.");
 };
 
 /* **************************************************************************
@@ -417,6 +402,8 @@ pearson.utils.MessageBroker.prototype.initialize = function (options)
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.disposeInternal = function ()
 {
+    goog.base(this, 'disposeInternal');
+
     // Disable Channel Dispatcher
     window.removeEventListener('message', this.channelDispatcher_);
 
@@ -424,7 +411,7 @@ pearson.utils.MessageBroker.prototype.disposeInternal = function ()
 
     this.iframeCollection.disposeInternal();
     //this.iframeCollection = null;
-    this.log(1, "MessageBroker disposed (listeners removed).");
+    this.logger_.config("MessageBroker disposed (listeners removed).");
 };
 
 /* **************************************************************************
@@ -459,10 +446,10 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
         {
             if ( frameEntry.node.contentWindow === evt.source)
             {
-                this.log(5, "Skipping the iframe where the message was originated.");
+                this.logger_.fine("Skipping the iframe where the message was originated.");
                 return;
             }
-            this.log(5, "Posting message to an iframe");
+            this.logger_.fine("Posting message to an iframe");
             // Sending the entire message as is
             frameEntry.node.contentWindow.postMessage(evt.data, '*');
         };
@@ -471,7 +458,7 @@ pearson.utils.MessageBroker.prototype.subscribe = function (topic, windowsObj)
     }
 
     this.pubSub.subscribe(topic, goog.bind(subscribeHandler, this));
-    this.log(2, "Frame '"+ frameEntry.node.src +"' subscribed to topic: [" + topic + "]");
+    this.logger_.config("Frame '"+ frameEntry.node.src +"' subscribed to topic: [" + topic + "]");
 
     return true;
 };
@@ -506,7 +493,7 @@ pearson.utils.MessageBroker.prototype.unsubscribe = function (topic, windowsObj)
     }
 
     this.pubSub.unsubscribe(topic, subscribeHandler);
-    this.log(2, "Frame '"+ frameEntry.node.src +"' unsubscribed from topic: [" + topic + "]");
+    this.logger_.config("Frame '"+ frameEntry.node.src +"' unsubscribed from topic: [" + topic + "]");
 
     return true;
 };
@@ -522,7 +509,7 @@ pearson.utils.MessageBroker.prototype.unsubscribe = function (topic, windowsObj)
  ****************************************************************************/
 pearson.utils.MessageBroker.prototype.publish = function (topic, evt)
 {
-    this.log(4, "Publishing message: " + JSON.stringify(evt.data.payload));
+    this.logger_.fine("Publishing message: " + JSON.stringify(evt.data.payload));
     this.pubSub.publish(topic, evt);
 };
 
