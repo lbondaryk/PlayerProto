@@ -166,7 +166,7 @@ pearson.brix.BricWorks.prototype.getBricTopic = function (bricName, eventName, i
     
     if (!('getEventTopic' in bricMold))
     {
-        throw new Error(bricName + "brix do not support the static method 'getEventTopic'");
+        throw new Error("'" + bricName + "' brix do not support the static method 'getEventTopic'");
     }
 
     return bricMold['getEventTopic'](eventName, instanceId);

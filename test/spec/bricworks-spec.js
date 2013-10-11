@@ -279,5 +279,41 @@
 				expect(mynewmortar2.em2).to.equal(dummyEventMgr);
 			});
 		});
+
+        describe('BricWorks.getBricTopic(bricName, eventName, instanceId)', function () {
+			var dummyEventMgr = {publish: function () {}, subscribe: function () {}, unsubscribe: function () {}};
+			var DummyBricCtor = function (c, e) {this.cfg = c; this.em = e;};
+			var DummyBric2Ctor = function (c, e) {this.cfg = c; this.em = e;};
+            var fauxTopic = "blah blah blah";
+            var passedEventName = null;
+            var passedInstanceId = null;
+            DummyBric2Ctor.getEventTopic = function (eventName, instanceId)
+            {
+                passedEventName = eventName;
+                passedInstanceId = instanceId;
+                return fauxTopic;
+            };
+
+			var BRIC1 = 'bric1';
+			var BRIC2 = 'bric2';
+			var bricWorks;
+
+			before(function () {
+				bricWorks = new BricWorks({}, dummyEventMgr);
+				bricWorks.registerBricMold(BRIC1, DummyBricCtor); // No getEventTopic
+				bricWorks.registerBricMold(BRIC2, DummyBric2Ctor); // Has getEventTopic
+			});
+
+			it('should throw an Error if the named bric doesn\'t support getEventTopic', function () {
+				expect(goog.bind(bricWorks.getBricTopic, bricWorks, BRIC1, 'event', '12')).to.throw(Error, /'bric1'.+'getEventTopic'/);
+			});
+
+			it('should return the value returned from the named bric\'s getEventTopic after passing it the eventName and instanceId', function () {
+                var returnedTopic = bricWorks.getBricTopic(BRIC2, 'event2', '14');
+				expect(passedEventName).to.equal('event2');
+				expect(passedInstanceId).to.equal('14');
+				expect(returnedTopic).to.equal(fauxTopic);
+			});
+		});
     });
 })();
