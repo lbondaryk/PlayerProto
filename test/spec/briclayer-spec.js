@@ -445,7 +445,7 @@ goog.require('goog.object');
             before(function () {
                 building = bricLayer.build(activityConfig);
             });
-        
+
             it('should call the methods on the correct objects w/ the correct arguments', function () {
                 var dummyBric = building.brix[dummyRefBricId];
                 expect(dummyBric.doItArgs).is.not.null;
@@ -476,6 +476,167 @@ goog.require('goog.object');
 
             it('should throw an exception w/ the name of the unkown dynamicValue type', function () {
                 expect(goog.bind(bricLayer.build, bricLayer, activityConfig)).to.throw(Error, /dynamicValue.+cant-get-thar/);
+            });
+        });
+
+        describe('BricLayer Dynamic Values', function() {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var bricWorks = bricLayer.getBricWorks();
+            // Add a bric mold to use for testing the dynamic values
+            var TestDV_BricCtor = function (c, e)
+                {this.cfg = c; this.em = e; this.dynamicVal = null;};
+            TestDV_BricCtor.prototype.doIt = function (dynamicValue) { this.dynamicVal = dynamicValue; };
+            TestDV_BricCtor.prototype.testProp = function () { return "howdy partner"; };
+            TestDV_BricCtor.getEventTopic = function (eventName, instanceId) { return eventName + '_' + instanceId; };
+            var testDV_BricName = '_test DV_'
+            bricWorks.registerBricMold(testDV_BricName, TestDV_BricCtor);
+
+            var testDV_BricId = 'test-dv';
+            var testDVConfig =
+                {
+                    "bricId": testDV_BricId,
+                    "bricType": testDV_BricName,
+                    "config": {}
+                };
+
+            // The method-call action used to pass the dynamic value being tested to the
+            // doIt method of the test bric.
+            var action =
+                {
+                    "type": "method-call",
+                    "instance": {"type": "ref", "domain": "brix", "refId": testDV_BricId},
+                    "methodName": "doIt",
+                    "args": []
+                };
+
+            var activityConfig = null;
+
+            beforeEach(function () {
+                // create a new activity config w/ the dynamic value test bric for each test
+                // and the hookup action which calls the doIt method of that bric, initially
+                // w/o any args, each test will add an arg of the dynamic value type
+                // being tested.
+                activityConfig = createActivityConfigSkeleton();
+                activityConfig.containerConfig[0].brixConfig.push(testDVConfig);
+                action['args'] = [];
+                activityConfig.containerConfig[0].hookupActions.push(action);
+            });
+
+            describe('constant', function() {
+                it('should support numeric values', function () {
+                    var constantDv = { "type": "constant", "value": 42 };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(constantDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.equal(42);
+                });
+
+                it('should support string values', function () {
+                    var constantDv = { "type": "constant", "value": "snafu?" };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(constantDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.equal("snafu?");
+                });
+
+                it('should support boolean values', function () {
+                    var constantDv = { "type": "constant", "value": true };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(constantDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.true;
+                });
+
+                it('should support object values', function () {
+                    var constantDv = { "type": "constant", "value": {"foo": "test", "bar": 19} };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(constantDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.deep.equal({"foo": "test", "bar": 19});
+                });
+
+                it('should support array values', function () {
+                    var constantDv = { "type": "constant", "value": [true, 16, "arg", {"foo": "test"}] };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(constantDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.deep.equal([true, 16, "arg", {"foo": "test"}]);
+                });
+            });
+
+            describe('brix-topic', function() {
+                it('should return the value from calling the getEventTopic static method of the specified bric', function () {
+                    var brixTopicDv = { "type": "brix-topic",
+                                        "bricType": testDV_BricName,
+                                        "eventName": "sunrise",
+                                        "instanceId": "foo" };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(brixTopicDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.equal('sunrise_foo');
+                });
+            });
+
+            describe('ref', function() {
+                it('should be able to reference a previously created bric', function () {
+                    var refDv = { "type": "ref", "domain": "brix", "refId": testDV_BricId };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(refDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.equal(testDVBric);
+                });
+            });
+
+            describe('property-of-ref', function() {
+                it('should get the property of a previously created bric using an accessor method', function () {
+                    var propOfRefDv = { "type": "property-of-ref", "domain": "brix", "refId": testDV_BricId, "accessor": "testProp" };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(propOfRefDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.equal('howdy partner');
+                });
+            });
+
+            describe('d3select', function() {
+                // the div element w/ id 'target' created before the tests, which will be removed
+                // after the tests.
+                var div;
+
+                before(function () {
+                    div = helper.createNewDiv();
+                    d3.select(div).attr('id', 'target42');
+                });
+
+                after(function () {
+                    d3.select(div).remove();
+                });
+
+                it('should be the value of the d3 select function called with the given selector', function () {
+                    var d3selectDv = { "type": "d3select", "selector": "#target42" };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(d3selectDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.an.instanceof(d3.selection);
+                    expect(testDVBric.dynamicVal).to.deep.equal(d3.select('#target42'));
+                });
             });
         });
     });
