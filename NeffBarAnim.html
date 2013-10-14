@@ -53,7 +53,7 @@
 		</div>
 	</div>
 
-  <script src="js/jquery-latest.js"></script>
+    <script src="js/jquery-latest.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-ui-1.10.2.custom.js"></script>
 	<script src="js/toc-structure.js"></script>
@@ -61,20 +61,400 @@
 	<script src="js/d3.v3.min.js"></script>
 
 	<script src="js/brixlib-compiled.js"></script>
-
 	<!--
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+    <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
+	<script src="js/bricworks.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
 	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
     <script src="js/widget-slider.js"></script>
-    <script src="js/widget-callouts.js"></script>
-    <script src="js/widget-legend.js"></script>
-    <script src="js/widget-numeric.js"></script>
-	<script src="js/eventmanager.js"></script>
-    !-->
+    <script src="js/mortar-hilite.js"></script>
+	<script src="js/briclayer.js"></script>
+	-->
 
 <script>
+	// Create an object that will contain the objects needed for the activities
+	// on this page.
+	pearson.brix.activity = {};
+	var a = pearson.brix.activity;
+
+	// The activity config that defines the brix and mortar for this page
+	a.config =
+		{
+			"description": "The Neff Age Structure activity, w/ a pyramid chart, a slider and a readout.",
+			"sequenceNodeKey": "b3d5b510-34dd-480f-b8e1-b474522c9b03",
+			"containerConfig":
+				[
+					{
+						"description": "container for growth and shrink prototypical age structures",
+						"containerId": "graph0",
+						"brixConfig":
+							[
+								{
+									"bricId": "bar1",
+									"bricType": "BarChart",
+									"config":
+										{
+											"id": "pyramid1-left",
+											"Data": [[], growthMen],
+											"xAxisFormat":
+												{ 
+													"type": "linear", 
+													"mode": "reverse",
+													"ticks": 4,
+													"orientation": "bottom",
+													"label": "Faster Growth"
+												},
+											"yAxisFormat":
+												{
+													"type": "ordinal",
+													"orientation": "right",
+													"label": "Age ranges"
+												},
+										},
+								},
+								{
+									"bricId": "bar2",
+									"bricType": "BarChart",
+									"config":
+										{
+											"id": "pyramid1-right",
+											"Data": [growthWomen],
+											"xAxisFormat":
+												{ 
+													"type": "linear", 
+													"ticks": 4,
+													"orientation": "bottom",
+													"label": "Men"
+												},
+											"yAxisFormat":
+												{
+													"type": "ordinal",
+													"orientation": "left",
+												},
+										},
+								},
+								{
+									"bricId": "bar3",
+									"bricType": "BarChart",
+									"config":
+										{
+											"id": "pyramid2-left",
+											"Data": [[], shrinkMen],
+											"xAxisFormat":
+												{ 
+													"type": "linear", 
+													"mode": "reverse",
+													"ticks": 4,
+													"orientation": "bottom",
+													"label": "Faster Death"
+												},
+											"yAxisFormat":
+												{
+													"type": "ordinal",
+													"orientation": "right",
+													"label": "Age ranges"
+												},
+										},
+								},
+								{
+									"bricId": "bar4",
+									"bricType": "BarChart",
+									"config":
+										{
+											"id": "pyramid2-right",
+											"Data": [shrinkWomen],
+											"xAxisFormat":
+												{ 
+													"type": "linear", 
+													"ticks": 4,
+													"orientation": "bottom",
+													"label": "Men"
+												},
+											"yAxisFormat":
+												{
+													"type": "ordinal",
+													"orientation": "left",
+												},
+										},
+								},
+								{
+									"bricId": "cntr1",
+									"bricType": "SvgContainer",
+									"config":
+										{
+											//"node": d3.select("#imgReactor"),
+											"maxSize": {"height": 300, "width": 700},
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "node",
+                                                "value":
+                                                    {
+                                                        "type": "d3select",
+                                                        "selector": "#graph0"
+                                                    }
+                                            }
+                                        ]
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"description": "Append the left of pyramid chart 1 to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "bar1" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 0.25} }
+										]
+								},
+								{
+									"description": "Append the right of pyramid chart 1 to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "bar2" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0.25, "heightPercent": 1, "widthPercent": 0.25} }
+										]
+								},
+								{
+									"description": "Append the left of pyramid chart 2 to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "bar3" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0.50, "heightPercent": 1, "widthPercent": 0.25} }
+										]
+								},
+								{
+									"description": "Append the right of pyramid chart 2 to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "bar4" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0.75, "heightPercent": 1, "widthPercent": 0.25} }
+										]
+								}
+							]
+					},
+					{
+						"description": "container for year selection slider",
+						"containerId": "SelectYear",
+						"brixConfig":
+							[
+								{
+									"bricId": "yearSldr",
+									"bricType": "Slider",
+									"config":
+										{
+											"id": "sldr-yr",
+											"startVal": 1950,
+											"minVal": 1950,
+											"maxVal": 2050,
+											"stepVal": 5,
+											"label": "Year",
+											"format": d3.format('5.0f'),
+										},
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"description": "draw the year slider",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "yearSldr"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#slider0" }
+										]
+								}
+							]
+					},
+					{
+						"description": "container for ratio readout",
+						"containerId": "Ratio",
+						"brixConfig":
+							[
+								{
+									"bricId": "ratioReadout",
+									"bricType": "Readout",
+									"config":
+										{
+											"id": "ratioOut",
+											// "node": d3.select("#depRatio"),
+											"startVal": d3.format(",.2f")(depRat(histMen[0])),
+											"size": 5,
+											"label": "Dependency Ratio"
+										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "node",
+												"value":
+													{
+														"type": "d3select",
+														"selector": "#depRatio"
+													}
+                                            }
+                                        ]
+								}
+							],
+						"mortarConfig":
+							[
+								// We will need mortar to update the readout as the slider changes
+								// We will use a simple data swap mortar to be created later.
+							]
+					},
+					{
+						"description": "container for interactive pyramid chart based on year slider value",
+						"containerId": "USPopPyramid",
+						"brixConfig":
+							[
+								{
+									"bricId": "bar5",
+									"bricType": "BarChart",
+									"config":
+										{
+											"id": "pyramid3-left",
+											"Data": [[], histMen[0]],
+											"xAxisFormat":
+												{ 
+													"type": "linear", 
+													"mode": "reverse",
+													"ticks": [0, 5, 10, 15],
+													"orientation": "bottom",
+													"label": "Men"
+												},
+											"yAxisFormat":
+												{
+													"type": "ordinal",
+													"orientation": "right",
+													"label": "Age ranges"
+												},
+										},
+								},
+								{
+									"bricId": "bar6",
+									"bricType": "BarChart",
+									"config":
+										{
+											"id": "pyramid3-right",
+											"Data": [histWomen[0]],
+											"xAxisFormat":
+												{ 
+													"type": "linear", 
+													"ticks": [0, 5, 10, 15],
+													"orientation": "bottom",
+													"label": "Women"
+												},
+											"yAxisFormat":
+												{
+													"type": "ordinal",
+													"orientation": "left",
+												},
+										},
+								},
+								{
+									"bricId": "cntr2",
+									"bricType": "SvgContainer",
+									"config":
+										{
+											//"node": d3.select("#imgReactor"),
+											"maxSize": {"height": 500, "width": 700},
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "node",
+                                                "value":
+                                                    {
+                                                        "type": "d3select",
+                                                        "selector": "#graph1"
+                                                    }
+                                            }
+                                        ]
+								}
+							],
+						"mortarConfig":
+							[
+								// We will need mortar to update the 2 barcharts as the slider changes
+								// We will use a simple data swap mortar to be created later.
+							]
+						"hookupActions":
+							[
+								{
+									"description": "Append the left of pyramid chart 3 to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr2"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "bar5" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 0.55} }
+										]
+								},
+								{
+									"description": "Append the right of pyramid chart 3 to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr2"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "bar6" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0.50, "heightPercent": 1, "widthPercent": 0.55} }
+										]
+								}
+							]
+					},
+				]
+		};
+
+	// create the eventmanager to be used by the created brix, and the
+	// bricLayer which will create them, and then tell the bricLayer to build.
+	a.eventManager = new pearson.utils.EventManager();
+	a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager);
+
+	a.building = a.bricLayer.build(a.config);
+
 // local aliases for convenience
 	var Size = pearson.utils.Size;
 	var SVGContainer = pearson.brix.SVGContainer;
