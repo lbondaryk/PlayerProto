@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+
+</head>
+
+<body>
+<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_minorMajor lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle">Dark Energy</span>
+					</h2>
+		 			<div class="lc_ec_leading">
+            			<p>This graph shows how the average distance between galaxies changes with time. The vertical axis is showing the scale factor, a(t). To visualize what it means, imagine a map of the universe painted on a stretchy sheet of rubber, including a scale bar. You can represent the expansion of the universe by stretching the sheet of rubber in all directions, and you can think of a(t) as the length of your scale bar, given as a function of time.
+            			</p>
+            			<p>
+            			According to our standard cosmological model, the expansion rate of the universe can be expressed in terms of the scale factor as follows: </p>
+            			<p>
+            			In this equation, H0 is the present-day value of Hubble’s constant, H(a) is the value of Hubble’s constant that you’d measure at the time when the scale factor is equal to a, ΩM is the present-day matter content of the universe expressed as a fraction of the critical density, and ΩΛ is the present-day dark energy content of the universe expressed as a fraction of the critical density. As you can see from these definitions and the form of the equation, we have defined the scale factor so that a=1 at the present time.
+            			</p>
+            		</div>
+					<div class"lc_ec_trailing">
+						
+						<div id="lineG"></div>
+						<div id="slide0" ></div>
+						<div id="slide1" ></div>
+						<div id="slide2" ></div>
+						<p>'What's the best fit you can get with zero dark energy?'
+How much does the predicted age of the universe change if you double Hubble constant?
+During what period of time is the universe's expansion decelerating, according to the best-fit model?
+Use the interactive to determine the age of a universe in which the dark-matter density is 0.5, the dark-energy density is 0.5, and Hubble's constant is 15.0?
+</p>
+					</div>
+			</div>
+		</section>
+	</div>
+</div>
+
+    <script src="js/jquery-latest.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<!-- <script src="js/jquery.touchSwipe.min.js"></script> -->
+	<script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>    
+	<script src="js/eCourse-master.js"></script>    
+	<script src="js/d3.v3.min.js"></script>
+   	<script src="js/brixlib-compiled.js"></script>
+
+
+	<script>
+
+
+
+	//the eventManager is an object that is specific to this page.  A new one
+	//is created for every page, and then passed to the widgets in that page
+	//that must talk to it.
+	 
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Callouts = pearson.brix.Callouts;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var Legend = pearson.brix.Legend;
+	var Slider = pearson.brix.Slider;
+	var Readout = pearson.brix.Readout;
+	var PieChart = pearson.brix.PieChart;
+	 
+	var EventManager = pearson.utils.EventManager;
+	var SubmitManager = pearson.brix.SubmitManager;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var SelectGroup = pearson.brix.SelectGroup;
+	var eventManager = new EventManager();
+var submitManager = new SubmitManager(eventManager);
+
+	var galaxyData = [
+	{x:	-13.199	, y:	0.010	},
+{x:	-13.164	, y:	0.020	},
+{x:	-13.120	, y:	0.030	},
+{x:	-13.071	, y:	0.040	},
+{x:	-13.015	, y:	0.050	},
+{x:	-12.954	, y:	0.060	},
+{x:	-12.888	, y:	0.070	},
+{x:	-12.817	, y:	0.080	},
+{x:	-12.743	, y:	0.090	},
+{x:	-12.664	, y:	0.100	},
+{x:	-12.581	, y:	0.110	},
+{x:	-12.495	, y:	0.120	},
+{x:	-12.406	, y:	0.130	},
+{x:	-12.313	, y:	0.140	},
+{x:	-12.217	, y:	0.150	},
+{x:	-12.117	, y:	0.160	},
+{x:	-12.015	, y:	0.170	},
+{x:	-11.910	, y:	0.180	},
+{x:	-11.802	, y:	0.190	},
+{x:	-11.692	, y:	0.200	},
+{x:	-11.579	, y:	0.210	},
+{x:	-11.463	, y:	0.220	},
+{x:	-11.346	, y:	0.230	},
+{x:	-11.225	, y:	0.240	},
+{x:	-11.103	, y:	0.250	},
+{x:	-10.978	, y:	0.260	},
+{x:	-10.852	, y:	0.270	},
+{x:	-10.723	, y:	0.280	},
+{x:	-10.593	, y:	0.290	},
+{x:	-10.460	, y:	0.300	},
+{x:	-10.326	, y:	0.310	},
+{x:	-10.190	, y:	0.320	},
+{x:	-10.053	, y:	0.330	},
+{x:	-9.914	, y:	0.340	},
+{x:	-9.773	, y:	0.350	},
+{x:	-9.631	, y:	0.360	},
+{x:	-9.488	, y:	0.370	},
+{x:	-9.343	, y:	0.380	},
+{x:	-9.197	, y:	0.390	},
+{x:	-9.050	, y:	0.400	},
+{x:	-8.902	, y:	0.410	},
+{x:	-8.753	, y:	0.420	},
+{x:	-8.603	, y:	0.430	},
+{x:	-8.452	, y:	0.440	},
+{x:	-8.300	, y:	0.450	},
+{x:	-8.147	, y:	0.460	},
+{x:	-7.994	, y:	0.470	},
+{x:	-7.840	, y:	0.480	},
+{x:	-7.686	, y:	0.490	},
+{x:	-7.530	, y:	0.500	},
+{x:	-7.375	, y:	0.510	},
+{x:	-7.219	, y:	0.520	},
+{x:	-7.063	, y:	0.530	},
+{x:	-6.906	, y:	0.540	},
+{x:	-6.749	, y:	0.550	},
+{x:	-6.592	, y:	0.560	},
+{x:	-6.435	, y:	0.570	},
+{x:	-6.278	, y:	0.580	},
+{x:	-6.120	, y:	0.590	},
+{x:	-5.963	, y:	0.600	},
+{x:	-5.805	, y:	0.610	},
+{x:	-5.648	, y:	0.620	},
+{x:	-5.491	, y:	0.630	},
+{x:	-5.334	, y:	0.640	},
+{x:	-5.177	, y:	0.650	},
+{x:	-5.020	, y:	0.660	},
+{x:	-4.864	, y:	0.670	},
+{x:	-4.708	, y:	0.680	},
+{x:	-4.552	, y:	0.690	},
+{x:	-4.397	, y:	0.700	},
+{x:	-4.242	, y:	0.710	},
+{x:	-4.087	, y:	0.720	},
+{x:	-3.933	, y:	0.730	},
+{x:	-3.779	, y:	0.740	},
+{x:	-3.626	, y:	0.750	},
+{x:	-3.473	, y:	0.760	},
+{x:	-3.321	, y:	0.770	},
+{x:	-3.169	, y:	0.780	},
+{x:	-3.018	, y:	0.790	},
+{x:	-2.868	, y:	0.800	},
+{x:	-2.718	, y:	0.810	},
+{x:	-2.569	, y:	0.820	},
+{x:	-2.420	, y:	0.830	},
+{x:	-2.272	, y:	0.840	},
+{x:	-2.125	, y:	0.850	},
+{x:	-1.978	, y:	0.860	},
+{x:	-1.832	, y:	0.870	},
+{x:	-1.687	, y:	0.880	},
+{x:	-1.542	, y:	0.890	},
+{x:	-1.399	, y:	0.900	},
+{x:	-1.255	, y:	0.910	},
+{x:	-1.113	, y:	0.920	},
+{x:	-0.971	, y:	0.930	},
+{x:	-0.830	, y:	0.940	},
+{x:	-0.690	, y:	0.950	},
+{x:	-0.551	, y:	0.960	},
+{x:	-0.412	, y:	0.970	},
+{x:	-0.274	, y:	0.980	},
+{x:	-0.137	, y:	0.990	},
+{x:	0.000	, y:	1.000	},
+{x:	0.136	, y:	1.010	},
+{x:	0.271	, y:	1.020	},
+{x:	0.405	, y:	1.030	},
+{x:	0.539	, y:	1.040	},
+{x:	0.671	, y:	1.050	},
+{x:	0.803	, y:	1.060	},
+{x:	0.935	, y:	1.070	},
+{x:	1.065	, y:	1.080	},
+{x:	1.195	, y:	1.090	},
+{x:	1.324	, y:	1.100	},
+{x:	1.452	, y:	1.110	},
+{x:	1.580	, y:	1.120	},
+{x:	1.706	, y:	1.130	},
+{x:	1.832	, y:	1.140	},
+{x:	1.958	, y:	1.150	},
+{x:	2.082	, y:	1.160	},
+{x:	2.206	, y:	1.170	},
+{x:	2.329	, y:	1.180	},
+{x:	2.452	, y:	1.190	},
+{x:	2.573	, y:	1.200	},
+{x:	2.694	, y:	1.210	},
+{x:	2.815	, y:	1.220	},
+{x:	2.934	, y:	1.230	},
+{x:	3.053	, y:	1.240	},
+{x:	3.171	, y:	1.250	},
+{x:	3.289	, y:	1.260	},
+{x:	3.406	, y:	1.270	},
+{x:	3.522	, y:	1.280	},
+{x:	3.637	, y:	1.290	},
+{x:	3.752	, y:	1.300	},
+{x:	3.866	, y:	1.310	},
+{x:	3.980	, y:	1.320	},
+{x:	4.093	, y:	1.330	},
+{x:	4.205	, y:	1.340	},
+{x:	4.316	, y:	1.350	},
+{x:	4.427	, y:	1.360	},
+{x:	4.537	, y:	1.370	},
+{x:	4.647	, y:	1.380	},
+{x:	4.756	, y:	1.390	},
+{x:	4.864	, y:	1.400	},
+{x:	4.972	, y:	1.410	},
+{x:	5.079	, y:	1.420	},
+{x:	5.186	, y:	1.430	},
+{x:	5.292	, y:	1.440	},
+{x:	5.397	, y:	1.450	},
+{x:	5.502	, y:	1.460	},
+{x:	5.606	, y:	1.470	},
+{x:	5.710	, y:	1.480	},
+{x:	5.813	, y:	1.490	},
+{x:	5.915	, y:	1.500	},
+{x:	6.017	, y:	1.510	},
+{x:	6.119	, y:	1.520	},
+{x:	6.219	, y:	1.530	},
+{x:	6.320	, y:	1.540	},
+{x:	6.419	, y:	1.550	},
+{x:	6.518	, y:	1.560	},
+{x:	6.617	, y:	1.570	},
+{x:	6.715	, y:	1.580	},
+{x:	6.813	, y:	1.590	},
+{x:	6.910	, y:	1.600	},
+{x:	7.006	, y:	1.610	},
+{x:	7.102	, y:	1.620	},
+{x:	7.198	, y:	1.630	},
+{x:	7.293	, y:	1.640	},
+{x:	7.387	, y:	1.650	},
+{x:	7.481	, y:	1.660	},
+{x:	7.575	, y:	1.670	},
+{x:	7.668	, y:	1.680	},
+{x:	7.760	, y:	1.690	},
+{x:	7.852	, y:	1.700	},
+{x:	7.944	, y:	1.710	},
+{x:	8.035	, y:	1.720	},
+{x:	8.125	, y:	1.730	},
+{x:	8.216	, y:	1.740	},
+{x:	8.305	, y:	1.750	},
+{x:	8.395	, y:	1.760	},
+{x:	8.483	, y:	1.770	},
+{x:	8.572	, y:	1.780	},
+{x:	8.660	, y:	1.790	},
+{x:	8.747	, y:	1.800	},
+{x:	8.834	, y:	1.810	},
+{x:	8.921	, y:	1.820	},
+{x:	9.007	, y:	1.830	},
+{x:	9.093	, y:	1.840	},
+{x:	9.178	, y:	1.850	},
+{x:	9.263	, y:	1.860	},
+{x:	9.348	, y:	1.870	},
+{x:	9.432	, y:	1.880	},
+{x:	9.515	, y:	1.890	},
+{x:	9.599	, y:	1.900	},
+{x:	9.682	, y:	1.910	},
+{x:	9.764	, y:	1.920	},
+{x:	9.846	, y:	1.930	},
+{x:	9.928	, y:	1.940	},
+{x:	10.009	, y:	1.950	},
+{x:	10.090	, y:	1.960	},
+{x:	10.171	, y:	1.970	},
+{x:	10.251	, y:	1.980	},
+{x:	10.331	, y:	1.990	},
+{x:	10.411	, y:	2.000	},
+];
+
+// initialize arrays used to store intermediate data steps
+
+var t = [];
+var z = [];
+var time = [];
+var dt = [];
+var myData = [];
+
+// initialize all the time steps.  The two Omaga densities will be the 
+// slider values eventually.
+
+t[0] = 0.001;
+dt[0] = 0;
+z[0] = 0.01;
+var OmegaM = 0.3;
+var OmegaL = 0.7;
+
+var H0 = 22 * Math.PI/946;
+
+function Hfun(H, OmegaM, OmegaL, z) {
+	var C = 1 - OmegaM - OmegaL;
+	return H * Math.sqrt(OmegaM * Math.pow(z,-3) + OmegaL + C * Math.pow(z,-2));
+}
+var H = [];
+H[0] = Hfun(H0, OmegaM, OmegaL, z[0]);
+
+
+for (var i = 1; i < 200; i++) {
+	
+	z[i] = d3.round((i + 1) * 0.01, 2);
+	H[i] = Hfun(H0, OmegaM, OmegaL, z[i]);
+	dt[i] = (0.01/H[i])/z[i];
+	t[i] = dt[i] + t[i-1];
+
+};
+
+for (var i = 200 - 1; i >= 0; i--) {
+ 
+	myData[i] = {x: t[i] - t[99], y: z[i]};
+}
+
+
+var cntr0 = new SVGContainer ({
+		node: d3.select("#lineG"),
+		maxSize: {width: 700, height: 400}
+	});
+
+var line = new LineGraph ({
+		Data: [myData],
+		type: 'lines',
+		xAxisFormat: { 
+						type: "linear", 
+					   	ticks: [-20, -10, 0, 10, 20],
+					   	orientation: "bottom",
+					   	label: "Time (billions of years)"},
+		yAxisFormat: { type: "linear",
+						ticks: 5,
+					   orientation: "left",
+					   label: "Average Distance Between Galaxies a(t) (relative units)"},
+		}, eventManager);
+	
+cntr0.append(line);
+	
+// Pie chart of densities
+var OmegaN = 0.046;
+var percents = [
+				{x: 100 * OmegaN, y: 'Normal Matter'},
+				{y: 'Dark Matter', x: 100 * Math.max(0, OmegaM - OmegaN)},
+				{y: 'Dark Energy', x: 100 * OmegaL},
+			  ];
+var pie0 = new PieChart ({
+			Data: percents,
+		});
+		
+cntr0.append(pie0, {topPercentOffset: .3, leftPercentOffset: .5, heightPercent: 0.4, widthPercent: 0.25});
+
+
+var matterDensity = new Slider ({
+			startVal: 0.3,
+			minVal: 0,
+			maxVal: 1,
+			stepVal: .1,
+			unit: "",
+			label: "Matter Density (fraction of critical)",
+			format: d3.format('.1f')
+		}, eventManager);
+		
+matterDensity.draw(d3.select("#slide0"));
+
+var darkDensity = new Slider ({
+			startVal: 0.7,
+			minVal: 0,
+			maxVal: 1,
+			stepVal: .1,
+			unit: "",
+			label: "Dark Energy Density (fraction of critical)",
+			format: d3.format('.1f')
+		}, eventManager);
+		
+darkDensity.draw(d3.select("#slide1"));
+	
+var hubbleConstant = new Slider ({
+			startVal: 22,
+			minVal: 15,
+			maxVal: 25,
+			stepVal: .1,
+			unit: "km/s/Mlt-yr",
+			label: "Hubble Constant",
+			format: d3.format('.1f')
+		}, eventManager);
+		
+hubbleConstant.draw(d3.select("#slide2"));
+
+// subscribe to the slider changes, redraw the graphs in either case
+eventManager.subscribe(matterDensity.changedValueEventId,
+						   	function(ed) { handleInputValueChanged(); });
+eventManager.subscribe(darkDensity.changedValueEventId,
+						   	function(ed) { handleInputValueChanged(); });
+eventManager.subscribe(hubbleConstant.changedValueEventId,
+							function(ed) { handleInputValueChanged(); });
+
+
+/* **************************************************************************
+	* handleInputValueChanged                                              *//**
+	*
+	* handleInputValueChanged is called from the event handler for one of
+	* the slider widgets when the user changes its value. It updates the
+	* given matching input widget's value to match the new value and then
+	* updates the charts.
+	*
+	* @param {NumericInput} otherInputWidget -This is the other input widget
+	*                                         whose value needs to be updated
+	*                                         to match the user changed widget.
+	* @param {number} newValue - The value of the widget that was changed.
+	*
+	****************************************************************************/
+	function handleInputValueChanged()
+	{
+
+		OmegaM = matterDensity.getValue();
+		OmegaL = darkDensity.getValue();
+		H0 =  hubbleConstant.getValue() * Math.PI/946;
+
+		H[0] = Hfun(H0, OmegaM, OmegaL, z[0]);
+
+		for (var i = 1; i < 200; i++) {
+	
+		z[i] = d3.round((i + 1) * 0.01, 2);
+		H[i] = Hfun(H0, OmegaM, OmegaL, z[i]);
+		dt[i] = (0.01/H[i])/z[i];
+		t[i] = dt[i] + t[i-1];
+
+		};
+
+		for (var i = 200 - 1; i >= 0; i--) {
+ 
+			myData[i] = {x: t[i] - t[99], y: z[i]};
+		}
+
+		line.redraw();
+
+		var totalDensity = Math.max(0, OmegaM - OmegaN) + OmegaN + OmegaL;
+
+		percents[0].x = d3.round(100 * OmegaN/totalDensity, 2);
+		percents[1].x = d3.round(100 * Math.max(0, OmegaM - OmegaN)/totalDensity);
+		percents[2].x = d3.round(100 * OmegaL/totalDensity);
+
+		pie0.redraw();
+	}
+	
+
+	</script>
+</body>
+</html>
