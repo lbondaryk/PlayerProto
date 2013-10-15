@@ -187,7 +187,7 @@ var lineData1 = [
 			stepVal: .11,
 			unit: "%",
 			label: "Growth Rate",
-			format: d3.format('.1f')
+			format: '.1f'
 		}, eventManager);
 		
 	growRt.draw(d3.select("#growthSlider"));
@@ -350,7 +350,7 @@ var Data = [lineData1,estimated];
 			stepVal: .5,
 			unit: "%",
 			label: "Estimated Global Death Rate in 2100",
-			format: d3.format('.1f')
+			format: '.1f'
 		}, eventManager);
 
 	var birthRt = new Slider ({
@@ -361,7 +361,7 @@ var Data = [lineData1,estimated];
 			stepVal: .5,
 			unit: "%",
 			label: "Estimated Global Birth Rate in 2100",
-			format: d3.format('.1f')
+			format: '.1f'
 		}, eventManager);
 		
 	deathRt.draw(d3.select("#deathSlider"));

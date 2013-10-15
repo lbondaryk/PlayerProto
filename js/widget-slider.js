@@ -58,8 +58,7 @@ goog.require('pearson.brix.HtmlBric');
  *                      config.label    -text preceding the slider, optional
  * @param {htmlString|undefined}
  *                      config.unit     -text following the slider, optional
- * @param {function(number): string}
- *                      config.format   -{@link https://github.com/mbostock/d3/wiki/Formatting|formatting function}
+ * @param {string}      config.format   -{@link https://github.com/mbostock/d3/wiki/Formatting|formatting function specifier}
  *                                       for displaying value in readout
  * @param {!pearson.utils.IEventManager=}
  *                      eventManager    -The event manager to use for publishing events
@@ -75,9 +74,10 @@ pearson.brix.Slider = function (config, eventManager)
 
     /**
      * A unique id for this instance of the slider widget
+     * @private
      * @type {string}
      */
-    this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Slider);
+    this.sldrId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Slider);
 
     // TODO: These all need comments describing what they are. -mjl 5/16/2013
     this.startVal = config.startVal;
@@ -88,15 +88,14 @@ pearson.brix.Slider = function (config, eventManager)
     /**
      * Text unit to display after the readout.  Currently for display only.
      * later could be used to multiply the value by a unit.
-     * @type {string}
+     * @type {htmlString|undefined}
      */
-
     this.unit = config.unit;
 
     /**
      * Text to display before the readout and slider.  Currently for display only.
      * later could be used to multiply the value by a unit.
-     * @type {string}
+     * @type {htmlString|undefined}
      */
     this.label = config.label;
 
@@ -104,7 +103,7 @@ pearson.brix.Slider = function (config, eventManager)
      * Function to format the value of this slider for display by the readout.
      * @type {function(number): string}
      */
-    this.format = config.format;
+    this.format = d3.format(config.format);
 
     /**
      * The event manager to use to publish (and subscribe to) events for this widget
@@ -117,7 +116,7 @@ pearson.brix.Slider = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.changedValueEventId = this.id + '_valueChanged';
+    this.changedValueEventId = pearson.brix.Slider.getEventTopic('value-changed', this.sldrId_);
 
     /**
      * The event details for this.changedValueEventId events
@@ -125,6 +124,7 @@ pearson.brix.Slider = function (config, eventManager)
      * @property {number} oldValue  -The previous value of this slider.
      * @property {number} newValue  -The new/current value of this slider.
      */
+    var ChangedValueEventDetails;
 
     /**
      * Information about the last drawn instance of this slider (from the draw method)
@@ -146,6 +146,46 @@ goog.inherits(pearson.brix.Slider, pearson.brix.HtmlBric);
  */
 pearson.brix.Slider.autoIdPrefix = "sldr_auto_";
 
+
+/* **************************************************************************
+ * Slider.getEventTopic (static)                                       */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * Slider bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of Slider with the given
+ *                   instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.Slider.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'value-changed': function (instanceId)
+        {
+            return instanceId + '_valueChanged';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by Slider brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
 
 /* **************************************************************************
  * Slider.draw                                                         */ /**
