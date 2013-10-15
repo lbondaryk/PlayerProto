@@ -254,10 +254,10 @@ pearson.utils.MessageBroker = function (config, domHelper)
     this.domHelperWasProvided_ = domHelper ? true : false;
 
     /**
-    * A logger to help debugging 
-    * @type {goog.debug.Logger}
-    * @private
-    */
+     * A logger to help debugging 
+     * @type {goog.debug.Logger}
+     * @private
+     */
     this.logger_ = goog.debug.Logger.getLogger('pearson.utils.MessageBroker');
 
     /**

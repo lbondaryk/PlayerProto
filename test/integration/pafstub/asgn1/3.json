@@ -1,0 +1,54 @@
+{
+    "guid":"Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1::http%3A%2F%2Frepo.paf.cert.pearsoncmg.com%2Fpaf-repo%2Fresources%2Factivities%2F05c6465a-a8fa-4182-8f0b-e63304037d2f%2Fbindings%2F0",
+    "player":{
+        "guid":null,
+        "contentType":"application/vnd.pearson.qti.v2p1.asi+xml",
+        "widgetFrontend":null,
+        "toolProxy":null,
+        "frameFrontend":{
+            "guid":null,
+            "frameURI":"placeholder"
+        },
+        "preprocessor":null,
+        "postprocessor":null,
+        "@context":null,
+        "@id":null,
+        "@type":null
+    },
+    "startTime":1376240112745,
+    "nodeIndex":4,
+    "targetActivityXML":"PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pjxhc3Nlc3NtZW50SXRlbSB4bWxucz0iaHR0cDovL3d3dy5pbXNnbG9iYWwub3JnL3hzZC9pbXNxdGlfdjJwMSIgeG1sbnM6bnMyPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hJbmNsdWRlIiB4bWxuczpuczM9Imh0dHA6Ly93d3cuaW1zZ2xvYmFsLm9yZy94c2QvaW1zbGlwX3YxcDAiIHRpdGxlPSJQcmUxMC4xIFNvY2lhbCBJbmZsdWVuY2U6IENvbmZvcm1pdHksIENvbXBsaWFuY2UsIGFuZCBPYmVkaWVuY2UsIFJlbWVtYmVyIiBhZGFwdGl2ZT0iZmFsc2UiIHRpbWVEZXBlbmRlbnQ9ImZhbHNlIj48cmVzcG9uc2VEZWNsYXJhdGlvbiBpZGVudGlmaWVyPSJSRVNQT05TRSIgY2FyZGluYWxpdHk9InNpbmdsZSIgYmFzZVR5cGU9ImlkZW50aWZpZXIiPjxjb3JyZWN0UmVzcG9uc2U+PHZhbHVlPjI8L3ZhbHVlPjwvY29ycmVjdFJlc3BvbnNlPjwvcmVzcG9uc2VEZWNsYXJhdGlvbj48aXRlbUJvZHk+PGNob2ljZUludGVyYWN0aW9uIHNodWZmbGU9ImZhbHNlIiBtYXhDaG9pY2VzPSIxIiByZXNwb25zZUlkZW50aWZpZXI9IlJFU1BPTlNFIj48cHJvbXB0PkluIFNvbG9tb24gQXNjaCdzIHN0dWR5LCBjb25mZWRlcmF0ZXMgd2VyZSBpbnN0cnVjdGVkIHRvPC9wcm9tcHQ+PHNpbXBsZUNob2ljZSBpZGVudGlmaWVyPSIxIj5naXZlIHRoZSBjb3JyZWN0IGFuc3dlciB0byB0aGUgbGluZS1tYXRjaGluZyB0YXNrLjwvc2ltcGxlQ2hvaWNlPjxzaW1wbGVDaG9pY2UgaWRlbnRpZmllcj0iMiI+Z2l2ZSB0aGUgaW5jb3JyZWN0IGFuc3dlciB0byB0aGUgbGluZS1tYXRjaGluZyB0YXNrLjwvc2ltcGxlQ2hvaWNlPjxzaW1wbGVDaG9pY2UgaWRlbnRpZmllcj0iMyI+b3Blbmx5IHJlZnVzZSB0byBwYXJ0aWNpcGF0ZSBpbiB0aGUgZXhwZXJpbWVudC48L3NpbXBsZUNob2ljZT48c2ltcGxlQ2hvaWNlIGlkZW50aWZpZXI9IjQiPmNoYWxsZW5nZSB0aGUgZXhwZXJpbWVudGVyLjwvc2ltcGxlQ2hvaWNlPjwvY2hvaWNlSW50ZXJhY3Rpb24+PC9pdGVtQm9keT48L2Fzc2Vzc21lbnRJdGVtPg==",
+    "targetActivity":null,
+    "aggregateResult":{
+        "guid":null,
+        "attempt":null,
+        "correctOnFirstTry":null,
+        "incorrectSubmissionCount":null,
+        "numLearningAidsUsed":null,
+        "activityBinding":null,
+        "startTime":1376240112745,
+        "duration":null,
+        "score":null,
+        "numAttempts":null,
+        "endTime":null
+    },
+    "prevNode":null,
+    "targetBinding":null,
+    "parentSequence":{
+        "guid":null,
+        "user":null,
+        "learningContext":"urn:udson:pearson.com/sms/prod:course/jsmith38271",
+        "overallActivity":"OverallActiviy, DO we need it?",
+        "@context":null,
+        "@id":"/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1",
+        "@type":null
+    },
+    "resultCollection":"http://hub.paf.cert.pearsoncmg.com/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1/nodes/1/results",
+    "endTime":null,
+    "@context":"http://purl.org/pearson/paf/v1/ctx/core/SequenceNode",
+    "@id":"http://hub.paf.cert.pearsoncmg.com/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1/nodes/1",
+    "@type":"SequenceNode",
+    "nodeResult":[
+        
+    ]
+}
