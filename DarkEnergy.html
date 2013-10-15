@@ -373,7 +373,7 @@ var pie0 = new PieChart ({
 cntr0.append(pie0, {topPercentOffset: .3, leftPercentOffset: .5, heightPercent: 0.4, widthPercent: 0.25});
 
 
-var matterDensity = new Slider ({
+	var matterDensity = new Slider ({
 			startVal: 0.3,
 			minVal: 0,
 			maxVal: 1,
@@ -408,6 +408,17 @@ var hubbleConstant = new Slider ({
 		}, eventManager);
 		
 hubbleConstant.draw(d3.select("#slide2"));
+
+// Create the ee readout widget
+var fitReadout = new Readout({
+		node: d3.select("#slide2"),
+		startVal: 100,
+		readOnly: true,
+		size: 4,
+		unit: " minimize this", 
+		label: "Model-data difference"
+	}, eventManager);
+
 
 // subscribe to the slider changes, redraw the graphs in either case
 eventManager.subscribe(matterDensity.changedValueEventId,
