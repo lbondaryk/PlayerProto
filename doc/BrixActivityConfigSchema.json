@@ -197,7 +197,10 @@
                     "oneOf":
                         [
                             {"$ref": "#/definitions/dynamicValue-d3select"},
+                            {"$ref": "#/definitions/dynamicValue-brix-topic"},
                             {"$ref": "#/definitions/dynamicValue-property-of-ref"},
+                            {"$ref": "#/definitions/dynamicValue-ref"},
+                            {"$ref": "#/definitions/dynamicValue-constant"},
                         ]
                 },
 			"dynamicValue-d3select":
