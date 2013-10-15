@@ -1,0 +1,255 @@
+{
+    "guid":"Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1::http%3A%2F%2Frepo.paf.cert.pearsoncmg.com%2Fpaf-repo%2Fresources%2Factivities%2F05c6465a-a8fa-4182-8f0b-e63304037d2f%2Fbindings%2F0",
+    "player":{
+        "guid":null,
+        "contentType":"application/vnd.pearson.qti.v2p1.asi+xml",
+        "widgetFrontend":null,
+        "toolProxy":null,
+        "frameFrontend":{
+            "guid":null,
+            "frameURI":"placeholder"
+        },
+        "preprocessor":null,
+        "postprocessor":null,
+        "@context":null,
+        "@id":null,
+        "@type":null
+    },
+    "startTime":1376240112745,
+    "nodeIndex":1,
+    "targetActivityXML":"NoXML",
+    "targetActivity":{
+    "containerConfig":
+        [
+            {
+                "containerId": "imgReactor",
+                "brixConfig":
+                    [
+                        {
+                            "bricId": "cimage1",
+                            "bricType": "CaptionedImage",
+                            "config":
+                                {
+                                    "id": "cimg0n",
+                                    "URI": "img/reactor.jpg",
+                                    "caption": "Nuclear Reactor Schematic Diagram from AMS",
+                                    "actualSize": {"height": 310, "width": 680},
+                                    "captionPosition": "below"
+                                }
+                        },
+                        {
+                            "bricId": "cntr1",
+                            "bricType": "SvgContainer",
+                            "config":
+                                {
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "node",
+                                        "value":
+                                            {
+                                                "type": "d3select",
+                                                "selector": "#imgReactor"
+                                            }
+                                    },
+                                    {
+                                        "type": "set-property",
+                                        "name": "maxSize",
+                                        "value":
+                                            {
+                                                "type": "property-of-ref",
+                                                "domain": "brix",
+                                                "refId": "cimage1",
+                                                "accessor": "getSizeAt100Pct"
+                                            }
+                                            
+                                    }
+                                ]
+                        },
+                        {
+                            "bricId": "labels1",
+                            "bricType": "LabelGroup",
+                            "config":
+                                {
+                                    "id": "reactorNum",
+                                    "type": "numbered",
+                                    "labels":   
+                                        [   
+                                            {"content": "1", "xyPos": [0, 0.22], "width": 0},
+                                            {"content": "2", "xyPos": [0.05, 0.43], "width": 0},
+                                            {"content": "3", "xyPos": [0.3, 0.7], "width": 0},
+                                            {"content": "4", "xyPos": [0.62, 0.65], "width": 0},
+                                            {"content": "5", "xyPos": [0.66, 0.15], "width": 0}
+                                        ]
+                                }
+                        }
+                    ],
+                "mortarConfig":
+                    [
+                        {
+                            "mortarId": "hilite1",
+                            "mortarType": "Hilite",
+                            "config":
+                                {
+                                    "eventDetailsProperty": "selectKey"
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "topic",
+                                        "value": { "type": "constant", "value": "callme_Callout" }
+                                    },
+                                    {
+                                        "type": "set-property",
+                                        "name": "targetBric",
+                                        "value": { "type": "ref", "domain": "brix", "refId": "labels1" }
+                                    }
+                                ]
+                        }
+                    ],
+                "hookupActions":
+                    [
+                        {
+                            "description": "Append the captioned image to the svg container",
+                            "type": "method-call",
+                            "instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+                            "methodName": "append",
+                            "args":
+                                [
+                                    { "type": "ref", "domain": "brix", "refId": "cimage1" },
+                                    { "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
+                                ]
+                        },
+                        {
+                            "description": "Append the labels to the captioned image",
+                            "type": "method-call",
+                            "instance": {"type": "ref", "domain": "brix", "refId": "cimage1"},
+                            "methodName": "append",
+                            "args":
+                                [
+                                    { "type": "ref", "domain": "brix", "refId": "labels1" }
+                                ]
+                        },
+                        {
+                            "description": "Initial condition: select 1st label (note that we may want to use the state field to do this later)",
+                            "type": "method-call",
+                            "instance": {"type": "ref", "domain": "brix", "refId": "labels1"},
+                            "methodName": "lite",
+                            "args":
+                                [
+                                    { "type": "constant", "value": "0" }
+                                ]
+                        }
+                    ]
+            },
+            {
+                "containerId": "steps",
+                "brixConfig":
+                    [
+                        {
+                            "bricId": "lbltbl1",
+                            "bricType": "Callouts",
+                            "config":
+                                {
+                                    "id": "callme",
+                                    "show": "all",
+                                    "type": "numbered",
+                                    "headers": ["Nuclear Reactor function"],
+                                    "textBits":
+                                        [
+                                            {"cols": ["In a closed circuit, (green) water is pumped at high pressure to the reactor core."]},
+                                            {"cols": ["Heat is generated by fission in the fuel rods in the reactor core, which heats the circulating water. Thick layers of concrete and steel or lead contain the reactor core’s radioactivity."]},
+                                            {"cols": [ "In the steam generator, the energy from the heated water is used to boil water from a separate supply. The resulting steam moves through a pipe to a turbine."]},
+                                            {"cols": ["The steam turns the turbine, which is connected to an electricity generator. Power lines distribute the electricity. A typical reactor produces as much as a coal-fired power plant."]},
+                                            {"cols": ["A third supply of water is used to cool the steam so it condenses into water, which is pumped back to the steam generator."]}
+                                        ]
+                                }
+                        }
+                    ],
+                "mortarConfig":
+                    [
+                        {
+                            "mortarId": "hilite2",
+                            "mortarType": "Hilite",
+                            "config":
+                                {
+                                    "eventDetailsProperty": "selectKey"
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "topic",
+                                        "value": { "type": "constant", "value": "reactorNum_labelSelected" }
+                                    },
+                                    {
+                                        "type": "set-property",
+                                        "name": "targetBric",
+                                        "value": { "type": "ref", "domain": "brix", "refId": "lbltbl1" }
+                                    }
+                                ]
+                        }
+                    ],
+                "hookupActions":
+                    [
+                        {
+                            "description": "draw the label table",
+                            "type": "method-call",
+                            "instance": {"type": "ref", "domain": "brix", "refId": "lbltbl1"},
+                            "methodName": "draw",
+                            "args":
+                                [
+                                    { "type": "d3select", "selector": "#steps" }
+                                ]
+                        },
+                        {
+                            "description": "Initial condition: select 1st table row (note that we may want to use the state field to do this later)",
+                            "type": "method-call",
+                            "instance": {"type": "ref", "domain": "brix", "refId": "lbltbl1"},
+                            "methodName": "lite",
+                            "args":
+                                [
+                                    { "type": "constant", "value": "0" }
+                                ]
+                        }
+
+                    ]
+            }
+        ]
+},
+    "aggregateResult":{
+        "guid":null,
+        "attempt":null,
+        "correctOnFirstTry":null,
+        "incorrectSubmissionCount":null,
+        "numLearningAidsUsed":null,
+        "activityBinding":null,
+        "startTime":1376240112745,
+        "duration":null,
+        "score":null,
+        "numAttempts":null,
+        "endTime":null
+    },
+    "prevNode":null,
+    "targetBinding":null,
+    "parentSequence":{
+        "guid":null,
+        "user":null,
+        "learningContext":"urn:udson:pearson.com/sms/prod:course/jsmith38271",
+        "overallActivity":"OverallActiviy, DO we need it?",
+        "@context":null,
+        "@id":"/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1",
+        "@type":null
+    },
+    "resultCollection":"http://hub.paf.cert.pearsoncmg.com/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1/nodes/1/results",
+    "endTime":null,
+    "@context":"http://purl.org/pearson/paf/v1/ctx/core/SequenceNode",
+    "@id":"http://hub.paf.cert.pearsoncmg.com/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1/nodes/1",
+    "@type":"SequenceNode",
+    "nodeResult":[
+        
+    ]
+}

@@ -41,6 +41,7 @@
     <script src="../../../closure/closure-library/closure/goog/base.js"></script>
     <script src="../../../closure/closure-library/closure/goog/deps.js"></script>
     <script src="../../../closure/closure-library/closure/goog/debug/logger.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/debug/console.js"></script>
     <script src="../../js/jquery-latest.js"></script>
 
     <!--
@@ -82,9 +83,11 @@
     <script src="../../js/ipsproxy.js"></script>
     <script src="../../js/ipc.js"></script>
 
-    <!-- local helper functions 
-    <script src="../helper.js"></script>
-    -->
+    <script>
+    var debugConsole = new goog.debug.Console();
+    debugConsole.setCapturing(true);
+    goog.debug.Logger.getLogger('pearson').setLevel(goog.debug.Logger.Level.FINER);
+    </script>
 
     <!-- LAS-PAF's amc -->
     <script src="amc.js"></script>
@@ -113,15 +116,15 @@
                         <p>Nuclear reactors use heat from fission reactions to turn water into steam, which spins turbines connected to generators that produce electricity. The figure shows a common design known as a pressurized water reactor.</p>
                         <!-- The div is is used by the Bric factory to map the containerId -->
                         <div id="imgReactor" habitat-id="some_habitat_id1" class="brix" 
-                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/a8bbad4b-73e6-4713-a00c-ae9b938e1aa5"
-                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/572bb1d2-b9f3-4bd9-9dd5-e31a4b70c02a"
+                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/assign_neff"
+                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_reactor"
                             data-containerid="imgReactor"
                             data-type="brix" >
                         </div>
                     </div>
                     <div id="steps" habitat-id="some_habitat_id2" class="brix" 
-                        data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/a8bbad4b-73e6-4713-a00c-ae9b938e1aa5" 
-                        data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/572bb1d2-b9f3-4bd9-9dd5-e31a4b70c02a"
+                        data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/assign_neff" 
+                        data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_reactor"
                         data-containerid="steps"
                         data-type="brix"></div>
             </div>

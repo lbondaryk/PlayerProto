@@ -16,9 +16,8 @@
 
 goog.provide('pearson.brix.IpsProxy');
 
+goog.require('goog.debug.Logger');
 goog.require("goog.net.XhrIo");
-//goog.require('goog.debug.Logger');
-//goog.require('goog.debug.Logger.Level');
 
 
 /* **************************************************************************
@@ -42,6 +41,14 @@ pearson.brix.IpsProxy = function (config)
      * @type {string|undefined}
      */
     this.serverBaseUrl = config.serverBaseUrl;
+
+    /**
+     * A logger to help debugging 
+     * @type {goog.debug.Logger}
+     * @private
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.IpsProxy');
+
 };
 
 /**
@@ -193,7 +200,6 @@ pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
 
         var error = null;
         var result = null;
-        window.console.log("###"+result);
         if (xhr.isSuccess())
         {
             var response = xhr.getResponseJson();
@@ -205,14 +211,21 @@ pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
                 message: xhr.getLastError(),
                 status: xhr.getStatus()
             };
-            result = xhr.getResponseJson();
+            result = xhr.getResponseBody();
+            try {
+                result = xhr.getResponseJson();
+            }
+            catch (jsonErr)
+            {
+                error.message = 'Could not parse response body into JSON';
+            }
         }
         callback(error, result);
     };
 
     var message = JSON.stringify(param);
 
-    window.console.log('IpsProxy calling server[' + url + '] :' + message);
+    this.logger_.fine('Making POST to server[' + url + '] with ' + message);
 
     // Another way of requesting is creating an XhrIo instance
     // passing it to goog event listner as

@@ -1,0 +1,77 @@
+{
+    "guid":"Course::557f5d39-24ea-48ef-8d14-04d6ab450527::test1",
+    "nodes":[
+        
+    ],
+    "user":null,
+    "learningContext":null,
+    "nodeCollection":"/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1/nodes",
+    "overallActivity":{
+        "guid":"557f5d39-24ea-48ef-8d14-04d6ab4592d2",
+        "@context":"http://purl.org/pearson/paf/v1/ctx/core/StructuredAssignment",
+        "assignmentContents":{
+            "binding":[
+                {
+                    "activityFormat":"application/vnd.pearson.qti.v2p1.asi+xml",
+                    "activityTitle":"Pre10.1 Social Influence: Conformity, Compliance, and Obedience, Remember",
+                    "bindingIndex":0,
+                    "boundActivity":"http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/boundActivity1",
+                    "credit":null,
+                    "guid":"f0212e44-39a4-4b22-977b-2629fd4199d9",
+                    "normalMaximum":null,
+                    "extraCreditMaximum":null,
+                    "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/05c6465a-a8fa-4182-8f0b-e63304037d2f/bindings/0"
+                },
+                {
+                    "activityFormat":"application/vnd.pearson.qti.v2p1.asi+xml",
+                    "activityTitle":"Pre10.2 Social Influence: Conformity, Compliance, and Obedience, Remember",
+                    "bindingIndex":1,
+                    "boundActivity":"http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/boundActivity2",
+                    "credit":null,
+                    "guid":"7373425f-4895-4f75-9155-64d7d4c86843",
+                    "normalMaximum":null,
+                    "extraCreditMaximum":null,
+                    "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/05c6465a-a8fa-4182-8f0b-e63304037d2f/bindings/1"
+                },
+                {
+                    "activityFormat":"application/vnd.pearson.qti.v2p1.asi+xml",
+                    "activityTitle":"Pre10.3 Social Influence: Conformity, Compliance, and Obedience, Remember",
+                    "bindingIndex":2,
+                    "boundActivity":"http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/boundActivity3",
+                    "credit":null,
+                    "guid":"b1a592ec-f27c-46af-9be1-299574c88f89",
+                    "normalMaximum":null,
+                    "extraCreditMaximum":null,
+                    "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/05c6465a-a8fa-4182-8f0b-e63304037d2f/bindings/2"
+                },
+                {
+                    "activityFormat":"application/vnd.pearson.qti.v2p1.asi+xml",
+                    "activityTitle":"Pre10.4 Social Cognition: Attitudes, Impression, Formation, and Attribution, Remember",
+                    "bindingIndex":3,
+                    "boundActivity":"http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/boundActivity4",
+                    "credit":null,
+                    "guid":"d7c7ef13-fee1-43d2-9b83-b147d9db2d1d",
+                    "normalMaximum":null,
+                    "extraCreditMaximum":null,
+                    "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/05c6465a-a8fa-4182-8f0b-e63304037d2f/bindings/3"
+                }
+            ],
+            "guid":"05c6465a-a8fa-4182-8f0b-e63304037d2f",
+            "normalMaximum":null,
+            "extraCreditMaximum":null,
+            "@contentType":"application/vnd.pearson.paf.v1.container+json",
+            "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/05c6465a-a8fa-4182-8f0b-e63304037d2f",
+            "@context":"http://purl.org/pearson/paf/v1/ctx/core/ActivityContainer",
+            "@type":"ActivityContainer"
+        },
+        "title":"Chapter 10: Social Psychology",
+        "@contentType":"application/vnd.pearson.paf.v1.assignment+json",
+        "extraCreditMaximum":null,
+        "@type":"StructuredAssignment",
+        "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/557f5d39-24ea-48ef-8d14-04d6ab4592d2",
+        "normalMaximum":null
+    },
+    "@context":"http://purl.org/pearson/paf/v1/ctx/core/RichActivitySequence",
+    "@id":"/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1",
+    "@type":"ActivitySequence"
+}

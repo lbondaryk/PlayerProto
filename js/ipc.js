@@ -38,6 +38,8 @@
  * **************************************************************************/
 goog.provide('pearson.brix.Ipc');
 
+goog.require('goog.debug.Logger');
+
 goog.require("pearson.brix.IpsProxy");
 goog.require("pearson.brix.BrixLayer");
 
@@ -72,6 +74,13 @@ pearson.brix.Ipc = function (config, eventManager)
      * @type {!pearson.utils.IEventManager}
      */
     this.eventManager = eventManager;
+
+    /**
+     * A logger to help debugging 
+     * @type {goog.debug.Logger}
+     * @private
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.Ipc');
 
     /**
      * The IpsProxy used by this Ipc to communicate w/ the IPS
@@ -130,9 +139,12 @@ pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
 {
     if (!items || items.length === 0)
     {
+        this.logger_.warning('Invalid items provided');
         throw new Error('Items should be valid array.');
     }
     this.items = this.normalizeByTopic(items);
+
+    this.logger_.config('Processing items: '+ JSON.stringify(items));
 
     this.subscribeInitTopic();
 
@@ -152,7 +164,7 @@ pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
         // IPS shall also subscribe to "pageLoaded" event that is originated 
         // from the master page
         this.eventManager.subscribe('__system_pageLoaded', function (message) {
-
+            that.logger_.config("Page loaded message received.");
             for (var i=0; i < that.items.length; i++)
             {
                 var reqSeqNodeIdentifierMsg = {
@@ -234,9 +246,11 @@ pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 {
     if (!item.assignmenturl || !item.activityurl)
     {
-        throw new Error('Invalid argument required properties "assignmenturl" or "activityurl" not found.');
+        var errMessage = 'Invalid argument required properties "assignmenturl" or "activityurl" not found.';
+        this.logger_.config(errMessage);
+        throw new Error(errMessage);
     }
-    return "init." + item.assignmenturl + "." + item.activityurl;
+    return 'init.' + item.assignmenturl + '.' + item.activityurl;
 };
 
 
@@ -261,11 +275,12 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
         // Anonymous function to create a scope for the currTopic to live as closure.
         // the topic is used to unsubscribe in the following lines
         (function(topic) {
+            that.logger_.config("Subscribing to: " + topic);
             that.eventManager.subscribe(topic, function(initMessage) {
-                
+                that.logger_.config("Initialization message received for topic: " + topic);
                 if (initMessage.status != 'success')
                 {
-                    window.console.log("initMessage returned error status. " + JSON.stringify(initMessage.sourcemessage));
+                    that.logger_.warning("initMessage returned error status. " + JSON.stringify(initMessage.sourcemessage));
                 }
                 else
                 {
@@ -285,17 +300,20 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
                         seqNodeRequestMessage.body.containerId = that.containerId;
                     }
 
+                    that.logger_.finer("Invoking ipsProxy.retrieveSequenceNode: "+ JSON.stringify(seqNodeRequestMessage));
                     that.ipsProxy.retrieveSequenceNode(seqNodeRequestMessage, function (error, result){
                         // Build the building!
                         if (error)
                         {
                             // Handle server error
-                            window.console.log("ERROR on retrieveSequenceNode: "+ JSON.stringify(error));
+                            that.logger_.severe("ERROR on retrieveSequenceNode: "+ JSON.stringify(error));
                         }
                         else
                         {
                             // in the absence of error, result is containerConfig
+                            that.logger_.fine("Building brix...");
                             that.bricLayer.build(result.data.containerConfig);
+                            that.logger_.fine("Building brix completed.");
                         }
                     }); // Does the AJAX call to IPS
 

@@ -81,7 +81,6 @@
             var message = helper.cloneObject(testInteractionMessage);
             message.sequenceNodeKey = seqNodeKey;
             ipsProxy.postInteraction(message, function(error, result){
-
                 try {
                     expect(error).to.equal(null);
                     expect(result).to.be.an('object');
@@ -138,8 +137,8 @@
             message.sequenceNodeKey = seqNodeKey;
             ipsProxy.postSubmission(message, function(error, result){
 
-                console.log("*EX.ERROR*:"+JSON.stringify(error));
-                console.log("*EX.RESULT*:"+JSON.stringify(result));
+console.log("*EX.ERROR*:"+JSON.stringify(error));
+console.log("*EX.RESULT*:"+JSON.stringify(result));
                 try {
                     expect(error).to.equal(null);
                     expect(result).to.be.an('object');
