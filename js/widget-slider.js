@@ -177,45 +177,38 @@ pearson.brix.Slider.prototype.draw = function (container)
 	var widgetGroup = container.append("div")
 		.attr("class", "widgetSlider")
 		.attr("id", this.id);
+	widgetGroup.append('span')
+		.attr('role', 'label')
+		.html(this.label ? this.label : "");
+	widgetGroup.append('span')
+		.attr('class', 'range')
+		.html(" &nbsp;&nbsp;&nbsp;" + this.minVal);
 
 	var googSliderDiv = widgetGroup.append("div")
 		.attr("class", "goog-slider")
-		.attr("style", "width: 200px; height: 20px");
-	googSliderDiv.append('div')
-		.attr('style', "position:absolute;width:100%;top:9px;border:1px inset white; overflow:hidden;height:0");
+		.attr("style", "display:inline-block; min-width: 200px; width: 200px; height: 20px;");
+	googSliderDiv.append('div') // rail (optional)
+		.attr('class', 'slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all')
+		.attr('style', "margin-top: 3px;");
+		//.attr('style', "position:absolute;width:100%;top:9px;border:1px inset white; overflow:hidden;height:0");
 	var thumbDiv = googSliderDiv.append('div')
-		.attr('class', 'goog-slider-thumb');
+		.attr('class', 'goog-slider-thumb ui-slider-handle ui-state-default ui-corner-all');
 
-	/*
-	widgetGroup
-	//write a label in front of the input if there is one
-				.append($("<span role='label' />")
-					.html(this.label ? this.label : "")
-				)
-				.append("&nbsp;&nbsp;&nbsp;")
-	//prepend a readout so user setting for value is visible
-				.append(readOut)
-	//prepend the minimum value for the slider in the display
-				.append($("<span class='range'/>")
-					.html(" &nbsp;&nbsp;&nbsp;" + this.minVal)
-				)
-				.append($("<div class='goog-slider' style='display:inline-block; min-width: 100px;' />")
-					.append('<div style="position:absolute;width:100%;top:9px;border:1px inset white; overflow:hidden;height:0"></div>')
-					.append('<div class="goog-slider-thumb"></div>')
-				)
-	//prepend the maximum value for the slider in the display
-				.append($("<span class='range'/>")
-					.text(this.maxVal)
-				);
-	*/
+	widgetGroup.append('span')
+		.attr('class', 'range')
+		.html(" &nbsp;&nbsp;&nbsp;" + this.maxVal);
+
 	var sliderEl = googSliderDiv.node();
 
 	this.lastdrawn.value = this.startVal;
 	this.lastdrawn.widgetGroup = widgetGroup;
 
 	var googSlider = new goog.ui.Slider;
-	// googSlider.setMinimum(10);
-	// googSlider.setMaximum(20);
+
+	googSlider.setValue(this.startVal);
+	googSlider.setMinimum(this.minVal);
+	googSlider.setMaximum(this.maxVal);
+	googSlider.setStep(this.stepVal);
 	googSlider.decorate(sliderEl);
 
 	googSlider.addEventListener(goog.ui.Component.EventType.CHANGE, function() {
@@ -226,7 +219,7 @@ pearson.brix.Slider.prototype.draw = function (container)
 		//that.display.setValue(newVal);
 		readOut.text(that.format(newVal));
 		// we want to publish the changedValue event after the value has been changed
-		var oldVal = googSlider.getValue();
+		var oldVal = that.lastdrawn.value;
 		that.lastdrawn.value = newVal;
 		that.eventManager.publish(that.changedValueEventId,
 						{oldValue: oldVal, newValue: newVal});
