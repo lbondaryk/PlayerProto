@@ -18,6 +18,10 @@
 
 goog.provide('pearson.brix.Slider');
 
+goog.require('goog.dom');
+goog.require('goog.ui.Component');
+goog.require('goog.ui.Slider');
+
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.HtmlBric');
 
@@ -170,10 +174,19 @@ pearson.brix.Slider.prototype.draw = function (container)
 	var readOut = $("<span class='readout'>" + this.format(this.startVal) + "</span>");
 
 	// All widgets get a top level "grouping" element which gets a class identifying the widget type.
-	var widgetGroup = $("<span />").addClass("widgetSlider");
-	$(cntrElement).append(widgetGroup);
+	var widgetGroup = container.append("div")
+		.attr("class", "widgetSlider")
+		.attr("id", this.id);
 
-	
+	var googSliderDiv = widgetGroup.append("div")
+		.attr("class", "goog-slider")
+		.attr("style", "width: 200px; height: 20px");
+	googSliderDiv.append('div')
+		.attr('style', "position:absolute;width:100%;top:9px;border:1px inset white; overflow:hidden;height:0");
+	var thumbDiv = googSliderDiv.append('div')
+		.attr('class', 'goog-slider-thumb');
+
+	/*
 	widgetGroup
 	//write a label in front of the input if there is one
 				.append($("<span role='label' />")
@@ -186,36 +199,44 @@ pearson.brix.Slider.prototype.draw = function (container)
 				.append($("<span class='range'/>")
 					.html(" &nbsp;&nbsp;&nbsp;" + this.minVal)
 				)
-				.append($("<span class='slider' style='display:inline-block; min-width: 100px;' />")
-					.slider(
-						{
-							max : this.maxVal,
-							step : this.stepVal,
-							value : this.startVal,
-							min : this.minVal,
-							slide : function(e, ui)
-							{
-								//this publishes the onChange event to the eventManager
-								//passing along the updated value in the numeric field.
-								var newVal = ui.value;
-								//newVal = that.format(newVal);
-								//that.display.setValue(newVal);
-								readOut.text(that.format(newVal))
-								// we want to publish the changedValue event after the value has been changed
-								var oldVal = that.lastdrawn.value;
-								that.lastdrawn.value = newVal;
-								that.eventManager.publish(that.changedValueEventId,
-												{oldValue: oldVal, newValue: newVal});
-							}
-						} )
+				.append($("<div class='goog-slider' style='display:inline-block; min-width: 100px;' />")
+					.append('<div style="position:absolute;width:100%;top:9px;border:1px inset white; overflow:hidden;height:0"></div>')
+					.append('<div class="goog-slider-thumb"></div>')
 				)
 	//prepend the maximum value for the slider in the display
 				.append($("<span class='range'/>")
 					.text(this.maxVal)
 				);
+	*/
+	var sliderEl = googSliderDiv.node();
 
 	this.lastdrawn.value = this.startVal;
-	this.lastdrawn.widgetGroup = widgetGroup.get(0);
+	this.lastdrawn.widgetGroup = widgetGroup;
+
+	var googSlider = new goog.ui.Slider;
+	// googSlider.setMinimum(10);
+	// googSlider.setMaximum(20);
+	googSlider.decorate(sliderEl);
+
+	googSlider.addEventListener(goog.ui.Component.EventType.CHANGE, function() {
+		//this publishes the onChange event to the eventManager
+		//passing along the updated value in the numeric field.
+		var newVal = googSlider.getValue();
+		//newVal = that.format(newVal);
+		//that.display.setValue(newVal);
+		readOut.text(that.format(newVal));
+		// we want to publish the changedValue event after the value has been changed
+		var oldVal = googSlider.getValue();
+		that.lastdrawn.value = newVal;
+		that.eventManager.publish(that.changedValueEventId,
+						{oldValue: oldVal, newValue: newVal});
+	});
+	googSlider.addEventListener(goog.ui.SliderBase.EventType.DRAG_START, function() {
+	
+	});
+	googSlider.addEventListener(goog.ui.SliderBase.EventType.DRAG_END, function() {
+	
+	});
 
 }; // end of Slider.draw()
 

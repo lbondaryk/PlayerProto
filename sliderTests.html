@@ -140,8 +140,8 @@
     <script src="js/eCourse-master.js"></script>    
     <script src="js/d3.v3.min.js"></script>
 
-	<script src="js/brixlib-compiled.js"></script>
-	<!--
+	<!--<script src="js/brixlib-compiled.js"></script>-->
+	
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
@@ -150,6 +150,7 @@
 	<script src="js/answerman.js"></script>
 	<script src="js/submitmanager.js"></script>
 	<script src="js/widget-base.js"></script>
+	<script src="js/widget-prototype-axes.js"></script>
     <script src="js/widget-numeric.js"></script>
     <script src="js/widget-legend.js"></script>
     <script src="js/widget-callouts.js"></script>
@@ -168,7 +169,46 @@
     <script src="js/widget-multiplechoicequestion.js"></script>
     <script src="js/widget-numericquestion.js"></script>
     <script src="js/widget-slider.js"></script>
-	-->
+	
+	<style>
+    .goog-slider-vertical,
+    .goog-slider-horizontal {
+      /*background-color: ThreeDFace;*/
+      position: relative;
+      overflow: hidden;
+    }
+    .goog-slider-thumb {
+      position: absolute;
+      background-color: ThreeDShadow;
+      overflow: hidden;
+    }
+
+    .goog-slider-vertical .goog-slider-thumb {
+      left: 0;
+      height: 20px;
+      width: 100%;
+    }
+
+    .goog-slider-horizontal .goog-slider-thumb {
+      top: 0;
+      width: 20px;
+      height: 60%;
+      background-color: #dae3f1;
+      border:1px solid #c8d5ea;
+      border-radius:5px;
+      box-shadow: 2px 2px 2px #888888;
+    }
+    .goog-slider-disabled {
+      background-color: lightgray
+    }
+    #s-h {
+      margin-bottom: 2em;
+    }
+    strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+  </style>
 
 <script>
 	// local aliases for convenience
