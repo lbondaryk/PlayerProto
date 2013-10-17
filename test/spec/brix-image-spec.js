@@ -159,6 +159,7 @@
         describe('DOM manipulation (create/update elements) tests', function () {
 				var configCntr = {
 					node: null,
+					//the container size gets ignored
 					maxSize: {width: 477, height: 300}
 				};
 				var targetEl = null;
@@ -183,44 +184,54 @@
 						expect(myCImage.captioned_lastdrawn.container.node()).to.deep.equal(cntrArg.node());
 					});
 
-					it('should set the captioned_lastdrawn size property to the scaled image height' +
-						' plus caption + margins (one-line caption = 50 at 16px Helvetica)', function () {
+					it('A square image should stay square plus ' +
+						' caption + margins (one-line caption = 19 at 16px Helvetica)', function () {
 						// get the last element of the container
 						// note: this uses internal knowledge of SVGContainer.append which may change. -mjl
 						var cntrArg = cntr.svgObj.select("g.brix:last-child");
-						var sizeArg = {height: 477 + 30 + 50, width: 477};
-						expect(myCImage.captioned_lastdrawn.size).to.deep.equal(sizeArg);
+						var sizeArg = {height: myCImage.displayWidth_ - 2 * myCImage.marginSize_, width: myCImage.displayWidth_ -  2 * myCImage.marginSize_};
+						expect(myCImage.imageDisplaySize_).to.deep.equal(sizeArg);
+						expect(myCImage.captionSize_.height).to.deep.equal(19 + 2 * myCImage.marginSize_);
 					});
 
 					it('should create a background rect, a foreignObject caption, and an image rect tree', function () {
 						/*
 						g.brixCaptionedImage
-							rect.background
+							g 
+								rect.background
+								g
+									g.brixImage
+										rect.background
+											image
+												desc
+										rect.highlight
 							g
 								foreignobject
-							g
-								g.brixImage
-									rect.background
-										image
-											desc
-									rect.highlight
 						 */
 						var tree =
 							{ name: 'g', class: 'brixCaptionedImage', children:
-								[
-                                    { name: 'rect', class: 'background' },
-                                    { name: 'g', children: [ { name: 'foreignObject' } ] },
-                                    { name: 'g', children: [
-                                    	{ name: 'g', class: 'brixImage', children:
+								[ 
+									{ name: 'g', children:
 										[
-											{ name: 'rect', class: 'background' },
-											{ name: 'image', children:
-                                       		 [ { name: 'desc' } ]
-                                    		},
-                                    		{ name: 'rect', class: 'highlight' }
-                                		],
-										}
-                                    ]}
+                                    		{ name: 'rect', class: 'background' },
+                                    		{ name: 'g', children: 
+                                    		[
+                                    			{ name: 'g', class: 'brixImage', children:
+												[
+													{ name: 'rect', class: 'background' },
+													{ name: 'image', children:
+                                       		 			[ { name: 'desc' } ]
+                                    				},
+                                    				{ name: 'rect', class: 'highlight' }
+                                				],
+												}
+											]
+											}
+                                    	]
+                                    },
+                                    { name: 'g', children:
+										[ {name: 'foreignObject'} ]
+									}
                                    
                                 ],
 							};
