@@ -446,7 +446,7 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 			
 	// TODO: figure out a strategy for highlighting and selecting individual bars -lb 
 
-	bars.attr("transform",
+	bars.transition().attr("transform",
 				  function(d)
 				  {
 				// move each group to the x=0 position horizontally if it's a
@@ -460,7 +460,7 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 				  });
 				  
 	// Update the height and width of the bar rects based on the data points bound above.
-	bars.select("rect")
+	bars.select("rect").transition()
 	//if grouped, each bar is only 1/(# groups) of the available height around 
 	// an ordinal tickmark
 		.attr("height", (this.type == "grouped") ? (bandsize / (this.data.length + 1)) : bandsize)
