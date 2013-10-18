@@ -415,19 +415,19 @@
 			minVal: t3_1Extent[0],
 			maxVal: t3_1Extent[1],
 			stepVal: .01,
-			label: "Test 3 slider 1",
+			label: "Test 3 SliderD3",
 			format: d3.format('5.2f'),
 		}, eventManager);
 
 	t3_1Slide.draw(d3.select("#t3_1slider"));
 
-	var t3_2Slide = new Slider ({
+	var t3_2Slide = new SliderHtml ({
 			id: "t3_2Val",
 			startVal: 7.5,
 			minVal: t3_2Extent[0],
 			maxVal: t3_2Extent[1],
 			stepVal: .01,
-			label: "Test 3 slider 2",
+			label: "Test 3 SliderHtml",
 			format: d3.format('5.2f'),
 		}, eventManager);
 
@@ -466,25 +466,25 @@
 	var t4_1Extent = [0, 10],
 		t4_2Extent = [0, 20];
 		
-	var t4_1Slide = new Slider ({
+	var t4_1Slide = new SliderJQuery ({
 			id: "t4_1Val",
 			startVal: 5.0,
 			minVal: t4_1Extent[0],
 			maxVal: t4_1Extent[1],
 			stepVal: .01,
-			label: "Test 4 slider 1",
+			label: "Test 4 SliderJQuery",
 			format: d3.format('5.2f'),
 		}, eventManager);
 
 	t4_1Slide.draw(d3.select("#t4_1slider"));
 
-	var t4_2Slide = new Slider ({
+	var t4_2Slide = new SliderD3 ({
 			id: "t4_2Val",
 			startVal: 10.0,
 			minVal: t4_2Extent[0],
 			maxVal: t4_2Extent[1],
 			stepVal: .01,
-			label: "Test 4 slider 2",
+			label: "Test 4 SliderD3",
 			format: d3.format('5.2f'),
 		}, eventManager);
 
@@ -536,31 +536,31 @@
 			minVal: t5_1Extent[0],
 			maxVal: t5_1Extent[1],
 			stepVal: 1,
-			label: "Test 5 slider 1",
+			label: "Test 5 Closure",
 			format: d3.format(String.fromCharCode(0x2007/*figure space*/) + '>2f'),
 		}, eventManager);
 
 	t5_1Slide.draw(d3.select("#t5_1slider"));
 
-	var t5_2Slide = new Slider ({
+	var t5_2Slide = new SliderJQuery ({
 			id: "t5_2Val",
 			startVal: 10,
 			minVal: t5_2Extent[0],
 			maxVal: t5_2Extent[1],
 			stepVal: 1,
-			label: "Test 5 slider 2",
+			label: "Test 5 SliderJQuery",
 			format: d3.format(String.fromCharCode(0x2007/*figure space*/) + '>2f'),
 		}, eventManager);
 
 	t5_2Slide.draw(d3.select("#t5_2slider"));
 	
-	var t5_3Slide = new Slider ({
+	var t5_3Slide = new SliderHtml ({
 			id: "t5_3Val",
 			startVal: 1,
 			minVal: t5_3Extent[0],
 			maxVal: t5_3Extent[1],
 			stepVal: 1,
-			label: "Test 5 slider 3",
+			label: "Test 5 SliderHtml",
 			format: d3.format(String.fromCharCode(0x2007/*figure space*/) + '>2f'),
 		}, eventManager);
 		

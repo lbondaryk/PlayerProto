@@ -195,8 +195,6 @@ pearson.brix.SliderHtml.prototype.draw = function (container)
         //this publishes the onChange event to the eventManager
         //passing along the updated value in the numeric field.
         var newVal = htmlSliderInput.property('value');
-        //newVal = that.format(newVal);
-        //that.display.setValue(newVal);
         readOut.text(that.format(newVal));
         // we want to publish the changedValue event after the value has been changed
         var oldVal = that.lastdrawn.value;
