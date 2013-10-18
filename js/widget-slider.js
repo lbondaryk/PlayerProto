@@ -210,6 +210,7 @@ pearson.brix.Slider.prototype.draw = function (container)
 	googSlider.setMaximum(this.maxVal);
 	googSlider.setStep(this.stepVal);
 	googSlider.decorate(sliderEl);
+	googSlider.setMoveToPointEnabled(true);
 
 	googSlider.addEventListener(goog.ui.Component.EventType.CHANGE, function() {
 		//this publishes the onChange event to the eventManager
