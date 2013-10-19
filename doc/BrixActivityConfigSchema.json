@@ -206,6 +206,7 @@
                             {"$ref": "#/definitions/dynamicValue-property-of-ref"},
                             {"$ref": "#/definitions/dynamicValue-ref"},
                             {"$ref": "#/definitions/dynamicValue-array"},
+                            {"$ref": "#/definitions/dynamicValue-array-element"},
                             {"$ref": "#/definitions/dynamicValue-constant"},
                         ]
                 },
@@ -337,7 +338,7 @@
                 {
                     "description": "a runtime value that is an array whose elements are defined by dynamicValues)",
                     "type": "object",
-                    "required": ["type", "value"],
+                    "required": ["type", "elements"],
                     "properties":
                         {
                             "type":
@@ -351,6 +352,36 @@
                                     "description": "array of dynamic values that make up the elements of the resultant array value",
                                     "type": "array",
                                     "items": { "$ref": "#/definitions/dynamicValue" }
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "dynamicValue-array-element":
+                {
+                    "description": "a runtime value that is an element of a dynamic value which is an array)",
+                    "type": "object",
+                    "required": ["type", "array", "index"],
+                    "properties":
+                        {
+                            "type":
+                                {
+                                    "description": "identifies this value as an array element value",
+                                    "type": "string",
+                                    "enum": ["array"]
+                                },
+                            "array":
+                                {
+                                    "description": "a dynamic value which is an array containing the element which is the value of this dynamic value",
+                                    "$ref": "#/definitions/dynamicValue"
+                                },
+                            "index":
+                                {
+                                    "description": "the index of the element of the array which is the value of this dynamic value",
+                                    "type": "integer"
                                 },
                             "description":
                                 {

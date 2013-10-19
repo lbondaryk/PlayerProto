@@ -64,9 +64,12 @@ goog.require('goog.object');
             });
         });
 
-        describe('BricLayer.build with valid empty activity config', function () {
+        describe('BricLayer.build with valid minimal empty activity config', function () {
             var bricLayer = new BricLayer({}, dummyEventMgr);
             var activityConfig = createActivityConfigSkeleton();
+            // remove the optional properties so the config is truly minimal
+            delete activityConfig.containerConfig[0].mortarConfig;
+            delete activityConfig.containerConfig[0].hookupActions;
             var building = bricLayer.build(activityConfig);
 
             it('should return an object w/ an info property which is an object', function () {

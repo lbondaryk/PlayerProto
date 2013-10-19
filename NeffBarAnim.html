@@ -60,8 +60,9 @@
 	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/brixlib-compiled.js"></script>
 	<!--
+	<script src="js/brixlib-compiled.js"></script>
+	-->
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
@@ -95,7 +96,6 @@
     <script src="js/widget-slider.js"></script>
     <script src="js/mortar-hilite.js"></script>
 	<script src="js/briclayer.js"></script>
-	-->
 
 <script>
 	// Create an object that will contain the objects needed for the activities
@@ -184,7 +184,6 @@
                                                         "type": "array",
                                                         "elements":
                                                         [
-                                                            { "type": "constant", "value": [] },
                                                             { "type": "ref", "domain": "data", "refId": "growthWomen" }
                                                         ]
                                                     }
@@ -260,7 +259,6 @@
                                                         "type": "array",
                                                         "elements":
                                                         [
-                                                            { "type": "constant", "value": [] },
                                                             { "type": "ref", "domain": "data", "refId": "shrinkWomen" }
                                                         ]
                                                     }
@@ -272,7 +270,7 @@
 									"bricType": "SvgContainer",
 									"config":
 										{
-											//"node": d3.select("#imgReactor"),
+											//"node": d3.select("#graph0"),
 											"maxSize": {"height": 300, "width": 700},
 										},
 									"configFixup":
@@ -353,7 +351,7 @@
 											"maxVal": 2050,
 											"stepVal": 5,
 											"label": "Year",
-											"format": '5.0f',
+											"format": "5.0f",
 										},
 								}
 							],
@@ -383,7 +381,7 @@
 										{
 											"id": "ratioOut",
 											// "node": d3.select("#depRatio"),
-											"startVal": d3.format(",.2f")(depRat(histMen[0])),
+											"startVal": "foo", // d3.format(",.2f")(depRat(histMen[0])),
 											"size": 5,
 											"label": "Dependency Ratio"
 										},
@@ -397,7 +395,23 @@
 														"type": "d3select",
 														"selector": "#depRatio"
 													}
-                                            }
+											},
+                                            {
+                                                "type": "set-property",
+                                                "name": "startVal",
+												"value":
+													{
+														"type": "array-element",
+														"array":
+															{
+																"type": "ref",
+																"domain": "data",
+																"refId": "mensDepRatios"
+															},
+														"index": 0
+													}
+											},
+
                                         ]
 								}
 							],
@@ -418,7 +432,7 @@
 									"config":
 										{
 											"id": "pyramid3-left",
-											"Data": [[], histMen[0]],
+											//"Data": [[], histMen[0]],
 											"xAxisFormat":
 												{ 
 													"type": "linear", 
@@ -434,6 +448,32 @@
 													"label": "Age ranges"
 												},
 										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "Data",
+                                                "value":
+                                                    {
+                                                        "type": "array",
+                                                        "elements":
+                                                        [
+                                                            { "type": "constant", "value": [] },
+															{
+																"type": "array-element",
+																"array":
+																	{
+																		"type": "ref",
+																		"domain": "data",
+																		"refId": "histMen"
+																	},
+																"index": 0
+															}
+                                                        ]
+                                                    }
+											},
+
+                                        ]
 								},
 								{
 									"bricId": "bar6",
@@ -441,7 +481,7 @@
 									"config":
 										{
 											"id": "pyramid3-right",
-											"Data": [histWomen[0]],
+											//"Data": [histWomen[0]],
 											"xAxisFormat":
 												{ 
 													"type": "linear", 
@@ -455,13 +495,38 @@
 													"orientation": "left",
 												},
 										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "Data",
+                                                "value":
+                                                    {
+                                                        "type": "array",
+                                                        "elements":
+                                                        [
+															{
+																"type": "array-element",
+																"array":
+																	{
+																		"type": "ref",
+																		"domain": "data",
+																		"refId": "histWomen"
+																	},
+																"index": 0
+															}
+                                                        ]
+                                                    }
+											},
+
+                                        ]
 								},
 								{
 									"bricId": "cntr2",
 									"bricType": "SvgContainer",
 									"config":
 										{
-											//"node": d3.select("#imgReactor"),
+											//"node": d3.select("#graph1"),
 											"maxSize": {"height": 500, "width": 700},
 										},
 									"configFixup":
@@ -482,7 +547,7 @@
 							[
 								// We will need mortar to update the 2 barcharts as the slider changes
 								// We will use a simple data swap mortar to be created later.
-							]
+							],
 						"hookupActions":
 							[
 								{
@@ -556,6 +621,30 @@
                             {y: "61-70", x: 8.5},
                             {y: "71-80", x: 9}
                         ],
+					"mensDepRatios":
+						[
+							"0.43", //1950
+							"0.49", //1955
+							"0.53", //1960
+							"0.52", //1965
+							"0.48", //1970
+							"0.41", //1975
+							"0.36", //1980
+							"0.35", //1985
+							"0.36", //1990
+							"0.37", //1995
+							"0.37", //2000
+							"0.36", //2005
+							"0.35", //2010
+							"0.34", //2015
+							"0.34", //2020
+							"0.34", //2025
+							"0.35", //2030
+							"0.37", //2035
+							"0.38", //2040
+							"0.38", //2045
+							"0.38"  //2050
+						],
                     "histMen":
                         [
                             [
@@ -1539,6 +1628,68 @@
 
 	a.building = a.bricLayer.build(a.config);
 
+ 
+
+
+
+	a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('Slider', 'value-changed', 'sldr-yr'), moveInTime);
+
+	function moveInTime(eventDetails)
+	{
+		var selYr = eventDetails.newValue;
+		var baseYr = 1950;
+		var sliderStep = 5;
+		var newDataIndex = (selYr - baseYr) / sliderStep;
+
+		a.building.brix["bar5"].data = [[], a.building.data['histMen'][newDataIndex]];
+		a.building.brix["bar5"].redraw();
+
+		a.building.brix["bar6"].data = [a.building.data['histWomen'][newDataIndex]];
+		a.building.brix["bar6"].redraw();
+
+		//a.building.brix["ratioReadout"].setValue(d3.format(",.2f")(depRat(a.building.data['histMen'][newDataIndex])));
+
+		// This is how this will work, since we won't be able to create the function to calc these values on the fly
+		//a.building.brix["ratioReadout"].setValue(a.building.data['mensDepRatios'][newDataIndex]);
+
+		// My new function adds in the female population, which seems to make sense to me. -mjl
+		a.building.brix["ratioReadout"].setValue(d3.format(",.2f")(popDepRatio(newDataIndex)));
+	}
+
+	function depRat(data)
+	{
+		var nonWork = 0, work = 0;
+		for (i=0; i<20; i++)
+		{
+			
+			if (i<3 || i > 14) 
+				{nonWork = nonWork + data[i].x;}
+			else {work = work + data[i].x;}
+		}
+		return nonWork/work;
+	}
+
+	// calc ratio of non-working population to working population for the US
+	function popDepRatio(dataIndex)
+	{
+		var nonWorkPop = 0;
+		var workPop = 0;
+
+		// non working pop is ages 0 - 14 (1st 3 elements) and 80+ (last 5 elements)
+		var men = a.building.data['histMen'][dataIndex];
+		var women = a.building.data['histWomen'][dataIndex];
+		for (i = 0; i < 20; ++i)
+		{
+			if (i < 3 || i > 14)
+				nonWorkPop += men[i].x + women[i].x;
+			else
+				workPop += men[i].x + women[i].x;
+		}
+
+		return nonWorkPop / workPop;
+	}
+
+	/*
 // local aliases for convenience
 	var Size = pearson.utils.Size;
 	var SVGContainer = pearson.brix.SVGContainer;
@@ -1713,6 +1864,7 @@ var shrinkWomen = a.config.data.shrinkWomen;
 
 		depRatRead.setValue(d3.format(",.2f")(depRat(histMen[newval])));
 	}
+	*/
 	
 </script>
 </body>
