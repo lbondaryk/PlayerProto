@@ -659,17 +659,20 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 	// Draw the caption
 	var captionGroup = widgetGroup.append("g");
 
-	captionGroup
-		.append("foreignObject")
+	var captionBody = captionGroup.append("foreignObject")
 			.attr("width", this.captionSize_.width)
 			.attr("height", this.captionSize_.height)
 			.append("xhtml:body")
 			// this interior body shouldn't inherit margins from page body
-				.style("margin", "0px")
-				.append("div")
-					.attr("class", "brixImageCaption")
-					.html(this.caption);
+				.style("margin", "0px");
 
+				 
+	var captionDiv = captionBody.selectAll('brixImageCaption').data([this.caption]);
+
+	captionDiv.enter()
+				.append("div")
+				.attr("class", "brixImageCaption")
+				.html(function (d) { return d;});
 
 
 	// position the caption
@@ -703,11 +706,18 @@ pearson.brix.CaptionedImage.prototype.redraw = function ()
 	//       by doing nothing? -mjl
 	goog.base(this, 'redraw');
 
+	// HACKALERT: Swapping the style around only serves to force a redisplay of 
+	// the caption, which otherwise doesn't refresh in many browsers
+	// 
+	var captionGroup = this.captioned_lastdrawn.widgetGroup;
+	
+	(captionGroup.style('display') == 'block') ? captionGroup.style('display','inline') : captionGroup.style('display','block');
+
 	// NOTE: for some reason foreignObject in a d3 selector doesn't work
 	//       but body does.
-	// TODO: updating the html isn't causing it to be re-rendered (at least in Chrome)
-	var captionDiv = this.captioned_lastdrawn.widgetGroup.select("g body div")
-		.html(this.caption);
+	var captionDiv = this.captioned_lastdrawn.widgetGroup.select("g body div");
+	captionDiv.html(this.caption);
+
 };
 
 /* **************************************************************************
