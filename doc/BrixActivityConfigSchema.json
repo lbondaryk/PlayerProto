@@ -5,149 +5,168 @@
     "title": "Pearson Brix Activity Configuration",
     "description": "A complete configuration used to create all the related brix and mortar needed to perform an activity.",
     "type": "object"
-	"required": ["sequenceNodeKey", "containerConfig"],
-	"properties":
-		{
-			"sequenceNodeKey":
-				{
-					"description": "The sequence node key created from the sequence node id by the IPS for the PAF sequence node that this config has been extracted from. This should not exist in the config stored in PAF.",
-					"type": "string"
-				},
-			"containerConfig":
-				{
-					"description": "Array of configuration objects each of which defines all the brix and mortar that live together in a single element (or iframe), for all of the targets on a page.",
-					"type": "array",
-					"minItems": 1,
-					"items": { "$ref": "#/definitions/containerConfig" }
-				}
-		},
-	"definitions":
-		{
-			"containerConfig":
-				{
-					"description": "defines all the brix and mortar that live together in a single element (or iframe).",
-					"type": "object",
-					"required": ["containerId", "brixConfig"],
-					"properties":
-						{
-							"containerId":
-								{
-									"description": "Unique ID of page container, probably the ID on the div or iframe or object element that is the target of this configuration",
-									"type": "string",
-									"minLength": 1
-								},
-							"brixConfig":
-								{
-									"description": "Array of configuration for all of the brix in this container.",
-									"type": "array",
-									"items": { "$ref": "#/definitions/brixConfig" }
-								},
-							"mortarConfig":
-								{
-									"description": "List of configuration needed to construct all of the mortar in this container.",
-									"type": "array",
-									"items": { "$ref": "#/definitions/mortarConfig" }
-								},
-							"hookupActions":
-								{
-									"description": "List of the actions needed to render the brix in this container and get it 'running'.",
-									"type": "array",
-									"items": { "$ref": "#/definitions/action" }
-								},
-						}
-				},
-			"brixConfig":
-				{
-					"description": "configuration of a particular bric.",
-					"type": "object",
-					"required": ["bricId", "bricType", "config"],
-					"properties":
-						{
-							"bricId":
-								{
-									"description": "A string which uniquely identifies this bric out of the set of all brix in the activity",
-									"type": "string",
-									"minLength": 1
-								},
-							"bricType":
-								{
-									"description": "BricTypes enum name used to register the bric with the BricWorks",
+    "required": ["sequenceNodeKey", "containerConfig"],
+    "properties":
+        {
+            "sequenceNodeKey":
+                {
+                    "description": "The sequence node key created from the sequence node id by the IPS for the PAF sequence node that this config has been extracted from. This should not exist in the config stored in PAF.",
+                    "type": "string"
+                },
+            "containerConfig":
+                {
+                    "description": "Array of configuration objects each of which defines all the brix and mortar that live together in a single element (or iframe), for all of the targets on a page.",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "$ref": "#/definitions/containerConfig" }
+                },
+                "description":
+                    {
+                        "description": "A descriptive comment about this activity",
+                        "type": "string"
+                    }
+        },
+    "definitions":
+        {
+            "containerConfig":
+                {
+                    "description": "defines all the brix and mortar that live together in a single element (or iframe).",
+                    "type": "object",
+                    "required": ["containerId", "brixConfig"],
+                    "properties":
+                        {
+                            "containerId":
+                                {
+                                    "description": "Unique ID of page container, probably the ID on the div or iframe or object element that is the target of this configuration",
                                     "type": "string",
-									"enum":
-										[
-											"SvgContainer",
-											"BarChart",
-											"Button",
-											"Callouts",
-											"CaptionedImage",
-											"Carousel",
-											"CheckGroup",
-											"Image",
-											"ImageViewer",
-											"LabelGroup",
-											"Legend",
-											"LineGraph",
-											"MarkerGroup",
-											"MultipleChoiceQuestion",
-											"MultiSelectQuestion",
-											"NumericInput",
-											"NumericQuestion",
-											"PieChart",
-											"RadioGroup",
-											"Readout",
-											"SelectGroup",
-											"Sketch",
-											"Slider"
-										],
-								},
-							"config":
-								{
-									"description": "config for the bric type specified",
-									"type": "object",
-								},
-							"configFixup":
-								{
-									"description": "array of fixups that need to be made to the config before using it to construct the bric",
-									"type": "array",
-									"items": { "$ref": "#/definitions/configFixup" }
-								},
-							"state":
-								{
-									"description": "State information specific to this bric that it can use to restore itself. Will probably require a method on all brix to send this info to. Can state be restored before the bric is drawn or only after?",
-									"type": "object",
-								},
-							"answerKey":
-								{
-									"description": "The answer key defining how to determine if a student's answer is correct, and the various responses that may be returned",
-									"type": "object",
-								},
-						}
-				},
-			"mortarConfig":
-				{
-					"description": "",
-					"type": "object",
-					"required": [],
-					"properties":
-						{
-						}
-				},
-			"configFixup":
-				{
-					"description": "runtime action to be applied to the config for the associated bric before constructing that bric",
-					"type": "object",
+                                    "minLength": 1
+                                },
+                            "brixConfig":
+                                {
+                                    "description": "Array of configuration for all of the brix in this container.",
+                                    "type": "array",
+                                    "items": { "$ref": "#/definitions/brixConfig" }
+                                },
+                            "mortarConfig":
+                                {
+                                    "description": "List of configuration needed to construct all of the mortar in this container.",
+                                    "type": "array",
+                                    "items": { "$ref": "#/definitions/mortarConfig" }
+                                },
+                            "hookupActions":
+                                {
+                                    "description": "List of the actions needed to render the brix in this container and get it 'running'.",
+                                    "type": "array",
+                                    "items": { "$ref": "#/definitions/action" }
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about the contents of this container",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "brixConfig":
+                {
+                    "description": "configuration of a particular bric.",
+                    "type": "object",
+                    "required": ["bricId", "bricType", "config"],
+                    "properties":
+                        {
+                            "bricId":
+                                {
+                                    "description": "A string which uniquely identifies this bric out of the set of all brix in the activity",
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                            "bricType":
+                                {
+                                    "$ref": "#/definitions/bricType"
+                                },
+                            "config":
+                                {
+                                    "description": "config for the bric type specified",
+                                    "type": "object",
+                                },
+                            "configFixup":
+                                {
+                                    "description": "array of fixups that need to be made to the config before using it to construct the bric",
+                                    "type": "array",
+                                    "items": { "$ref": "#/definitions/configFixup" }
+                                },
+                            "state":
+                                {
+                                    "description": "State information specific to this bric that it can use to restore itself. Will probably require a method on all brix to send this info to. Can state be restored before the bric is drawn or only after?",
+                                    "type": "object",
+                                },
+                            "answerKey":
+                                {
+                                    "description": "The answer key defining how to determine if a student's answer is correct, and the various responses that may be returned",
+                                    "type": "object",
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about the brix defined here",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "mortarConfig":
+                {
+                    "description": "configuration of a particular mortar.",
+                    "type": "object",
+                    "required": ["mortarId", "mortarType", "config"],
+                    "properties":
+                        {
+                            "mortarId":
+                                {
+                                    "description": "A string which uniquely identifies this mortar out of the set of all mortars in the activity",
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                            "mortarType":
+                                {
+                                    "description": "MortarTypes enum name used to register the mortar with the BricWorks",
+                                    "type": "string",
+                                    "enum":
+                                        [
+                                            "Hilite"
+                                        ],
+                                },
+                            "config":
+                                {
+                                    "description": "config for the mortar type specified",
+                                    "type": "object",
+                                },
+                            "configFixup":
+                                {
+                                    "description": "array of fixups that need to be made to the config before using it to construct the mortar",
+                                    "type": "array",
+                                    "items": { "$ref": "#/definitions/configFixup" }
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about the mortar defined here",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "configFixup":
+                {
+                    "description": "runtime action to be applied to the config for the associated bric before constructing that bric",
+                    "type": "object",
                     "oneOf":
                         [
                             {"$ref": "#/definitions/configFixup-set-property"},
                         ]
-				},
-			"configFixup-set-property":
-				{
-					"description": "fixup a config by defining a property on that config",
-					"type": "object",
-					"required": ["type", "name", "value"],
-					"properties":
-						{
+                },
+            "configFixup-set-property":
+                {
+                    "description": "fixup a config by defining a property on that config",
+                    "type": "object",
+                    "required": ["type", "name", "value"],
+                    "properties":
+                        {
                             "type":
                                 {
                                     "description": "identifies this fixup as setting a property on the config",
@@ -164,8 +183,13 @@
                                     "description": "a dynamicValue object which describes how to construct the value of the property to be set on the config",
                                     "$ref": "#/definitions/dynamicValue",
                                 },
-						}
-				},
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this config fixup",
+                                    "type": "string"
+                                }
+                        }
+                },
             "dynamicValue":
                 {
                     "description": "describes how to construct a value at runtime which may reference previously constructed objects",
@@ -173,16 +197,19 @@
                     "oneOf":
                         [
                             {"$ref": "#/definitions/dynamicValue-d3select"},
+                            {"$ref": "#/definitions/dynamicValue-brix-topic"},
                             {"$ref": "#/definitions/dynamicValue-property-of-ref"},
+                            {"$ref": "#/definitions/dynamicValue-ref"},
+                            {"$ref": "#/definitions/dynamicValue-constant"},
                         ]
                 },
-			"dynamicValue-d3select":
-				{
-					"description": "a runtime value that is a d3 selection w/ a particular selector",
-					"type": "object",
-					"required": ["type", "selector"],
-					"properties":
-						{
+            "dynamicValue-d3select":
+                {
+                    "description": "a runtime value that is a d3 selection w/ a particular selector",
+                    "type": "object",
+                    "required": ["type", "selector"],
+                    "properties":
+                        {
                             "type":
                                 {
                                     "description": "identifies this value as a d3 selection",
@@ -194,15 +221,54 @@
                                     "description": "the selector argument to d3.select",
                                     "type": "string"
                                 },
-						}
-				},
-			"dynamicValue-ref":
-				{
-					"description": "a runtime value that is a reference to an existing object (or the value of an existing simple value type)",
-					"type": "object",
-					"required": ["type", "domain", "refId"],
-					"properties":
-						{
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "dynamicValue-brix-topic":
+                {
+                    "description": "get the topic that will be used by a particular bric instance to publish a named event, this is not a runtime value",
+                    "type": "object",
+                    "required": ["type", "bricType", "instanceId", "eventName"],
+                    "properties":
+                        {
+                            "type":
+                                {
+                                    "description": "identifies this value as a d3 selection",
+                                    "type": "string",
+                                    "enum": ["brix-topic"]
+                                },
+                            "bricType":
+                                {
+                                    "$ref": "#/definitions/bricType"
+                                },
+                            "instanceId":
+                                {
+                                    "description": "the id that was or will be given to the bric instance in its config",
+                                    "type": "string"
+                                },
+                            "eventName":
+                                {
+                                    "description": "the name of the event that is published by the specified bric type",
+                                    "type": "string"
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "dynamicValue-ref":
+                {
+                    "description": "a runtime value that is a reference to an existing object (or the value of an existing simple value type)",
+                    "type": "object",
+                    "required": ["type", "domain", "refId"],
+                    "properties":
+                        {
                             "type":
                                 {
                                     "description": "identifies this value as a reference to an existing object",
@@ -218,16 +284,21 @@
                                 {
                                     "description": "the id that identifies an object/value in the specified domain.",
                                     "type": "string"
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
                                 }
-						}
-				},
-			"dynamicValue-property-of-ref":
-				{
-					"description": "a runtime value that is the value of a property (accessed via accessor method) of an object",
-					"type": "object",
-					"required": ["type", "domain", "refId", "accessor"],
-					"properties":
-						{
+                        }
+                },
+            "dynamicValue-property-of-ref":
+                {
+                    "description": "a runtime value that is the value of a property (accessed via accessor method) of an object",
+                    "type": "object",
+                    "required": ["type", "domain", "refId", "accessor"],
+                    "properties":
+                        {
                             "type":
                                 {
                                     "description": "identifies this value as the property of a reference object",
@@ -249,15 +320,20 @@
                                     "description": "the name of the accessor method of the object that returns the property value",
                                     "type": "string"
                                 },
-						}
-				},
-			"dynamicValue-constant":
-				{
-					"description": "a runtime value that is the specified constant value (this allows constants to be specified anywhere you can specify a dynamicValue)",
-					"type": "object",
-					"required": ["type", "value"],
-					"properties":
-						{
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "dynamicValue-constant":
+                {
+                    "description": "a runtime value that is the specified constant value (this allows constants to be specified anywhere you can specify a dynamicValue)",
+                    "type": "object",
+                    "required": ["type", "value"],
+                    "properties":
+                        {
                             "type":
                                 {
                                     "description": "identifies this value as a constant value (not actually dynamic)",
@@ -268,24 +344,29 @@
                                 {
                                     "description": "the constant value which can be any JSON value"
                                 },
-						}
-				},
-			"action":
-				{
-					"description": "An action to be exectuted such as calling a function or object method",
-					"type": "object",
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "action":
+                {
+                    "description": "An action to be exectuted such as calling a function or object method",
+                    "type": "object",
                     "oneOf":
                         [
                             {"$ref": "#/definitions/action-method-call"},
                         ]
-				},
-			"action-method-call":
-				{
-					"description": "call a method of a specific object",
-					"type": "object",
-					"required": ["type", "instance", "methodName"],
-					"properties":
-						{
+                },
+            "action-method-call":
+                {
+                    "description": "call a method of a specific object",
+                    "type": "object",
+                    "required": ["type", "instance", "methodName"],
+                    "properties":
+                        {
                             "type":
                                 {
                                     "description": "identifies this action as calling a method of an object",
@@ -306,41 +387,72 @@
                                 {
                                     "description": "a dynamicValue object which describes how to construct the value of the property to be set on the config",
                                     "type": "array",
-									"items": { "$ref": "#/definitions/dynamicValue" }
+                                    "items": { "$ref": "#/definitions/dynamicValue" }
                                 },
                             "description":
                                 {
                                     "description": "A descriptive comment about this action",
                                     "type": "string"
                                 }
-						}
-				},
-			"foo":
-				{
-					"description": "",
-					"type": "object",
-					"required": [],
-					"properties":
-						{
-						}
-				},
-			"foo":
-				{
-					"description": "",
-					"type": "object",
-					"required": [],
-					"properties":
-						{
-						}
-				},
-			"foo":
-				{
-					"description": "",
-					"type": "object",
-					"required": [],
-					"properties":
-						{
-						}
-				},
-		}
+                        }
+                },
+            "bricType":
+                {
+                    "description": "BricTypes enum name used to register the bric with the BricWorks",
+                    "type": "string",
+                    "enum":
+                        [
+                            "SvgContainer",
+                            "BarChart",
+                            "Button",
+                            "Callouts",
+                            "CaptionedImage",
+                            "Carousel",
+                            "CheckGroup",
+                            "Image",
+                            "ImageViewer",
+                            "LabelGroup",
+                            "Legend",
+                            "LineGraph",
+                            "MarkerGroup",
+                            "MultipleChoiceQuestion",
+                            "MultiSelectQuestion",
+                            "NumericInput",
+                            "NumericQuestion",
+                            "PieChart",
+                            "RadioGroup",
+                            "Readout",
+                            "SelectGroup",
+                            "Sketch",
+                            "Slider"
+                        ],
+                },
+            "foo":
+                {
+                    "description": "",
+                    "type": "object",
+                    "required": [],
+                    "properties":
+                        {
+                        }
+                },
+            "foo":
+                {
+                    "description": "",
+                    "type": "object",
+                    "required": [],
+                    "properties":
+                        {
+                        }
+                },
+            "foo":
+                {
+                    "description": "",
+                    "type": "object",
+                    "required": [],
+                    "properties":
+                        {
+                        }
+                },
+        }
 }

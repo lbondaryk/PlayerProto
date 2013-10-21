@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="lib/mocha/mocha.css">
 </head>
 <body>
+    <div>If the test fails, try compiling the lib folder with ./build.sh =)</div>
     <div id="mocha"></div>
     <script src="lib/mocha/mocha.js"></script>
     <script>mocha.setup('bdd')</script>
@@ -15,6 +16,8 @@
 	<!-- function created by David Bau to allow seeding Math.random -->
 	<!-- downloaded from github https://github.com/davidbau/seedrandom -->
 	<script src="lib/seedrandom.js"></script>
+    <!-- mocking framework -->
+    <script src="lib/sinon-1.7.3.js"></script>
 
     <!-- include source files here... -->
     <script src="../js/d3.v3.min.js"></script>
@@ -32,6 +35,7 @@
 	<script src="../js/answerman.js"></script>
 	<script src="../js/submitmanager.js"></script>
 	<script src="../js/widget-base.js"></script>
+    <script src="../js/mortar-base.js"></script>
 	<script src="../js/bricworks.js"></script>
     <script src="../js/widget-numeric.js"></script>
     <script src="../js/widget-legend.js"></script>
@@ -54,7 +58,12 @@
     <script src="../js/widget-multiselectquestion.js"></script>
     <script src="../js/widget-numericquestion.js"></script>
     <script src="../js/widget-slider.js"></script>
+    <script src="../js/mortar-hilite.js"></script>
 	<script src="../js/briclayer.js"></script>
+
+    <script src="../js/domhelper.js"></script>
+    <script src="../js/ipsproxy.js"></script>
+    <script src="../js/ipc.js"></script>
 
 	<!-- local helper functions -->
     <script src="helper.js"></script>
@@ -75,6 +84,12 @@
     <script src="spec/widget-sketch-spec.js"></script>
     <script src="spec/submitmanager-spec.js"></script>
 	<script src="spec/widget-barchart-spec.js"></script>
+    <script src="spec/mortar-hilite-spec.js"></script>
+
+    <script src="testmessages-ips.js"></script>
+    <script src="spec/domhelper-spec.js"></script>
+    <script src="spec/ipsproxy-spec.js"></script>
+    <script src="spec/ipc-spec.js"></script>
     <script>mocha.run()</script>
 </body>
 </html>
