@@ -181,6 +181,7 @@ pearson.brix.SliderHtml.prototype.draw = function (container)
         .html(" &nbsp;&nbsp;&nbsp;" + this.minVal);
 
     var htmlSliderInput = widgetGroup.append("input")
+        .attr("class", "slider")
         .attr("type", "range")
         .attr("min", this.minVal)
         .attr("max", this.maxVal)
@@ -246,11 +247,11 @@ pearson.brix.SliderHtml.prototype.setValue = function (newValue)
     if (newValue === oldValue)
         return oldValue;
 
-    var jSlider = $("span.slider", this.lastdrawn.widgetGroup);
+    var slider = this.lastdrawn.widgetGroup.select('.slider');
     var jReadout = $("span.readout", this.lastdrawn.widgetGroup);
 
     this.lastdrawn.value = newValue;
-    jSlider.slider("value", newValue);
+    slider.property("value", newValue);
     jReadout.text(this.format(newValue));
 
     return oldValue;

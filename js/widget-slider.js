@@ -138,7 +138,8 @@ pearson.brix.Slider = function (config, eventManager)
 		{
 			/** @type {d3.selection} */		container: null,
 			/** @type {Element} */			widgetGroup: null,		
-			/** @type {?number} */			value: null,		
+			/** @type {?number} */			value: null,
+			/** @type {goog.ui.Slider} */   sliderObj: null
 		};
 }; // end of slider constructor
 goog.inherits(pearson.brix.Slider, pearson.brix.HtmlBric);
@@ -162,7 +163,7 @@ pearson.brix.Slider.autoIdPrefix = "sldr_auto_";
  *
  ****************************************************************************/
 pearson.brix.Slider.prototype.draw = function (container)
-{	
+{
 	this.lastdrawn.container = container;
 
 	// Provide a reference to this Slider instance for use in any function expressions defined here.
@@ -231,6 +232,7 @@ pearson.brix.Slider.prototype.draw = function (container)
 	googSlider.addEventListener(goog.ui.SliderBase.EventType.DRAG_END, function() {
 	
 	});
+	this.lastdrawn.sliderObj = googSlider;
 
 }; // end of Slider.draw()
 
@@ -272,11 +274,10 @@ pearson.brix.Slider.prototype.setValue = function (newValue)
 	if (newValue === oldValue)
 		return oldValue;
 
-	var jSlider = $("span.slider", this.lastdrawn.widgetGroup);
 	var jReadout = $("span.readout", this.lastdrawn.widgetGroup);
 
 	this.lastdrawn.value = newValue;
-	jSlider.slider("value", newValue);
+	this.lastdrawn.sliderObj.setValue(newValue);
 	jReadout.text(this.format(newValue));
 
 	return oldValue;

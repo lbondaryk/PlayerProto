@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+            		<p>Mathematically, the percentage of each enantiomer can be expressed as follows:</p>
+					<img src="img/Kequation1.png" />
+					<p>and</p>
+					<img src="img/Kequation2.png"/>
+					<p>For both equations, the numerator of the term in parentheses relates to the optically inactive 		portion of the sample. Halving this value provides the percentage of the enantiomer present in lesser amount. This same value needs to be added to the %ee to provide the percentage of the dominant enantiomer.
+					</p>
+					<p>
+					The % ee can also be calculated if the composition of the mixture is known. The enantiomer present in smaller number is subtracted from the dominant enantiomer. Consider a sample that contains
+					<div id="Dextro"></div><div id="Levo"></div>
+                	
+                 	The % ee is given by the absolute difference between the components, or 
+                 	 <span id="ee" class="math"></span>.</p>
+					</div>
+					<div class="lc_ec_trailing">
+            			<div id="roto">
+                		<p> <span id="alpha"></span> </p>
+                		</div>
+						<div id="barChart0"></div>
+						<div id="barChart"></div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+
+    <script src="js/jquery-latest.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<!-- script src="js/jquery.touchSwipe.min.js"></script -->
+	<script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>    
+	<script src="js/eCourse-master.js"></script>    
+	<script src="js/d3.v3.min.js"></script>
+
+	<!--<script src="js/brixlib-compiled.js"></script>-->
+	
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
+	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+	<script src="js/widget-base.js"></script>
+	<script src="js/widget-prototype-axes.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+
+    <script src="js/d3.slider.js"></script>
+    <script src="js/widget-slider_d3.js"></script>
+    <script src="js/widget-slider_jquery.js"></script>
+    <script src="js/widget-slider_html.js"></script>
+	
+	<style>
+    .goog-slider-vertical,
+    .goog-slider-horizontal {
+      /*background-color: ThreeDFace;*/
+      position: relative;
+      overflow: hidden;
+    }
+    .goog-slider-thumb {
+      position: absolute;
+      background-color: ThreeDShadow;
+      overflow: hidden;
+    }
+
+    .goog-slider-vertical .goog-slider-thumb {
+      left: 0;
+      height: 20px;
+      width: 100%;
+    }
+
+    .goog-slider-horizontal .goog-slider-thumb {
+      top: 0;
+      width: 20px;
+      height: 80%;
+      background-color: #dae3f1;
+      border:1px solid #c8d5ea;
+      border-radius:5px;
+      box-shadow: 2px 2px 2px #888888;
+    }
+    .goog-slider-disabled {
+      background-color: lightgray
+    }
+    #s-h {
+      margin-bottom: 2em;
+    }
+    strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+	/** D3 Slider **/
+    .d3-slider {
+    	display: inline-block;
+	    position: relative;
+	    font-family: Verdana,Arial,sans-serif;
+	    font-size: 1.1em;
+	    border: 1px solid #aaaaaa;
+	    z-index: 2;
+	}
+
+	.d3-slider-horizontal {
+	    height: .8em;
+	    width: 150px;
+	}  
+
+	.d3-slider-vertical {
+	    width: .8em;
+	    height: 100px;
+	}      
+
+	.d3-slider-handle {
+	    position: absolute;
+	    width: 1.2em;
+	    height: 1.2em;
+	    border: 1px solid #d3d3d3;
+	    border-radius: 4px;
+	    background: #ee3;
+	    background: linear-gradient(to bottom, #eee 0%, #ddd 100%);
+	    z-index: 3;
+	}
+
+	.d3-slider-handle:hover {
+	    border: 1px solid #999999;
+	}
+
+	.d3-slider-horizontal .d3-slider-handle {
+	    top: -.3em;
+	    margin-left: -.6em;
+	}
+
+	.d3-slider-axis {
+	    position: relative;
+	    z-index: 1;    
+	}
+
+	.d3-slider-axis-bottom {
+	    top: .8em;
+	}
+
+	.d3-slider-axis-right {
+	    left: .8em;
+	}
+
+	.d3-slider-axis path {
+	    stroke-width: 0;
+	    fill: none;
+	}
+
+	.d3-slider-axis line {
+	    fill: none;
+	    stroke: #aaa;
+	    shape-rendering: crispEdges;
+	}
+
+	.d3-slider-axis text {
+	    font-size: 11px;
+	}
+
+	.d3-slider-vertical .d3-slider-handle {
+	    left: -.25em;
+	    margin-left: 0;
+	    margin-bottom: -.6em;      
+	}
+  </style>
+	
+
+	<script>
+	// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+	var Sketch = pearson.brix.Sketch;
+	var Readout = pearson.brix.Readout;
+	var NumericInput = pearson.brix.NumericInput;
+	var Slider = pearson.brix.Slider;
+
+	//the eventManager is an object that is specific to this page.  A new one
+	//is created for every page, and then passed to the widgets in that page
+	//that must talk to it.
+	var eventManager = new EventManager();
+
+	//data to start the graph and the sliders
+	var levoData =   [ { x: 35, y: "Levo" } ];
+	var dextroData = [ { x: 65, y: "Dextro" } ];
+		
+	var inputLevo = new Slider ({
+			id: "levo",
+			startVal: levoData[0].x,
+			minVal: 0,
+			maxVal: 100,
+			stepVal: 1,
+			unit: "%",
+			label: "Levorotary ",
+			format: d3.format('.0f')
+		}, eventManager);
+
+	inputLevo.draw(d3.select("#Levo"));
+
+	
+	var inputDextro = new Slider ({
+			id: "dextro",
+			startVal: dextroData[0].x,
+			minVal: 0,
+			maxVal: 100,
+			stepVal: 1,
+			unit: "%",
+			label: "Dextrorotary ",
+			format: d3.format('.0f')
+		}, eventManager);
+	
+	inputDextro.draw(d3.select("#Dextro"));
+	
+	
+	var cont1 = new SVGContainer({
+			node: d3.select("#barChart"),
+			maxWid: 450,
+			maxHt: 400
+		});
+	var Bars = new BarChart({
+			id: "bc0",
+			Data: [dextroData, levoData], 
+			xAxisFormat: { type: "linear",
+						   ticks: [0,10,20,30,40,50,60,70,80,90,100],
+						   orientation: "bottom",
+						   label: "% enantiomers" },
+			yAxisFormat: { type: "ordinal",
+						   orientation: "left",
+						    },
+		});		
+	//draw the bar chart to not use the whole height so there is room for the marker label
+	cont1.append(Bars, {topPercentOffset: 0.2, leftPercentOffset: 0, heightPercent: 0.8, widthPercent: 1});
+
+	var markerVal = [(levoData[0].x > dextroData[0].x) ? dextroData[0] : levoData[0]];
+
+	var barMarks = new MarkerGroup(
+		{
+		marks: markerVal
+		}, eventManager);
+		
+	// write the markers onto the graph in the local coordinates, inside the 
+	// data area.  These are designed to slop over the top, that's why the
+	// graph is written to the bottom 80% of SVG area
+	Bars.append(barMarks);
+		
+		
+	var diff = inputDextro.startVal-inputLevo.startVal,
+		absDiff = Math.abs(diff);
+	
+	// Create the ee readout widget
+	var eeReadout = new Readout({
+		node: d3.select("#ee"),
+        id: 'eeRead',
+		startVal: absDiff,
+		readOnly: true,
+		size: 4,
+		unit: "%", 
+		label: "ee ="
+	}, eventManager);
+
+
+	var sl1 = new Slider ({
+			id: "slider1",
+			startVal: 80,
+			minVal: 0,
+			maxVal: 360,
+			stepVal: 10,
+			unit: "&deg;",
+			label: "Specific rotation (&alpha;): ",
+			format: d3.format('.0f')
+		}, eventManager);
+		
+	sl1.draw(d3.select("#alpha"));
+
+
+	var pieDish = new SVGContainer(
+		{
+			node: d3.select("#roto"),
+			maxWid: 470,
+			maxHt: 200
+		});
+
+	
+	var anglePie = new PieChart({
+		Data: [{x: d3.format("4.2f")(sl1.startVal * diff/360), y: "Rotation"}],
+		});
+	
+	pieDish.append(anglePie, {topPercentOffset: 0.3, leftPercentOffset: .08, heightPercent: .8, 		
+	widthPercent: 1});
+
+
+	//This is the marker that shows the 0/180 rotation line
+	var angleMark = new MarkerGroup({
+								marks: [{
+									x: 0.5, 
+									label: d3.format("+0r2")(sl1.getValue() * diff/100) + "&deg;"
+									}] 
+									});
+
+	// the marker should really be appended to the pie chart, so it stays on center, but 
+	// for right now that's producing nans so this is a stopgap. -lb 
+	
+	pieDish.append(angleMark, {topPercentOffset: 0.3, leftPercentOffset: 0, heightPercent: 1, 		
+	widthPercent: 0.5});
+
+	// Modify the value of the data for the bar graph when the
+	//numerical input changes.  So, subscribe to the event emitted by inputLevo,
+	//or inputDextro,
+	//and target whatever is identified by the handler in the second argument.
+	//TODO: make these methods of the target widget?
+
+	// Handle changes of the levo and dextro input values
+	eventManager.subscribe(inputLevo.changedValueEventId,
+						   function(ed) { handleInputValueChanged(inputDextro, ed.newValue); });
+	eventManager.subscribe(inputDextro.changedValueEventId,
+						   function(ed) { handleInputValueChanged(inputLevo, ed.newValue); });
+	eventManager.subscribe(sl1.changedValueEventId, function(ed) { handleNumericInputChanged(ed.newValue); });
+	
+
+	/* **************************************************************************
+	* handleInputValueChanged                                              *//**
+	*
+	* handleInputValueChanged is called from the event handler for one of
+	* the input widgets when the user changes its value. It updates the
+	* given matching input widget's value to match the new value and then
+	* updates the bar chart.
+	*
+	* @param {NumericInput} otherInputWidget -This is the other input widget
+	*                                         whose value needs to be updated
+	*                                         to match the user changed widget.
+	* @param {number} newValue - The value of the widget that was changed.
+	*
+	****************************************************************************/
+	function handleInputValueChanged(otherInputWidget, newValue)
+	{
+		otherInputWidget.setValue(100 - newValue);
+		var diff = inputDextro.getValue() - inputLevo.getValue(),
+		    absDiff = Math.abs(diff);
+		eeReadout.setValue(absDiff);
+		//rot.setValue(sl1.getValue() * diff/100);
+		updateBarChart();
+		updatePieChart(diff);
+	}
+	
+	
+	/* **************************************************************************
+	 * handleNumericInputChanged                                            *//**
+	 *
+	* handleInputValueChanged is called from the event handler for one of
+	* the input widgets when the user changes its value. It updates the
+	* given matching input widget's value to match the new value and then
+	* updates the bar chart.
+	*
+	* @param {NumericInput} Otherwidgetarray -These are the other widgets
+	*                                         which need to be updated
+	*                                         to match the user changed widget.
+	* @param {number} newValue - The value of the widget that was changed.
+	*
+	****************************************************************************/
+	function handleNumericInputChanged(WidgetList, newValue)
+	{
+		var diff = inputDextro.getValue() - inputLevo.getValue();
+		//var angle = newValue * diff/10;
+		//rot.setValue(newValue * diff/100);
+		updatePieChart(diff);
+	}
+
+	/* **************************************************************************
+	 * updateBarChart                                                       *//**
+	 *
+	 * updateBarChart updates the bar chart widget to match the current values
+	 * of the levo and dextro input widgets.
+	 *
+	 ****************************************************************************/
+	function updateBarChart()
+	{
+		console.log("TODO: fired updateBarChart log");
+		levoData[0].x = inputLevo.getValue();
+		dextroData[0].x = inputDextro.getValue();
+		
+		Bars.Data = [dextroData,levoData]
+		
+		var newMark = [(levoData[0].x > dextroData[0].x) ? dextroData[0] : levoData[0]];
+		barMarks.marks = newMark;
+		console.log("marks", barMarks.marks)
+		Bars.redraw();
+
+	}
+
+	function updatePieChart(diff)
+	{
+		console.log("TODO: fired updatePieChart log");
+		anglePie.data = [{x: d3.format("4.2f")(sl1.getValue() * diff/360), y: "Rotation"}];
+		
+		var newMark = {x:(1/2), label: d3.format("+0r2")(sl1.getValue() * diff/100) + "&deg;"};
+		angleMark.marks = [newMark];
+		anglePie.redraw();
+		angleMark.redraw();
+		
+	}
+		
+	
+	</script>
+</body>
+</html>

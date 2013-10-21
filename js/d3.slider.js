@@ -156,6 +156,7 @@ d3.slider = function module() {
         }
 
       }
+      slider._moveHandle = moveHandle;
 
 
       // Calculate nearest step value
@@ -249,6 +250,12 @@ d3.slider = function module() {
   slider.scale = function(_) {
     if (!arguments.length) return scale;
     scale = _;
+    return slider;
+  }  
+
+  slider.setValue = function(_) {
+    this.value(_);
+    //slider._moveHandle(_);
     return slider;
   }  
 
