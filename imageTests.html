@@ -421,7 +421,36 @@ var image200 = new Image({
 
 	neffCont2.append(imgCrsl);
 	
+	var svgContFoo = new SVGContainer({
+			node: d3.select("#neff3Numbers"),
+			maxWid: 477,
+			maxHt: 440
+		});
+
+	var imgvwr = new LabelCarousel({
+			type: 'textLabels',
+			images:
+				[
+					{
+					URI: 'img/Neff/Neff_12.6.3_S1.jpg',
+					selectorLabel: 'Food',
+					caption: "70% more food",
+					},
+					{
+					URI: 'img/Neff/Neff_12.6.3_S2.jpg',
+					caption: "200% more energy",
+					selectorLabel: 'Energy'
+					},
+					{
+					URI: 'img/Neff/Neff_12.6.3_S3.jpg',
+					caption: "80% more water for agriculture",
+					selectorLabel: 'Water'
+					},
+				],
+			imagesActualSize: {height: 379, width: 570},
+			}, eventManager);
 	
+	svgContFoo.append(imgvwr);
 </script>
 </body>
 </html>

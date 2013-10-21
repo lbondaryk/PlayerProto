@@ -33,16 +33,13 @@
 					</h2>
 		 			<div class="lc_ec_leading">
 					<p>Racial inequality is not just reflected in socioeconomic indicators like income, wealth, and education; racial and ethnic groups also show disparities in a variety of indicators related to heath. For example, coronary heart disease is the leading cause of death in the United States, but African Americans are much more likely to die from this condition than any other racial group (Centers for Disease Control and Prevention 2011).  African Americans also have the highest rate of infant mortality in the United States, more than double that of whites, Asians, and Hispanics. </p>
-					</div>
-					<div class='lc_ec_bordered lc_ec_flush lc_ec_fiftyFifty'>
-							<div id="table0" class='lc_ec_leading'><p>Select rows in the table to see a comparitive graph for each type of mortality by race.
-							</p>	</div>
 					
-							<figure id="graphGrouped" class='lc_ec_trailing'></figure>
-					</div>
 					
-
-					<div class="lc_ec_leading">
+						<figure id="graphGrouped"><p>Select mortality rates to see a comparitive chart for each.
+							</p>	</figure>
+					
+						<div id="table0" class='lc_ec_leading'>
+						</div>
 					<p>Many of these disparities in health are leated to differences in healthcare coverage. According to the US Census Bureas (2011), about 30% of Hispanics and 20% of African Americans lack a regular source of healthcare, compared to less than 12% of whites.  As a result, African Americans and Latinos are far more likely than whites to rely on hospitals and clinics for their usual source of health care (US Department of Health and Human Services 2000).</p>
 
 					<div id="mcQuestion0"></div>
@@ -94,7 +91,7 @@
 	var Legend = pearson.brix.Legend;
 	var Button = pearson.brix.Button;
 	var Slider = pearson.brix.Slider;
-	var Readout = pearson.brix.Readout;
+	var LabelSelector = pearson.brix.LabelSelector;
 	 
 	var EventManager = pearson.utils.EventManager;
 	var SubmitManager = pearson.brix.SubmitManager;
@@ -172,13 +169,12 @@ var homicide = [
 
 var svgGroup = new SVGContainer(
 		{node: d3.select("#graphGrouped"),
-		maxSize: { height: 300, width: 377}
+		maxSize: { height: 400, width: 600}
 		}
 	);
 	
 var groupGraph = new BarChart ({
 		Data: [coronary],
-		//type: "grouped",
 		xAxisFormat: { 
 						type: "linear", 
 					   	ticks: 4,
@@ -189,7 +185,7 @@ var groupGraph = new BarChart ({
 					   yLabel: "Cause of Death"},
 	}, eventManager);
 
-svgGroup.append(groupGraph);
+svgGroup.append(groupGraph, {topPercentOffset: .1, leftPercentOffset: 0, heightPercent: 1, widthPercent: 1});
 /*
 var legBar = new Legend({
 		xPos: "right", yPos: "top",
@@ -205,8 +201,18 @@ var legBar = new Legend({
 groupGraph.append(legBar);
 */
 
+var labelButtons = new LabelSelector({
+	labels: ["Coronary Deaths", "HIV Deaths", "Infant Mortality", "Homicide"],
+	layout: "horizontal",
+	itemMargin: {top: 5, bottom: 5, left: 0, right: 0},
+	//type: "numbered"
+}, eventManager);
+
+svgGroup.append(labelButtons, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.2, widthPercent: 1});
+
+
 var graphReadout = new Callouts({
-	show: "all",
+	//show: "all",
 	headers: ["Cause", coronary[3].y, coronary[2].y, coronary[1].y, coronary[0].y ],
 	textBits: [
 		{cols: [ "Coronary Deaths", coronary[3].x, coronary[2].x, coronary[1].x, coronary[0].x ]},
@@ -233,7 +239,8 @@ insTable.draw(d3.select("#table1"));
 
 graphReadout.draw(d3.select("#table0"));
 	
-eventManager.subscribe(graphReadout.selectedEventId, liteUp);
+eventManager.subscribe(labelButtons.selectedEventId, liteUp);
+//eventManager.subscribe(graphReadout.selectedEventId, liteUp);
 //eventManager.subscribe(insTable.selectedEventId, liteUp);
 //eventManager.subscribe(groupGraph.selectedEventId, liteUp);
 //eventManager.subscribe(legBar.selectedEventId, liteUp);
@@ -268,6 +275,7 @@ function liteUp (liteKey)
 		//insTable.lite(liteKey.selectKey);
 		//legBar.lite(liteKey.selectKey);
 		graphReadout.lite(liteKey.selectKey);
+		labelButtons.lite(liteKey.selectKey);
 	}
 
 var Q0Choices = [

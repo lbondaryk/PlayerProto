@@ -94,12 +94,14 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 	var lblselConfig =
 		{
 			id: this.id + "_labels",
-			//labels: config.images.map(function (e) {return e.selectorLabel || '&nbsp;';}),
-			labels: config.images.length,
+			labels: (config.type == 'textLabels') ? 
+				config.images.map(function (e, i) {return e.selectorLabel || '&nbsp;';}) :
+				config.images.length,
 			layout: "horizontal",
-			type: "numbered",
+			type: (config.type == 'textLabels') ? 'none' : 'numbered',
 			itemMargin: {top: 15, bottom: 0, left: 0, right: 0}
 		};
+
 
 	/**
 	 * The selector bric used by this LabelCarousel to present the images.
