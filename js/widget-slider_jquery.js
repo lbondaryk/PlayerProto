@@ -189,6 +189,7 @@ pearson.brix.SliderJQuery.prototype.draw = function (container)
                 .append($("<span class='slider' style='display:inline-block; min-width: 100px;' />")
                     .slider(
                         {
+                            range: "min",
                             max : this.maxVal,
                             step : this.stepVal,
                             value : this.startVal,
