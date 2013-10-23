@@ -63,6 +63,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=bricworks.js
 	--input=brix-labelcarousel.js
 	--input=brix-labelselector.js
+	--input=brix-pyramidchart.js
 	--input=domhelper.js
 	--input=eventmanager.js
 	--input=fakeactivitydb.js

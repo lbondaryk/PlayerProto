@@ -26,7 +26,7 @@ goog.require('pearson.brix.PrototypeAxes');
 {
 	var bc1Config = {
 			id: "bc1",
-			Data: [data1array, data2array],
+			Data: [],
 			dataLabels: ['Men', 'Women'],
 			xAxisFormat: { // other axis options are set by default
 						  	ticks: [5, 10, 15, 20],
@@ -50,12 +50,12 @@ goog.require('pearson.brix.PrototypeAxes');
  * @param {string}		config.id		-String to uniquely identify this PyramidChart.
  * @param {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
  *						config.Data		-An array of 2 series;
- *										 each series is an array of one or more bars with names.
- *										 Either bars or series can have a key label for highlighting.
+ *										each series is an array of one or more bars with names.
+ *										Either bars or series can have a key label for highlighting.
  * @param {pearson.brix.AxisFormat}
- * 						config.xAxisFormat -Format of the x axis of the graph.
+ *        				config.xAxisFormat -Format of the x axis of the two graphs.
  * @param {pearson.brix.AxisFormat}
- * 						config.yAxisFormat -Format of the y axis of the graph.
+ * 						config.yAxisFormat -Format of the y axis of the two graphs.
  * @param {!pearson.utils.IEventManager=}
  * 						eventManager	-allows the object to emit events
  *
@@ -114,37 +114,92 @@ pearson.brix.PyramidChart = function (config, eventManager)
 
 	
 	// Configure left and right graphs
-	var rightConfig =
-			Data: [this.data[0]], 
-			xAxisFormat: { type: 'linear',
-						   ticks: config.xAxisFormat.ticks,
-						   orientation: 'bottom',
-						   label: config.xAxisFormat.label },
-			yAxisFormat: { type: 'ordinal',
-						   orientation: 'left',
-						   ticks: config.yAxisFormat.ticks,
-						   label: config.yAxisFormat.label },
+	var rightConfig = {
+			Data: [this.data[0]],
+			xAxisFormat: {	type: 'linear',
+							ticks: 3,
+							orientation: 'bottom',
+							//label: config.xAxisFormat.label 
+						},
+			yAxisFormat: {	type: 'ordinal',
+							orientation: 'left',
+							ticks: 0,
+							},
 		};
 	
-	var leftConfig =
-			Data: ['', this.data[1]], 
-			xAxisFormat: { type: 'linear',
-						   ticks: config.xAxisFormat.ticks,
-						   orientation: 'bottom',
-						   mode: 'reverse'
-						  },
-			yAxisFormat: { type: "ordinal",
-						   orientation: "right",
-						   ticks: [],
-						 },
+	var leftConfig = {
+	// the data needs to have an empty first data set, so the color cycles to the 
+	// next in series from the right hand graph
+	// @todo - we should be checking and padding so tht the y values are the
+	// same for all sets of data or these graphs won't work! - lb
+			Data: [[], this.data[1]], 
+			xAxisFormat: {	type: 'linear',
+							ticks: config.xAxisFormat.ticks,
+							orientation: 'bottom',
+							mode: 'reverse'
+						},
+			yAxisFormat: {	type: 'ordinal',
+							orientation: 'right',
+							ticks: config.yAxisFormat.ticks,
+						},
 		};
-
+ 
 	/**
 	 * The left and right bar charts comprising the pyramid chart
 	 * @type {!pearson.brix.BarChart}
 	 */
 	this.rightGraph = new pearson.brix.BarChart(rightConfig);
 	this.leftGraph = new pearson.brix.BarChart(leftConfig);
+
+	/**
+	 * The x and y axis labels
+	 * @private
+	 * @type {string}
+	 */
+	
+	this.xLabel_ = config.xAxisFormat.label;
+	this.yLabel_ = config.yAxisFormat.label;
+
+	/**
+     * Column width (in pixels) which is the full size display, with margins.
+     * @note This sets the width at which captions display at full font size.
+     * If not set, the default is for a two-column layout with even column widths.
+     * @private
+     * @type {number}
+     */
+    this.displayWidth_ = config.displayWidth || 477;
+     
+    // Draw the x axis label to measure it
+	var xlabelRendered = d3.select('body')
+						.append("div")
+						.style('visibility', 'hidden')
+						.style('width', this.displayWidth_ + "px")
+						.attr("class", "axisLabel")
+						.html(this.xLabel_);
+
+	// Draw the y axis label to measure it
+	var ylabelRendered = d3.select('body')
+						.append("div")
+						.style('visibility', 'hidden')
+						.style('width', this.displayWidth_ + "px")
+						.attr("class", "axisLabel")
+						.html(this.yLabel_);
+
+	// measure the  height, and set the associated size to match what was rendered
+	// then remove the dummy rendering
+	
+	/**
+     * The full size (in pixels) of the x and y labels
+     * @private
+     * @type {!pearson.utils.ISize}
+     */
+    this.xlabelSize_ = new pearson.utils.Size(xlabelRendered.node().offsetHeight,
+		this.displayWidth_);
+	xlabelRendered.remove();
+	this.ylabelSize_ = new pearson.utils.Size(ylabelRendered.node().offsetHeight,
+		this.displayWidth_);
+
+	ylabelRendered.remove();
 
 	/**
 	 * List of child brix which are to be drawn before and after this
@@ -195,12 +250,12 @@ pearson.brix.PyramidChart = function (config, eventManager)
 			bars: null,
 			graph: null,
 		};
-} // end of pyramidChart constructor
+}; // end of pyramidChart constructor
 
-goog.inherits(pearson.brix.BarChart, pearson.brix.SvgBric);
+goog.inherits(pearson.brix.PyramidChart, pearson.brix.SvgBric);
 
 /**
- * Prefix to use when generating ids for instances of BarChart.
+ * Prefix to use when generating ids for instances of PyramidChart.
  * @const
  * @type {string}
  */
@@ -226,6 +281,10 @@ pearson.brix.PyramidChart.prototype.draw = function(container, size)
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
 	
+	// aliases of utility functions for readability
+    var attrFnVal = pearson.brix.utils.attrFnVal;
+
+    var that = this;
 
 	var brixGroup = container.append("g")
 		.attr("class", "brixPyramidChart")
@@ -240,15 +299,73 @@ pearson.brix.PyramidChart.prototype.draw = function(container, size)
 
 	
 	// Draw the barcharts
+
+	var leftGroup = brixGroup.append("g")
+	.attr('class', 'leftChart')
+			.attr('transform', attrFnVal('translate', 0, this.ylabelSize_.height));
+
+	// it's important to render both graphs at the same width, with the same y axis data
+	// so their scales match.  But we'll remove the ticks from one and scootch it over
+	// so it shares labels with the other
+
+	this.leftGraph.draw(leftGroup, {height: (size.height - this.xlabelSize_.height - this.ylabelSize_.height),
+		width: (0.6 * size.width)});
+
+	var leftWidth = leftGroup.node().getBBox().width;
+	 
+	var yAxisWidth = leftGroup.select('.y.axis').node().getBBox().width;
+	
 	var rightGroup = brixGroup.append("g")
 	.attr('class', 'rightChart')
-			.attr('transform', attrFnVal('translate', size.width/2, 0));
-	
-	goog.base(this.rightGraph, 'draw', rightGroup, {height: size.height, width: size.width/2});
+	// @TODO it should be correct to place
+			.attr('transform', attrFnVal('translate', leftWidth - yAxisWidth + 10,
+				this.ylabelSize_.height));
 
+
+	this.rightGraph.draw(rightGroup, {height: (size.height - this.xlabelSize_.height - this.ylabelSize_.height),
+		width: (0.6 * size.width)});
+	
+	// don't show the right set of tick labels since they are the same as the left
+	rightGroup.selectAll('.y .tick text').remove();
+
+	// Draw the x axis label below the graph
+	var xLabelGroup = brixGroup.append("g")
+		.attr('class','axis')
+		.attr('transform', attrFnVal('translate', -yAxisWidth/2, size.height - this.xlabelSize_.height));
+
+	// Draw the x axis label above the graph, in the center
+	var yLabelGroup = brixGroup.append("g")
+		.attr('class','axis')
+		.attr('transform', attrFnVal('translate', 5 - yAxisWidth/2, 0));;
+
+	xLabelGroup.append("foreignObject")
+			.attr("width", this.xlabelSize_.width)
+			.attr("height", this.ylabelSize_.height)
+			.append("xhtml:body")
+			// this interior body shouldn't inherit margins from page body
+				.style("margin", "0px")
+				.append('div')
+				.attr('class','axisLabel')
+				.html(this.xLabel_);
+
+	yLabelGroup.append("foreignObject")
+			.attr("width", this.ylabelSize_.width)
+			.attr("height", this.ylabelSize_.height)
+			.append("xhtml:body")
+			// this interior body shouldn't inherit margins from page body
+				.style("margin", "0px")
+				.append('div')
+				.attr('class','axisLabel')
+				.html(this.yLabel_);
+
+	// for now, let's make the datarect of the pyramid chart correspond to that of the 
+	// right graph (arbitrary)
+	this.lastdrawn.datarect = this.rightGraph.datarect;
 
 	// Draw any 'after' child brix that got appended after draw was called
 	this.childBrix.afterData.forEach(this.drawBric_, this);
+
+
 	
 }; // end of pearson.brix.PyramidChart.draw()
 
@@ -268,7 +385,8 @@ pearson.brix.PyramidChart.prototype.redraw = function ()
 
 	this.childBrix.beforeData.forEach(this.redrawBric_, this);
 	//this.drawData_();
-	goog.base(this.rightGraph, 'redraw');
+	this.rightGraph.redraw();
+	this.leftGraph.redraw();
 
 	this.childBrix.afterData.forEach(this.redrawBric_, this);
 };
@@ -441,7 +559,7 @@ pearson.brix.PyramidChart.prototype.drawData_ = function ()
  * 									 to "after".
  *
  ****************************************************************************/
-pearson.brix.PyramidChart.prototype.append = function(svgBrix, zOrder)
+ pearson.brix.PyramidChart.prototype.append = function(svgBrix, zOrder)
 {
 	if (!Array.isArray(svgBrix))
 	{
@@ -501,7 +619,7 @@ pearson.brix.PyramidChart.prototype.append_one_ = function(bric, zOrder)
 			this.drawBric_(bric);
 	}
 		
-} // end of pearson.brix.BarChart.append_one_()
+} // end of pearson.brix.PyramidChart.append_one_()
 
 
 /* **************************************************************************
@@ -514,7 +632,7 @@ pearson.brix.PyramidChart.prototype.append_one_ = function(bric, zOrder)
  * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
-pearson.brix.BarChart.prototype.lite = function(liteKey)
+pearson.brix.PyramidChart.prototype.lite = function(liteKey)
 {
 	this.rightGraph.lite();
 	this.leftGraph.lite();

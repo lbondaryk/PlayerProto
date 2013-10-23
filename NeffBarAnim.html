@@ -80,8 +80,6 @@
 	var SVGContainer = pearson.brix.SVGContainer;
 	var Image = pearson.brix.Image;
 	var CaptionedImage = pearson.brix.CaptionedImage;
-	var Carousel = pearson.brix.Carousel;
-	var ImageViewer = pearson.brix.ImageViewer;
 	var Callouts = pearson.brix.Callouts;
 	var BarChart = pearson.brix.BarChart;
 	var LabelGroup = pearson.brix.LabelGroup;
@@ -93,6 +91,7 @@
 	var SubmitManager = pearson.brix.SubmitManager;
 	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
 	var SelectGroup = pearson.brix.SelectGroup;
+	var PyramidChart = pearson.brix.PyramidChart;
 	var sign = pearson.brix.utils.sign;
 var eventManager = new EventManager();
 var growthMen = [
@@ -1101,7 +1100,7 @@ var shrinkMen = [
 			maxVal: 2050,
 			stepVal: 5,
 			label: "Year",
-			format: '5.0f',
+			format: d3.format('5.0f'),
 		}, eventManager);
 
 	slide1.draw(d3.select("#slider0"));
@@ -1129,7 +1128,7 @@ var shrinkMen = [
 		});
 
 	// US historical and projected age structure pyramid chart
-	var menSeries = new BarChart ({
+	/* var menSeries = new BarChart ({
 		Data: [[],histMen[0]],
 		xAxisFormat: { 
 						type: "linear", 
@@ -1154,19 +1153,28 @@ var shrinkMen = [
 					   },
 	});
 
-	
 	animCont.append(menSeries, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.55});
 	animCont.append(womenSeries, {topPercentOffset: 0, leftPercentOffset: 0.5, heightPercent: 1, widthPercent: 0.55});
+	*/
+
+	var pyramid = new PyramidChart ({
+		Data: [histWomen[0], histMen[0]],
+		dataLabels: ['women','men'],
+		xAxisFormat: {  ticks: 4,
+					   	label: "Population (Millions)"},
+		yAxisFormat: {	ticks: 0,
+					   	label: "Age group"},
+	});
+	
+	animCont.append(pyramid);
 	 
 	eventManager.subscribe(slide1.changedValueEventId, moveInTime);
 
 	function moveInTime ()
 	{
 		var newval = (d3.round(slide1.getValue(), 1) - 1950)/5;
-		womenSeries.data = [histWomen[newval]];
-		womenSeries.redraw();
-		menSeries.data = [[],histMen[newval]];
-		menSeries.redraw();
+		pyramid.data = [histWomen[newval],histMen[newval]];
+		pyramid.redraw();
 
 		depRatRead.setValue(d3.format(",.2f")(depRat(histMen[newval])));
 	}
