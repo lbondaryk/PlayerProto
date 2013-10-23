@@ -371,7 +371,7 @@
                                 {
                                     "description": "identifies this value as an array element value",
                                     "type": "string",
-                                    "enum": ["array"]
+                                    "enum": ["array-element"]
                                 },
                             "array":
                                 {
