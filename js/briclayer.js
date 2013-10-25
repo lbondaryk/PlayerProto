@@ -213,9 +213,16 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
     /**
      * @dict
      */
-    var building = {'info': {}, 'brix': {}, 'mortar': {}};
+    var building = {'info': {}, 'data': {}, 'brix': {}, 'mortar': {}};
 
+    // Define the building info properties
     building['info']['sequenceNodeKey'] = activityConfig['sequenceNodeKey'];
+
+    // Define the building data domain from the activityConfig
+    if ('data' in activityConfig)
+    {
+        building['data'] = activityConfig['data'];
+    }
 
     activityConfig['containerConfig'].forEach(goog.bind(this.buildContainer_, this, building));
 
@@ -241,10 +248,14 @@ pearson.brix.BricLayer.prototype.buildContainer_ = function (building, container
     // build brix
     containerConfig['brixConfig'].forEach(goog.bind(this.buildBric_, this, building));
 
-    // build mortar
-    containerConfig['mortarConfig'].forEach(goog.bind(this.buildMortar_, this, building));
+    // build mortar (mortarConfig is optional in an activity)
+    var mortarConfig = containerConfig['mortarConfig'];
+    if (mortarConfig !== undefined)
+    {
+        mortarConfig.forEach(goog.bind(this.buildMortar_, this, building));
+    }
 
-    // do hookup actions
+    // do hookup actions if there are any specified
     this.doActions_(containerConfig['hookupActions'], building);
 };
 
@@ -521,6 +532,48 @@ pearson.brix.BricLayer.dynamicValueHandlers =
     'ref': function (building, dynamicValueConfig)
     {
         var o = this.getRefObject(building, dynamicValueConfig['domain'], dynamicValueConfig['refId']);
+        return o;
+    },
+
+    /* **************************************************************************
+     * dynamicValueHandlers.array                                          */ /**
+     *
+     * Return an array of the elements defined by the dynamic values in the
+     * configuration elements array.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the array dynamicValue config object
+     *
+     * @returns {Array.<*>} The array of dynamic values specified.
+     ****************************************************************************/
+    'array': function (building, dynamicValueConfig)
+    {
+        var a = dynamicValueConfig['elements'].map(
+               function (dynVal) { return this.getDynamicValue(building, dynVal); },
+               this);
+
+        return a;
+    },
+
+    /* **************************************************************************
+     * dynamicValueHandlers.array-element                                  */ /**
+     *
+     * Return some object that is the element of an array which itself is
+     * specified as a dynamic value.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the array-element dynamicValue config object
+     *
+     * @returns {*} The object/value specified.
+     ****************************************************************************/
+    'array-element': function (building, dynamicValueConfig)
+    {
+        var a = this.getDynamicValue(building, dynamicValueConfig['array']);
+        var o = a[dynamicValueConfig['index']];
         return o;
     },
 
