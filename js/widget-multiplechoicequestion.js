@@ -19,6 +19,7 @@ goog.provide('pearson.brix.MultipleChoiceQuestion');
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.utils.EventManager');
 goog.require('pearson.brix.SubmitManager');
+goog.require('pearson.brix.BricWorks');
 goog.require('pearson.brix.HtmlBric');
 
 // Sample configuration objects for classes defined here
@@ -49,7 +50,7 @@ goog.require('pearson.brix.HtmlBric');
         }
     ];
 
-    // RadioButton widget config
+    // RadioButton bric config
     var rbConfig =
         {
             id: "RG1",
@@ -57,7 +58,7 @@ goog.require('pearson.brix.HtmlBric');
             numberFormat: "latin-upper"
         };
 
-    // MultipleChoiceQuestion widget config
+    // MultipleChoiceQuestion bric config
     var mcqConfig =
     {
         id: "Q1",
@@ -65,8 +66,8 @@ goog.require('pearson.brix.HtmlBric');
         question: "Why?",
         choices: Q1Choices,
         order: "randomized", //default, even if not specified
-        widget: null, // or actually something such as: pearson.brix.RadioGroup,
-        widgetConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultipleChoiceQuestion
+        presenterType: "RadioGroup",
+        presenterConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultipleChoiceQuestion
     };
 });
 
@@ -112,25 +113,37 @@ pearson.brix.Answer;
  *                      config.order    -The order in which the choices should be presented.
  *                                       either "randomized" or "ordered". Default is
  *                                       "randomized" if not specified.
- * @param {!function(new:pearson.brix.HtmlBric, Object, !pearson.utils.IEventManager=)}
- *                      config.widget   -The constructor for a widget that presents choices.
- * @param {!Object}     config.widgetConfig
- *                                      -The configuration object for the specified widget
- *                                       constructor without the id or choices properties which
+ * @param {pearson.brix.BrixTypes}
+ *                      config.presenterType
+ *                                      -The type of bric to use for presenting the choices.
+ * @param {!Object}     config.presenterConfig
+ *                                      -The configuration object for the specified presenter
+ *                                       bric without the id or choices properties which
  *                                       will be added by this question constructor.
  * @param {!pearson.utils.IEventManager=}
  *                      eventManager    -The event manager to use for publishing events
  *                                       and subscribing to them.
+ * @param {!pearson.brix.BricWorks=}
+ *                      bricWorks       -The BricWorks to use to create the specified choice
+ *                                       presentation bric. This is not really optional, but
+ *                                       in order to keep all Bric constructors w/ the same
+ *                                       signature, we need to annotate it as though it was.
  *
  * @classdesc
  * The MultipleChoiceQuestion bric displays a question and a set of possible
  * answers one of which must be selected and submitted to be scored.
  *
  ****************************************************************************/
-pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
+pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
 {
     // call the base class constructor
     goog.base(this);
+
+    // Without a valid BricWorks we can't construct this MultipleChoiceBric
+    if (!bricWorks)
+    {
+        throw new Error('MultipleChoiceQuestion requires a valid BricWorks to create the presenterType and Button brix that it uses');
+    }
 
     /**
      * A unique id for this instance of the multiple choice question bric
@@ -159,16 +172,11 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
      * to the config.
      * @type {Object}
      */
-    var widgetConfig = config.widgetConfig;
+    var presenterConfig = config.presenterConfig;
 
-    widgetConfig.id = this.mcqId_ + "_wdgt";
+    presenterConfig.id = this.mcqId_ + "_prsntr";
 
     var choices = config.choices;
-
-    /** @todo these 2 instance variables need comments (and review and unit tests) -mjl */
-    this.svgSize = config.svgSize;
-    this.svgBaseBrix = config.svgBaseBrix;
-
     if (config.order === undefined || config.order === "randomized")
     {
         // clone the array before we rearrange it so we don't modify the
@@ -177,14 +185,14 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
         pearson.utils.randomizeArray(choices);
     }
 
-    widgetConfig.choices = choices;
+    presenterConfig.choices = choices;
 
     /**
      * The bric used to present the choices that may be selected to answer
      * this question.
      * @type {!pearson.brix.HtmlBric}
      */
-    this.choiceWidget = new config.widget(widgetConfig, eventManager);
+    this.presenterBric = /**@type {!pearson.brix.HtmlBric}*/ (bricWorks.createBric(config.presenterType, presenterConfig));
 
     // The configuration options for the submit button
     var submitBtnConfig =
@@ -199,7 +207,8 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
      * for scoring.
      * @type {!pearson.brix.Button}
      */
-    this.submitButton = new pearson.brix.Button(submitBtnConfig, eventManager);
+    this.submitButton = /**@type {!pearson.brix.Button}*/
+                        (bricWorks.createBric(pearson.brix.BricTypes.BUTTON, submitBtnConfig));
 
     /**
      * List of responses that have been received for all submitted
@@ -219,7 +228,7 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.selectedEventId = this.choiceWidget.selectedEventId;
+    this.selectedEventId = this.presenterBric.selectedEventId;
 
     /**
      * The event details for this.selectedEventId events
@@ -238,7 +247,8 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
     /**
      * The event details for this.submitScoreRequestEventId events
      * @typedef {Object} SubmitAnswerRequest
-     * @property {Iuestion}         question    -This question widget
+     * @property {pearson.brix.IQuestionBric}
+     *                              question    -This question bric
      * @property {string}           questionId  -The id which identifies this question to the scoring engine.
      * @property {string}           answerKey   -The answerKey associated with the selected answer.
      * @property {function(Object)} responseCallback
@@ -247,9 +257,9 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager)
      */
     var SubmitAnswerRequest;
 
-    // subscribe to events of our 'child' widgets
+    // subscribe to events of our 'child' brix
     eventManager.subscribe(this.submitButton.pressedEventId, goog.bind(this.handleSubmitRequested_, this));
-    eventManager.subscribe(this.choiceWidget.selectedEventId, goog.bind(this.handleAnswerSelected_, this));
+    eventManager.subscribe(this.presenterBric.selectedEventId, goog.bind(this.handleAnswerSelected_, this));
 
     /**
      * Information about the last drawn instance of this bric (from the draw method)
@@ -331,7 +341,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
         {
             question: this,
             questionId: this.questionId,
-            answerKey: this.choiceWidget.selectedItem().answerKey,
+            answerKey: this.presenterBric.selectedItem().answerKey,
             responseCallback: goog.bind(this.handleSubmitResponse_, this)
         };
 
@@ -395,10 +405,9 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 {
     this.lastdrawn.container = container;
 
-    // make a div to hold the select one question
+    // make a div to hold the multiple choice question
     var widgetGroup = container.append("div")
-        .attr("class", "brixMultipleChoiceQuestion")
-        .attr("id", this.mcqId_);
+        .attr("class", "brixMultipleChoiceQuestion");
 
     // use a fieldset (although w/o a form) to group the question and choices
     var qCntr = widgetGroup.append('fieldset');
@@ -407,36 +416,11 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
         .attr("class", "question")
         .html(this.question);
 
-    var choiceWidgetCntr = qCntr.append("div")
-        .attr("class", "choices")
-        .attr("id", this.mcqId_ + "_choice_id");
+    var presenterBricCntr = qCntr.append("div")
+        .attr("class", "choices");
 
-
-    // check if it's an SVG widget with a size, in which case
-    // create
-
-    if (Array.isArray(this.svgSize))
-    {
-        var mcSVG = new pearson.brix.SVGContainer({
-                node: choiceWidgetCntr,
-                maxWid: this.svgSize[0],
-                maxHt: this.svgSize[1]
-            });
-
-        if (this.svgBaseBrix)
-        {
-            this.svgBaseBrix.append(this.choiceWidget);
-            mcSVG.append(this.svgBaseBrix);
-        }
-        else
-        {
-            mcSVG.append(this.choiceWidget)
-        }
-    }
-    else
-    {
-        this.choiceWidget.draw(choiceWidgetCntr);
-    }
+    // draw the choices
+    this.presenterBric.draw(presenterBricCntr);
 
     // make a target for feedback when the question is answered
     widgetGroup.append('div')
@@ -480,7 +464,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.getId = function ()
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.selectedItem = function ()
 {
-    return this.choiceWidget.selectedItem();
+    return this.presenterBric.selectedItem();
 };
 
 /* **************************************************************************
@@ -497,6 +481,6 @@ pearson.brix.MultipleChoiceQuestion.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.selectItemAtIndex = function (index)
 {
-    this.choiceWidget.selectItemAtIndex(index);
+    this.presenterBric.selectItemAtIndex(index);
 };
 
