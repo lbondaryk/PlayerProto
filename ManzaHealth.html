@@ -151,9 +151,9 @@
                                                         "type": "array",
                                                         "elements":
                                                         [
-                                                            { "type": "ref", "domain": "data", "refId": "whites" }
-                                                            { "type": "ref", "domain": "data", "refId": "blacks" }
-                                                            { "type": "ref", "domain": "data", "refId": "hispanics" }
+                                                            { "type": "ref", "domain": "data", "refId": "whites" },
+                                                            { "type": "ref", "domain": "data", "refId": "blacks" },
+                                                            { "type": "ref", "domain": "data", "refId": "hispanics" },
                                                             { "type": "ref", "domain": "data", "refId": "asians" }
                                                         ]
                                                     }
@@ -166,7 +166,7 @@
 									"config":
 										{
 											"id": "legdeath",
-											"type": "box"
+											"type": "box",
 											"xPos": "right",
 											"yPos": "top",
 											"labels":
@@ -415,8 +415,8 @@
 											"id": "homicideQ",
 											"questionId": "homicide",
 											"order": "randomized",
-											"widget": SelectGroup,
-											"widgetConfig":
+											"presenterType": "SelectGroup",
+											"presenterConfig":
 												{
 													"numberFormat": "none",
 													"question": true
@@ -470,7 +470,7 @@
 				],
             "data":
                 {
-					"insurance"
+					"insurance":
 						[
 							{y: "White",    x: 11.1},
 							{y: "Black",    x: 19.5},
@@ -478,7 +478,7 @@
 							{y: "Hispanic", x: 30.1}
 						],
 
-					"whites"
+					"whites":
 						[
 							{y: "Coronary Deaths",  x: 134.2},
 							{y: "HIV Deaths",       x:   8.2},
@@ -486,7 +486,7 @@
 							{y: "Homicide Deaths",  x:   2.7},	
 						],
  
-					"blacks"
+					"blacks":
 						[
 							{y: "Coronary Deaths",  x: 161.6},
 							{y: "HIV Deaths",       x:  73.7},
@@ -494,7 +494,7 @@
 							{y: "Homicide Deaths",  x:  23.1},	
 						],
 
-					"hispanics"
+					"hispanics":
 						[
 							{y: "Coronary Deaths",  x: 106.4},
 							{y: "HIV Deaths",       x:  25},
@@ -502,7 +502,7 @@
 							{y: "Homicide Deaths",  x:   7.6},
 						],
 
-					"asians"
+					"asians":
 						[	
 							{y: "Coronary Deaths",  x: 77.1},
 							{y: "HIV Deaths",       x:  7.2},
@@ -520,7 +520,8 @@
 	a.building = a.bricLayer.build(a.config);
 
 
-submitManager.handleRequestsFrom(Q0);
+	a.submitManager = new pearson.brix.SubmitManager(a.eventManager);
+	a.submitManager.handleRequestsFrom(a.building.brix.Q0);
 /*
 
 // local aliases for convenience
