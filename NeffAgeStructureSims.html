@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+              			<p> This simulation allows you to change the starting population size, a type of mortality structure, the total fertility rate and the age of first childbirth for a fictitious society. </p>
+				
+						<table width="100%">
+                    		<tr><td><span id="slider0"></span></td><td><span id="dropdown0"></span></td></tr>
+							<tr><td><span id="slider1"></span></td><td><span id="slider2"></span></td></tr>
+            			</table>
+
+						<p>Some things to observe: 
+							<ol>
+								<li>factoid about age structures
+								<li>another fact
+								<li>another thing to notice...
+							</ol>
+						</p>
+				
+						<p>At this growth rate, the world's population would hit 9 billion around 2033. In the figure, you can see what happens if the growth rate falls or rises just a little, and as you can see, small changes in the growth rate can have big impacts on future population growth.
+						</p>
+					</div>
+					<div class="lc_ec_trailing">      
+						<div id="slider3"></div>   
+               			<div id="graph0"></div> 
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+	
+  
+	<script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
+	<script src="js/d3.v3.min.js"></script>
+
+	<script src="js/brixlib-compiled.js"></script>
+
+	<!--
+	<script src="js/widget-base.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+    <script src="js/widget-slider.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-numeric.js"></script>
+	<script src="js/eventmanager.js"></script>
+	!-->
+
+	<script>
+
+	// local aliases for convenience
+	
+var SVGContainer = pearson.brix.SVGContainer;
+var LineGraph = pearson.brix.LineGraph;
+var BarChart = pearson.brix.BarChart;
+var Slider = pearson.brix.Slider;
+var Readout = pearson.brix.Readout;
+var Legend = pearson.brix.Legend;
+var EventManager = pearson.utils.EventManager;
+var SelectGroup = pearson.brix.SelectGroup;
+var eventManager = new EventManager();
+	
+var years = 50;
+		
+// slider for total population
+var n0 = new Slider ({
+			startVal: 10,
+			minVal: 10,
+			maxVal: 1000,
+			stepVal: 20,
+			unit: "(x 1000)",
+			label: "Starting population",
+			format: d3.format('.1f')
+		}, eventManager);
+		
+n0.draw(d3.select("#slider0"));
+
+// slider for looking at different years in the population evolution
+var yearSlide = new Slider ({
+			startVal: 0,
+			minVal: 0,
+			maxVal: years,
+			stepVal: 1,
+			unit: "years",
+			label: "Years elapsed",
+			format: d3.format('.1f')
+		}, eventManager);
+		
+yearSlide.draw(d3.select("#slider3"));
+
+// variables to set up the difference equation
+var n0 = 100000;	// total population - eventually slider
+var maxAge = 10;
+var endBearingAge = 50; //age at which women become infertile(ish)
+var mort = 0.05; //death rate, eventually needs to be an array of values
+var birth = .0012;
+var population = []; //population is a 2-D array, first index year up to 50, second age group
+var init = []; // pop is the population array for all ages
+
+for (var a = 0; a <= maxAge; a++) {
+	// initialize the population at each age at year 0, Type I, II or III
+	// currently typeII uniform
+	init[a] = {x: n0/maxAge, y: a};
+};
+ 
+// initialize population zero year
+population[0] = init;
+
+console.log(population); 
+
+// now fill up the rest of the array
+for (var t = 1 ; t <= years; t++) {
+	var pop = [];
+
+	console.log(population[t - 1][0].x);
+	// Age 0-1 should be different, including the birth rate
+	pop[0] = {x: population[t - 1][0].x * (1 + birth), y: 0};
+
+	for (var age = 1; age <= maxAge; age++) {
+		//while it might be more efficient to count down, the difference equation 
+		//only works if you bootstrap up. Each age's population is equal to the 
+		//population of the previous age from last year, times (1 - death rate).
+		pop[age] = {x: population[t - 1][age - 1].x * (1 - mort), y: age};  
+		};
+
+	population[t] = pop;
+};
+	
+// configure and draw the SVG container and the graph of the population data
+
+	var cont1 = new SVGContainer({
+			node: d3.select("#graph0"),
+			maxWid: 500,
+			maxHt: 500
+		});
+		
+	var bars = new BarChart({
+			id: "lg0",
+			Data: [population[5]], 
+			type: "lines",
+			xAxisFormat: { type: "linear",
+						   ticks: [0, 5000, 10000, 15000],
+						   orientation: "bottom",
+						   label: "population" },
+			yAxisFormat: { type: "ordinal",
+						   orientation: "left",
+						   label: "Age",
+						    ticks: 0,
+						    },
+		},eventManager);	
+			
+	cont1.append(bars);
+	
+// configure and append the legend to the graph
+
+	var legLines = new Legend({
+		xPos: "right", yPos: "top",
+		labels: [{ content: "Men",	},
+				{ content: "Women",	}],
+		type: "box"
+	},eventManager);
+	
+	bars.append(legLines);
+	
+	// Handle changes of the year slider (one subscription per
+	// event we listen to)
+	eventManager.subscribe(yearSlide.changedValueEventId, moveInTime);
+
+	function moveInTime ()
+	{
+		var newval = yearSlide.getValue();
+		bars.data = [population[newval]];
+		bars.redraw();
+	}
+
+	eventManager.subscribe(legLines.selectedEventId,
+						   handleHighlight);
+	eventManager.subscribe(bars.selectedEventId,
+						   handleHighlight);
+	
+/************************************************************************
+* handleHighlight                                            *//**
+*
+* handleInputValueChanged is called from the event handler for one of
+* the input widgets when the user changes its value. It updates the
+* given matching input widget's value to match the new value and then
+* updates the bar chart.
+*
+* @param eventDetails			These are the keyed values returned by 
+*								the event, in this case, a selection
+*								(click).
+*************************************************************************/
+	function handleHighlight(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+	
+		lines.lite(eventDetails.selectKey);
+		legLines.lite(eventDetails.selectKey);
+		
+	}
+
+
+	
+	
+	</script>
+</body>
+</html>
