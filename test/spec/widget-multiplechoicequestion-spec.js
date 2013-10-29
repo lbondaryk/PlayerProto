@@ -19,9 +19,16 @@
 
 	var EventManager = pearson.utils.EventManager;
 	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+    var BricTypes = pearson.brix.BricTypes;
 	var RadioGroup = pearson.brix.RadioGroup;
 	var SelectGroup = pearson.brix.SelectGroup;
-	var CheckGroup = pearson.brix.CheckGroup;
+
+    // Create a bricworks that has molds for all the brix we need for this test
+    var bricWorks = new pearson.brix.BricWorks();
+    bricWorks.registerBricMold(BricTypes.MULTIPLECHOICEQUESTION, MultipleChoiceQuestion);
+    bricWorks.registerBricMold(BricTypes.RADIOGROUP, RadioGroup);
+    bricWorks.registerBricMold(BricTypes.SELECTGROUP, SelectGroup);
+    bricWorks.registerBricMold(BricTypes.BUTTON, pearson.brix.Button);
 
     describe('MultipleChoiceQuestions: choose one and only one', function () {
 		var eventManager = null;
@@ -59,8 +66,8 @@
 					question: "Wherefore?",
 					choices: Q1Choices,
 					order: "randomized",
-					widget: RadioGroup,
-					widgetConfig: { numberFormat: "latin-upper" },
+					presenterType: BricTypes.RADIOGROUP,
+					presenterConfig: { numberFormat: "latin-upper" },
 				};
 
 			var myMultipleChoiceQuestion = null;
@@ -78,12 +85,12 @@
 				// deterministic and we can test them.
 				Math.seedrandom("MultipleChoiceQuestion");
 	
-				eventManager = new EventManager();
+				bricWorks.eventManager = new EventManager();
 				selectEventCount = 0;
 				lastSelectEventDetails = null;
 
-				myMultipleChoiceQuestion = new MultipleChoiceQuestion(configMultipleChoiceQuestion1, eventManager);
-				eventManager.subscribe(myMultipleChoiceQuestion.selectedEventId, logSelectEvent);
+				myMultipleChoiceQuestion = bricWorks.createBric(BricTypes.MULTIPLECHOICEQUESTION, configMultipleChoiceQuestion1);
+				bricWorks.eventManager.subscribe(myMultipleChoiceQuestion.selectedEventId, logSelectEvent);
 				//eventManager.subscribe(myMultipleChoiceQuestion.submitScoreRequestEventId, logScoreRequestEvent);
 			});
 			
@@ -91,20 +98,20 @@
                 expect(myMultipleChoiceQuestion.getId()).to.equal(configMultipleChoiceQuestion1.id);
             });
 
-			it('should have a RadioGroup choiceWidget', function () {
-				expect(myMultipleChoiceQuestion.choiceWidget).to.be.an.instanceof(RadioGroup);
+			it('should have a RadioGroup presenterBric', function () {
+				expect(myMultipleChoiceQuestion.presenterBric).to.be.an.instanceof(RadioGroup);
 			});
 
 			it('should have randomized the choices', function () {
 				// We set the random seed above so the randomization would be deterministic
-				expect(myMultipleChoiceQuestion.choiceWidget.choices[0], "1st choice").to.deep.equal(Q1Choices[3]);
-				expect(myMultipleChoiceQuestion.choiceWidget.choices[1], "2nd choice").to.deep.equal(Q1Choices[0]);
-				expect(myMultipleChoiceQuestion.choiceWidget.choices[2], "3rd choice").to.deep.equal(Q1Choices[2]);
-				expect(myMultipleChoiceQuestion.choiceWidget.choices[3], "4th choice").to.deep.equal(Q1Choices[1]);
+				expect(myMultipleChoiceQuestion.presenterBric.choices[0], "1st choice").to.deep.equal(Q1Choices[3]);
+				expect(myMultipleChoiceQuestion.presenterBric.choices[1], "2nd choice").to.deep.equal(Q1Choices[0]);
+				expect(myMultipleChoiceQuestion.presenterBric.choices[2], "3rd choice").to.deep.equal(Q1Choices[2]);
+				expect(myMultipleChoiceQuestion.presenterBric.choices[3], "4th choice").to.deep.equal(Q1Choices[1]);
 			});
 
 			it('should have the eventManager given to the constructor', function () {
-                expect(myMultipleChoiceQuestion.eventManager).to.equal(eventManager);
+                expect(myMultipleChoiceQuestion.eventManager).to.equal(bricWorks.eventManager);
 			});
 
 			it('should have an uninitialized lastdrawn property', function () {
@@ -172,7 +179,7 @@
 				describe('.selectItemAtIndex()', function () {
 					it('should publish the multiplechoicequestion.selectedEventId with the answer key of the item at that index', function () {
 						var index = 1;
-						var expectedKey = myMultipleChoiceQuestion.choiceWidget.choices[index].answerKey;
+						var expectedKey = myMultipleChoiceQuestion.presenterBric.choices[index].answerKey;
 						var prevSelectEventCount = selectEventCount;
 						myMultipleChoiceQuestion.selectItemAtIndex(index);
 						expect(selectEventCount).is.equal(prevSelectEventCount + 1);
@@ -180,7 +187,7 @@
 					});
 
 					it('should change the selection when selecting an unselected item', function() {
-						var expectedKey = myMultipleChoiceQuestion.choiceWidget.choices[2].answerKey;
+						var expectedKey = myMultipleChoiceQuestion.presenterBric.choices[2].answerKey;
 						// Arrange - item 1 is selected
 						myMultipleChoiceQuestion.selectItemAtIndex(1);
 						var prevSelectEventCount = selectEventCount;
@@ -228,15 +235,15 @@
 					it('should return the selected choice, even after the choice has been changed', function () {
 						// 1st selection
 						myMultipleChoiceQuestion.selectItemAtIndex(1);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.choiceWidget.choices[1]);
+						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[1]);
 
 						// 2nd selection is after the current selection
 						myMultipleChoiceQuestion.selectItemAtIndex(3);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.choiceWidget.choices[3]);
+						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[3]);
 
 						// 3rd selection is before the current selection
 						myMultipleChoiceQuestion.selectItemAtIndex(0);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.choiceWidget.choices[0]);
+						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[0]);
 					});
 				});
 			});	
@@ -249,8 +256,8 @@
 					question: "Whassup?",
 					choices: Q1Choices,
 					order: "ordered",
-					widget: SelectGroup,
-					widgetConfig: {},
+					presenterType: BricTypes.SELECTGROUP,
+					presenterConfig: {},
 				};
 
 			var myMultipleChoiceQuestion = null;
@@ -264,12 +271,12 @@
 				};
 
 			before(function () {
-				eventManager = new EventManager();
+				bricWorks.eventManager = new EventManager();
 				selectEventCount = 0;
 				lastSelectEventDetails = null;
 
-				myMultipleChoiceQuestion = new MultipleChoiceQuestion(configMultipleChoiceQuestion1, eventManager);
-				eventManager.subscribe(myMultipleChoiceQuestion.selectedEventId, logSelectEvent);
+				myMultipleChoiceQuestion = bricWorks.createBric(BricTypes.MULTIPLECHOICEQUESTION, configMultipleChoiceQuestion1);
+				bricWorks.eventManager.subscribe(myMultipleChoiceQuestion.selectedEventId, logSelectEvent);
 				//eventManager.subscribe(myMultipleChoiceQuestion.submitScoreRequestEventId, logScoreRequestEvent);
 			});
 			
@@ -277,20 +284,20 @@
                 expect(myMultipleChoiceQuestion.getId()).to.equal(configMultipleChoiceQuestion1.id);
             });
 
-			it('should have a SelectGroup choiceWidget', function () {
-				expect(myMultipleChoiceQuestion.choiceWidget).to.be.an.instanceof(SelectGroup);
+			it('should have a SelectGroup presenterBric', function () {
+				expect(myMultipleChoiceQuestion.presenterBric).to.be.an.instanceof(SelectGroup);
 			});
 
 			it('should have randomized the choices', function () {
 				// We set the random seed above so the randomization would be deterministic
-				expect(myMultipleChoiceQuestion.choiceWidget.choices[0], "1st choice").to.deep.equal(Q1Choices[0]);
-				expect(myMultipleChoiceQuestion.choiceWidget.choices[1], "2nd choice").to.deep.equal(Q1Choices[1]);
-				expect(myMultipleChoiceQuestion.choiceWidget.choices[2], "3rd choice").to.deep.equal(Q1Choices[2]);
-				expect(myMultipleChoiceQuestion.choiceWidget.choices[3], "4th choice").to.deep.equal(Q1Choices[3]);
+				expect(myMultipleChoiceQuestion.presenterBric.choices[0], "1st choice").to.deep.equal(Q1Choices[0]);
+				expect(myMultipleChoiceQuestion.presenterBric.choices[1], "2nd choice").to.deep.equal(Q1Choices[1]);
+				expect(myMultipleChoiceQuestion.presenterBric.choices[2], "3rd choice").to.deep.equal(Q1Choices[2]);
+				expect(myMultipleChoiceQuestion.presenterBric.choices[3], "4th choice").to.deep.equal(Q1Choices[3]);
 			});
 
 			it('should have the eventManager given to the constructor', function () {
-                expect(myMultipleChoiceQuestion.eventManager).to.equal(eventManager);
+                expect(myMultipleChoiceQuestion.eventManager).to.equal(bricWorks.eventManager);
 			});
 
 			it('should have an uninitialized lastdrawn property', function () {
@@ -359,7 +366,7 @@
 				describe.skip('.selectItemAtIndex()', function () {
 					it('should publish the multiplechoicequestion.selectedEventId with the answer key of the item at that index', function () {
 						var index = 1;
-						var expectedKey = myMultipleChoiceQuestion.choiceWidget.choices[index].answerKey;
+						var expectedKey = myMultipleChoiceQuestion.presenterBric.choices[index].answerKey;
 						var prevSelectEventCount = selectEventCount;
 						myMultipleChoiceQuestion.selectItemAtIndex(index);
 						expect(selectEventCount).is.equal(prevSelectEventCount + 1);
@@ -367,7 +374,7 @@
 					});
 
 					it('should change the selection when selecting an unselected item', function() {
-						var expectedKey = myMultipleChoiceQuestion.choiceWidget.choices[2].answerKey;
+						var expectedKey = myMultipleChoiceQuestion.presenterBric.choices[2].answerKey;
 						// Arrange - item 1 is selected
 						myMultipleChoiceQuestion.selectItemAtIndex(1);
 						var prevSelectEventCount = selectEventCount;
@@ -410,15 +417,15 @@
 					it('should return the selected choice, even after the choice has been changed', function () {
 						// 1st selection
 						myMultipleChoiceQuestion.selectItemAtIndex(1);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.choiceWidget.choices[1]);
+						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[1]);
 
 						// 2nd selection is after the current selection
 						myMultipleChoiceQuestion.selectItemAtIndex(3);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.choiceWidget.choices[3]);
+						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[3]);
 
 						// 3rd selection is before the current selection
 						myMultipleChoiceQuestion.selectItemAtIndex(0);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.choiceWidget.choices[0]);
+						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[0]);
 					});
 				});
 			});	

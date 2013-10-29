@@ -235,6 +235,22 @@ pearson.brix.BarChart.getEventTopic = function (eventName, instanceId)
 };
 
 /* **************************************************************************
+ * BarChart.getId                                                      */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.BarChart.prototype.getId = function ()
+{
+    return this.barId_;
+};
+
+/* **************************************************************************
  * BarChart.draw                                                       */ /**
  *
  * @inheritDoc
