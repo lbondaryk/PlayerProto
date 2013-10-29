@@ -69,6 +69,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=fakeactivitydb.js
 	--input=mortar-base.js
 	--input=mortar-hilite.js
+	--input=mortar-agestructure.js
 	--input=ipc.js
 	--input=ipsproxy.js
 	--input=messagebroker.js
