@@ -47,6 +47,7 @@ declare -a COMPILER_ARGS=(\
 	"--externs=d3.v3.externs.js"\
 	"--externs=jquery-1.8.externs.js"\
 	"--generate_exports"\
+	"--js=${LIBRARYDIR}closure/goog/deps.js"\
 	)
 
 declare -a BLDR_COMPILER_ARGS
