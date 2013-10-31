@@ -532,36 +532,6 @@
                                                 }
                                         }
                                 },
-                            "answers":
-                                {
-                                    "description": "the feedback and score of all possible choices for this multiple choice questione",
-                                    "type": "array",
-                                    "items":
-                                        {
-                                            "type": "object",
-                                            "required": ["key", "score", "response"],
-                                            "properties":
-                                                {
-                                                    "key":
-                                                        {
-                                                            "description": "The key value which uniquely identifies this answer choice",
-                                                            "type": "string"
-                                                        },
-                                                    "score":
-                                                        {
-                                                            "description": "A number between 0 and 1 where 0 is incorrect and 1 is correct",
-                                                            "type": "number",
-                                                            "minimum": 0,
-                                                            "maximum": 1
-                                                        },
-                                                    "response":
-                                                        {
-                                                            "description": "The feedback for the student who selected this answer",
-                                                            "type": "string"
-                                                        }
-                                                }
-                                        }
-                                },
                             "description":
                                 {
                                     "description": "A descriptive comment about this answer key",
