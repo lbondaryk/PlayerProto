@@ -34,8 +34,10 @@
               			<p> This simulation allows you to change the starting population size, a type of mortality structure, the total fertility rate and the age of first childbirth for a fictitious society. </p>
 				
 						<table width="100%">
-                    		<tr><td><span id="slider0"></span></td><td><span id="dropdown0"></span></td></tr>
-							<tr><td><span id="slider1"></span></td><td><span id="slider2"></span></td></tr>
+                    		<tr><td><span id="slider0"></span></td></tr>
+                    		<tr><td><span id="dropdown0">Mortality Type </span></td></tr>
+							<tr><td><span id="slider1"></span></td></tr>
+							<tr><td><span id="slider2"></span></td></tr>
             			</table>
 
 						<p>Some things to observe: 
@@ -122,20 +124,53 @@ var SelectGroup = pearson.brix.SelectGroup;
 var eventManager = new EventManager();
 	
 var years = 50;
-var maxAge = 80;
+var maxAge = 90;
+var startPop = 80;
 		
 // slider for total population
 var n0Slide = new Slider ({
-			startVal: 50,
-			minVal: 1,
+			startVal: startPop,
+			minVal: 10,
 			maxVal: 100,
-			stepVal: 1,
+			stepVal: 10,
 			unit: "(x 10000)",
-			label: "Starting population",
+			label: "Starting population (10000 x)",
 			format: d3.format('.1f')
 		}, eventManager);
 		
 n0Slide.draw(d3.select("#slider0"));
+
+// Select mortality type
+var profiles = new SelectGroup(
+		{
+			choices: [
+			{
+			content: "Highly developed nations",
+			},
+			{
+       		content: "Developing nations",
+			},
+			{
+			content: "Least developed nations",
+			},
+			]
+			
+		}, eventManager);
+		
+profiles.draw(d3.select("#dropdown0"));
+
+// slider for looking at different years in the population evolution
+var fertileSlide = new Slider ({
+			startVal: 2,
+			minVal: 0,
+			maxVal: 6,
+			stepVal: 1,
+			unit: "children/female",
+			label: "Total fertility rate T<sub>f</sub>",
+			format: d3.format('.1f')
+		}, eventManager);
+		
+fertileSlide.draw(d3.select("#slider1"));
 
 // slider for looking at different years in the population evolution
 var yearSlide = new Slider ({
@@ -157,14 +192,14 @@ yearSlide.draw(d3.select("#slider3"));
 			maxHt: 800
 		});
 		
-	var bars = new BarChart({
+	var barsWomen = new BarChart({
 			id: "lg0",
 			Data: [[]], 
 			type: "lines",
 			xAxisFormat: { type: "linear",
-						   ticks: [0, 100/maxAge],
+						   ticks: [0, 50/maxAge],
 						   orientation: "bottom",
-						   label: "population" },
+						   label: "Female population" },
 			yAxisFormat: { type: "ordinal",
 						   orientation: "left",
 						   label: "Age",
@@ -172,14 +207,27 @@ yearSlide.draw(d3.select("#slider3"));
 						    },
 		},eventManager);	
 			
-	
+	var barsMen = new BarChart ({
+		Data: [[]],
+		xAxisFormat: { 
+						type: "linear", 
+					   	mode: "reverse",
+					   	ticks: [0, 50/maxAge],
+					   	orientation: "bottom",
+					   	label: "Male Population"},
+		yAxisFormat: { type: "ordinal",
+					   orientation: "right",
+					   },
+	});
+
 	
 // configure and append the legend to the graph
 
 	var legLines = new Legend({
 		xPos: "right", yPos: "top",
-		labels: [{ content: "Men",	},
-				{ content: "Women",	}],
+		labels: [
+				{ content: "Women",	},
+				{ content: "Men",	},],
 		type: "box"
 	},eventManager);
 	
@@ -189,23 +237,29 @@ yearSlide.draw(d3.select("#slider3"));
 		yearSlider: yearSlide,
 		yearTopic: yearSlide.changedValueEventId,
 		initialPopTopic: n0Slide.changedValueEventId,
-		targetBric: bars
+		mortTopic: profiles.selectedEventId,
+		fertilityTopic: fertileSlide.changedValueEventId,
+		targetBricLeft: barsWomen,
+		targetBricRight: barsMen
 	};
 
 	var popMortar = new pearson.brix.mortar.AgeStructure(popConfig, eventManager);
-	bars.data = [popMortar.population_[0]];
+	barsWomen.data = [popMortar.populationWomen_[0]];
+	barsMen.data = [[], popMortar.populationMen_[0]];
 
-	cont1.append(bars);
-	bars.append(legLines);
+	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .45, heightPercent: 1, widthPercent: 0.55});
+	cont1.append(barsMen, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.55});
+	
+	barsWomen.append(legLines);
 
 	eventManager.publish(yearSlide.changedValueEventId, {newValue: 0});
+	eventManager.publish(profiles.selectedEventId, {selectKey: "0"});
 
 
 
 	eventManager.subscribe(legLines.selectedEventId,
 						   handleHighlight);
-	eventManager.subscribe(bars.selectedEventId,
-						   handleHighlight);
+	
 	
 /************************************************************************
 * handleHighlight                                            *//**
@@ -224,7 +278,8 @@ yearSlide.draw(d3.select("#slider3"));
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
 	
-		bars.lite(eventDetails.selectKey);
+		barsWomen.lite(eventDetails.selectKey);
+		barsMen.lite(eventDetails.selectKey);
 		legLines.lite(eventDetails.selectKey);
 		
 	}

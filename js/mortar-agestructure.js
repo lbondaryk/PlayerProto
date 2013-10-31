@@ -81,12 +81,30 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      */
     this.initialPopTopic_ = config['initialPopTopic'];
 
+
+     /**
+     * The initialMort topic to handle by updating the mortality profile, then 
+     * recalculating the data and redrawing the target bric.
+     * @private
+     * @type {string}
+     */
+    this.mortTopic_ = config['mortTopic'];
+
     /**
-     * The target bric instance to draw the data.
+     * The fertility topic to handle by updating the total fertility rate, then 
+     * recalculating the data and redrawing the target bric.
+     * @private
+     * @type {string}
+     */
+    this.fertilityTopic_ = config['fertilityTopic'];
+
+    /**
+     * The target bric instances to draw the data.
      * @private
      * @type {!pearson.brix.ILightable}
      */
-    this.targetBric_ = config['targetBric'];
+    this.targetBricLeft_ = config['targetBricLeft'];
+    this.targetBricRight_ = config['targetBricRight'];
 
     /**
      * The population year that should be displayed in the target bric. 
@@ -95,20 +113,33 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
     this.year_ = 0;
 
     /**
+     * The key for the mortality profile to use in calculating data. 
+     * @type {string}
+     */
+    this.mortalityKey_ = '0';
+
+    /**
      * The initial total population that will be allocated to various ages
      * according to the selected distribution profile.
      * @type {number}
      */
-    this.initialPop_ = 10;
+    this.initialPop_ = 80;
 
-    this.birthRate_ = 0.0012;
+    /**
+     * The total fertility rate that will be allocated to various ages
+     * according to the selected distribution profile.
+     * @type {number}
+     */
+    this.totalFertilityRate_ = 2;
 
     /**
      * The calculated population data
      * @private
      * @type {Array.<Array.<{x: number, y: number}>>}
      */
-    this.population_ = [];
+    this.populationWomen_ = [];
+    this.populationMen_ = [];
+
 
     // Init population data
     this.calcPopulation_();
@@ -123,6 +154,8 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
     // Set up the selection event subscription
     this.eventManager_.subscribe(this.yearTopic_, goog.bind(this.handleYearChangedEvent_, this));
     this.eventManager_.subscribe(this.initialPopTopic_, goog.bind(this.handleInitialPopChangedEvent_, this));
+    this.eventManager_.subscribe(this.mortTopic_, goog.bind(this.handleMortChangedEvent_, this));
+    this.eventManager_.subscribe(this.fertilityTopic_, goog.bind(this.handleFertilityChangedEvent_, this));
 };
 goog.inherits(pearson.brix.mortar.AgeStructure, pearson.brix.mortar.Mortar);
 
@@ -170,6 +203,45 @@ pearson.brix.mortar.AgeStructure.prototype.handleInitialPopChangedEvent_ = funct
 };
 
 /* **************************************************************************
+ * AgeStructure.handleFertilityChangedEvent_                                */ /**
+ *
+ * Handler for the changed fertility rate value event which will 
+ * recalculate the population data, and redisplay the data for
+ * year0 in the target bric.
+ * @private
+ *
+ * @param {Object}  eventDetails        -The details of the slider change event.
+ *
+ ****************************************************************************/
+pearson.brix.mortar.AgeStructure.prototype.handleFertilityChangedEvent_ = function (eventDetails)
+{
+    this.totalFertilityRate_ = eventDetails.newValue;
+    this.calcPopulation_();
+    this.year_ = 0;
+    this.yearSlider_.setValue(this.year_);
+    this.updateTargetBric_();
+};
+
+/* **************************************************************************
+ * AgeStructure.handleMortChangedEvent_                                */ /**
+ *
+ * Handler for the changed mortality profile value event which will 
+ * recalculate the population data, and redisplay the data for
+ * year0 in the target bric.
+ * @private
+ *
+ * @param {Object}  eventDetails        -The details of the slider change event.
+ *
+ ****************************************************************************/
+pearson.brix.mortar.AgeStructure.prototype.handleMortChangedEvent_ = function (eventDetails)
+{
+    this.mortalityKey_ = eventDetails.selectKey;
+    this.calcPopulation_();
+    this.year_ = 0;
+    this.yearSlider_.setValue(this.year_);
+    this.updateTargetBric_();
+};
+/* **************************************************************************
  * AgeStructure.updateTargetBric_                                      */ /**
  *
  * Handler for the changed year value event which will display the data for
@@ -179,8 +251,10 @@ pearson.brix.mortar.AgeStructure.prototype.handleInitialPopChangedEvent_ = funct
  ****************************************************************************/
 pearson.brix.mortar.AgeStructure.prototype.updateTargetBric_ = function ()
 {
-    this.targetBric_.data = [this.population_[this.year_]];
-    this.targetBric_.redraw();
+    this.targetBricLeft_.data = [this.populationWomen_[this.year_]];
+    this.targetBricLeft_.redraw();
+    this.targetBricRight_.data = [[], this.populationMen_[this.year_]];
+    this.targetBricRight_.redraw();
 };
 
 /* **************************************************************************
@@ -199,62 +273,78 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
     var maxAge = 90;
     var endBearingAge = 50; //age at which women become infertile(ish)
     var startBearingAge = 15; //might want to set this on slider
-    var fertilityRate = 2; //# kids born per woman, on slider
+    var fertilityRate = this.totalFertilityRate_; //# kids born per woman, on slider
     //death rate, A and B need to be set by a dropdown for 3 population types
     //and different A and B for men and women
     function mort(A,B,age)
         {
         return A * Math.exp(B * age);
         }
-
-    function birth(Nreproductive)
-        {
-            return Nreproductive * fertilityRate/(50 - startBearingAge);
-        }
-
-    var population = []; //population is a 2-D array, first index year up to 50, second age group
-    var init = []; // pop is the population array for all ages
-    var A = 0.00081, B= 0.062;
+    //populations are 2-D array, first index is year up to 50, second is age group
+    var populationW = [], populationM = []; 
+    var init = []; 
+    
+    if (this.mortalityKey_ === "0")
+    {
+        var Aw = 0.0008, Bw= 0.06; 
+        var Am = 0.00081, Bm = 0.062;
+    }
+    else if (this.mortalityKey_ === "1")
+    {
+        var Aw = 0.0008, Bw= 0.06; 
+        var Am = 0.0009, Bm = 0.065;
+    }
+    else
+    {
+        var Aw = 0.05, Bw= 0.030; 
+        var Am = 0.049, Bm = 0.029;
+    }
 
     for (var a = 0; a <= maxAge; a++)
     {
         // initialize the population at each age at year 0, Type I, II or III
-        // currently typeII uniform
-        init[a] = {x: n0/maxAge, y: a};
+        // currently typeII uniform, and 1/2 for men/women
+        init[a] = {x: n0/(2 * maxAge), y: a};
     }
      
     // initialize population zero year
-    population[0] = init;
+    populationW[0] = init;
+    populationM[0] = init;
 
     // now fill up the rest of the array
     for (var t = 1 ; t <= years; t++)
     {
-        var pop = [];
-        var prevPop = population[t - 1];
-        var Nreproductive;
+        var popW = [], popM = [];
+        var prevPopW = populationW[t - 1];
+        var prevPopM = populationM[t - 1];
+        var Nreproductive = 0;
 
-        prevPop.forEach( function(o,i)
+        prevPopW.forEach( function(o,i)
             {
-                console.log(o.x)
+                // for each previous year's female population, count the population across the reproductive
+                // female age range
                 Nreproductive = (i < endBearingAge && i > startBearingAge) ? Nreproductive + o.x : Nreproductive;
             });
 
-        console.log(Nreproductive);
-
+        var birth = Nreproductive * fertilityRate/(2 * (endBearingAge - startBearingAge));
         // Age 0-1 should be different, including the birth rate
-        pop[0] = {x: prevPop[0].x * mort(A, B, prevPop[0].x) + birth(Nreproductive), y: 0};
+        popW[0] = {x: prevPopW[0].x * mort(Aw, Bw, prevPopW[0].x) + birth, y: 0};
+        popM[0] = {x: prevPopM[0].x * mort(Am, Bm, prevPopM[0].x) + birth, y: 0};
 
         for (var age = 1; age <= maxAge; age++)
         {
             //while it might be more efficient to count down, the difference equation 
             //only works if you bootstrap up. Each age's population is equal to the 
             //population of the previous age from last year, times (1 - death rate).
-            pop[age] = {x: population[t - 1][age - 1].x * (1 - mort(A, B, age - 1)), y: age};
+            popW[age] = {x: populationW[t - 1][age - 1].x * (1 - mort(Aw, Bw, age - 1)), y: age};
+            popM[age] = {x: populationM[t - 1][age - 1].x * (1 - mort(Am, Bm, age - 1)), y: age};
         }
 
-        population[t] = pop;
+        populationW[t] = popW;
+        populationM[t] = popM;
     }
 
-    this.population_ = population;
+    this.populationWomen_ = populationW;
+    this.populationMen_ = populationM;
 
 };
