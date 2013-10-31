@@ -7,8 +7,8 @@
  * The IPSProxy encapsulates series of methods that wraps around AJAX calls
  * to remote IPS.
  *
- * Created on		Sept 19, 2013
- * @author			Young-Suk Ahn
+ * Created on       Sept 19, 2013
+ * @author          Young-Suk Ahn
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -43,7 +43,7 @@ pearson.brix.utils.IpsProxy = function (config)
     this.serverBaseUrl = config.serverBaseUrl;
 
     /**
-     * A logger to help debugging 
+     * A logger to help debugging
      * @type {goog.debug.Logger}
      * @private
      */
@@ -68,13 +68,13 @@ pearson.brix.utils.IpsProxy.CallbackFn;
  * on the IPS), to the IPS. This object must conform to JSON standards.
  *
  * @typedef {Object} pearson.brix.utils.IpsProxy.SubmissionParam
- * @property {string}	sequenceNodeKey	-Identifies the specific question,
+ * @property {string}   sequenceNodeKey -Identifies the specific question,
  *                                       student and course.
  *                                       ex. "895af0ae2d8aa5bffba54ab0555d7461"
- * @property {string}	timestamp	    -format "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
- * @property {string}	type	        -must be "submission"
+ * @property {string}   timestamp       -format "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+ * @property {string}   type            -must be "submission"
  * @property {{studentSubmission: *}}
- *                      body	        -Contains the data specific to the
+ *                      body            -Contains the data specific to the
  *                                       question type being answered, for
  *                                       what the student's answer is.
  *
@@ -87,9 +87,9 @@ pearson.brix.utils.IpsProxy.SubmissionParam;
 /* **************************************************************************
  * IpsProxy.checkHealth                                                */ /**
  *
- * Returns the server health status if the callback is called without error. 
+ * Returns the server health status if the callback is called without error.
  * @export
- * 
+ *
  * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
  *                      callback -Function that is called when the async operation
  *                                is completed.
@@ -141,9 +141,9 @@ pearson.brix.utils.IpsProxy.prototype.checkHealth = function (callback)
  *   method: "POST"
  * }
  * @export
- * 
+ *
  * @param  {Object}   param     Parameter that contains message to be passed
- *                              to the server as request body. 
+ *                              to the server as request body.
  * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
  *                    callback  Function that is called when the async operation
  *                              is completed.
@@ -167,11 +167,11 @@ pearson.brix.utils.IpsProxy.prototype.retrieveSequenceNode = function (param, ca
  *      "interactionData": "...some stuff..."
  *    }
  * }
- * 
+ *
  * @export
- * 
+ *
  * @param  {Object}   param     Parameter that contains message to be passed
- *                              to the server as request body. 
+ *                              to the server as request body.
  * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
  *                    callback  Function that is called when the async operation
  *                              is completed.
@@ -186,11 +186,11 @@ pearson.brix.utils.IpsProxy.prototype.postInteraction = function (param, callbac
  *
  * Posts submission data (the answer selected by the student that she
  * has requested be corrected) to the Brix server.
- * 
+ *
  * @param  {pearson.brix.utils.IpsProxy.SubmissionParam}
  *                      param       Parameter that contains message to be passed
- *                                  to the server as request body. 
- *                               
+ *                                  to the server as request body.
+ *
  * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
  *                      callback    Function that is called when the async operation
  *                                  is completed.
@@ -205,10 +205,10 @@ pearson.brix.utils.IpsProxy.prototype.postSubmission = function (param, callback
  *
  * Makes a REST POST request with the provided parameters.
  * @private
- * 
+ *
  * @param  {Object}   param     Parameter that contains message to be passed
- *                              to the server as request body. 
- *                               
+ *                              to the server as request body.
+ *
  * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
  *                    callback  Function that is called when the async operation
  *                              is completed.
@@ -253,7 +253,7 @@ pearson.brix.utils.IpsProxy.prototype.postMessage_ = function (url, param, callb
     // Another way of requesting is creating an XhrIo instance
     // passing it to goog event listner as
     // goog.events.listenOnce(xhr, goog.net.EventType.COMPLETE, function(e) {...}
-    // and the do the actual send on the instance.    
+    // and the do the actual send on the instance.
     goog.net.XhrIo.send(url, ajaxCallback, 'POST',
                         message, {"Content-Type": "application/json" });
 };
