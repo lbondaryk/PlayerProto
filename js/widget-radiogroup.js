@@ -65,10 +65,10 @@ goog.require('pearson.brix.HtmlBric');
 });
 
 /**
- * Answers are presented to users by certain brix that allow the user to
+ * KeyedAnswers are presented to users by certain brix that allow the user to
  * select one (or more of them).
  *
- * @typedef {Object} pearson.brix.Answer
+ * @typedef {Object} pearson.brix.KeyedAnswer
  * @property {htmlString}
  *                      content     -The content of the answer, which presents the
  * 									 meaning of the answer.
@@ -81,7 +81,7 @@ goog.require('pearson.brix.HtmlBric');
  * @todo: the content currently must be text (a string) however, we are likely
  * to want to make the content be any widget.
  */
-pearson.brix.Answer;
+pearson.brix.KeyedAnswer;
 
 
 /* **************************************************************************
@@ -97,7 +97,7 @@ pearson.brix.Answer;
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this RadioGroup.
  * 										 if undefined a unique id will be assigned.
- * @param {!Array.<!pearson.brix.Answer>}
+ * @param {!Array.<!pearson.brix.KeyedAnswer>}
  *						config.choices	-The list of choices (answers) to be presented by the RadioGroup.
  * @param {string|undefined}
  *						config.numberFormat
@@ -124,7 +124,7 @@ pearson.brix.RadioGroup = function (config, eventManager)
 
 	/**
 	 * The list of choices presented by the RadioGroup.
-	 * @type {!Array.<!pearson.brix.Answer>}
+	 * @type {!Array.<!pearson.brix.KeyedAnswer>}
 	 */
 	this.choices = config.choices;
 
@@ -290,7 +290,7 @@ pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 	// choice at index is not selected, so select it and publish selected event
 	selectedInput.checked = true;
 
-	var d = /** @type {!pearson.brix.Answer} */ (d3.select(selectedInput).datum());
+	var d = /** @type {!pearson.brix.KeyedAnswer} */ (d3.select(selectedInput).datum());
 
 	this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
 };

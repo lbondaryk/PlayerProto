@@ -413,7 +413,7 @@
 									"config":
 										{
 											"id": "homicideQ",
-											"questionId": "homicide",
+											//"questionId": "homicide",
 											"order": "randomized",
 											"presenterType": "SelectGroup",
 											"presenterConfig":
@@ -434,22 +434,30 @@
 													},
 											]
 										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "questionId",
+                                                "value": { "type": "ref", "domain": "info", "refId": "sequenceNodeKey" }
+                                            }
+                                        ],
 									"answerKey":
 										{
 											"assessmentType": "multiplechoice",
 											"answers":
-												[
-													{
-														"key": "answer000",
-														"score": 1,
-														"response": "Wow, that's a surprise."
-													},
-													{
-														"key": "answer001",
-														"score": 1,
-														"response": "This does seem more likely, doesn't it?",
-													}
-												]
+												{
+													"answer000":
+														{
+															"score": 1,
+															"response": "Wow, that's a surprise."
+														},
+													"answer001":
+														{
+															"score": 1,
+															"response": "This does seem more likely, doesn't it?",
+														}
+												}
 										}
 								}
 							],
@@ -515,12 +523,16 @@
 	// create the eventmanager to be used by the created brix, and the
 	// bricLayer which will create them, and then tell the bricLayer to build.
 	a.eventManager = new pearson.utils.EventManager();
+	a.answerMan = new pearson.brix.utils.LocalAnswerMan();
+	a.submitManager = new pearson.brix.utils.SubmitManager(a.eventManager, a.answerMan);
+
 	a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager);
 
 	a.building = a.bricLayer.build(a.config);
 
+	a.answerMan.registerAnswerKey(a.config.sequenceNodeKey,
+								  a.config.containerConfig[2].brixConfig[0].answerKey);
 
-	a.submitManager = new pearson.brix.SubmitManager(a.eventManager);
 	a.submitManager.handleRequestsFrom(a.building.brix.Q0);
 /*
 

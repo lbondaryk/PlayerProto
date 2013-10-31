@@ -667,6 +667,22 @@ goog.require('goog.object');
                     expect(testDVBric.dynamicVal).to.be.an('array');
                     expect(testDVBric.dynamicVal).to.equal(building.data[dataId]);
                 });
+
+                it('should be able to reference info properties', function () {
+                    // the bricLayer currently only supports 1 info property
+                    // which it creates from the 'sequenceNodeKey' property
+                    // so add that property to the config.
+                    var seqNodeKey = "f7d82086-4072-411a-8fe4-1fcee6843613";
+                    activityConfig.sequenceNodeKey = seqNodeKey;
+                    var refDv = { "type": "ref", "domain": "info", "refId": 'sequenceNodeKey' };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(refDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.a('string');
+                    expect(testDVBric.dynamicVal).to.equal(seqNodeKey);
+                });
             });
 
             describe('property-of-ref', function() {

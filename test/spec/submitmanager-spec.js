@@ -18,7 +18,7 @@
     var expect = chai.expect;
 
 	var SubmitManager = pearson.brix.utils.SubmitManager;
-	var AnswerMan = pearson.brix.AnswerMan;
+	var LocalAnswerMan = pearson.brix.utils.LocalAnswerMan;
 
 	var createMockEventManager = function ()
 		{
@@ -36,7 +36,20 @@
     describe('SubmitManager tests', function () {
 		describe('.handleRequestsFrom()', function () {
 			var eventManager = createMockEventManager();
-			var submitManager = new SubmitManager(eventManager, new AnswerMan());
+            var answerMan = new LocalAnswerMan();
+            answerMan.registerAnswerKey("http://hub.paf.pearson.com/resources/sequences/123/nodes/1",
+                                        {
+                                            assessmentType: "multiplechoice",
+                                            answers:
+                                                {
+                                                    "1":
+                                                        {
+                                                            score: 1,
+                                                            response: "There can be only 1",
+                                                        },
+                                                }
+                                        });
+			var submitManager = new SubmitManager(eventManager, answerMan);
 			var mockQWidget = {submitScoreRequestEventId: "foo"};
 			submitManager.handleRequestsFrom(mockQWidget);
 

@@ -15,7 +15,7 @@
 
 goog.provide('pearson.brix.utils.SubmitManager');
 
-goog.require('pearson.brix.AnswerMan');
+goog.require('pearson.brix.utils.LocalAnswerMan');
 
 /* **************************************************************************
  * SubmitManager                                                       */ /**
@@ -27,7 +27,7 @@ goog.require('pearson.brix.AnswerMan');
  * @param {!pearson.utils.EventManager}
  * 						eventManager	-The event manager to use for publishing events
  * 									 	 and subscribing to them.
- * @param {!pearson.brix.AnswerMan=}
+ * @param {!pearson.brix.IAnswerMan=}
  * 						answerMan		-The correctness engine to process the selected answer.
  *
  * @classdesc
@@ -43,9 +43,10 @@ pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
 {
 	/**
 	 * The answerMan provides feedback to submissions 
-	 * @type {!pearson.brix.AnswerMan}
+     * @private
+	 * @type {!pearson.brix.utils.IAnswerMan}
 	 */
-	this.answerMan = answerMan || new pearson.brix.AnswerMan();
+	this.answerMan_ = answerMan || new pearson.brix.utils.LocalAnswerMan();
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events
@@ -68,7 +69,7 @@ pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
  *
  * @typedef {Object} pearson.brix.utils.SubmitManager.PendingDetails
  * @property {pearson.brix.Ipc.SequenceNodeKey}
- * 								sequenceNodeId	-The PAF Activity Id which identifies the
+ * 								sequenceNodeKey	-The PAF Activity Id which identifies the
  * 												 activity being scored.
  * @property {string}			answer			-The 'key' of the chosen answer to be scored.
  * @property {number|undefined}	value			-If the answer selection is not from a discrete list
@@ -117,25 +118,27 @@ pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventD
 {
 	var pendingDetails =
 		{
-			sequenceNodeId: eventDetails['questionId'],
+			sequenceNodeKey: eventDetails['questionId'],
 			answer: eventDetails['answerKey'],
 			value: eventDetails['submissionValue'],
 			responseCallback: eventDetails['responseCallback'],
 			requestDetails: eventDetails,
 		};
 
-	if (this.requestsAwaitingResponse_[pendingDetails.sequenceNodeId] !== undefined)
+	if (this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] !== undefined)
 	{
 		alert("there's already an outstanding submission request for the sequenceNode: " + pendingDetails.sequenceNodeId);
 	}
 
-	this.requestsAwaitingResponse_[pendingDetails.sequenceNodeId] = pendingDetails;
+	this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] = pendingDetails;
 
-	this.submitForScoring_(pendingDetails);
+    this.answerMan_.scoreAnswer(pendingDetails.sequenceNodeKey,
+                                {key: pendingDetails.answer},
+                                goog.bind(this.handleScoringResponse_, this, pendingDetails.sequenceNodeKey));
 };
 
 /* **************************************************************************
- * SubmitManager.submitForScoring_                                     */ /**
+ * SubmitManager.handleScoringResponse_                                */ /**
  *
  * Send the score request to the scoring engine using whatever means required
  * to access that scoring engine.
@@ -154,21 +157,13 @@ pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventD
  * moved to this new method. -mjl
  *
  ****************************************************************************/
-pearson.brix.utils.SubmitManager.prototype.submitForScoring_ = function(submitDetails)
+pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (seqNodeKey, submissionResponse)
 {
-	// pass the submission on to the scoring engine. This will probably be
-	// via the ActivityManager I'd think
-	// todo: Although we're getting a synchronous response here, we should
-	// enhance this to have the "answerMan" give us an asynchronous
-	// response, probably via an eventManager event. -mjl
-	var submissionResponse = this.answerMan.submitAnswer(submitDetails.sequenceNodeId,
-										submitDetails.answer, submitDetails.value);
-
 	// We handle the reply from the scoring engine (in the event handler eventually)
 	// by removing the request from the list of pending request
 	// and calling the given callback if it exists
-	var pendingDetails = this.requestsAwaitingResponse_[submitDetails.sequenceNodeId];
-	delete this.requestsAwaitingResponse_[submitDetails.sequenceNodeId];
+	var pendingDetails = this.requestsAwaitingResponse_[seqNodeKey];
+	delete this.requestsAwaitingResponse_[seqNodeKey];
 	if (typeof pendingDetails.responseCallback === "function")
 	{
 		submissionResponse.submitDetails = pendingDetails.requestDetails;

@@ -387,6 +387,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     prevFeedback.remove();
 
     // For now just use the helper function to write the response.
+    responseDetails.submission = this.presenterBric.selectedItem().content;
     pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 };
 

@@ -64,7 +64,6 @@ BRIX_ARGS=$(cat <<EOF
 	--input=bricworks.js
 	--input=domhelper.js
 	--input=eventmanager.js
-	--input=fakeactivitydb.js
 	--input=mortar-base.js
 	--input=mortar-hilite.js
 	--input=ipc.js
