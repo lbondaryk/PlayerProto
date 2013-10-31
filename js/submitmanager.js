@@ -13,18 +13,9 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.SubmitManager');
-goog.provide('pearson.paf');
+goog.provide('pearson.brix.utils.SubmitManager');
 
 goog.require('pearson.brix.AnswerMan');
-
-/**
- * The PAF Activity ID used by the scoring engine to identify
- * the particular activity (question) being scored.
- *
- * @typedef {string} pearson.paf.SequenceNodeId
- */
-pearson.paf.SequenceNodeId;
 
 /* **************************************************************************
  * SubmitManager                                                       */ /**
@@ -48,7 +39,7 @@ pearson.paf.SequenceNodeId;
  * is a callback associated w/ the request.
  *
  ****************************************************************************/
-pearson.brix.SubmitManager = function (eventManager, answerMan)
+pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
 {
 	/**
 	 * The answerMan provides feedback to submissions 
@@ -65,7 +56,7 @@ pearson.brix.SubmitManager = function (eventManager, answerMan)
 	/**
 	 * map of all submitted answers awaiting a response from
 	 * the scoring engine.
-	 * @type {Object.<pearson.paf.SequenceNodeId, pearson.brix.SubmitManager.PendingDetails>}
+	 * @type {Object.<pearson.brix.Ipc.SequenceNodeKey, pearson.brix.utils.SubmitManager.PendingDetails>}
 	 * @private
 	 */
 	this.requestsAwaitingResponse_ = {};
@@ -75,8 +66,8 @@ pearson.brix.SubmitManager = function (eventManager, answerMan)
  * The PendingDetails is the information about an outstanding
  * request for an activity to be scored by the scoring engine.
  *
- * @typedef {Object} pearson.brix.SubmitManager.PendingDetails
- * @property {pearson.paf.SequenceNodeId}
+ * @typedef {Object} pearson.brix.utils.SubmitManager.PendingDetails
+ * @property {pearson.brix.Ipc.SequenceNodeKey}
  * 								sequenceNodeId	-The PAF Activity Id which identifies the
  * 												 activity being scored.
  * @property {string}			answer			-The 'key' of the chosen answer to be scored.
@@ -88,7 +79,7 @@ pearson.brix.SubmitManager = function (eventManager, answerMan)
  * @property {Object}			requestDetails	-The details from the score
  * 												 request event from the question widget.
  */
-pearson.brix.SubmitManager.PendingDetails;
+pearson.brix.utils.SubmitManager.PendingDetails;
 
 /* **************************************************************************
  * SubmitManager.handleRequestsFrom                                    */ /**
@@ -102,7 +93,7 @@ pearson.brix.SubmitManager.PendingDetails;
  * 										 be scored.
  *
  ****************************************************************************/
-pearson.brix.SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
+pearson.brix.utils.SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
 {
 	var that = this;
 	this.eventManager.subscribe(questionWidget.submitScoreRequestEventId,
@@ -122,7 +113,7 @@ pearson.brix.SubmitManager.prototype.handleRequestsFrom = function(questionWidge
  * @private
  *
  ****************************************************************************/
-pearson.brix.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
+pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 {
 	var pendingDetails =
 		{
@@ -149,7 +140,7 @@ pearson.brix.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails
  * Send the score request to the scoring engine using whatever means required
  * to access that scoring engine.
  *
- * @param {pearson.brix.SubmitManager.PendingDetails}
+ * @param {pearson.brix.utils.SubmitManager.PendingDetails}
  * 							submitDetails	-Information identifying the question
  * 											 and answer to be scored, in the properties:
  * 											 sequenceNodeId and answer.
@@ -163,7 +154,7 @@ pearson.brix.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails
  * moved to this new method. -mjl
  *
  ****************************************************************************/
-pearson.brix.SubmitManager.prototype.submitForScoring_ = function(submitDetails)
+pearson.brix.utils.SubmitManager.prototype.submitForScoring_ = function(submitDetails)
 {
 	// pass the submission on to the scoring engine. This will probably be
 	// via the ActivityManager I'd think
@@ -212,7 +203,7 @@ pearson.brix.SubmitManager.prototype.submitForScoring_ = function(submitDetails)
  * a whole number that could be used as an index w/o manipulation. -mjl
  *
  ****************************************************************************/
-pearson.brix.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
+pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
 {
 	var responseFormat = {
 			correct: {

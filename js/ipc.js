@@ -41,7 +41,7 @@ goog.provide('pearson.brix.Ipc');
 goog.require('goog.debug.Logger');
 
 goog.require("pearson.brix.utils.IpsProxy");
-goog.require("pearson.brix.BrixLayer");
+goog.require("pearson.brix.BricLayer");
 
 
 /* **************************************************************************
@@ -113,6 +113,15 @@ pearson.brix.Ipc = function (config, eventManager)
      */
     this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager);
 };
+
+/**
+ * The SequenceNodeKey is defined by the IPS and uniquely identifies this
+ * PAF Activity, user (student) and course. The IPS adds it to the activity
+ * config returned to the IPC.
+ *
+ * @typedef {string} pearson.brix.Ipc.SequenceNodeKey
+ */
+pearson.brix.Ipc.SequenceNodeKey;
 
 /* **************************************************************************
  * Ipc.init                                                            */ /**

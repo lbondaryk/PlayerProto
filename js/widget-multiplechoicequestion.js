@@ -18,7 +18,7 @@ goog.provide('pearson.brix.MultipleChoiceQuestion');
 
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.utils.EventManager');
-goog.require('pearson.brix.SubmitManager');
+goog.require('pearson.brix.utils.SubmitManager');
 goog.require('pearson.brix.BricWorks');
 goog.require('pearson.brix.HtmlBric');
 
@@ -387,7 +387,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     prevFeedback.remove();
 
     // For now just use the helper function to write the response.
-    pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
+    pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 };
 
 /* **************************************************************************

@@ -14,8 +14,9 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.BrixLayer');
+goog.provide('pearson.brix.BricLayer');
 goog.provide('pearson.brix.BricTypes');
+goog.provide('pearson.brix.MortarTypes');
 
 goog.require('goog.object');
 goog.require('pearson.utils.IEventManager');
