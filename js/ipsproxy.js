@@ -14,7 +14,7 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.IpsProxy');
+goog.provide('pearson.brix.utils.IpsProxy');
 
 goog.require('goog.debug.Logger');
 goog.require("goog.net.XhrIo");
@@ -29,12 +29,12 @@ goog.require("goog.net.XhrIo");
  * @constructor
  * @export
  *
- * @param {Object}      config          - The settings to configure this SelectGroup
+ * @param {Object}      config          - The settings to configure this IpsProxy
  * @param {string|undefined}
  *                      config.serverBaseUrl - The URL to the IPS server.
  *
  ****************************************************************************/
-pearson.brix.IpsProxy = function (config)
+pearson.brix.utils.IpsProxy = function (config)
 {
     /**
      * The URL to the IPS server.
@@ -47,17 +47,42 @@ pearson.brix.IpsProxy = function (config)
      * @type {goog.debug.Logger}
      * @private
      */
-    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.IpsProxy');
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.utils.IpsProxy');
 
 };
 
 /**
- * The server base url
- * @type {String}
+ * A callback function that is supplied to the IpsProxy that will be invoked
+ * once the a response from the Ips has been received. It will be invoked
+ * with 2 arguments, the 1st is an error object that will be null if no
+ * error occurred, the 2nd is the successful result return value from the Ips,
+ * which will be null if an error occurred.
+ *
+ * @typedef {function(*, *)} pearson.brix.utils.IpsProxy.CallbackFn
  */
-pearson.brix.IpsProxy.prototype.serverBaseUrl = null;
+pearson.brix.utils.IpsProxy.CallbackFn;
 
-//pearson.brix.IpsProxy.prototype.logger = goog.debug.Logger.getLogger('example.Child');
+/**
+ * The parameter information that is needed when sending a submission
+ * (a student answer that will be corrected using an answerKey available
+ * on the IPS), to the IPS. This object must conform to JSON standards.
+ *
+ * @typedef {Object} pearson.brix.utils.IpsProxy.SubmissionParam
+ * @property {string}	sequenceNodeKey	-Identifies the specific question,
+ *                                       student and course.
+ *                                       ex. "895af0ae2d8aa5bffba54ab0555d7461"
+ * @property {string}	timestamp	    -format "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+ * @property {string}	type	        -must be "submission"
+ * @property {{studentSubmission: *}}
+ *                      body	        -Contains the data specific to the
+ *                                       question type being answered, for
+ *                                       what the student's answer is.
+ *
+ * @note Why require that the timestamp and type be in the parameter info
+ * given to the postSubmission method, couldn't those fields be filled in
+ * by the postSubmission method? -mjl
+ */
+pearson.brix.utils.IpsProxy.SubmissionParam;
 
 /* **************************************************************************
  * IpsProxy.checkHealth                                                */ /**
@@ -65,29 +90,31 @@ pearson.brix.IpsProxy.prototype.serverBaseUrl = null;
  * Returns the server health status if the callback is called without error. 
  * @export
  * 
- * @param  {Function} callback  Function that is called when the async operation
- *                              is completed. The signature should be:
- *                              fn(error, result).
+ * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
+ *                      callback -Function that is called when the async operation
+ *                                is completed.
  ****************************************************************************/
-pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
+pearson.brix.utils.IpsProxy.prototype.checkHealth = function (callback)
 {
 
     var xhr = new goog.net.XhrIo();
-    var ajaxCallback = function(e) {
+    var ajaxCallback = function (e)
+    {
         var xhr = /** @type {goog.net.XhrIo} */ (e.target);
 
         var error = null;
         var result = null;
 
-        if (xhr.isSuccess()) {
+        if (xhr.isSuccess())
+        {
             result = xhr.getResponseJson();
         }
         else
         {
             error = {
-                message: xhr.getLastError(),
-                status: xhr.getStatus()
-            };
+                        message: xhr.getLastError(),
+                        status: xhr.getStatus()
+                    };
         }
         callback(error, result);
     };
@@ -117,11 +144,11 @@ pearson.brix.IpsProxy.prototype.checkHealth = function (callback)
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
  *                              to the server as request body. 
- * @param  {Function} callback  Function that is called when the async operation
- *                              is completed. The signature should be:
- *                              fn(error, result).
+ * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
+ *                    callback  Function that is called when the async operation
+ *                              is completed.
  ****************************************************************************/
-pearson.brix.IpsProxy.prototype.retrieveSequenceNode = function (param, callback)
+pearson.brix.utils.IpsProxy.prototype.retrieveSequenceNode = function (param, callback)
 {
     this.postMessage_(this.serverBaseUrl + '/sequencenodes', param, callback);
 };
@@ -135,20 +162,21 @@ pearson.brix.IpsProxy.prototype.retrieveSequenceNode = function (param, callback
  *  "sequenceNodeKey": "895af0ae2d8aa5bffba54ab0555d7461",
  *  "timestamp": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
  *  "type": "submission",
- *  "body": {
- *    "interactionData": "...some stuff..."
- *  }
+ *  "body":
+ *    {
+ *      "interactionData": "...some stuff..."
+ *    }
  * }
  * 
  * @export
  * 
  * @param  {Object}   param     Parameter that contains message to be passed
  *                              to the server as request body. 
- * @param  {Function} callback  Function that is called when the async operation
- *                              is completed. The signature should be:
- *                              fn(error, result).
+ * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
+ *                    callback  Function that is called when the async operation
+ *                              is completed.
  ****************************************************************************/
-pearson.brix.IpsProxy.prototype.postInteraction = function (param, callback)
+pearson.brix.utils.IpsProxy.prototype.postInteraction = function (param, callback)
 {
     this.postMessage_(this.serverBaseUrl + '/sequencenodes/' + param.sequenceNodeKey + '/interactions', param, callback);
 };
@@ -156,25 +184,18 @@ pearson.brix.IpsProxy.prototype.postInteraction = function (param, callback)
 /* **************************************************************************
  * IpsProxy.postSubmission                                             */ /**
  *
- * Posts submission data to the Brix server
- * The input parameter is JSON object of format:
- * {
- *  "sequenceNodeKey": "895af0ae2d8aa5bffba54ab0555d7461",
- *  "timestamp": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
- *  "type": "submission",
- *  "body": {
- *    "submissionData": "...some stuff..."
- *  }
- * }
+ * Posts submission data (the answer selected by the student that she
+ * has requested be corrected) to the Brix server.
  * 
- * @param  {Object}   param     Parameter that contains message to be passed
- *                              to the server as request body. 
+ * @param  {pearson.brix.utils.IpsProxy.SubmissionParam}
+ *                      param       Parameter that contains message to be passed
+ *                                  to the server as request body. 
  *                               
- * @param  {Function} callback  Function that is called when the async operation
- *                              is completed. The signature should be:
- *                              fn(error, result).
+ * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
+ *                      callback    Function that is called when the async operation
+ *                                  is completed.
  ****************************************************************************/
-pearson.brix.IpsProxy.prototype.postSubmission = function (param, callback)
+pearson.brix.utils.IpsProxy.prototype.postSubmission = function (param, callback)
 {
     this.postMessage_(this.serverBaseUrl + '/sequencenodes/' + param.sequenceNodeKey + '/submissions', param, callback);
 };
@@ -188,14 +209,15 @@ pearson.brix.IpsProxy.prototype.postSubmission = function (param, callback)
  * @param  {Object}   param     Parameter that contains message to be passed
  *                              to the server as request body. 
  *                               
- * @param  {Function} callback  Function that is called when the async operation
- *                              is completed. The signature should be:
- *                              fn(error, result).
+ * @param  {pearson.brix.utils.IpsProxy.CallbackFn}
+ *                    callback  Function that is called when the async operation
+ *                              is completed.
  ****************************************************************************/
-pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
+pearson.brix.utils.IpsProxy.prototype.postMessage_ = function (url, param, callback)
 {
     var xhr = new goog.net.XhrIo();
-    var ajaxCallback = function(e) {
+    var ajaxCallback = function (e)
+    {
         var xhr = /** @type {goog.net.XhrIo} */ (e.target);
 
         var error = null;
@@ -208,11 +230,12 @@ pearson.brix.IpsProxy.prototype.postMessage_ = function (url, param, callback)
         else
         {
             error = {
-                message: xhr.getLastError(),
-                status: xhr.getStatus()
-            };
+                        message: xhr.getLastError(),
+                        status: xhr.getStatus()
+                    };
             result = xhr.getResponseBody();
-            try {
+            try
+            {
                 result = xhr.getResponseJson();
             }
             catch (jsonErr)

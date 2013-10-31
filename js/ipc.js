@@ -40,7 +40,7 @@ goog.provide('pearson.brix.Ipc');
 
 goog.require('goog.debug.Logger');
 
-goog.require("pearson.brix.IpsProxy");
+goog.require("pearson.brix.utils.IpsProxy");
 goog.require("pearson.brix.BrixLayer");
 
 
@@ -84,9 +84,9 @@ pearson.brix.Ipc = function (config, eventManager)
 
     /**
      * The IpsProxy used by this Ipc to communicate w/ the IPS
-     * @type {pearson.brix.IpsProxy}
+     * @type {pearson.brix.utils.IpsProxy}
      */
-    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl": config.ipsBaseUrl});
+    this.ipsProxy = new pearson.brix.utils.IpsProxy({"serverBaseUrl": config.ipsBaseUrl});
 
     /**
      * List of activity identification records used to obtain the sequence node id
