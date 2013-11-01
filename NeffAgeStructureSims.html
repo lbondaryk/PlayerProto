@@ -3,11 +3,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Author" content="Jason Neff" />
 	<meta name="Owner" content="Pearson" />
 	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
 	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<meta content="Our Changing Planet" name="description" />
 	<title class="setTitle"></title>
 
     <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
@@ -33,9 +33,10 @@
 		 			<div class="lc_ec_leading">
               			<p> This simulation allows you to change the starting population size, a type of mortality structure, the total fertility rate and the age of first childbirth for a fictitious society. </p>
 				
-						<table width="100%">
+						<table width="100%" margin="10">
                     		<tr><td><span id="slider0"></span></td></tr>
-                    		<tr><td><span id="dropdown0">Mortality Type </span></td></tr>
+                    		<tr><td><span id="dropdown0">Initial population distribution </span></td></tr>
+                    		<tr><td><span id="dropdown1">Mortality Type </span></td></tr>
 							<tr><td><span id="slider1"></span></td></tr>
 							<tr><td><span id="slider2"></span></td></tr>
             			</table>
@@ -134,11 +135,30 @@ var n0Slide = new Slider ({
 			maxVal: 100,
 			stepVal: 10,
 			unit: "(x 10000)",
-			label: "Starting population (10000 x)",
+			label: "Total population (10000 x)",
 			format: d3.format('.1f')
 		}, eventManager);
 		
 n0Slide.draw(d3.select("#slider0"));
+
+// Select initial population distribution type
+var popDistribution = new SelectGroup(
+		{
+			choices: [
+			{
+			content: "Type I (triangle)",
+			},
+			{
+       		content: "Type II (uniform)",
+			},
+			{
+			content: "Type III (pyramid)",
+			},
+			]
+			
+		}, eventManager);
+		
+popDistribution.draw(d3.select("#dropdown0"));
 
 // Select mortality type
 var profiles = new SelectGroup(
@@ -157,7 +177,7 @@ var profiles = new SelectGroup(
 			
 		}, eventManager);
 		
-profiles.draw(d3.select("#dropdown0"));
+profiles.draw(d3.select("#dropdown1"));
 
 // slider for looking at different years in the population evolution
 var fertileSlide = new Slider ({
@@ -171,6 +191,19 @@ var fertileSlide = new Slider ({
 		}, eventManager);
 		
 fertileSlide.draw(d3.select("#slider1"));
+
+// slider for looking at different age of first childbirth
+var ageFirstBirthSlide = new Slider ({
+			startVal: 16,
+			minVal: 15,
+			maxVal: 30,
+			stepVal: 1,
+			unit: "",
+			label: "Age of first birth A<sub>c</sub>",
+			format: d3.format('.1f')
+		}, eventManager);
+		
+ageFirstBirthSlide.draw(d3.select("#slider2"));
 
 // slider for looking at different years in the population evolution
 var yearSlide = new Slider ({
@@ -237,8 +270,10 @@ yearSlide.draw(d3.select("#slider3"));
 		yearSlider: yearSlide,
 		yearTopic: yearSlide.changedValueEventId,
 		initialPopTopic: n0Slide.changedValueEventId,
+		popDistributionTopic: popDistribution.selectedEventId,
 		mortTopic: profiles.selectedEventId,
 		fertilityTopic: fertileSlide.changedValueEventId,
+		ageFirstBirthTopic: ageFirstBirthSlide.changedValueEventId,
 		targetBricLeft: barsWomen,
 		targetBricRight: barsMen
 	};
@@ -252,11 +287,7 @@ yearSlide.draw(d3.select("#slider3"));
 	
 	barsWomen.append(legLines);
 
-	eventManager.publish(yearSlide.changedValueEventId, {newValue: 0});
-	eventManager.publish(profiles.selectedEventId, {selectKey: "0"});
-
-
-
+	
 	eventManager.subscribe(legLines.selectedEventId,
 						   handleHighlight);
 	

@@ -81,7 +81,13 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      */
     this.initialPopTopic_ = config['initialPopTopic'];
 
-
+    /**
+     * The initialMort topic to handle by updating the mortality profile, then 
+     * recalculating the data and redrawing the target bric.
+     * @private
+     * @type {string}
+     */
+    this.popDistributionTopic_ = config['popDistributionTopic'];
      /**
      * The initialMort topic to handle by updating the mortality profile, then 
      * recalculating the data and redrawing the target bric.
@@ -97,6 +103,14 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      * @type {string}
      */
     this.fertilityTopic_ = config['fertilityTopic'];
+
+     /**
+     * The fertility topic to handle by updating the total fertility rate, then 
+     * recalculating the data and redrawing the target bric.
+     * @private
+     * @type {string}
+     */
+    this.ageFirstBirthTopic_ = config['ageFirstBirthTopic'];
 
     /**
      * The target bric instances to draw the data.
@@ -118,6 +132,12 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      */
     this.mortalityKey_ = '0';
 
+     /**
+     * The key for the initial population profile to use in calculating data. 
+     * @type {string}
+     */
+    this.popDistributionKey_ = '0';
+
     /**
      * The initial total population that will be allocated to various ages
      * according to the selected distribution profile.
@@ -127,10 +147,16 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
 
     /**
      * The total fertility rate that will be allocated to various ages
-     * according to the selected distribution profile.
+     * according to the selected age range.
      * @type {number}
      */
     this.totalFertilityRate_ = 2;
+
+     /**
+     * The age of first childbirth determining the bottom of the fertile group of women.
+     * @type {number}
+     */
+    this.ageFirstBirth_ = 16;
 
     /**
      * The calculated population data
@@ -154,8 +180,10 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
     // Set up the selection event subscription
     this.eventManager_.subscribe(this.yearTopic_, goog.bind(this.handleYearChangedEvent_, this));
     this.eventManager_.subscribe(this.initialPopTopic_, goog.bind(this.handleInitialPopChangedEvent_, this));
+    this.eventManager_.subscribe(this.popDistributionTopic_, goog.bind(this.handlePopDistributionChangedEvent_, this));
     this.eventManager_.subscribe(this.mortTopic_, goog.bind(this.handleMortChangedEvent_, this));
     this.eventManager_.subscribe(this.fertilityTopic_, goog.bind(this.handleFertilityChangedEvent_, this));
+    this.eventManager_.subscribe(this.ageFirstBirthTopic_, goog.bind(this.handleFirstBirthChangedEvent_, this));
 };
 goog.inherits(pearson.brix.mortar.AgeStructure, pearson.brix.mortar.Mortar);
 
@@ -241,6 +269,46 @@ pearson.brix.mortar.AgeStructure.prototype.handleMortChangedEvent_ = function (e
     this.yearSlider_.setValue(this.year_);
     this.updateTargetBric_();
 };
+
+/* **************************************************************************
+ * AgeStructure.handlePopDistributionChangedEvent_                                */ /**
+ *
+ * Handler for the changed mortality profile value event which will 
+ * recalculate the population data, and redisplay the data for
+ * year0 in the target bric.
+ * @private
+ *
+ * @param {Object}  eventDetails        -The details of the slider change event.
+ *
+ ****************************************************************************/
+pearson.brix.mortar.AgeStructure.prototype.handlePopDistributionChangedEvent_ = function (eventDetails)
+{
+    this.popDistributionKey_ = eventDetails.selectKey;
+    this.calcPopulation_();
+    this.year_ = 0;
+    this.yearSlider_.setValue(this.year_);
+    this.updateTargetBric_();
+};
+/* **************************************************************************
+ * AgeStructure.handleFirstBirthChangedEvent_                            */ /**
+ *
+ * Handler for the changed mortality profile value event which will 
+ * recalculate the population data, and redisplay the data for
+ * year0 in the target bric.
+ * @private
+ *
+ * @param {Object}  eventDetails        -The details of the slider change event.
+ *
+ ****************************************************************************/
+pearson.brix.mortar.AgeStructure.prototype.handleFirstBirthChangedEvent_ = function (eventDetails)
+{
+    this.ageFirstBirth_ = eventDetails.newValue;
+    this.calcPopulation_();
+    this.year_ = 0;
+    this.yearSlider_.setValue(this.year_);
+    this.updateTargetBric_();
+};
+
 /* **************************************************************************
  * AgeStructure.updateTargetBric_                                      */ /**
  *
@@ -272,7 +340,7 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
     var n0 = this.initialPop_;    // total population - eventually slider
     var maxAge = 90;
     var endBearingAge = 50; //age at which women become infertile(ish)
-    var startBearingAge = 15; //might want to set this on slider
+    var startBearingAge = this.ageFirstBirth_; //might want to set this on slider
     var fertilityRate = this.totalFertilityRate_; //# kids born per woman, on slider
     //death rate, A and B need to be set by a dropdown for 3 population types
     //and different A and B for men and women
@@ -282,7 +350,7 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
         }
     //populations are 2-D array, first index is year up to 50, second is age group
     var populationW = [], populationM = []; 
-    var init = []; 
+    var init = [], sum = 0;
     
     if (this.mortalityKey_ === "0")
     {
@@ -300,13 +368,48 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
         var Am = 0.049, Bm = 0.029;
     }
 
-    for (var a = 0; a <= maxAge; a++)
-    {
-        // initialize the population at each age at year 0, Type I, II or III
-        // currently typeII uniform, and 1/2 for men/women
-        init[a] = {x: n0/(2 * maxAge), y: a};
-    }
-     
+   
+    // initialize the population at each age at year 0, Type I, II or III
+   
+    switch(this.popDistributionKey_)
+        {
+        case "0":
+        // Sloped initial Popululation, Type I
+            for (var a = 0; a <= maxAge; a++)
+            {
+                init[a] = {x: (1 - a/100), y: a};
+            }
+            init.forEach( function(o) { sum = o.x + sum; });
+          
+            for (var a = 0; a <= maxAge; a++)
+            {
+                init[a] = {x: n0 * init[a].x/(2 * sum), y: a};
+            }
+            break;
+
+        case "1":
+        // Uniform initial population, Type II
+            for (var a = 0; a <= maxAge; a++)
+            {
+                init[a] = {x: n0/(2 * maxAge), y: a};
+            }
+            break;
+            
+        //fallthrough case for Type III.
+        default:
+            for (var a = 0; a <= maxAge; a++)
+            {
+                init[a] = {x: (a > 60 ? (init[a-1].x - 0.03) : (1 + (a + 1)/100)), y: a};
+            }
+            init.forEach( function(o) { sum = o.x + sum; });
+            console.log(sum, n0);
+            for (var a = 0; a <= maxAge; a++)
+            {
+                init[a] = {x: n0 * init[a].x/(2 * sum), y: a};
+            }
+            break;
+        }
+    
     // initialize population zero year
     populationW[0] = init;
     populationM[0] = init;
