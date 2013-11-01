@@ -1,0 +1,13 @@
+{
+  "@context" : "http://purl.org/pearson/paf/v1/ctx/core/ActivityPlayer",
+  "@type" : "ActivityPlayer",
+  "@id" : "http://server.example.com/resources/ActivityPlayer/68032",
+  "guid" : "sanvan.1",
+  "contentType" : "application/vnd.pearson.sanvan.v1.activity",
+  "widgetFrontend" : {
+  },
+  "toolProxy" : "http://server.example.com/resources/ToolProxy/8116",
+  "frameFrontend" : {
+    "frameURI" : "http://localhost:8080/ecourses-paf-proxy/jsp/sanvanIframePlayerv1.jsp"
+  }
+}

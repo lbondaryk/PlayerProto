@@ -1,0 +1,34 @@
+
+{
+   "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
+   "@type" : "Envelope",
+   "metadata" : {
+     "title" : "Sanvan exam 1c",
+     "guid" : "test.sanvan.assignment.1",
+     "description" : "Sanvan sample test ",
+     "contentTypeTier1" : "Assessment",
+     "contentTypeTier2" : [ "AssessmentItem" ],
+     "subject" : [ "EnvironmentalScience" ],
+     "intendedEndUserRole" : [ "Student" ],
+     "timeRequired" : "PT20S",
+     "educationalAlignment" : [ "http://purl.org/pearson/objectives/183725473384362" ]
+   },
+   "body" : {
+     "@context" : "http://purl.org/pearson/paf/v1/ctx/core/StructuredAssignment",
+     "@type" : "StructuredAssignment",
+     "title" : "Sanvan exam 1c",
+     "guid" : "test.sanvan.assignment.1",
+     "assignmentContents" : {
+       "@contentType":"application/vnd.pearson.paf.v1.container+json",
+       "binding" : [
+           {
+           "bindingIndex" : 1,
+           "boundActivity"  : "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.neff.1",
+           "activityFormat" : "application/vnd.pearson.sanvan.v1.activity",
+           "activityTitle" : "Neff Reactor Stepped Image",
+           "credit" : "ForCredit",
+           "guid" : "test.sanvan.neff.1"
+         }]
+    }
+  }
+}
