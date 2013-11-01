@@ -759,6 +759,42 @@ goog.require('goog.object');
                 });
             });
 
+            describe('submit-manager', function() {
+                it('should be null if the BricLayer is constructed w/o a submit manager', function () {
+                    // We need to construct a new bricLayer so we control the constructor args
+                    var bricLayer = new BricLayer({}, dummyEventMgr);
+                    var bricWorks = bricLayer.getBricWorks();
+                    // Add a bric mold to use for testing the dynamic values (use the one setup above)
+                    bricWorks.registerBricMold(testDV_BricName, TestDV_BricCtor);
+
+                    var submitMgrDv = { "type": "submit-manager" };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(submitMgrDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.null;
+                });
+
+                it('should be the instance of the SubmitManager passed to the BricLayer constructor', function () {
+                    // We need to construct a new bricLayer so we control the constructor args
+                    var submitManager = new pearson.brix.utils.SubmitManager();
+                    var bricLayer = new BricLayer({}, dummyEventMgr, submitManager);
+                    var bricWorks = bricLayer.getBricWorks();
+                    // Add a bric mold to use for testing the dynamic values (use the one setup above)
+                    bricWorks.registerBricMold(testDV_BricName, TestDV_BricCtor);
+
+                    var submitMgrDv = { "type": "submit-manager" };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(submitMgrDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.an.instanceof(pearson.brix.utils.SubmitManager);
+                    expect(testDVBric.dynamicVal).to.equal(submitManager);
+                });
+            });
+
             describe('d3select', function() {
                 // the div element w/ id 'target' created before the tests, which will be removed
                 // after the tests.
