@@ -59,6 +59,88 @@ pearson.brix.utils.IAnswerMan.prototype.scoreAnswer = function (seqNodeKey, stud
 
 
 /* **************************************************************************
+ * IpsAnswerMan                                                        */ /**
+ *
+ * The IpsAnswerMan constructor.
+ *
+ * @constructor
+ * @implements {pearson.brix.utils.IAnswerMan}
+ *
+ * @param {!pearson.brix.utils.IpsProxy}
+ *                          ipsProxy   -The IpsProxy that will be used to
+ *                                      communicate w/ the IPS.
+ *
+ * @classdesc
+ * The IpsAnswerMan is a correctness engine which sends the student's answer
+ * to the IPS to be scored.
+ *
+ **************************************************************************/
+pearson.brix.utils.IpsAnswerMan = function (ipsProxy)
+{
+    /**
+     * The IpsProxy used to communicate w/ the IPS
+     * @private
+     * @type {!pearson.brix.utils.IpsProxy}
+     */
+    this.ipsProxy_ = ipsProxy;
+};
+
+/* **************************************************************************
+ * IpsAnswerMan.scoreAnswer                                            */ /**
+ *
+ * Score (determine the correctness) of a student's answer to a question and
+ * return feedback.
+ *
+ * @param {string}  seqNodeKey      -The sequence node key that identifies the question
+ *                                   being scored.
+ * @param {Object}  studentAnswer   -The student's answer to the question.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback        -Callback function to be invoked w/ the
+ *                                   correctness feedback from scoring the given
+ *                                   answer.
+ ****************************************************************************/
+pearson.brix.utils.IpsAnswerMan.prototype.scoreAnswer = function (seqNodeKey, studentAnswer, callback)
+{
+    var param =
+        {
+            'sequenceNodeKey': seqNodeKey,
+            'timestamp': "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            'type': 'submission',
+            'body': { 'studentSubmission': studentAnswer }
+        };
+
+    var ipsRespHandler = goog.bind(this.ipsSubmissionResponseHandler, this, seqNodeKey, callback);
+    this.ipsProxy_.postSubmission(param, ipsRespHandler);
+};
+
+/* **************************************************************************
+ * IpsAnswerMan.ipsSubmissionResponseHandler                           */ /**
+ *
+ * [Description of ipsSubmissionResponseHandler]
+ *
+ * @param {string}  seqNodeKey  -The sequence node key that identifies the question
+ *                               being scored.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback    -Callback function to be invoked w/ the
+ *                               correctness feedback from scoring the given answer.
+ * @param {*}       error       -[Description of error]
+ * @param {*}       result      -[Description of result]
+ *
+ ****************************************************************************/
+pearson.brix.utils.IpsAnswerMan.prototype.ipsSubmissionResponseHandler = function (seqNodeKey, callback, error, result)
+{
+    if (result)
+    {
+        callback({'score': result['score'], 'response': result['response'] });
+    }
+    else
+    {
+        callback({'score': null, 'response': 'no response' });
+    }
+};
+
+
+/* **************************************************************************
  * LocalAnswerMan                                                      */ /**
  *
  * The LocalAnswerMan is a correctness engine which uses a local database of
@@ -101,7 +183,7 @@ pearson.brix.utils.LocalAnswerMan.prototype.registerAnswerKey = function (seqNod
 };
 
 /* **************************************************************************
- * AnswerMan.scoreAnswer                                               */ /**
+ * LocalAnswerMan.scoreAnswer                                          */ /**
  *
  * Score (determine the correctness) of a student's answer to a question and
  * return feedback.

@@ -54,9 +54,9 @@ pearson.brix.utils.IpsProxy = function (config)
 /**
  * A callback function that is supplied to the IpsProxy that will be invoked
  * once the a response from the Ips has been received. It will be invoked
- * with 2 arguments, the 1st is an error object that will be null if no
- * error occurred, the 2nd is the successful result return value from the Ips,
- * which will be null if an error occurred.
+ * with 2 arguments (function(error, result), the 1st is an error object that
+ * will be null if no error occurred, the 2nd is the successful result return
+ * value from the Ips, which will be null if an error occurred.
  *
  * @typedef {function(*, *)} pearson.brix.utils.IpsProxy.CallbackFn
  */

@@ -142,7 +142,7 @@ pearson.brix.BricLayer = function (config, eventManager, submitManager)
      * The submit manager to use for submitting scoring requests from question
      * brix.
      * @private
-     * @type {pearson.utils.SubmitManager}
+     * @type {pearson.brix.utils.SubmitManager}
      */
     this.submitManager_ = submitManager || null;
 
