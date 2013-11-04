@@ -64,165 +64,483 @@
 	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/brixlib-compiled.js"></script>
-
 	<!--
+	<script src="js/brixlib-compiled.js"></script>
+	-->
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+	<script src="js/eventmanager.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+    <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
+	<script src="js/bricworks.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
 	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
     <script src="js/widget-slider.js"></script>
-    <script src="js/widget-callouts.js"></script>
-    <script src="js/widget-legend.js"></script>
-    <script src="js/widget-numeric.js"></script>
-	<script src="js/eventmanager.js"></script>
-    !-->
+    <script src="js/mortar-hilite.js"></script>
+	<script src="js/briclayer.js"></script>
 
 <script>
-// local aliases for convenience
-	var Size = pearson.utils.Size;
-	var SVGContainer = pearson.brix.SVGContainer;
-	var Image = pearson.brix.Image;
-	var Callouts = pearson.brix.Callouts;
-	var BarChart = pearson.brix.BarChart;
-	var Legend = pearson.brix.Legend;
-	var Button = pearson.brix.Button;
-	var Slider = pearson.brix.Slider;
-	var Readout = pearson.brix.Readout;
-	 
-	var EventManager = pearson.utils.EventManager;
-	var SubmitManager = pearson.brix.SubmitManager;
-	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
-	var SelectGroup = pearson.brix.SelectGroup;
-	var sign = pearson.brix.utils.sign;
+	// Create an object that will contain the objects needed for the activities
+	// on this page.
+	pearson.brix.activity = {};
+	var a = pearson.brix.activity;
 
-var eventManager = new EventManager();
-var submitManager = new SubmitManager(eventManager);
+	// The activity config that defines the brix and mortar for this page
+	a.config =
+		{
+			"description": "The Neff Age Structure activity, w/ a pyramid chart, a slider and a readout.",
+			"sequenceNodeKey": "b3d5b510-34dd-480f-b8e1-b474522c9b03",
+			"containerConfig":
+				[
+					{
+						"description": "container for the cause of death by race chart",
+						"containerId": "graphGrouped",
+						"brixConfig":
+							[
+								{
+									"bricId": "groupGraph",
+									"bricType": "BarChart",
+									"config":
+										{
+											"id": "death",
+											//"Data": [whites, blacks, hispanics, asians],
+											"type": "grouped",
+											"xAxisFormat":
+												{ 
+													"type": "linear", 
+													"ticks": 4,
+													"orientation": "bottom",
+													"label": "Mortality Rate (deaths per 100,000/year)"
+												},
+											"yAxisFormat":
+												{
+													"type": "ordinal",
+													"orientation": "left",
+													"label": "Cause of Death"
+												},
+										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "Data",
+                                                "value":
+                                                    {
+                                                        "type": "array",
+                                                        "elements":
+                                                        [
+                                                            { "type": "ref", "domain": "data", "refId": "whites" },
+                                                            { "type": "ref", "domain": "data", "refId": "blacks" },
+                                                            { "type": "ref", "domain": "data", "refId": "hispanics" },
+                                                            { "type": "ref", "domain": "data", "refId": "asians" }
+                                                        ]
+                                                    }
+                                            }
+                                        ]
+								},
+								{
+									"bricId": "legBar",
+									"bricType": "Legend",
+									"config":
+										{
+											"id": "legdeath",
+											"type": "box",
+											"xPos": "right",
+											"yPos": "top",
+											"labels":
+											[
+												{"content": "White"}, 
+												{"content": "Black"}, 
+												{"content": "Hispanic"},
+												{"content": "Asian"}
+											],
+										}
+								},
+								{
+									"bricId": "cntr1",
+									"bricType": "SvgContainer",
+									"config":
+										{
+											//"node": d3.select("#graph0"),
+											"maxSize": {"height": 600, "width": 477},
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "node",
+                                                "value":
+                                                    {
+                                                        "type": "d3select",
+                                                        "selector": "#graphGrouped"
+                                                    }
+                                            }
+                                        ]
+								}
+							],
+                        "mortarConfig":
+                            [
+                                {
+                                    "mortarId": "hilite1",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Legend",
+                                                        "instanceId": "legdeath",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "groupGraph" }
+                                            }
+                                        ]
+                                },
+                                {
+                                    "mortarId": "hilite2",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "BarChart",
+                                                        "instanceId": "death",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "legBar" }
+                                            }
+                                        ]
+                                },
+                                {
+                                    "mortarId": "hilite3",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Callouts",
+                                                        "instanceId": "insTbl",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "legBar" }
+                                            }
+                                        ]
+                                }
+                            ],
+						"hookupActions":
+							[
+								{
+									"description": "Append the death chart to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "groupGraph" },
+										]
+								},
+								{
+									"description": "Append the death chart's legend to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "legBar" },
+										]
+								}
+							]
+					},
+					{
+						"description": "container for the race insurance table",
+						"containerId": "table0",
+						"brixConfig":
+							[
+								{
+									"bricId": "insTable",
+									"bricType": "Callouts",
+									"config":
+										{
+											"id": "insTbl",
+											"show": "all",
+											"headers": ["Race", "Uninsured Rate (%)"],
+											"textBits":
+												[
+													{"cols": ["White",    "11.1%"]},
+													{"cols": ["Black",    "19.5%"]},
+													{"cols": ["Hispanic", "30.1%"]},
+													{"cols": ["Asian",    "16.8%"]}
+												]
+										}
+								}
+							],
+                        "mortarConfig":
+                            [
+                                {
+                                    "mortarId": "hilite4",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Legend",
+                                                        "instanceId": "legdeath",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "insTable" }
+                                            }
+                                        ]
+                                },
+                                {
+                                    "mortarId": "hilite5",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "BarChart",
+                                                        "instanceId": "death",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "insTable" }
+                                            }
+                                        ]
+                                }
+                            ],
+						"hookupActions":
+							[
+								{
+									"description": "Draw the insurance table",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "insTable"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#table0" },
+										]
+								}
+							]
+					},
+					{
+						"description": "container for the homicide question",
+						"containerId": "mcQuestion0",
+						"brixConfig":
+							[
+								{
+									"bricId": "Q0",
+									"bricType": "MultipleChoiceQuestion",
+									"config":
+										{
+											"id": "homicideQ",
+											//"questionId": "homicide",
+											"order": "randomized",
+											"presenterType": "SelectGroup",
+											"presenterConfig":
+												{
+													"numberFormat": "none",
+													"question": true
+												},
+											"question": "Does the difference in insurance rates explain the high mortality rate from homicide for African Americans?",
+											"choices":
+												[
+													{
+														"content": "Yes, some homicides might not be fatal if health care were available.",
+														"answerKey": "answer000"
+													},
+													{
+														"content": "No, that's a different socioeconomic indicator.",
+														"answerKey": "answer001"
+													},
+											]
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "questionId",
+                                                "value": { "type": "ref", "domain": "info", "refId": "sequenceNodeKey" }
+                                            }
+                                        ],
+									"answerKey":
+										{
+											"assessmentType": "multiplechoice",
+											"answers":
+												{
+													"answer000":
+														{
+															"score": 1,
+															"response": "Wow, that's a surprise."
+														},
+													"answer001":
+														{
+															"score": 1,
+															"response": "This does seem more likely, doesn't it?",
+														}
+												}
+										}
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"description": "Hookup the submit manager to evaluate answers",
+									"type": "method-call",
+									"instance": { "type": "submit-manager" },
+									"methodName": "handleRequestsFrom",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "Q0" },
+										]
+								},
+								{
+									"description": "Draw the homicide question",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "Q0"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#mcQuestion0" },
+										]
+								}
+							]
+					},
+				],
+            "data":
+                {
+					"insurance":
+						[
+							{y: "White",    x: 11.1},
+							{y: "Black",    x: 19.5},
+							{y: "Asian",    x: 16.8},
+							{y: "Hispanic", x: 30.1}
+						],
 
-
-var insurance = [
-	{ y: "White", x: 11.1},
-	{ y: "Black", x: 19.5},
-	{ y: "Asian", x: 16.8},
-	{ y: "Hispanic", x: 30.1}
-];
-
-var whites = [
-	{	y: "Coronary Deaths", x: 134.2},
-	{	y: "HIV Deaths", x: 8.2},
-	{	y: "Infant Mortality", x: 5.58},
-	{	y: "Homicide Deaths", x: 2.7},	
-	];
+					"whites":
+						[
+							{y: "Coronary Deaths",  x: 134.2},
+							{y: "HIV Deaths",       x:   8.2},
+							{y: "Infant Mortality", x:   5.58},
+							{y: "Homicide Deaths",  x:   2.7},	
+						],
  
-var blacks = [
-	{	y: "Coronary Deaths", x: 161.6},
-	{	y: "HIV Deaths", x: 73.7},
-	{	y: "Infant Mortality", x: 13.36},
-	{	y: "Homicide Deaths", x: 23.1},	
-	];
+					"blacks":
+						[
+							{y: "Coronary Deaths",  x: 161.6},
+							{y: "HIV Deaths",       x:  73.7},
+							{y: "Infant Mortality", x:  13.36},
+							{y: "Homicide Deaths",  x:  23.1},	
+						],
 
-var hispanics = [
-	{	y: "Coronary Deaths", x: 106.4},
-	{	y: "HIV Deaths", x: 25},
-	{	y: "Infant Mortality", x: 5.41},
-	{	y: "Homicide Deaths", x: 7.6},
-	];
+					"hispanics":
+						[
+							{y: "Coronary Deaths",  x: 106.4},
+							{y: "HIV Deaths",       x:  25},
+							{y: "Infant Mortality", x:   5.41},
+							{y: "Homicide Deaths",  x:   7.6},
+						],
 
-var asians = [	
-	{	y: "Coronary Deaths", x: 77.1},
-	{	y: "HIV Deaths", x: 7.2},
-	{	y: "Infant Mortality", x: 4.55},
-	{	y: "Homicide Deaths", x: 2.4},
-	];
+					"asians":
+						[	
+							{y: "Coronary Deaths",  x: 77.1},
+							{y: "HIV Deaths",       x:  7.2},
+							{y: "Infant Mortality", x:  4.55},
+							{y: "Homicide Deaths",  x:  2.4},
+						]
+                }
+		};
 
+	// create the eventmanager to be used by the created brix, and the
+	// bricLayer which will create them, and then tell the bricLayer to build.
+	a.eventManager = new pearson.utils.EventManager();
+	a.answerMan = new pearson.brix.utils.LocalAnswerMan();
+	a.submitManager = new pearson.brix.utils.SubmitManager(a.eventManager, a.answerMan);
 
-var svgGroup = new SVGContainer(
-		{node: d3.select("#graphGrouped"),
-		maxSize: { height: 600, width: 477}
-		}
-	);
-	
-var groupGraph = new BarChart ({
-		Data: [whites, blacks, hispanics, asians],
-		type: "grouped",
-		xAxisFormat: { 
-						type: "linear", 
-					   	ticks: 4,
-					   	orientation: "bottom",
-					   	label: "Mortality Rate (deaths per 100,000/year)"},
-		yAxisFormat: { type: "ordinal",
-					   orientation: "left",
-					   yLabel: "Cause of Death"},
-	}, eventManager);
+	a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager, a.submitManager);
 
-svgGroup.append(groupGraph);
+	a.building = a.bricLayer.build(a.config);
 
-var legBar = new Legend({
-		xPos: "right", yPos: "top",
-		labels: [
-			{content: "White"}, 
-			{content: "Black"}, 
-			{content: "Hispanic"},
-			{content: "Asian"}
-			],
-		type: "box"
-	}, eventManager);
-
-groupGraph.append(legBar);
-
-var insTable = new Callouts({
-	show: "all",
-	headers: ["Race", "Uninsured Rate (%)" ],
-	textBits: [
-		{cols:["White", "11.1%"]},
-		{cols: ["Black", "19.5%"]},
-		{cols: ["Hispanic", "30.1%"]},
-		{cols: ["Asian", "16.8%"]}
-	],
-	},eventManager);
-	
-insTable.draw(d3.select("#table0"));
-	
-eventManager.subscribe(insTable.selectedEventId, liteUp);
-eventManager.subscribe(groupGraph.selectedEventId, liteUp);
-eventManager.subscribe(legBar.selectedEventId, liteUp);
-
-liteUp({selectKey: "0"});
-
-function liteUp (liteKey)
-	{
-		groupGraph.lite(liteKey.selectKey);
-		insTable.lite(liteKey.selectKey);
-		legBar.lite(liteKey.selectKey);
-	}
-
-var Q0Choices = [
-		{
-			content: "Yes, some homicides might not be fatal if health care were available.",
-			answerKey: "answer000"
-		},
-		{
-			content: "No, that's a different socioeconomic indicator.",
-			answerKey: "answer001"
-		},
-		];
-
-var Q0 = new MultipleChoiceQuestion({
-			questionId: "homicide",
-			question: "Does the difference in insurance rates explain the high mortality rate from homicide for African Americans?",
-			choices: Q0Choices,
-			order: "randomized",
-			widget: SelectGroup,
-			widgetConfig: {
-				numberFormat: "none",
-				question: true,
-			},
-		}, eventManager);
-
-Q0.draw(d3.select("#mcQuestion0"));
-
-submitManager.handleRequestsFrom(Q0);
-	
+	a.answerMan.registerAnswerKey(a.config.sequenceNodeKey,
+								  a.config.containerConfig[2].brixConfig[0].answerKey);
 </script>
 </body>
 </html>

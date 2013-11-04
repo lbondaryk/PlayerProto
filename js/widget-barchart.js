@@ -85,9 +85,10 @@ pearson.brix.BarChart = function (config, eventManager)
 
 	/**
 	 * A unique id for this instance of the bar chart bric
+     * @private
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.BarChart);
+	this.barId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.BarChart);
 
 	/**
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
@@ -153,14 +154,14 @@ pearson.brix.BarChart = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.selectedEventId = this.id + '_barSelected';
+	this.selectedEventId = pearson.brix.BarChart.getEventTopic('selected', this.barId_);
 
 	/**
-	 * The event id published when a the order of the bars is changed.
+	 * The event id published when the order of the bars is changed.
 	 * @const
 	 * @type {string}
 	 */
-	this.sortedEventId = this.id + '_barSortChanged';
+	this.reorderedEventId = pearson.brix.BarChart.getEventTopic('reordered', this.barId_);
 	
 	
 	/**
@@ -190,6 +191,64 @@ goog.inherits(pearson.brix.BarChart, pearson.brix.SvgBric);
  */
 pearson.brix.BarChart.autoIdPrefix = "bar_auto_";
 
+/* **************************************************************************
+ * BarChart.getEventTopic (static)                                     */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * BarChart bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of BarChart with the given instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.BarChart.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            return instanceId + '_barSelected';
+        },
+        'reordered': function (instanceId)
+        {
+            return instanceId + '_barSortChanged';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by BarChart brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
+
+/* **************************************************************************
+ * BarChart.getId                                                      */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.BarChart.prototype.getId = function ()
+{
+    return this.barId_;
+};
 
 /* **************************************************************************
  * BarChart.draw                                                       */ /**
@@ -212,7 +271,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	
 	// Create the axes (svg canvas) in the container
 	var axesConfig = {
-			id: this.id + '_axes',
+			id: this.barId_ + '_axes',
 			size: this.lastdrawn.size,
 			xAxisFormat: this.xAxisFormat,
 			yAxisFormat: this.yAxisFormat,
@@ -260,7 +319,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	//inherit the x and y scales from the axes 
 	this.lastdrawn.xScale = axesDrawn.xScale;
 	this.lastdrawn.yScale = axesDrawn.yScale;
-	var barsId = this.id + '_bars';
+	var barsId = this.barId_ + '_bars';
 	
 	
 
@@ -603,7 +662,7 @@ pearson.brix.BarChart.prototype.lite = function(liteKey)
 
 	if (barsToLite.empty())
 	{
-		window.console.log("No key '" + liteKey + "' in bar chart " + this.id );
+		window.console.log("No key '" + liteKey + "' in bar chart " + this.barId_ );
 	}
 };
 

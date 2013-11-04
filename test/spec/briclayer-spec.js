@@ -667,6 +667,22 @@ goog.require('goog.object');
                     expect(testDVBric.dynamicVal).to.be.an('array');
                     expect(testDVBric.dynamicVal).to.equal(building.data[dataId]);
                 });
+
+                it('should be able to reference info properties', function () {
+                    // the bricLayer currently only supports 1 info property
+                    // which it creates from the 'sequenceNodeKey' property
+                    // so add that property to the config.
+                    var seqNodeKey = "f7d82086-4072-411a-8fe4-1fcee6843613";
+                    activityConfig.sequenceNodeKey = seqNodeKey;
+                    var refDv = { "type": "ref", "domain": "info", "refId": 'sequenceNodeKey' };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(refDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.a('string');
+                    expect(testDVBric.dynamicVal).to.equal(seqNodeKey);
+                });
             });
 
             describe('property-of-ref', function() {
@@ -740,6 +756,42 @@ goog.require('goog.object');
 
                     expect(testDVBric.dynamicVal).to.be.an('object');
                     expect(testDVBric.dynamicVal).to.equal(objInNestedArray);
+                });
+            });
+
+            describe('submit-manager', function() {
+                it('should be null if the BricLayer is constructed w/o a submit manager', function () {
+                    // We need to construct a new bricLayer so we control the constructor args
+                    var bricLayer = new BricLayer({}, dummyEventMgr);
+                    var bricWorks = bricLayer.getBricWorks();
+                    // Add a bric mold to use for testing the dynamic values (use the one setup above)
+                    bricWorks.registerBricMold(testDV_BricName, TestDV_BricCtor);
+
+                    var submitMgrDv = { "type": "submit-manager" };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(submitMgrDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.null;
+                });
+
+                it('should be the instance of the SubmitManager passed to the BricLayer constructor', function () {
+                    // We need to construct a new bricLayer so we control the constructor args
+                    var submitManager = new pearson.brix.utils.SubmitManager();
+                    var bricLayer = new BricLayer({}, dummyEventMgr, submitManager);
+                    var bricWorks = bricLayer.getBricWorks();
+                    // Add a bric mold to use for testing the dynamic values (use the one setup above)
+                    bricWorks.registerBricMold(testDV_BricName, TestDV_BricCtor);
+
+                    var submitMgrDv = { "type": "submit-manager" };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(submitMgrDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.an.instanceof(pearson.brix.utils.SubmitManager);
+                    expect(testDVBric.dynamicVal).to.equal(submitManager);
                 });
             });
 

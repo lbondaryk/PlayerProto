@@ -13,18 +13,9 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.SubmitManager');
-goog.provide('pearson.paf');
+goog.provide('pearson.brix.utils.SubmitManager');
 
-goog.require('pearson.brix.AnswerMan');
-
-/**
- * The PAF Activity ID used by the scoring engine to identify
- * the particular activity (question) being scored.
- *
- * @typedef {string} pearson.paf.SequenceNodeId
- */
-pearson.paf.SequenceNodeId;
+goog.require('pearson.brix.utils.LocalAnswerMan');
 
 /* **************************************************************************
  * SubmitManager                                                       */ /**
@@ -36,7 +27,7 @@ pearson.paf.SequenceNodeId;
  * @param {!pearson.utils.EventManager}
  * 						eventManager	-The event manager to use for publishing events
  * 									 	 and subscribing to them.
- * @param {!pearson.brix.AnswerMan=}
+ * @param {!pearson.brix.IAnswerMan=}
  * 						answerMan		-The correctness engine to process the selected answer.
  *
  * @classdesc
@@ -48,13 +39,14 @@ pearson.paf.SequenceNodeId;
  * is a callback associated w/ the request.
  *
  ****************************************************************************/
-pearson.brix.SubmitManager = function (eventManager, answerMan)
+pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
 {
 	/**
 	 * The answerMan provides feedback to submissions 
-	 * @type {!pearson.brix.AnswerMan}
+     * @private
+	 * @type {!pearson.brix.utils.IAnswerMan}
 	 */
-	this.answerMan = answerMan || new pearson.brix.AnswerMan();
+	this.answerMan_ = answerMan || new pearson.brix.utils.LocalAnswerMan();
 	
 	/**
 	 * The event manager to use to publish (and subscribe to) events
@@ -65,7 +57,7 @@ pearson.brix.SubmitManager = function (eventManager, answerMan)
 	/**
 	 * map of all submitted answers awaiting a response from
 	 * the scoring engine.
-	 * @type {Object.<pearson.paf.SequenceNodeId, pearson.brix.SubmitManager.PendingDetails>}
+	 * @type {Object.<pearson.brix.Ipc.SequenceNodeKey, pearson.brix.utils.SubmitManager.PendingDetails>}
 	 * @private
 	 */
 	this.requestsAwaitingResponse_ = {};
@@ -75,9 +67,9 @@ pearson.brix.SubmitManager = function (eventManager, answerMan)
  * The PendingDetails is the information about an outstanding
  * request for an activity to be scored by the scoring engine.
  *
- * @typedef {Object} pearson.brix.SubmitManager.PendingDetails
- * @property {pearson.paf.SequenceNodeId}
- * 								sequenceNodeId	-The PAF Activity Id which identifies the
+ * @typedef {Object} pearson.brix.utils.SubmitManager.PendingDetails
+ * @property {pearson.brix.Ipc.SequenceNodeKey}
+ * 								sequenceNodeKey	-The PAF Activity Id which identifies the
  * 												 activity being scored.
  * @property {string}			answer			-The 'key' of the chosen answer to be scored.
  * @property {number|undefined}	value			-If the answer selection is not from a discrete list
@@ -88,7 +80,7 @@ pearson.brix.SubmitManager = function (eventManager, answerMan)
  * @property {Object}			requestDetails	-The details from the score
  * 												 request event from the question widget.
  */
-pearson.brix.SubmitManager.PendingDetails;
+pearson.brix.utils.SubmitManager.PendingDetails;
 
 /* **************************************************************************
  * SubmitManager.handleRequestsFrom                                    */ /**
@@ -102,7 +94,7 @@ pearson.brix.SubmitManager.PendingDetails;
  * 										 be scored.
  *
  ****************************************************************************/
-pearson.brix.SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
+pearson.brix.utils.SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
 {
 	var that = this;
 	this.eventManager.subscribe(questionWidget.submitScoreRequestEventId,
@@ -122,34 +114,36 @@ pearson.brix.SubmitManager.prototype.handleRequestsFrom = function(questionWidge
  * @private
  *
  ****************************************************************************/
-pearson.brix.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
+pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 {
 	var pendingDetails =
 		{
-			sequenceNodeId: eventDetails['questionId'],
+			sequenceNodeKey: eventDetails['questionId'],
 			answer: eventDetails['answerKey'],
 			value: eventDetails['submissionValue'],
 			responseCallback: eventDetails['responseCallback'],
 			requestDetails: eventDetails,
 		};
 
-	if (this.requestsAwaitingResponse_[pendingDetails.sequenceNodeId] !== undefined)
+	if (this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] !== undefined)
 	{
 		alert("there's already an outstanding submission request for the sequenceNode: " + pendingDetails.sequenceNodeId);
 	}
 
-	this.requestsAwaitingResponse_[pendingDetails.sequenceNodeId] = pendingDetails;
+	this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] = pendingDetails;
 
-	this.submitForScoring_(pendingDetails);
+    this.answerMan_.scoreAnswer(pendingDetails.sequenceNodeKey,
+                                {key: pendingDetails.answer},
+                                goog.bind(this.handleScoringResponse_, this, pendingDetails.sequenceNodeKey));
 };
 
 /* **************************************************************************
- * SubmitManager.submitForScoring_                                     */ /**
+ * SubmitManager.handleScoringResponse_                                */ /**
  *
  * Send the score request to the scoring engine using whatever means required
  * to access that scoring engine.
  *
- * @param {pearson.brix.SubmitManager.PendingDetails}
+ * @param {pearson.brix.utils.SubmitManager.PendingDetails}
  * 							submitDetails	-Information identifying the question
  * 											 and answer to be scored, in the properties:
  * 											 sequenceNodeId and answer.
@@ -163,21 +157,13 @@ pearson.brix.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails
  * moved to this new method. -mjl
  *
  ****************************************************************************/
-pearson.brix.SubmitManager.prototype.submitForScoring_ = function(submitDetails)
+pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (seqNodeKey, submissionResponse)
 {
-	// pass the submission on to the scoring engine. This will probably be
-	// via the ActivityManager I'd think
-	// todo: Although we're getting a synchronous response here, we should
-	// enhance this to have the "answerMan" give us an asynchronous
-	// response, probably via an eventManager event. -mjl
-	var submissionResponse = this.answerMan.submitAnswer(submitDetails.sequenceNodeId,
-										submitDetails.answer, submitDetails.value);
-
 	// We handle the reply from the scoring engine (in the event handler eventually)
 	// by removing the request from the list of pending request
 	// and calling the given callback if it exists
-	var pendingDetails = this.requestsAwaitingResponse_[submitDetails.sequenceNodeId];
-	delete this.requestsAwaitingResponse_[submitDetails.sequenceNodeId];
+	var pendingDetails = this.requestsAwaitingResponse_[seqNodeKey];
+	delete this.requestsAwaitingResponse_[seqNodeKey];
 	if (typeof pendingDetails.responseCallback === "function")
 	{
 		submissionResponse.submitDetails = pendingDetails.requestDetails;
@@ -212,7 +198,7 @@ pearson.brix.SubmitManager.prototype.submitForScoring_ = function(submitDetails)
  * a whole number that could be used as an index w/o manipulation. -mjl
  *
  ****************************************************************************/
-pearson.brix.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
+pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
 {
 	var responseFormat = {
 			correct: {

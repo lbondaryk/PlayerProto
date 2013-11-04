@@ -7,116 +7,354 @@
  * The AnswerMan engine does simple comparisons between its record of an item's
  * data and whether the submitted answer is correct or not.
  *
- * Created on		June 17, 2013
- * @author			Leslie Bondaryk
+ * Created on       June 17, 2013
+ * @author          Leslie Bondaryk
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.AnswerMan');
-
-goog.require('pearson.brix.test.activities');
+goog.provide('pearson.brix.utils.LocalAnswerMan');
 
 // YSAP - Changed from function to class with method.
 // Proposal: change from AnswerMan to EvalProvider
 
-/* **************************************************************************
- * AnswerMan                                                           */ /**
+/**
+ * The common answerKey structure for all question types, they vary in the
+ * contents of the answers property.
  *
- * The AnswerMan widget creates a clickable html button that publishes events.
+ * @typedef {Object} pearson.brix.utils.AnswerKey
+ * @property {string}   assessmentType  -The type of assessment (question)
+ *                                       this is an answer key for.
+ * @property {!Object}  answers         -The information needed to determine
+ *                                       correctness and feedback for any
+ *                                       answer of this particular question.
+ */
+pearson.brix.utils.AnswerKey;
+
+/* **************************************************************************
+ * IAnswerMan                                                          */ /**
+ *
+ * Interface for classes that provide a scoreAnswer method that evaluates
+ * a student's answer and returns feedback about it.
+ * @interface
+ ****************************************************************************/
+pearson.brix.utils.IAnswerMan = function () {};
+
+/* **************************************************************************
+ * IAnswerMan.scoreAnswer                                              */ /**
+ *
+ * Score (determine the correctness) of a student's answer to a question and
+ * return feedback.
+ *
+ * @param {string}  seqNodeKey      -The sequence node key that identifies the question
+ *                                   being scored.
+ * @param {Object}  studentAnswer   -The student's answer to the question.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback        -Callback function to be invoked w/ the
+ *                                   correctness feedback from scoring the given
+ *                                   answer.
+ ****************************************************************************/
+pearson.brix.utils.IAnswerMan.prototype.scoreAnswer = function (seqNodeKey, studentAnswer, callback) {};
+
+
+/* **************************************************************************
+ * IpsAnswerMan                                                        */ /**
+ *
+ * The IpsAnswerMan constructor.
  *
  * @constructor
- * @export
+ * @implements {pearson.brix.utils.IAnswerMan}
+ *
+ * @param {!pearson.brix.utils.IpsProxy}
+ *                          ipsProxy   -The IpsProxy that will be used to
+ *                                      communicate w/ the IPS.
+ *
+ * @classdesc
+ * The IpsAnswerMan is a correctness engine which sends the student's answer
+ * to the IPS to be scored.
  *
  **************************************************************************/
-pearson.brix.AnswerMan = function ()
+pearson.brix.utils.IpsAnswerMan = function (ipsProxy)
 {
+    /**
+     * The IpsProxy used to communicate w/ the IPS
+     * @private
+     * @type {!pearson.brix.utils.IpsProxy}
+     */
+    this.ipsProxy_ = ipsProxy;
+};
+
+/* **************************************************************************
+ * IpsAnswerMan.scoreAnswer                                            */ /**
+ *
+ * Score (determine the correctness) of a student's answer to a question and
+ * return feedback.
+ *
+ * @param {string}  seqNodeKey      -The sequence node key that identifies the question
+ *                                   being scored.
+ * @param {Object}  studentAnswer   -The student's answer to the question.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback        -Callback function to be invoked w/ the
+ *                                   correctness feedback from scoring the given
+ *                                   answer.
+ ****************************************************************************/
+pearson.brix.utils.IpsAnswerMan.prototype.scoreAnswer = function (seqNodeKey, studentAnswer, callback)
+{
+    var param =
+        {
+            'sequenceNodeKey': seqNodeKey,
+            'timestamp': "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            'type': 'submission',
+            'body': { 'studentSubmission': studentAnswer }
+        };
+
+    var ipsRespHandler = goog.bind(this.ipsSubmissionResponseHandler, this, seqNodeKey, callback);
+    this.ipsProxy_.postSubmission(param, ipsRespHandler);
+};
+
+/* **************************************************************************
+ * IpsAnswerMan.ipsSubmissionResponseHandler                           */ /**
+ *
+ * [Description of ipsSubmissionResponseHandler]
+ *
+ * @param {string}  seqNodeKey  -The sequence node key that identifies the question
+ *                               being scored.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback    -Callback function to be invoked w/ the
+ *                               correctness feedback from scoring the given answer.
+ * @param {*}       error       -[Description of error]
+ * @param {*}       result      -[Description of result]
+ *
+ ****************************************************************************/
+pearson.brix.utils.IpsAnswerMan.prototype.ipsSubmissionResponseHandler = function (seqNodeKey, callback, error, result)
+{
+    if (result)
+    {
+        callback({'score': result['score'], 'response': result['response'] });
+    }
+    else
+    {
+        callback({'score': null, 'response': 'no response' });
+    }
 };
 
 
 /* **************************************************************************
- * AnswerMan.submitAnswer                                              */ /**
+ * LocalAnswerMan                                                      */ /**
  *
- * Mock scoring engine.
- * @export
+ * The LocalAnswerMan is a correctness engine which uses a local database of
+ * answer keys to determine if a given answer is correct.
  *
- * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
- * @param {string} 		studAnswerKey	-The student's answer key.
- * @param {string} 		studAnswerValue	-The student's answer value.
- ****************************************************************************/
-pearson.brix.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
-{ 
-	//lookup the student answer in the answer key in fakeactivitydb.js, which
-	//got loaded with the page
-	var activities = pearson.brix.test.activities;
-	var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
-	var solution = (studAnswerKey in activity) ? activity[studAnswerKey] : "solution key not found";
+ * @constructor
+ * @implements {pearson.brix.utils.IAnswerMan}
+ *
+ **************************************************************************/
+pearson.brix.utils.LocalAnswerMan = function ()
+{
+    /**
+     * Database of registered answer keys, indexed by sequenceNodeKey
+     * @private
+     * @type {Object.<string, !pearson.brix.utils.AnswerKey>}
+     */
+    this.answerKeyDB_ = {};
+};
 
-	// stash the answer score and response in some variables
-	//var ansKey = ('score' in solution) ? activity.score : "answer key not found";
-	
-	// what follows is an unbelievably bogus implementation of numerical answer
-	// scoring.  There is only one answer key for numerical problems, and it always
-	// returns correct.  The numerical right answer is stored in the correctValue key.
-	// This can only be absolutely compared with the submitted value.  If they match,
-	// you get one, otherwise, 0, and the content (used in the response generator),
-	// is set to the value the student submitted.
-	
-	var feedback = solution.response;
-	var ansKey;
-	if (studAnswerValue)
-	{
-		ansKey = studAnswerValue != solution.correctValue ? 0 : 1;
-		solution.content = studAnswerValue;
-	}
-	else
-	{
-		ansKey = solution.score;
-	}
-	
-	//initialized the scored return object.  We'll need to know it's container
-	//(specifies where to write the responses), the value of the student submission,
-	//the score, and any specialized response.
-	var scored = {
-					submission: solution.content,
-					response: feedback
-				 };
-				
-	//then we switch on the lookup right or wrong response.  This is hard-coded
-	//to student answer now, but needs to come from the lookup vs. the student 
-	//response.  Should be either 0 for wrong, 1 for right, or anything else for
-	//partial credit for the fallthrough case.
-				
-	//note that the current implementation of the submitmanager uses the score
-	//as an array index, and so these must be integers.  Not sure if we'll want
-	//to keep doing that in the long term, but eventually we'll need some kind of 
-	//sliding scale functionality that allows some answers to be more correct
-	//and some less -lb
-	switch(ansKey)
-	{
-		case 1:
-  		// You got it right, hooray!
-			scored.score = 1;
- 			break;
-			
-		case 0:
-		// You're always WRONG!  HAHAHHAHAHA.
-			scored.score = 0;
-  			break;
-			
-		case undefined: 
-			scored.score = -1;
-			break;
-			
-		//fallthrough case for partially correct answers.
-		default:
-  			scored.score = 2;
-			//scored.response =" Sorta kinda.";
-  			break;
-	}
-	
-	//the return the scored object to the submitting page.
-	return scored;
-	
-}; //end answerMan function
+/* **************************************************************************
+ * LocalAnswerMan.registerAnswerKey                                    */ /**
+ *
+ * Register the answer key to use for a particular question (assessment)
+ * identified by the given seqNodeKey that will be used to evaluate the
+ * correctness and determine the feedback for any particular answer to
+ * the question when it is scored.
+ *
+ * @param {string}  seqNodeKey  -The sequence node key that identifies the question
+ *                               being scored.
+ * @param {!pearson.brix.utils.AnswerKey}
+ *                  answerKey   -The answer key for the question (assessment)
+ *                               identified by the given seqNodeKey, that will
+ *                               be used to evaluate any particular answer to
+ *                               the question.
+ *
+ ****************************************************************************/
+pearson.brix.utils.LocalAnswerMan.prototype.registerAnswerKey = function (seqNodeKey, answerKey)
+{
+    this.answerKeyDB_[seqNodeKey] = answerKey;
+};
+
+/* **************************************************************************
+ * LocalAnswerMan.scoreAnswer                                          */ /**
+ *
+ * Score (determine the correctness) of a student's answer to a question and
+ * return feedback.
+ *
+ * @param {string}  seqNodeKey      -The sequence node key that identifies the question
+ *                                   being scored.
+ * @param {Object}  studentAnswer   -The student's answer to the question.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback        -Callback function to be invoked w/ the
+ *                                   correctness feedback from scoring the given
+ *                                   answer.
+ ****************************************************************************/
+pearson.brix.utils.LocalAnswerMan.prototype.scoreAnswer = function (seqNodeKey, studentAnswer, callback)
+{
+    // Make sure we have an answer key for the seqNodeKey
+    if (!(seqNodeKey in this.answerKeyDB_))
+    {
+        throw Error("The answer key for '" + seqNodeKey + "' has not been registered, so it cannot be scored.");
+    }
+
+    var answerKey = this.answerKeyDB_[seqNodeKey];
+    var assessmentType = answerKey['assessmentType'];
+
+    // Make sure we've got an evaluator for the question type
+    if (!(assessmentType in pearson.brix.utils.LocalAnswerMan.evaluateAnswer))
+    {
+        throw Error("There is no evaluator for an assessment type of '" + assessmentType);
+    }
+
+    var evaluator = pearson.brix.utils.LocalAnswerMan.evaluateAnswer[assessmentType];
+
+    callback(evaluator(studentAnswer, answerKey['answers']));
+};
+
+
+/**
+ * The types of questions.
+ * @enum {string}
+ */
+pearson.brix.utils.QuestionTypes =
+{
+    MULTIPLECHOICE: "multiplechoice",
+    MULTISELECT:    "multiselect",
+    NUMERIC:        "numeric"
+};
+
+/**
+ * The ScoreResponse is the object returned describing the result of
+ * evaluating the answer choice to a question.
+ *
+ * @typedef {Object} pearson.brix.utils.ScoreResponse
+ * @property {number}   score       -Description of score
+ * @property {string}   response    -Description of response
+ */
+pearson.brix.utils.ScoreResponse;
+
+/**
+ * Functions to evaluate the various types of answers.
+ * @type {Object.<pearson.brix.utils.QuestionTypes, function(Object, !pearson.brix.utils.AnswerKey):pearson.brix.utils.ScoreResponse>}
+ */
+pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
+{
+    /* **************************************************************************
+     * evaluateAnswer.multiplechoice                                       */ /**
+     *
+     * Function which evaluates the answer to a multiple choice question.
+     *
+     * @param {Object}  answer      -the multiple choice answer submitted by the
+     *                               student to be evaluated.
+     * @param {string}  answer.key  -the key of the choice selected by the student.
+     * @param {!pearson.brix.utils.AnswerKey}
+     *                  questionSolution
+     *                              -the object which describes the question and
+     *                               its solution. For a multiple choice question
+     *                               it contains a property for each choice which
+     *                               specifies the result for selecting that choice.
+     *
+     * @returns {pearson.brix.utils.ScoreResponse}
+     *
+     ****************************************************************************/
+    'multiplechoice': function(answer, questionSolution)
+    {
+        var chosenKey = answer['key'];
+
+        if (chosenKey in questionSolution)
+        {
+            var solution = questionSolution[chosenKey];
+            return { "score": solution['score'], "response": solution['response'] };
+        }
+
+        return { "score": null, "response": 'Something went awry, your answer was unexpected.' };
+    },
+
+    /* **************************************************************************
+     * evaluateAnswer.numeric                                              */ /**
+     *
+     * Function which evaluates the answer to a numeric question.
+     *
+     * @param {Object}  answer          -the numeric answer submitted by the
+     *                                   student to be evaluated.
+     * @param {string}  answer.value    -the numeric answer entered by the student.
+     * @param {!pearson.brix.utils.AnswerKey}
+     *                  questionSolution
+     *                                  -the object which describes the question and
+     *                                   its solution. For a numeric question
+     *                                   it contains the correct numeric answer as
+     *                                   well as an acceptable error by which the
+     *                                   student's answer may vary from the correct answer
+     *                                   and still be considered correct.
+     *                                   It also contains a response for a correct answer
+     *                                   and for an incorrect answer.
+     *
+     * @returns {pearson.brix.utils.ScoreResponse}
+     *
+     ****************************************************************************/
+    'numeric': function(answer, questionSolution)
+    {
+        // assert that answer.type === "numeric"
+
+        // Assume answer is incorrect
+        var result = { "score": 0,
+                       "submission": "your answer: " + answer.value + ",",
+                       "response": questionSolution['incorrectResponse'] };
+
+        var correctValue = questionSolution['correctValue'];
+        var acceptableError = questionSolution['acceptableError'];
+
+        // if answer is correct, update result to reflect that
+        if (answer.value >= correctValue - acceptableError &&
+            answer.value <= correctValue + acceptableError)
+        {
+            result.score = 1;
+            result.score = questionSolution['correctResponse'];
+        }
+
+        return result;
+    },
+
+    /* **************************************************************************
+     * evaluateAnswer.multiselect                                          */ /**
+     *
+     * Function which evaluates the answer to a numeric question.
+     *
+     * @param {Object}  answer          -the multiple choices selected by the
+     *                                   student to be evaluated.
+     * @param {!Array.<string>}
+     *                  answer.keys     -list of keys of the choices selected by
+     *                                   the student.
+     * @param {!pearson.brix.utils.AnswerKey}
+     *                  questionSolution
+     *                                  -the object which describes the question and
+     *                                   its solution. For a multiselect question
+     *                                   it contains SOMETHING that hasn't been defined
+     *                                   yet, but should be similar to the solutions
+     *                                   of other question types. -mjl
+     *
+     * @returns {pearson.brix.utils.ScoreResponse}
+     *
+     ****************************************************************************/
+    'multiselect': function(answer, questionSolution)
+    {
+        // assert that answer.type === "multiselect"
+
+        // Assume answer is incorrect
+        var result = { "score": 0,
+                       "submission": "your answer: " + answer.value + ",",
+                       "response": questionSolution['incorrectResponse'] };
+
+        // if answer is correct, update result to reflect that
+        // Don't know how to do that yet as the solution structure hasn't been defined.
+
+        return result;
+    },
+};

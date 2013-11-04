@@ -29,7 +29,7 @@
 
         before(function () {
 
-            ipsProxy = new pearson.brix.IpsProxy(ipsProxyConfig);
+            ipsProxy = new pearson.brix.utils.IpsProxy(ipsProxyConfig);
         });
 
 

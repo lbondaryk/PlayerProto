@@ -50,7 +50,7 @@ pearson.brix.BricWorks = function (config, eventManager)
 	/**
 	 * The bricCatalogue is the reference to all of the brix that this BricWorks
 	 * can manufacture.
-	 * @type {Object.<string, function(new:pearson.brix.Bric, Object, !pearson.utils.IEventManager=)>}
+	 * @type {Object.<string, function(new:pearson.brix.Bric, Object, !pearson.utils.IEventManager=, !pearson.brix.BricWorks=)>}
 	 * @private
 	 */
 	this.bricCatalogue_ = {};
@@ -72,7 +72,7 @@ pearson.brix.BricWorks = function (config, eventManager)
  *
  * @param {string}
  * 					bricName	-The name of the bric that the given mold creates.
- * @param {function(new:pearson.brix.Bric, Object, !pearson.utils.IEventManager=)}
+ * @param {function(new:pearson.brix.Bric, Object, !pearson.utils.IEventManager=, !pearson.brix.BricWorks=)}
  * 					bricMold	-A function which creates the named bric.
  *
  * @note This is currently set up for a bricMold to be a constructor.
@@ -123,7 +123,7 @@ pearson.brix.BricWorks.prototype.createBric = function (bricName, config)
 {
 	var bricMold = this.bricCatalogue_[bricName];
 
-	return bricMold ? new bricMold(config, this.eventManager) : null;
+	return bricMold ? new bricMold(config, this.eventManager, this) : null;
 };
 
 /* **************************************************************************

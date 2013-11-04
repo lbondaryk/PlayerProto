@@ -19,7 +19,7 @@
 goog.provide('pearson.brix.NumericQuestion');
 
 goog.require('pearson.utils.IEventManager');
-goog.require('pearson.brix.SubmitManager');
+goog.require('pearson.brix.utils.SubmitManager');
 goog.require('pearson.brix.HtmlBric');
 
 // Sample configuration objects for classes defined here
@@ -255,7 +255,7 @@ pearson.brix.NumericQuestion.prototype.handleSubmitResponse_ = function (respons
 	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
 
 	// For now just use the helper function to write the response.
-	pearson.brix.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
+	pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 };
 
 /* **************************************************************************
