@@ -31,10 +31,10 @@
 											<span class="setTitle"></span>
 					</h2>
 		 			<div class="lc_ec_leading">
-              			<p> This simulation allows you to change the starting population size, a type of mortality structure, the total fertility rate and the age of first childbirth for a fictitious society. </p>
+              			<p> This simulation allows you to change the initial population distribution, type of mortality structure, the total fertility rate and the age of first childbirth for a fictitious society. </p>
 				
 						<table width="100%" margin="10">
-                    		<tr><td><span id="slider0"></span></td></tr>
+                    		<tr><td><span id="slider0">Starting Population: 10,000</span></td></tr>
                     		<tr><td><span id="dropdown0">Initial population distribution </span></td></tr>
                     		<tr><td><span id="dropdown1">Mortality Type </span></td></tr>
 							<tr><td><span id="slider1"></span></td></tr>
@@ -124,22 +124,9 @@ var EventManager = pearson.utils.EventManager;
 var SelectGroup = pearson.brix.SelectGroup;
 var eventManager = new EventManager();
 	
-var years = 50;
-var maxAge = 90;
-var startPop = 80;
-		
-// slider for total population
-var n0Slide = new Slider ({
-			startVal: startPop,
-			minVal: 10,
-			maxVal: 100,
-			stepVal: 10,
-			unit: "(x 10000)",
-			label: "Total population (10000 x)",
-			format: d3.format('.1f')
-		}, eventManager);
-		
-n0Slide.draw(d3.select("#slider0"));
+var years = 100;
+var maxAge = 100;
+var initialPop = 10000;
 
 // Select initial population distribution type
 var popDistribution = new SelectGroup(
@@ -230,9 +217,9 @@ yearSlide.draw(d3.select("#slider3"));
 			Data: [[]], 
 			type: "lines",
 			xAxisFormat: { type: "linear",
-						   ticks: [0, 50/maxAge],
+						   ticks: [0, initialPop/maxAge, 2 * initialPop/maxAge, 3 * initialPop/maxAge],
 						   orientation: "bottom",
-						   label: "Female population" },
+						   label: "Female population " },
 			yAxisFormat: { type: "ordinal",
 						   orientation: "left",
 						   label: "Age",
@@ -245,9 +232,9 @@ yearSlide.draw(d3.select("#slider3"));
 		xAxisFormat: { 
 						type: "linear", 
 					   	mode: "reverse",
-					   	ticks: [0, 50/maxAge],
+					   	ticks: [0, initialPop/maxAge, 2 * initialPop/maxAge, 3 * initialPop/maxAge],
 					   	orientation: "bottom",
-					   	label: "Male Population"},
+					   	label: "Male Population  "},
 		yAxisFormat: { type: "ordinal",
 					   orientation: "right",
 					   },
@@ -269,7 +256,6 @@ yearSlide.draw(d3.select("#slider3"));
 	{
 		yearSlider: yearSlide,
 		yearTopic: yearSlide.changedValueEventId,
-		initialPopTopic: n0Slide.changedValueEventId,
 		popDistributionTopic: popDistribution.selectedEventId,
 		mortTopic: profiles.selectedEventId,
 		fertilityTopic: fertileSlide.changedValueEventId,

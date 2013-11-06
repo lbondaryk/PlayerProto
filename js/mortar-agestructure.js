@@ -79,7 +79,7 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      * @private
      * @type {string}
      */
-    this.initialPopTopic_ = config['initialPopTopic'];
+    //this.initialPopTopic_ = config['initialPopTopic'];
 
     /**
      * The initialMort topic to handle by updating the mortality profile, then 
@@ -143,7 +143,7 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      * according to the selected distribution profile.
      * @type {number}
      */
-    this.initialPop_ = 80;
+    this.initialPop_ = 10000;
 
     /**
      * The total fertility rate that will be allocated to various ages
@@ -179,7 +179,7 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
 
     // Set up the selection event subscription
     this.eventManager_.subscribe(this.yearTopic_, goog.bind(this.handleYearChangedEvent_, this));
-    this.eventManager_.subscribe(this.initialPopTopic_, goog.bind(this.handleInitialPopChangedEvent_, this));
+    //this.eventManager_.subscribe(this.initialPopTopic_, goog.bind(this.handleInitialPopChangedEvent_, this));
     this.eventManager_.subscribe(this.popDistributionTopic_, goog.bind(this.handlePopDistributionChangedEvent_, this));
     this.eventManager_.subscribe(this.mortTopic_, goog.bind(this.handleMortChangedEvent_, this));
     this.eventManager_.subscribe(this.fertilityTopic_, goog.bind(this.handleFertilityChangedEvent_, this));
@@ -336,9 +336,9 @@ pearson.brix.mortar.AgeStructure.prototype.updateTargetBric_ = function ()
 pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
 {
     // variables to set up the difference equation
-    var years = 50;
+    var years = 100;
     var n0 = this.initialPop_;    // total population - eventually slider
-    var maxAge = 90;
+    var maxAge = 100;
     var endBearingAge = 50; //age at which women become infertile(ish)
     var startBearingAge = this.ageFirstBirth_; //might want to set this on slider
     var fertilityRate = this.totalFertilityRate_; //# kids born per woman, on slider
@@ -349,23 +349,23 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
         return A * Math.exp(B * age);
         }
     //populations are 2-D array, first index is year up to 50, second is age group
-    var populationW = [], populationM = []; 
+    var populationW = [], populationM = [];
     var init = [], sum = 0;
     
     if (this.mortalityKey_ === "0")
     {
-        var Aw = 0.0008, Bw= 0.06; 
+        var Aw = 0.0008, Bw= 0.06;
         var Am = 0.00081, Bm = 0.062;
     }
     else if (this.mortalityKey_ === "1")
     {
-        var Aw = 0.0008, Bw= 0.06; 
-        var Am = 0.0009, Bm = 0.065;
+        var Aw = 0.0009, Bw = 0.062;
+        var Am = 0.001, Bm = 0.062;
     }
     else
     {
-        var Aw = 0.05, Bw= 0.030; 
-        var Am = 0.049, Bm = 0.029;
+        var Aw = 0.0035, Bw= 0.045;
+        var Am = 0.004, Bm = 0.050;
     }
 
    
@@ -402,7 +402,7 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
                 init[a] = {x: (a > 60 ? (init[a-1].x - 0.03) : (1 + (a + 1)/100)), y: a};
             }
             init.forEach( function(o) { sum = o.x + sum; });
-            console.log(sum, n0);
+             
             for (var a = 0; a <= maxAge; a++)
             {
                 init[a] = {x: n0 * init[a].x/(2 * sum), y: a};
@@ -431,9 +431,9 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
 
         var birth = Nreproductive * fertilityRate/(2 * (endBearingAge - startBearingAge));
         // Age 0-1 should be different, including the birth rate
-        popW[0] = {x: prevPopW[0].x * mort(Aw, Bw, prevPopW[0].x) + birth, y: 0};
-        popM[0] = {x: prevPopM[0].x * mort(Am, Bm, prevPopM[0].x) + birth, y: 0};
-
+        popW[0] = {x: prevPopW[0].x * mort(Aw, Bw, 0) + birth, y: 0};
+        popM[0] = {x: prevPopM[0].x * mort(Am, Bm, 0) + birth, y: 0};
+        
         for (var age = 1; age <= maxAge; age++)
         {
             //while it might be more efficient to count down, the difference equation 
@@ -442,10 +442,12 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
             popW[age] = {x: populationW[t - 1][age - 1].x * (1 - mort(Aw, Bw, age - 1)), y: age};
             popM[age] = {x: populationM[t - 1][age - 1].x * (1 - mort(Am, Bm, age - 1)), y: age};
         }
-
+       
         populationW[t] = popW;
         populationM[t] = popM;
     }
+
+    
 
     this.populationWomen_ = populationW;
     this.populationMen_ = populationM;
