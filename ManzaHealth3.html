@@ -29,30 +29,22 @@
 			<section class="lc_ec_majorMinor lc_ec_pageInner">
        	 		<div class="lc_ec_content">
        	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
-											<span class="setTitle">Why do disparities in health exist among racial groups?</span>
+											<span class="setTitle">LO 10.14 Explain racial and ethnic disparities on indicators related to health.</span>
 					</h2>
 		 			<div class="lc_ec_leading">
-					<p>Racial inequality is not just reflected in socioeconomic indicators like income, wealth, and education; racial and ethnic groups also show disparities in a variety of indicators related to heath. For example, coronary heart disease is the leading cause of death in the United States, but African Americans are much more likely to die from this condition than any other racial group (Centers for Disease Control and Prevention 2011).  African Americans also have the highest rate of infant mortality in the United States, more than double that of whites, Asians, and Hispanics. </p>
+					<p>Racial inequality is not just reflected in socioeconomic indicators such as income, wealth, and education; racial and ethnic groups also show large disparities on a variety of other indicators of well-being, in particular those related to health. To see examples, explore the graphs below in Figure 10.6 to discover more about some of the differences in health-related indicators for various groups. </p>
 					
-					
+						<div id="table0" ></div>
 						<figure id="graphGrouped"><p>Select mortality rates to see a comparitive chart for each.
-							</p>	</figure>
+							</p>	
+						</figure>
 					
-						<div id="table0" class='lc_ec_leading'>
-						</div>
-					<p>Many of these disparities in health are leated to differences in healthcare coverage. According to the US Census Bureas (2011), about 30% of Hispanics and 20% of African Americans lack a regular source of healthcare, compared to less than 12% of whites.  As a result, African Americans and Latinos are far more likely than whites to rely on hospitals and clinics for their usual source of health care (US Department of Health and Human Services 2000).</p>
+					<div id="table1" style = 'width: 100%;'></div>
+
+					<p>Why is there such a big gap in health well-being? Many of these disparities in health are related to differences in healthcare coverage. According to the U.S. Census Bureau (2011), about 30 percent of Hispanics and 20 percent of African Americans lack health insurance or access to a regular source of healthcare, compared to less than 12 percent of whites. As a result, African Americans and Latinos are far more likely than whites to rely on emergency clinics for their usual source of health care (U.S. Department of Health and Human Services 2000). Additionally, the combination of lower household incomes and housing segregation has meant that it is far more likely that African Americans and Latinos live in higher-poverty, higher-crime neighborhoods (Sharkey 2013). The resulting stresses accumulated over a lifetime from living in more dangerous areas can be very damaging for an individual’s health.</p>
+
 
 					<div id="mcQuestion0"></div>
-					
-
-					<div id="table1"></div>
-
-					<p>US Department of Health and Human Services 2012 http://aspe.hhs.gov/health/reports/2012/uninsuredintheus/ib.shtml)
-					</p>
-
-					 <p>One of the most striking disparities in mortality is in the area of homicide.  For example, in 2007 the homicide rate for black males was over 10 times the rate for white and Asian males and about 4 times the rate for Latinos and Native Americans. Moreover, blacks have by far the highest rates of HIV infection among any racial or ethnic group in the US.</p>
-				
-				
  
 					</div>
 				</div>
@@ -69,75 +61,26 @@
 
 	<script src="js/brixlib-compiled.js"></script>
 
-	<!--
-
-	<script src="js/widget-base.js"></script>
-	<script src="js/widget-linegraph.js"></script>
-	<script src="js/widget-barchart.js"></script>
-    <script src="js/widget-slider.js"></script>
-    <script src="js/widget-callouts.js"></script>
-    <script src="js/widget-legend.js"></script>
-    <script src="js/widget-numeric.js"></script>
-	<script src="js/eventmanager.js"></script>
-    !-->
 
 <script>
 // local aliases for convenience
-	var Size = pearson.utils.Size;
+	 
 	var SVGContainer = pearson.brix.SVGContainer;
-	var Image = pearson.brix.Image;
 	var Callouts = pearson.brix.Callouts;
 	var BarChart = pearson.brix.BarChart;
 	var Legend = pearson.brix.Legend;
-	var Button = pearson.brix.Button;
-	var Slider = pearson.brix.Slider;
 	var LabelSelector = pearson.brix.LabelSelector;
 	 
 	var EventManager = pearson.utils.EventManager;
 	var SubmitManager = pearson.brix.SubmitManager;
 	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
 	var SelectGroup = pearson.brix.SelectGroup;
+	var RadioGroup = pearson.brix.RadioGroup;
 	var sign = pearson.brix.utils.sign;
 
 var eventManager = new EventManager();
 var submitManager = new SubmitManager(eventManager);
 
-
-var insurance = [
-	{ y: "White", x: 11.1},
-	{ y: "Black", x: 19.5},
-	{ y: "Asian", x: 16.8},
-	{ y: "Hispanic", x: 30.1}
-];
-/*
-var whites = [
-	{	y: "Coronary Deaths", x: 134.2},
-	{	y: "HIV Deaths", x: 8.2},
-	{	y: "Infant Mortality", x: 5.58},
-	{	y: "Homicide Deaths", x: 2.7},	
-	];
- 
-var blacks = [
-	{	y: "Coronary Deaths", x: 161.6},
-	{	y: "HIV Deaths", x: 73.7},
-	{	y: "Infant Mortality", x: 13.36},
-	{	y: "Homicide Deaths", x: 23.1},	
-	];
-
-var hispanics = [
-	{	y: "Coronary Deaths", x: 106.4},
-	{	y: "HIV Deaths", x: 25},
-	{	y: "Infant Mortality", x: 5.41},
-	{	y: "Homicide Deaths", x: 7.6},
-	];
-
-var asians = [	
-	{	y: "Coronary Deaths", x: 77.1},
-	{	y: "HIV Deaths", x: 7.2},
-	{	y: "Infant Mortality", x: 4.55},
-	{	y: "Homicide Deaths", x: 2.4},
-	];
-	*/
 
 var coronary = [
 	{	y: "Whites", x: 134.2},
@@ -213,7 +156,7 @@ svgGroup.append(labelButtons, {topPercentOffset: 0, leftPercentOffset: 0, height
 
 var graphReadout = new Callouts({
 	//show: "all",
-	headers: ["Cause", coronary[3].y, coronary[2].y, coronary[1].y, coronary[0].y ],
+	headers: ["Deaths per 100,000/year", coronary[3].y, coronary[2].y, coronary[1].y, coronary[0].y ],
 	textBits: [
 		{cols: [ "Coronary Deaths", coronary[3].x, coronary[2].x, coronary[1].x, coronary[0].x ]},
 		{cols: [ "HIV Deaths", HIV[3].x, HIV[2].x, HIV[1].x, HIV[0].x ]},
@@ -223,14 +166,16 @@ var graphReadout = new Callouts({
 	],
 	},eventManager);
 
+
 var insTable = new Callouts({
-	show: "all",
-	headers: ["Race", "Uninsured Rate (%)" ],
+	//show: "all",
+	//headers: ["Mortality Rate", "Details" ],
 	textBits: [
-		{cols:["White", "11.1%"]},
-		{cols: ["Black", "19.5%"]},
-		{cols: ["Hispanic", "30.1%"]},
-		{cols: ["Asian", "16.8%"]}
+		{cols: ["Death Rates for Coronary Heart Disease in 2008", "Coronary heart disease is the leading cause of death in the United States, but African Americans are much more likely to die from this condition than any other racial group (Centers for Disease Control and Prevention 2011)."]},
+		{cols:["Rates of HIV Infection of Persons Over 13 Years of Age per 100,000 in 2008", 
+			"Blacks have by far the highest rates of HIV infection among any racial or ethnic group in the United States. The rate of HIV infection among African Americans is about 10 times the rate for whites and Asians and about 3 times the rate for Hispanics. "]},
+		{cols: ["Rates of Infant Mortality per 100,000 in 2006", "African Americans have the highest rate of infant mortality in the United States, a rate that is more than double that of whites, Asians, and Hispanics."]},
+		{cols: ["Homicide Rates per 100,000 in 2007", "One of the most striking disparities in mortality is in the area of homicide. For example, in 2007 the homicide rate for black males was over 10 times the rate for white and Asian males and about 4 times the rate for Latinos and Native Americans."]},
 	],
 	},eventManager);
 	
@@ -240,9 +185,6 @@ insTable.draw(d3.select("#table1"));
 graphReadout.draw(d3.select("#table0"));
 	
 eventManager.subscribe(labelButtons.selectedEventId, liteUp);
-//eventManager.subscribe(graphReadout.selectedEventId, liteUp);
-//eventManager.subscribe(insTable.selectedEventId, liteUp);
-//eventManager.subscribe(groupGraph.selectedEventId, liteUp);
 //eventManager.subscribe(legBar.selectedEventId, liteUp);
 
 liteUp({selectKey: "0"});
@@ -272,7 +214,7 @@ function liteUp (liteKey)
 
 		
 		groupGraph.redraw();
-		//insTable.lite(liteKey.selectKey);
+		insTable.lite(liteKey.selectKey);
 		//legBar.lite(liteKey.selectKey);
 		graphReadout.lite(liteKey.selectKey);
 		labelButtons.lite(liteKey.selectKey);
@@ -302,7 +244,7 @@ var Q0 = new MultipleChoiceQuestion({
 			question: "Disparities in health exist among racial groups because of ",
 			choices: Q0Choices,
 			order: "randomized",
-			widget: SelectGroup,
+			widget: RadioGroup,
 			widgetConfig: {
 				numberFormat: "none",
 				question: true,

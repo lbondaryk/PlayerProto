@@ -209,7 +209,7 @@ yearSlide.draw(d3.select("#slider3"));
 	var cont1 = new SVGContainer({
 			node: d3.select("#graph0"),
 			maxWid: 500,
-			maxHt: 800
+			maxHt: 500
 		});
 		
 	var barsWomen = new BarChart({
@@ -217,7 +217,7 @@ yearSlide.draw(d3.select("#slider3"));
 			Data: [[]], 
 			type: "lines",
 			xAxisFormat: { type: "linear",
-						   ticks: [0, initialPop/maxAge, 2 * initialPop/maxAge, 3 * initialPop/maxAge],
+						   ticks:  [0, initialPop/2, initialPop],
 						   orientation: "bottom",
 						   label: "Female population " },
 			yAxisFormat: { type: "ordinal",
@@ -232,7 +232,7 @@ yearSlide.draw(d3.select("#slider3"));
 		xAxisFormat: { 
 						type: "linear", 
 					   	mode: "reverse",
-					   	ticks: [0, initialPop/maxAge, 2 * initialPop/maxAge, 3 * initialPop/maxAge],
+					   	ticks: [0, initialPop/2, initialPop],
 					   	orientation: "bottom",
 					   	label: "Male Population  "},
 		yAxisFormat: { type: "ordinal",
@@ -268,7 +268,7 @@ yearSlide.draw(d3.select("#slider3"));
 	barsWomen.data = [popMortar.populationWomen_[0]];
 	barsMen.data = [[], popMortar.populationMen_[0]];
 
-	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .45, heightPercent: 1, widthPercent: 0.55});
+	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .25, heightPercent: 1, widthPercent: 0.8});
 	cont1.append(barsMen, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.55});
 	
 	barsWomen.append(legLines);
