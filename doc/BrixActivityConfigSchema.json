@@ -25,6 +25,11 @@
                     "description": "Various named data (values, arrays, objects) that are used by brix in this activity",
                     "type": "object"
                 },
+            "maxAttempts":
+                {
+                    "description": "The maximum number of attempts allowed for Submission brix",
+                    "type": "integer"
+                },
             "description":
                 {
                     "description": "A descriptive comment about this activity",
