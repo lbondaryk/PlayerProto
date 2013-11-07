@@ -171,22 +171,47 @@ svg g.brixLabel.lit .descLabel
 /* Sliders
 ================================================== */
 
-span.widgetSlider 
-{
-  font-size: 14px;
-  margin-left: 3px;  
-  margin-right: 10px; 
-  margin-bottom: 40px;
-  padding-top: 10px;
-  padding-left: 10px;
-  border: 1px solid #e4e4e4;
-  max-width: 30px;
+.bricSlider {
+  /*background-color: ThreeDFace;*/
+  position: relative;
+  overflow: hidden;
+}
+.bricSlider-thumb {
+  position: absolute;
+  background-color: ThreeDShadow;
+  overflow: hidden;
 }
 
-span.widgetSlider .range
-{
-  margin-left: 10px;
-  margin-right: 10px;
+.goog-slider-vertical .bricSlider-thumb {
+  left: 0;
+  height: 20px;
+  width: 100%;
+}
+
+.goog-slider-horizontal .bricSlider-thumb {
+    top: 0;
+    width: 15px;
+    height: 80%;
+    background-color: #dae3f1;
+    border: 1px solid #c8d5ea;
+    border-radius:5px;
+    /*box-shadow: 2px 2px 2px #888888;*/
+}
+
+.bricSlider-rail {
+    border: 1px solid #aaaaaa;
+    height: .8em;
+    margin-top: 3px;
+}
+
+.bric-round-corner {
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+}
+.goog-slider-disabled {
+    background-color: lightgray
 }
 
 /* Radio groups

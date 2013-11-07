@@ -4,19 +4,24 @@
  *
  * @fileoverview Implementation of the slider bric.
  *
- * The slider bric creates a jQuery slider for setting a numerical value
+ * The slider bric creates a Google Closure slider for setting a numerical value
  * from a range.
  *
  * Created on       April 15, 2013
  * @author          Leslie Bondaryk
  * @author          Michael Jay Lippert
  * @author          Greg Davis
+ * @author          Young-Suk Ahn
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
 goog.provide('pearson.brix.Slider');
+
+goog.require('goog.dom');
+goog.require('goog.ui.Component');
+goog.require('goog.ui.Slider');
 
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.HtmlBric');
@@ -35,12 +40,16 @@ goog.require('pearson.brix.HtmlBric');
             format: d3.format(String.fromCharCode(0x2007/*figure space*/) + '>5.2f'),
         };
 });
-
+    
 /* **************************************************************************
  * Slider                                                              */ /**
  *
  * The slider widget creates a jQuery slider for setting a numerical value
  * from a range.
+ * It publishes events to following topics:
+ * <ID>_valueChanged - When the value was changed
+ * <ID>_dragStart    - When the user starts dragging the thumb
+ * <ID>_dragENd      - When the user stopped dragging the thumb
  *
  * @constructor
  * @extends {pearson.brix.HtmlBric}
@@ -58,8 +67,12 @@ goog.require('pearson.brix.HtmlBric');
  *                      config.label    -text preceding the slider, optional
  * @param {htmlString|undefined}
  *                      config.unit     -text following the slider, optional
- * @param {string}      config.format   -{@link https://github.com/mbostock/d3/wiki/Formatting|formatting function specifier}
- *                                       for displaying value in readout
+ * @param {function(number): string}
+ *                      config.format   -{@link https://github.com/mbostock/d3/wiki/Formatting|formatting function}
+ *                                       for displaying value in readout. 
+ *                                       Set to null if does not want readout to be shown.
+ * @param {number}
+ *                      config.width    -The width of the slider in px.
  * @param {!pearson.utils.IEventManager=}
  *                      eventManager    -The event manager to use for publishing events
  *                                       and subscribing to them.
@@ -74,10 +87,9 @@ pearson.brix.Slider = function (config, eventManager)
 
     /**
      * A unique id for this instance of the slider widget
-     * @private
      * @type {string}
      */
-    this.sldrId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Slider);
+    this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Slider);
 
     // TODO: These all need comments describing what they are. -mjl 5/16/2013
     this.startVal = config.startVal;
@@ -88,22 +100,29 @@ pearson.brix.Slider = function (config, eventManager)
     /**
      * Text unit to display after the readout.  Currently for display only.
      * later could be used to multiply the value by a unit.
-     * @type {htmlString|undefined}
+     * @type {string}
      */
+
     this.unit = config.unit;
 
     /**
      * Text to display before the readout and slider.  Currently for display only.
      * later could be used to multiply the value by a unit.
-     * @type {htmlString|undefined}
+     * @type {string}
      */
     this.label = config.label;
 
     /**
      * Function to format the value of this slider for display by the readout.
-     * @type {function(number): string}
+     * @type { (function(number): string) | null}
      */
-    this.format = d3.format(config.format);
+    this.format = (config.format) ? d3.format(config.format) : null;
+
+    /**  
+     * The width of the Slider in pixel
+     * @type {number}
+     */
+    this.width = config.width || "200";
 
     /**
      * The event manager to use to publish (and subscribe to) events for this widget
@@ -116,7 +135,21 @@ pearson.brix.Slider = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.changedValueEventId = pearson.brix.Slider.getEventTopic('value-changed', this.sldrId_);
+    this.changedValueEventId = this.id + '_valueChanged';
+    
+    /**
+     * The event id (topic) published when the handle starts dragging.
+     * @const
+     * @type {string}
+     */
+    this.dragStartEventId = this.id + '_dragStart';
+
+    /**
+     * The event id (topic) published when the handle stops dragging.
+     * @const
+     * @type {string}
+     */
+    this.dragEndEventId = this.id + '_dragEnd';
 
     /**
      * The event details for this.changedValueEventId events
@@ -124,7 +157,6 @@ pearson.brix.Slider = function (config, eventManager)
      * @property {number} oldValue  -The previous value of this slider.
      * @property {number} newValue  -The new/current value of this slider.
      */
-    var ChangedValueEventDetails;
 
     /**
      * Information about the last drawn instance of this slider (from the draw method)
@@ -135,6 +167,8 @@ pearson.brix.Slider = function (config, eventManager)
             /** @type {d3.selection} */     container: null,
             /** @type {Element} */          widgetGroup: null,
             /** @type {?number} */          value: null,
+            /** @type {d3.selection} */     readOut: null,
+            /** @type {goog.ui.Slider} */   sliderObj: null,
         };
 }; // end of slider constructor
 goog.inherits(pearson.brix.Slider, pearson.brix.HtmlBric);
@@ -146,46 +180,6 @@ goog.inherits(pearson.brix.Slider, pearson.brix.HtmlBric);
  */
 pearson.brix.Slider.autoIdPrefix = "sldr_auto_";
 
-
-/* **************************************************************************
- * Slider.getEventTopic (static)                                       */ /**
- *
- * Get the topic that will be published for the specified event by a
- * Slider bric with the specified id.
- * @export
- *
- * @param {string}  eventName       -The name of the event published by instances
- *                                   of this Bric.
- * @param {string}  instanceId      -The id of the Bric instance.
- *
- * @returns {string} The topic string for the given topic name published
- *                   by an instance of Slider with the given
- *                   instanceId.
- *
- * @throws {Error} If the eventName is not published by this bric or the
- *                 topic cannot be determined for any other reason.
- ****************************************************************************/
-pearson.brix.Slider.getEventTopic = function (eventName, instanceId)
-{
-    /**
-     * Functions that return the topic of a published event given an id.
-     * @type {Object.<string, function(string): string>}
-     */
-    var publishedEventTopics =
-    {
-        'value-changed': function (instanceId)
-        {
-            return instanceId + '_valueChanged';
-        },
-    };
-
-    if (!(eventName in publishedEventTopics))
-    {
-        throw new Error("The requested event '" + eventName + "' is not published by Slider brix");
-    }
-
-    return publishedEventTopics[eventName](instanceId);
-};
 
 /* **************************************************************************
  * Slider.draw                                                         */ /**
@@ -207,55 +201,82 @@ pearson.brix.Slider.prototype.draw = function (container)
     // get the element from the d3 selection so we can use it w/ jQuery
     var cntrElement = container.node();
 
-    var readOut = $("<span class='readout'>" + this.format(this.startVal) + "</span>");
+    //var readOut = $("<span class='readout'>" + this.format(this.startVal) + "</span>");
 
     // All widgets get a top level "grouping" element which gets a class identifying the widget type.
-    var widgetGroup = $("<span />").addClass("widgetSlider");
-    $(cntrElement).append(widgetGroup);
+    var widgetGroup = container.append("div")
+        .attr("class", "widgetSlider")
+        .attr("id", this.id);
+    widgetGroup.append('span')
+        .attr('role', 'label')
+        .html(this.label ? this.label : "");
+    var readOut = (this.format) ? widgetGroup.append('span')
+            .attr("class", "readout")
+            .html(this.format(this.startVal))
+        : null;
+    widgetGroup.append('span')
+        .attr('class', 'range')
+        .html(" &nbsp;&nbsp;&nbsp;" + this.minVal);
 
+    var googSliderDiv = widgetGroup.append("div")
+        .attr("class", "bricSlider goog-slider")
+        .attr("style", "display:inline-block; width: " + this.width + "px; height: 20px;");
+    googSliderDiv.append('div') // rail (optional)
+        .attr('class', 'bricSlider-rail bric-round-corner');
+        // Below is sample from google site
+        //.attr('style', "position:absolute;width:100%;top:9px;border:1px inset white; overflow:hidden;height:0");
+    var thumbDiv = googSliderDiv.append('div')
+        .attr('class', 'bricSlider-thumb goog-slider-thumb bric-round-corner');
 
-    widgetGroup
-    //write a label in front of the input if there is one
-                .append($("<span role='label' />")
-                    .html(this.label ? this.label : "")
-                )
-                .append("&nbsp;&nbsp;&nbsp;")
-    //prepend a readout so user setting for value is visible
-                .append(readOut)
-    //prepend the minimum value for the slider in the display
-                .append($("<span class='range'/>")
-                    .html(" &nbsp;&nbsp;&nbsp;" + this.minVal)
-                )
-                .append($("<span class='slider' style='display:inline-block; min-width: 100px;' />")
-                    .slider(
-                        {
-                            max : this.maxVal,
-                            step : this.stepVal,
-                            value : this.startVal,
-                            min : this.minVal,
-                            slide : function(e, ui)
-                            {
-                                //this publishes the onChange event to the eventManager
-                                //passing along the updated value in the numeric field.
-                                var newVal = ui.value;
-                                //newVal = that.format(newVal);
-                                //that.display.setValue(newVal);
-                                readOut.text(that.format(newVal))
-                                // we want to publish the changedValue event after the value has been changed
-                                var oldVal = that.lastdrawn.value;
-                                that.lastdrawn.value = newVal;
-                                that.eventManager.publish(that.changedValueEventId,
-                                                {oldValue: oldVal, newValue: newVal});
-                            }
-                        } )
-                )
-    //prepend the maximum value for the slider in the display
-                .append($("<span class='range'/>")
-                    .text(this.maxVal)
-                );
+    widgetGroup.append('span')
+        .attr('class', 'range')
+        .html(" &nbsp;&nbsp;&nbsp;" + this.maxVal);
+
+    var sliderEl = googSliderDiv.node();
 
     this.lastdrawn.value = this.startVal;
-    this.lastdrawn.widgetGroup = widgetGroup.get(0);
+    this.lastdrawn.widgetGroup = widgetGroup;
+    this.lastdrawn.readOut = readOut;
+
+    var googSlider = new goog.ui.Slider;
+
+    googSlider.setValue(this.startVal);
+    googSlider.setMinimum(this.minVal);
+    googSlider.setMaximum(this.maxVal);
+    if (this.stepVal)
+    {
+        googSlider.setStep(this.stepVal);
+    }
+    googSlider.decorate(sliderEl);
+    googSlider.setMoveToPointEnabled(true); // Allows to go to specific point when tapped over the rail
+
+    googSlider.listen(goog.ui.Component.EventType.CHANGE, function() {
+        //this publishes the onChange event to the eventManager
+        //passing along the updated value in the numeric field.
+        var newVal = googSlider.getValue();
+        //newVal = that.format(newVal);
+        //that.display.setValue(newVal);
+        if (readOut)
+        {
+            readOut.text(that.format(newVal));
+        }
+        // we want to publish the changedValue event after the value has been changed
+        var oldVal = that.lastdrawn.value;
+        that.lastdrawn.value = newVal;
+        that.eventManager.publish(that.changedValueEventId,
+                        {oldValue: oldVal, newValue: newVal});
+    });
+
+    googSlider.listen(goog.ui.SliderBase.EventType.DRAG_START, function() {
+        that.eventManager.publish(that.dragStartEventId,
+            {value: googSlider.getValue()});
+    });
+    
+    googSlider.listen(goog.ui.SliderBase.EventType.DRAG_END, function() {
+        that.eventManager.publish(that.dragEndEventId,
+            {value: googSlider.getValue()});
+    });
+    this.lastdrawn.sliderObj = googSlider;
 
 }; // end of Slider.draw()
 
@@ -297,13 +318,13 @@ pearson.brix.Slider.prototype.setValue = function (newValue)
     if (newValue === oldValue)
         return oldValue;
 
-    var jSlider = $("span.slider", this.lastdrawn.widgetGroup);
-    var jReadout = $("span.readout", this.lastdrawn.widgetGroup);
+    // The addEventListener(CHANGE) is called when sliderObj.setValue is called below
+    // There is no need to set the readout again.
+    //var jReadout = $("span.readout", this.lastdrawn.widgetGroup);
+    //jReadout.text(this.format(newValue));
 
     this.lastdrawn.value = newValue;
-    jSlider.slider("value", newValue);
-    jReadout.text(this.format(newValue));
+    this.lastdrawn.sliderObj.setValue(newValue);
 
     return oldValue;
 };
-
