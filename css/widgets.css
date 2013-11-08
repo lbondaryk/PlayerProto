@@ -191,6 +191,7 @@ svg g.brixLabel.lit .descLabel
 {
   margin-left: .5em;
   background-color: #fff;
+  font-weight: bold;
 }
 
 .bricSlider-widget {

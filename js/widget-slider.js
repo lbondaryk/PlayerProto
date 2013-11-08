@@ -111,7 +111,7 @@ pearson.brix.Slider = function (config, eventManager)
      * @type {string}
      */
 
-    this.unit = config.unit;
+    this.unit = config.unit || '';
 
     /**
      * Text to display before the readout and slider.  Currently for display only.
@@ -130,7 +130,7 @@ pearson.brix.Slider = function (config, eventManager)
      * The width of the Slider in pixel
      * @type {number}
      */
-    this.width = config.width || "200";
+    this.width = config.width || '200';
 
     /**
      * The event manager to use to publish (and subscribe to) events for this widget
@@ -224,7 +224,7 @@ pearson.brix.Slider.prototype.draw = function (container)
         .html(this.label ? this.label : "");
     var readOut = (this.format) ? widgetHeaderDiv.append('span')
             .attr("class", "readout")
-            .html(this.format(this.startVal))
+            .html(this.getFormattedValue(this.startVal))
         : null;
 
     var googSliderDiv = widgetGroup.append("div")
@@ -242,10 +242,10 @@ pearson.brix.Slider.prototype.draw = function (container)
     trackDiv.append('div')
         .attr('class', 'range')
         .attr('style', 'float:right')
-        .html(this.maxVal);
+        .html(this.maxVal.toString() + '&nbsp;' + this.unit);
     trackDiv.append('div')
         .attr('class', 'range')
-        .html(this.minVal);
+        .html(this.minVal.toString() + this.unit);
 
     var sliderEl = googSliderDiv.node();
 
@@ -270,16 +270,17 @@ pearson.brix.Slider.prototype.draw = function (container)
         // passing along the updated value in the numeric field.
         var newVal = googSlider.getValue();
 
-        if (readOut)
-        {
-            readOut.text(that.format(newVal));
-        }
         // we want to publish the changedValue event after the value has been changed
         var oldVal = that.lastdrawn.value;
         that.lastdrawn.value = newVal;
-        that.logger_.finer('Publishing to ' + that.changedValueEventId);
-        that.eventManager.publish(that.changedValueEventId,
-                        {oldValue: oldVal, newValue: newVal});
+
+        if (readOut)
+        {
+            readOut.html(that.getFormattedValue());
+        }
+        var eventDetail = {oldValue: oldVal, newValue: newVal};
+        that.logger_.finer('Publishing to "' + that.changedValueEventId + '"" ' + JSON.stringify(eventDetail));
+        that.eventManager.publish(that.changedValueEventId, eventDetail);
     });
 
     googSlider.listen(goog.ui.SliderBase.EventType.DRAG_START, function() {
@@ -363,4 +364,10 @@ pearson.brix.Slider.prototype.setValue = function (newValue)
     this.lastdrawn.sliderObj.setValue(newValue);
 
     return oldValue;
+};
+
+pearson.brix.Slider.prototype.getFormattedValue = function (value)
+{
+    var valueToFormat = (value !== undefined) ? value : this.lastdrawn.value;
+    return this.format(valueToFormat) + this.unit;
 };

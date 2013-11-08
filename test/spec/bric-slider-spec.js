@@ -79,7 +79,11 @@ goog.require('goog.testing.events');
                     expect(mySlider.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
                 });
 
-                describe('setting value', function () {
+                it.skip('should enable/disable', function(){
+
+                });
+
+                describe('Value Setter', function () {
                     it('should publish the Slider.valueChangeEventId with new value', function () {
                         var valueToSet = 2;
                         var prevValue = mySlider.getValue();
@@ -111,7 +115,7 @@ goog.require('goog.testing.events');
                 });
 
 
-                describe('Events handling', function () {
+                describe('Event handler', function () {
 
                     it('should change value when dragged, and all three events must be published', function() {
                         var changeWasPublished = false;

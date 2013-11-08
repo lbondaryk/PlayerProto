@@ -20,6 +20,11 @@
 
     <!-- content_styles.css contains styling for the narrative layout and responsive design -->
     <link href="css/content_styles.css" rel="stylesheet" media="screen">
+    <style>
+    .test{
+        margin-top: 10px;
+    }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -85,34 +90,27 @@
                 
                 <div class="test">
                     <p>Test 7: Two half-sized sliders</p>
-                    <div class="span6">
+                    <div id="t7sliders">
                         <span id="t7_1slider"></span>
-                    </div>
-                    <div class="span6">
                         <span id="t7_2slider"></span>
                     </div>  
                 </div>
-                
                 
             </div>
             <div class="lc_ec_trailing">
                 
                 <div class="test">
                     <p>Test 8: Slider next to readout</p>
-                    <div class="span3">
+                    <div >
                         Slider value = <span id="t8val"></span>
-                    </div>
-                    <div class="span6">
                         <span id="t8slider"></span>
                     </div>
                 </div>
                 
                 <div class="test">
                     <p>Test 9: Two sliders next to each other</p>
-                    <div class="span6">
+                    <div id="t9sliders">
                         <span id="t9_1slider"></span>
-                    </div>
-                    <div class="span5">
                         <span id="t9_2slider"></span>
                     </div>
                 </div>
@@ -215,6 +213,7 @@
             stepVal: .01,
             label: "Test 0 slider",
             format: '5.2f',
+            unit: '&deg;'
         }, eventManager);
     
     t0Slide.draw(d3.select("#t0slider"));
@@ -243,7 +242,6 @@
             maxVal: t1_2Extent[1],
             stepVal: .01,
             label: "Test 1 slider 2",
-            format: '5.2f',
         }, eventManager);
         
     t1_2Slide.draw(d3.select("#t1_2slider"));
@@ -261,6 +259,7 @@
             stepVal: .01,
             label: "Test 2 slider",
             format: '5.2f',
+            unit: 'µ',
         }, eventManager);
         
     t2Slide.draw(d3.select("#t2slider"));
@@ -495,7 +494,8 @@
             minVal: t7_1Extent[0],
             maxVal: t7_1Extent[1],
             stepVal: 1,
-            label: "Test 7 slider 1",
+            width: 100,
+            label: "Test7 sldr 1",
             format: '5.2f',
         }, eventManager);
         
@@ -507,7 +507,8 @@
             minVal: t7_2Extent[0],
             maxVal: t7_2Extent[1],
             stepVal: 1,
-            label: "Test 7 slider 2",
+            width: 100,
+            label: "Test7 sldr 2",
             format: '5.2f',
         }, eventManager);
         
@@ -554,15 +555,15 @@
     ////////////////////////////////////////////////
     
     // Test 9: Two sliders next to each other
-    var t9_1Extent = [0, 10],
-        t9_2Extent = [0, 10];
+    var t9_1Extent = [0, 100000],
+        t9_2Extent = [0.1, 0.2];
         
     var t9_1Slide = new Slider ({
             id: "t9_1Val",
-            startVal: 1,
+            startVal: t9_1Extent[0],
             minVal: t9_1Extent[0],
             maxVal: t9_1Extent[1],
-            stepVal: 1,
+            stepVal: 100,
             label: "Test 9 slider 1",
             format: '5.2f',
         }, eventManager);
@@ -571,10 +572,9 @@
     
     var t9_2Slide = new Slider ({
             id: "t9_2Val",
-            startVal: 1,
+            startVal: t9_2Extent[0],
             minVal: t9_2Extent[0],
             maxVal: t9_2Extent[1],
-            stepVal: 1,
             label: "Test 9 slider 2",
             format: '5.2f',
         }, eventManager);
@@ -595,6 +595,7 @@
             stepVal: .1,
             label: "Test 10 slider 1",
             format: '5.2f',
+            unit: 'Å'
         }, eventManager);
         
     t10_1Slide.draw(d3.select("#t10_1slider"));
@@ -604,7 +605,7 @@
             id: "t10_1Read",
             startVal: test10function(t10_1Slide.getValue()),
             readOnly: true,
-            size: 10
+            size: 10,
         }, eventManager);
     
     var t10_2Slide = new Slider ({
@@ -615,6 +616,7 @@
             stepVal: .1,
             label: "Test 10 slider 2",
             format: '5.2f',
+            unit: 'Å'
         }, eventManager);
         
     t10_2Slide.draw(d3.select("#t10_2slider"));
