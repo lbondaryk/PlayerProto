@@ -32,7 +32,7 @@
                     <div class="lc_ec_leading">
                 <div class="test">
                     <p>Test 0: One slider, no readout</p>
-                    <span id="t0slider"></span>
+                    Slider: <span id="t0slider"></span>
                 </div>
                 
                 <div class="test">
@@ -144,6 +144,8 @@
     
     <script src="../closure/closure-library/closure/goog/base.js"></script>
     <script src="../closure/closure-library/closure/goog/deps.js"></script>
+    <script src="../closure/closure-library/closure/goog/debug/logger.js"></script>
+    <script src="../closure/closure-library/closure/goog/debug/console.js"></script>
 
     <script src="js/eventmanager.js"></script>
     <script src="js/fakeactivitydb.js"></script>
@@ -170,7 +172,11 @@
     <script src="js/widget-numericquestion.js"></script>
     <script src="js/widget-slider.js"></script>
 
-
+    <script>
+    var debugConsole = new goog.debug.Console();
+    debugConsole.setCapturing(true);
+    goog.debug.Logger.getLogger('pearson').setLevel(goog.debug.Logger.Level.FINER);
+    </script>
 <script>
     // local aliases for convenience
     var EventManager = pearson.utils.EventManager;

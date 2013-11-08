@@ -64,6 +64,13 @@ goog.require("pearson.brix.BrixLayer");
  ****************************************************************************/
 pearson.brix.Ipc = function (config, eventManager)
 {
+    /**
+     * A logger to help debugging 
+     * @type {goog.debug.Logger}
+     * @private
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.Ipc');
+
     if (!config.ipsBaseUrl)
     {
         throw new Error('IPS server URL not provided.');
@@ -74,13 +81,6 @@ pearson.brix.Ipc = function (config, eventManager)
      * @type {!pearson.utils.IEventManager}
      */
     this.eventManager = eventManager;
-
-    /**
-     * A logger to help debugging 
-     * @type {goog.debug.Logger}
-     * @private
-     */
-    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.Ipc');
 
     /**
      * The IpsProxy used by this Ipc to communicate w/ the IPS
