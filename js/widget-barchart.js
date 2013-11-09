@@ -217,29 +217,34 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 			xAxisFormat: this.xAxisFormat,
 			yAxisFormat: this.yAxisFormat,
 		};
-		
-	var dataPts = d3.merge(this.data);
-	
+
 	//all the data in each dimension is merged to use for the domain  
 	//on the axis (autoranging)
-	axesConfig.xAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.x;});
-	axesConfig.yAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.y;});
-
-	//Check to see whether ordinal or other scales will be generated
+	var dataPts = d3.merge(this.data);
+	
+	
+	// Check to see whether ordinal scales will be generated in x or y
 	// and whether explicit ticks are set, which overrides the autoranging
-	if (axesConfig.xAxisFormat.type == 'ordinal' && !Array.isArray(axesConfig.xAxisFormat.ticks))
+	if (axesConfig.xAxisFormat.type == 'ordinal')
 	{
 		var ordinalValueMap = d3.set(dataPts.map(function (pt) {return pt.x;}));
-		axesConfig.xAxisFormat.ticks = ordinalValueMap.values();
+		axesConfig.xAxisFormat.extent = ordinalValueMap.values();
+	}
+	else
+	{
+		axesConfig.xAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.x;});
 	}
 	
-	if (axesConfig.yAxisFormat.type == 'ordinal' && !Array.isArray(axesConfig.yAxisFormat.ticks))
+	if (axesConfig.yAxisFormat.type == 'ordinal')
 	{
 		var ordinalValueMap = d3.set(dataPts.map(function (pt) {return pt.y;}));
-		axesConfig.yAxisFormat.ticks = ordinalValueMap.values();
+		axesConfig.yAxisFormat.extent = ordinalValueMap.values();
 		
 	} 
-	
+	else
+	{
+		axesConfig.yAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.y;});
+	}
 	
 	//make the axes for this graph - draw these first because these are the 
 	//pieces that need extra unknown space for ticks, ticklabels, axis label

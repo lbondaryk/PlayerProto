@@ -76,7 +76,7 @@
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
-		<script src="js/eventmanager.js"></script>
+	<script src="js/eventmanager.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
 	<script src="js/answerman.js"></script>
 	<script src="js/submitmanager.js"></script>
@@ -209,7 +209,7 @@ yearSlide.draw(d3.select("#slider3"));
 	var cont1 = new SVGContainer({
 			node: d3.select("#graph0"),
 			maxWid: 500,
-			maxHt: 500
+			maxHt: 600
 		});
 		
 	var barsWomen = new BarChart({
@@ -217,13 +217,13 @@ yearSlide.draw(d3.select("#slider3"));
 			Data: [[]], 
 			type: "lines",
 			xAxisFormat: { type: "linear",
-						   ticks:  [0, initialPop/2, initialPop],
+						   ticks:  [0, initialPop/40, initialPop/20],
 						   orientation: "bottom",
 						   label: "Female population " },
 			yAxisFormat: { type: "ordinal",
 						   orientation: "left",
 						   label: "Age",
-						    ticks: 0,
+						   ticks: 5
 						    },
 		},eventManager);	
 			
@@ -232,11 +232,12 @@ yearSlide.draw(d3.select("#slider3"));
 		xAxisFormat: { 
 						type: "linear", 
 					   	mode: "reverse",
-					   	ticks: [0, initialPop/2, initialPop],
+					   	ticks: [0, initialPop/40, initialPop/20],
 					   	orientation: "bottom",
 					   	label: "Male Population  "},
 		yAxisFormat: { type: "ordinal",
 					   orientation: "right",
+					   ticks: 5
 					   },
 	});
 
@@ -268,7 +269,7 @@ yearSlide.draw(d3.select("#slider3"));
 	barsWomen.data = [popMortar.populationWomen_[0]];
 	barsMen.data = [[], popMortar.populationMen_[0]];
 
-	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .25, heightPercent: 1, widthPercent: 0.8});
+	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .45, heightPercent: 1, widthPercent: 0.5});
 	cont1.append(barsMen, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.55});
 	
 	barsWomen.append(legLines);

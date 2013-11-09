@@ -347,33 +347,6 @@ var ordinalData2 = [
 					   	label: "Age group"},
 	});
 
-	/* var dblPos = new BarChart ({
-		Data: [growthWomen],
-		xAxisFormat: { 
-						type: "linear", 
-					   	mode: "reverse",
-					   	ticks: 4,
-					   	orientation: "bottom",
-					   	label: "reverse axis - Women"},
-		yAxisFormat: { type: "ordinal",
-					   orientation: "right",
-					   yLabel: "Age ranges"},
-	});
-
-	var dblPos2 = new BarChart ({
-		Data: [growthMen],
-		xAxisFormat: { 
-						type: "linear", 
-					   	ticks: 4,
-					   	orientation: "bottom",
-					   	label: "Men"},
-		yAxisFormat: { type: "ordinal",
-					   orientation: "left",
-					   ticks: 0
-					   },
-	});
-	svg55.append(dblPos, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.5});
-	*/
 
 	svg55.append(dblPos);
 
@@ -397,7 +370,8 @@ var ordinalData2 = [
 		yAxisFormat: {
 			type: "ordinal",
 			orientation: "left",
-			label: "age groups"
+			label: "age groups (2 ticks)",
+			ticks: 4
 		}
 	});
 	
@@ -415,7 +389,8 @@ var ordinalData2 = [
 		yAxisFormat: {
 			type: "ordinal",
 			orientation: "left",
-			//label: "age groups"
+			ticks: ['11-20', '71-80'],
+			label: "only 11 and 71 ticks"
 		}
 	});
 	
