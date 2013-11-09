@@ -64,14 +64,23 @@ goog.require('goog.object');
             });
         });
 
-        describe('BricLayer.build with valid empty activity config', function () {
+        describe('BricLayer.build with valid minimal empty activity config', function () {
             var bricLayer = new BricLayer({}, dummyEventMgr);
             var activityConfig = createActivityConfigSkeleton();
+            // remove the optional properties so the config is truly minimal
+            delete activityConfig.containerConfig[0].mortarConfig;
+            delete activityConfig.containerConfig[0].hookupActions;
             var building = bricLayer.build(activityConfig);
 
             it('should return an object w/ an info property which is an object', function () {
                 expect(building).to.have.a.property('info');
                 expect(building.info).to.be.an('object');
+            });
+
+            it('should return an object w/ a data property which is an object w/ no properties', function () {
+                expect(building).to.have.a.property('data');
+                expect(building.brix).to.be.an('object');
+                expect(goog.object.getCount(building.brix)).to.equal(0);
             });
 
             it('should return an object w/ a brix property which is an object w/ no properties', function () {
@@ -122,6 +131,22 @@ goog.require('goog.object');
                 expect(dummyBric.cfg).to.deep.equal(dummyBricConfig);
                 // the eventmanager the BricLayer was created with is passed to the bric ctor.
                 expect(dummyBric.em).to.equal(dummyEventMgr);
+            });
+        });
+
+        describe('BricLayer.build with an activity config with a data section', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var activityConfig = createActivityConfigSkeleton();
+            // remove the optional properties so the config is truly minimal
+            delete activityConfig.containerConfig[0].mortarConfig;
+            delete activityConfig.containerConfig[0].hookupActions;
+            // add a data property
+            activityConfig.data = { "foo1": "here and now", "bar1": 20, "foo2": { "key1": 1 } };
+
+            var building = bricLayer.build(activityConfig);
+
+            it('should return a "building" object with a data property which is a ref to the data property in the config', function () {
+                expect(building.data).to.equal(activityConfig.data);
             });
         });
 
@@ -599,6 +624,49 @@ goog.require('goog.object');
 
                     expect(testDVBric.dynamicVal).to.equal(testDVBric);
                 });
+
+                it('should be able to reference a previously created mortar', function () {
+                    // add a test mortar to the activity config so it can be referenced
+                    var dummyMortarName = '_dummy test mortar_'
+                    var DummyMortarCtor = function (c, e) {this.cfg = c; this.em = e;};
+                    bricWorks.registerMortarMix(dummyMortarName, DummyMortarCtor);
+
+                    var testDV_MortarId = 'test';
+                    var testDV_MortarConfig = {"foo": "any foo will do"};
+
+                    var staticMortarConfig =
+                        {
+                            "mortarId": testDV_MortarId,
+                            "mortarType": dummyMortarName,
+                            "config": testDV_MortarConfig
+                        };
+
+                    activityConfig.containerConfig[0].mortarConfig.push(staticMortarConfig);
+
+                    var refDv = { "type": "ref", "domain": "mortar", "refId": testDV_MortarId };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(refDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+                    var testDVMortar = building.mortar[testDV_MortarId];
+
+                    expect(testDVBric.dynamicVal).to.equal(testDVMortar);
+                });
+
+                it('should be able to reference data properties', function () {
+                    // add a data property to the activity config so it can be referenced
+                    var dataId = "foo";
+                    activityConfig.data = {};
+                    activityConfig.data[dataId] = ["one", "two", "shoe"];
+                    var refDv = { "type": "ref", "domain": "data", "refId": dataId };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(refDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.an('array');
+                    expect(testDVBric.dynamicVal).to.equal(building.data[dataId]);
+                });
             });
 
             describe('property-of-ref', function() {
@@ -610,6 +678,68 @@ goog.require('goog.object');
                     var testDVBric = building.brix[testDV_BricId];
 
                     expect(testDVBric.dynamicVal).to.equal('howdy partner');
+                });
+            });
+
+            describe('array', function() {
+                it('should get an array whose elements are the specified dynamic values', function () {
+                    var arrayDv = { "type": "array",
+                                    "elements":
+                                        [
+                                            { "type": "ref", "domain": "brix", "refId": testDV_BricId },
+                                            { "type": "constant", "value": "snafu?" },
+                                            { "type": "constant", "value": 101 }
+                                        ]
+                                  };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(arrayDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.an('array');
+                    expect(testDVBric.dynamicVal.length).to.equal(3);
+                    expect(testDVBric.dynamicVal[0]).to.equal(building.brix[testDV_BricId]);
+                    expect(testDVBric.dynamicVal[1]).to.equal("snafu?");
+                    expect(testDVBric.dynamicVal[2]).to.equal(101);
+                });
+            });
+
+            describe('array-element', function() {
+                it('should get an element of an array which is a dynamic value', function () {
+                    var dataId = "foo";
+                    activityConfig.data = {};
+                    activityConfig.data[dataId] = [10, 20, 30, 40];
+                    var arrayElDv = { "type": "array-element",
+                                      "array": { "type": "ref", "domain": "data", "refId": dataId },
+                                      "index": 2
+                                    };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(arrayElDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.equal(30);
+                });
+
+                it('should be able to be nested to get values from nested arrays', function () {
+                    var dataId = "foo";
+                    var objInNestedArray = {"george": "dragon"};
+                    activityConfig.data = {};
+                    activityConfig.data[dataId] = [10, 20, ["a", "b", "c", objInNestedArray, [3]], 40];
+                    var arrayElDv = { "type": "array-element",
+                                      "array": { "type": "array-element",
+                                                 "array": { "type": "ref", "domain": "data", "refId": dataId },
+                                                 "index": 2
+                                               },
+                                      "index": 3
+                                    };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(arrayElDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.an('object');
+                    expect(testDVBric.dynamicVal).to.equal(objInNestedArray);
                 });
             });
 

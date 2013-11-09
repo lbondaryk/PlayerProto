@@ -95,13 +95,13 @@
 </head>
 
 <body>
-    <h1>NeffReactor Integration test (complete)</h1>
+    <h1>NeffReactor Integration test (AMS PAF Stub)</h1>
     <div style="border: orange 1px solid; padding: 10px">
     <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Server (Node.js) up</p>
     <pre>
 [Tomcat/bin]$ ./catalina.sh run
 [BrixServer]$ make testsvr</pre>
-    <b>The Reactor's image label sould say "... from PAF"</b>
+    <b>The Reactor's image label should say "... from AMS"</b>
     </div>
 
     <!-- TEST CONTENT {{ -->
@@ -115,17 +115,16 @@
                     </h2>
                     <div class="lc_ec_leading">
                         <p>Nuclear reactors use heat from fission reactions to turn water into steam, which spins turbines connected to generators that produce electricity. The figure shows a common design known as a pressurized water reactor.</p>
-                        <!-- The div is is used by the Bric factory to map the containerId -->
                         <div id="imgReactor" habitat-id="some_habitat_id1" class="brix" 
-                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assignment.2"
-                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.neff.2"
+                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/assign_neff"
+                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_reactor"
                             data-containerid="imgReactor"
                             data-type="brix" >
                         </div>
                     </div>
                     <div id="steps" habitat-id="some_habitat_id2" class="brix" 
-                        data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assignment.2" 
-                        data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.neff.2"
+                        data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/assign_neff" 
+                        data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_reactor"
                         data-containerid="steps"
                         data-type="brix"></div>
             </div>
