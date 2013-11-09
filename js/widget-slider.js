@@ -19,6 +19,7 @@
 
 goog.provide('pearson.brix.Slider');
 
+goog.require('goog.debug.Logger');
 goog.require('goog.dom');
 goog.require('goog.ui.Component');
 goog.require('goog.ui.Slider');
@@ -86,6 +87,13 @@ pearson.brix.Slider = function (config, eventManager)
     goog.base(this);
 
     /**
+     * A logger to help debugging 
+     * @type {goog.debug.Logger}
+     * @private
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.Slider');
+
+    /**
      * A unique id for this instance of the slider widget
      * @type {string}
      */
@@ -103,7 +111,7 @@ pearson.brix.Slider = function (config, eventManager)
      * @type {string}
      */
 
-    this.unit = config.unit;
+    this.unit = config.unit || '';
 
     /**
      * Text to display before the readout and slider.  Currently for display only.
@@ -122,7 +130,7 @@ pearson.brix.Slider = function (config, eventManager)
      * The width of the Slider in pixel
      * @type {number}
      */
-    this.width = config.width || "200";
+    this.width = config.width || '200';
 
     /**
      * The event manager to use to publish (and subscribe to) events for this widget
@@ -170,6 +178,8 @@ pearson.brix.Slider = function (config, eventManager)
             /** @type {d3.selection} */     readOut: null,
             /** @type {goog.ui.Slider} */   sliderObj: null,
         };
+
+    this.logger_.config('Slider with id:' + this.id + ' created.');
 }; // end of slider constructor
 goog.inherits(pearson.brix.Slider, pearson.brix.HtmlBric);
 
@@ -205,22 +215,21 @@ pearson.brix.Slider.prototype.draw = function (container)
 
     // All widgets get a top level "grouping" element which gets a class identifying the widget type.
     var widgetGroup = container.append("div")
-        .attr("class", "widgetSlider")
+        .attr("class", "bricSlider-container")
         .attr("id", this.id);
-    widgetGroup.append('span')
+    var widgetHeaderDiv = widgetGroup.append('div')
+        .attr("class", "header");
+    widgetHeaderDiv.append('span')
         .attr('role', 'label')
         .html(this.label ? this.label : "");
-    var readOut = (this.format) ? widgetGroup.append('span')
+    var readOut = (this.format) ? widgetHeaderDiv.append('span')
             .attr("class", "readout")
-            .html(this.format(this.startVal))
+            .html(this.getFormattedValue(this.startVal))
         : null;
-    widgetGroup.append('span')
-        .attr('class', 'range')
-        .html(" &nbsp;&nbsp;&nbsp;" + this.minVal);
 
     var googSliderDiv = widgetGroup.append("div")
-        .attr("class", "bricSlider goog-slider")
-        .attr("style", "display:inline-block; width: " + this.width + "px; height: 20px;");
+        .attr("class", "bricSlider-widget goog-slider")
+        .attr("style", "position:relative; display:inline-block; width: " + this.width + "px; height: 20px;");
     googSliderDiv.append('div') // rail (optional)
         .attr('class', 'bricSlider-rail bric-round-corner');
         // Below is sample from google site
@@ -228,9 +237,15 @@ pearson.brix.Slider.prototype.draw = function (container)
     var thumbDiv = googSliderDiv.append('div')
         .attr('class', 'bricSlider-thumb goog-slider-thumb bric-round-corner');
 
-    widgetGroup.append('span')
+    var trackDiv = widgetGroup.append("div")
+        .attr("class", "track");
+    trackDiv.append('div')
         .attr('class', 'range')
-        .html(" &nbsp;&nbsp;&nbsp;" + this.maxVal);
+        .attr('style', 'float:right')
+        .html(this.maxVal.toString() + '&nbsp;' + this.unit);
+    trackDiv.append('div')
+        .attr('class', 'range')
+        .html(this.minVal.toString() + this.unit);
 
     var sliderEl = googSliderDiv.node();
 
@@ -251,34 +266,61 @@ pearson.brix.Slider.prototype.draw = function (container)
     googSlider.setMoveToPointEnabled(true); // Allows to go to specific point when tapped over the rail
 
     googSlider.listen(goog.ui.Component.EventType.CHANGE, function() {
-        //this publishes the onChange event to the eventManager
-        //passing along the updated value in the numeric field.
+        // This publishes the CHANGE event to the eventManager
+        // passing along the updated value in the numeric field.
         var newVal = googSlider.getValue();
-        //newVal = that.format(newVal);
-        //that.display.setValue(newVal);
-        if (readOut)
-        {
-            readOut.text(that.format(newVal));
-        }
+
         // we want to publish the changedValue event after the value has been changed
         var oldVal = that.lastdrawn.value;
         that.lastdrawn.value = newVal;
-        that.eventManager.publish(that.changedValueEventId,
-                        {oldValue: oldVal, newValue: newVal});
+
+        if (readOut)
+        {
+            readOut.html(that.getFormattedValue());
+        }
+        var eventDetail = {oldValue: oldVal, newValue: newVal};
+        that.logger_.finer('Publishing to "' + that.changedValueEventId + '"" ' + JSON.stringify(eventDetail));
+        that.eventManager.publish(that.changedValueEventId, eventDetail);
     });
 
     googSlider.listen(goog.ui.SliderBase.EventType.DRAG_START, function() {
+        that.logger_.fine('Publishing to ' + that.dragStartEventId);
         that.eventManager.publish(that.dragStartEventId,
             {value: googSlider.getValue()});
     });
     
     googSlider.listen(goog.ui.SliderBase.EventType.DRAG_END, function() {
+        that.logger_.fine('Publishing to ' + that.dragEndEventId);
         that.eventManager.publish(that.dragEndEventId,
             {value: googSlider.getValue()});
     });
     this.lastdrawn.sliderObj = googSlider;
 
 }; // end of Slider.draw()
+
+/* **************************************************************************
+ * Button.setEnabled                                                   */ /**
+ *
+ * This method sets the current enable state of the button.
+ * @export
+ *
+ * @param {boolean} newEnableState  -true to enable the button, false to disable it.
+ *
+ **************************************************************************/
+pearson.brix.Slider.prototype.setEnabled = function (newEnableState)
+{
+    if (!this.lastdrawn.sliderObj)
+    {
+        // If not drawn yet, nothing to do
+        return;
+    }
+    var stateChanged = this.lastdrawn.sliderObj.isEnabled() !== newEnableState;
+
+    if (stateChanged && this.lastdrawn.widgetGroup)
+    {
+        this.lastdrawn.sliderObj.setEnabled(newEnableState);
+    }
+};
 
 /* **************************************************************************
  * Slider.getValue                                                     */ /**
@@ -315,16 +357,17 @@ pearson.brix.Slider.prototype.setValue = function (newValue)
 {
     var oldValue = this.lastdrawn.value;
 
-    if (newValue === oldValue)
-        return oldValue;
-
+    /*
     // The addEventListener(CHANGE) is called when sliderObj.setValue is called below
     // There is no need to set the readout again.
-    //var jReadout = $("span.readout", this.lastdrawn.widgetGroup);
-    //jReadout.text(this.format(newValue));
-
-    this.lastdrawn.value = newValue;
+    */
     this.lastdrawn.sliderObj.setValue(newValue);
 
     return oldValue;
+};
+
+pearson.brix.Slider.prototype.getFormattedValue = function (value)
+{
+    var valueToFormat = (value !== undefined) ? value : this.lastdrawn.value;
+    return this.format(valueToFormat) + this.unit;
 };
