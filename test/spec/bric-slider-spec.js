@@ -10,6 +10,8 @@
  * Copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
+
+// Requires for simulating events
 goog.require('goog.style');
 goog.require('goog.testing.events');
 
@@ -21,7 +23,21 @@ goog.require('goog.testing.events');
     var EventManager = pearson.utils.EventManager;
     var Slider = pearson.brix.Slider;
 
-    describe('Sliders: broadcasting for an answer', function () {
+    var moveSlider = function(slider, delta)
+    {
+        var googSlider = slider.lastdrawn.sliderObj;
+        var offset = goog.style.getPageOffset(googSlider.valueThumb);
+        var size = goog.style.getSize(googSlider.valueThumb);
+        offset.x += size.width / 2;
+        offset.y += size.height / 2;
+
+        goog.testing.events.fireMouseDownEvent(googSlider.valueThumb);
+        offset.x += size.width * delta;
+        goog.testing.events.fireMouseMoveEvent(googSlider.valueThumb, offset);
+        goog.testing.events.fireMouseUpEvent(googSlider.valueThumb);
+    };
+
+    describe('Sliders Bric', function () {
         var eventManager = null;
 
         describe('Creating a Slider w/ 4 choices', function () {
@@ -30,8 +46,8 @@ goog.require('goog.testing.events');
                     id: "t1_1Val",
                     startVal: 0.5,
                     minVal: 0,
-                    maxVal: 5,
-                    stepVal: .01,
+                    maxVal: 10,
+                    stepVal: 0.1,
                     label: "Test Slider",
                     format: '5.2f',
                 };
@@ -79,8 +95,24 @@ goog.require('goog.testing.events');
                     expect(mySlider.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
                 });
 
-                it.skip('should enable/disable', function(){
+                it('should not alter value when disabled', function(){
+                    // Check that a slider is enabled by default
+                    expect(mySlider.isEnabled()).to.be.true;
 
+                    var valToSet = 5;
+                    mySlider.setValue(valToSet);
+                    expect(mySlider.getValue()).to.equal(valToSet);
+
+                    // Disable the slider and check its state
+                    mySlider.setEnabled(false);
+                    // setValue should work unaffected even when the slider is disabled.
+                    moveSlider(mySlider, 3);
+                    expect(mySlider.getValue()).to.equal(valToSet);
+
+                    mySlider.setEnabled(true);
+                    moveSlider(mySlider, 3);
+                    expect(mySlider.getValue()).to.not.equal(valToSet);
+                    console.log('Slider new val:'+ mySlider.getValue());
                 });
 
                 describe('Value Setter', function () {
@@ -102,7 +134,7 @@ goog.require('goog.testing.events');
                     });
 
                     it('should not change when the value is outside the min-max range', function() {
-                        var valueToSet = 10;
+                        var valueToSet = sliderConfig + 1;
                         var prevValue = mySlider.getValue();
                         var stub = sinon.stub(eventManager, "publish", function(topic, evtDetails) {
                             throw new Error("Should not have published when value outside of valid range");
@@ -135,16 +167,8 @@ goog.require('goog.testing.events');
                         });
 
                         var theVal =  mySlider.getValue();
-                        var googSlider = mySlider.lastdrawn.sliderObj;
-                        var offset = goog.style.getPageOffset(googSlider.valueThumb);
-                        var size = goog.style.getSize(googSlider.valueThumb);
-                        offset.x += size.width / 2;
-                        offset.y += size.height / 2;
-
-                        goog.testing.events.fireMouseDownEvent(googSlider.valueThumb);
-                        offset.x += size.width * 3;
-                        goog.testing.events.fireMouseMoveEvent(googSlider.valueThumb, offset);
-                        goog.testing.events.fireMouseUpEvent(googSlider.valueThumb);
+                        
+                        moveSlider(mySlider, 3);
 
                         expect(changeWasPublished).to.equal(true);
                         expect(startWasPublished).to.equal(true);

@@ -38,10 +38,28 @@ goog.require('pearson.brix.HtmlBric');
             stepVal: 0.1,
             unit: "&micro;m",
             label: "diameter: ",
-            format: d3.format(String.fromCharCode(0x2007/*figure space*/) + '>5.2f'),
+            widht: '45%',
+            format: '>5.2f',
         };
 });
-    
+
+
+/* **************************************************************************
+ * UnitOpt                                                           */ /**
+ *
+ * This is the enumeration for unit displaying option. The unit can be 
+ * prepended, appended or not displayed.
+ *
+ * @enum {number}
+ *
+ ****************************************************************************/
+pearson.brix.UnitOpt =
+{
+    NONE: 0,
+    PREPEND: 1,
+    APPEND: 2
+};
+
 /* **************************************************************************
  * Slider                                                              */ /**
  *
@@ -60,20 +78,22 @@ goog.require('pearson.brix.HtmlBric');
  * @param {string|undefined}
  *                      config.id       -String to uniquely identify this Slider.
  *                                       if undefined a unique id will be assigned.
- * @param {number}      config.startVal -starting value of slider
- * @param {number}      config.minVal   -minimum value of slider
- * @param {number}      config.maxVal   -maximum value of slider
- * @param {number}      config.stepVal  -step size of slider
+ * @param {number}      config.startVal -Starting value of slider
+ * @param {number}      config.minVal   -Minimum value of slider
+ * @param {number}      config.maxVal   -Maximum value of slider
+ * @param {number}      config.stepVal  -Step size of slider
  * @param {htmlString|undefined}
- *                      config.label    -text preceding the slider, optional
+ *                      config.label    -Text preceding the slider, optional
  * @param {htmlString|undefined}
- *                      config.unit     -text following the slider, optional
+ *                      config.unit     -Unit as displayed in the internal readout
+ * @param {pearson.brix.UnitOpt|undefined}
+ *                      config.unitOpt  -Unit display option
  * @param {function(number): string}
  *                      config.format   -{@link https://github.com/mbostock/d3/wiki/Formatting|formatting function}
  *                                       for displaying value in readout. 
  *                                       Set to null if does not want readout to be shown.
- * @param {number}
- *                      config.width    -The width of the slider in px.
+ * @param {string}
+ *                      config.width    -The width of the slider in format: Nn{px|%}. E.g.: 90%, 200px
  * @param {!pearson.utils.IEventManager=}
  *                      eventManager    -The event manager to use for publishing events
  *                                       and subscribing to them.
@@ -110,8 +130,13 @@ pearson.brix.Slider = function (config, eventManager)
      * later could be used to multiply the value by a unit.
      * @type {string}
      */
-
     this.unit = config.unit || '';
+
+    /**
+     * Unit display option.
+     * @type {pearson.brix.UnitOpt}
+     */
+    this.unitOpt = config.unitOpt || pearson.brix.UnitOpt.APPEND;
 
     /**
      * Text to display before the readout and slider.  Currently for display only.
@@ -124,13 +149,13 @@ pearson.brix.Slider = function (config, eventManager)
      * Function to format the value of this slider for display by the readout.
      * @type { (function(number): string) | null}
      */
-    this.format = (config.format) ? d3.format(config.format) : null;
+    this.format = (config.format) ? d3.format(config.format) : function(val){ return val.toString();};
 
     /**  
      * The width of the Slider in pixel
      * @type {number}
      */
-    this.width = config.width || '200';
+    this.width = config.width || '90%';
 
     /**
      * The event manager to use to publish (and subscribe to) events for this widget
@@ -143,21 +168,21 @@ pearson.brix.Slider = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.changedValueEventId = this.id + '_valueChanged';
+    this.changedValueEventId = pearson.brix.Slider.getEventTopic('valueChanged', this.id);
     
     /**
      * The event id (topic) published when the handle starts dragging.
      * @const
      * @type {string}
      */
-    this.dragStartEventId = this.id + '_dragStart';
+    this.dragStartEventId = pearson.brix.Slider.getEventTopic('dragStart', this.id);
 
     /**
      * The event id (topic) published when the handle stops dragging.
      * @const
      * @type {string}
      */
-    this.dragEndEventId = this.id + '_dragEnd';
+    this.dragEndEventId = pearson.brix.Slider.getEventTopic('dragEnd', this.id);
 
     /**
      * The event details for this.changedValueEventId events
@@ -216,20 +241,23 @@ pearson.brix.Slider.prototype.draw = function (container)
     // All widgets get a top level "grouping" element which gets a class identifying the widget type.
     var widgetGroup = container.append("div")
         .attr("class", "bricSlider-container")
-        .attr("id", this.id);
+        .attr("id", this.id)
+        .attr("style", "width:"+ this.width);
     var widgetHeaderDiv = widgetGroup.append('div')
         .attr("class", "header");
     widgetHeaderDiv.append('span')
         .attr('role', 'label')
         .html(this.label ? this.label : "");
+
+    // readout is enabled if format was provided
     var readOut = (this.format) ? widgetHeaderDiv.append('span')
             .attr("class", "readout")
-            .html(this.getFormattedValue(this.startVal))
+            .html(this.getFormattedValue(this.unitOpt, this.startVal))
         : null;
 
     var googSliderDiv = widgetGroup.append("div")
         .attr("class", "bricSlider-widget goog-slider")
-        .attr("style", "position:relative; display:inline-block; width: " + this.width + "px; height: 20px;");
+        .attr("style", "position:relative; display:inline-block; width: 100%; height: 20px;");
     googSliderDiv.append('div') // rail (optional)
         .attr('class', 'bricSlider-rail bric-round-corner');
         // Below is sample from google site
@@ -242,10 +270,10 @@ pearson.brix.Slider.prototype.draw = function (container)
     trackDiv.append('div')
         .attr('class', 'range')
         .attr('style', 'float:right')
-        .html(this.maxVal.toString() + '&nbsp;' + this.unit);
+        .html(this.getFormattedValue(pearson.brix.UnitOpt.NONE, this.maxVal));
     trackDiv.append('div')
         .attr('class', 'range')
-        .html(this.minVal.toString() + this.unit);
+        .html(this.getFormattedValue(pearson.brix.UnitOpt.NONE, this.minVal));
 
     var sliderEl = googSliderDiv.node();
 
@@ -261,6 +289,7 @@ pearson.brix.Slider.prototype.draw = function (container)
     if (this.stepVal)
     {
         googSlider.setStep(this.stepVal);
+        googSlider.setUnitIncrement(this.stepVal);
     }
     googSlider.decorate(sliderEl);
     googSlider.setMoveToPointEnabled(true); // Allows to go to specific point when tapped over the rail
@@ -276,7 +305,7 @@ pearson.brix.Slider.prototype.draw = function (container)
 
         if (readOut)
         {
-            readOut.html(that.getFormattedValue());
+            readOut.html(that.getFormattedValue(that.unitOpt));
         }
         var eventDetail = {oldValue: oldVal, newValue: newVal};
         that.logger_.finer('Publishing to "' + that.changedValueEventId + '"" ' + JSON.stringify(eventDetail));
@@ -284,13 +313,13 @@ pearson.brix.Slider.prototype.draw = function (container)
     });
 
     googSlider.listen(goog.ui.SliderBase.EventType.DRAG_START, function() {
-        that.logger_.fine('Publishing to ' + that.dragStartEventId);
+        that.logger_.fine('Publishing to "' + that.dragStartEventId + '" value:'+googSlider.getValue());
         that.eventManager.publish(that.dragStartEventId,
             {value: googSlider.getValue()});
     });
     
     googSlider.listen(goog.ui.SliderBase.EventType.DRAG_END, function() {
-        that.logger_.fine('Publishing to ' + that.dragEndEventId);
+        that.logger_.fine('Publishing to "' + that.dragEndEventId+ '" value:'+googSlider.getValue());
         that.eventManager.publish(that.dragEndEventId,
             {value: googSlider.getValue()});
     });
@@ -299,7 +328,7 @@ pearson.brix.Slider.prototype.draw = function (container)
 }; // end of Slider.draw()
 
 /* **************************************************************************
- * Button.setEnabled                                                   */ /**
+ * Slider.setEnabled                                                   */ /**
  *
  * This method sets the current enable state of the button.
  * @export
@@ -322,21 +351,35 @@ pearson.brix.Slider.prototype.setEnabled = function (newEnableState)
     }
 };
 
+
+/* **************************************************************************
+ * Button.isEnabled                                                    */ /**
+ *
+ * Returns the current enable state of the slider.
+ * @export
+ *
+ * @return {boolean} True is enabled, false otherwise
+ **************************************************************************/
+pearson.brix.Slider.prototype.isEnabled = function ()
+{
+    if (!this.lastdrawn.sliderObj)
+    {
+        // If not drawn yet, nothing to do
+        return false;
+    }
+    return this.lastdrawn.sliderObj.isEnabled();
+};
+
 /* **************************************************************************
  * Slider.getValue                                                     */ /**
  *
  * The getValue method returns the current value of this Slider bric.
  * @export
  *
- * @return {number} current value of this Slider.
+ * @return {number} Current value of this Slider.
  ****************************************************************************/
 pearson.brix.Slider.prototype.getValue = function ()
 {
-    // The value held by the jQuery slider may not be the value of this slider
-    // bric because we update during the jQuery's slide event which is before
-    // the jQuery slider updates its value.
-    //var jSlider = $("span.slider", this.lastdrawn.widgetGroup);
-    //return jSlider.slider("value");
     return this.lastdrawn.value;
 };
 
@@ -344,10 +387,8 @@ pearson.brix.Slider.prototype.getValue = function ()
  * Slider.setValue                                                     */ /**
  *
  * The setValue method sets the value of this Slider bric.
- * This does NOT fire the changedValue event.
+ * This fires the changedValue event if the value is valid.
  * @export
- *
- * @note: should it fire the changedValue event? -mjl
  *
  * @param {number} newValue -The new value for the widget
  *
@@ -366,8 +407,78 @@ pearson.brix.Slider.prototype.setValue = function (newValue)
     return oldValue;
 };
 
-pearson.brix.Slider.prototype.getFormattedValue = function (value)
+/* **************************************************************************
+ * Slider.getFormattedValue                                            */ /**
+ *
+ * The returns the formatted value with unit suffix. 
+ * @export
+ *
+ * @param {pearson.brix.UnitOpt} unitOpt - Unit display option 
+ * @param {number=} value -The value to format, if not provided, uses the 
+ *                         current value of the slider.
+ *
+ * @return {string} the value formatted with unit suffix
+ ****************************************************************************/
+pearson.brix.Slider.prototype.getFormattedValue = function (unitOpt, value)
 {
     var valueToFormat = (value !== undefined) ? value : this.lastdrawn.value;
-    return this.format(valueToFormat) + this.unit;
+
+    if (unitOpt == pearson.brix.UnitOpt.APPEND)
+    {
+        return this.format(valueToFormat) + this.unit;
+    }
+    else if (unitOpt == pearson.brix.UnitOpt.PREPEND)
+    {
+        return this.unit + this.format(valueToFormat);
+    }
+    return this.format(valueToFormat);
+};
+
+
+/* **************************************************************************
+ * Slider.getEventTopic (static)                                   */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * Slider bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of LabelGroup with the given
+ *                   instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.Slider.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'valueChanged': function (instanceId)
+        {
+            return instanceId + '_valueChanged';
+        },
+        'dragStart': function (instanceId)
+        {
+            return instanceId + '_dragStart';
+        },
+        'dragEnd': function (instanceId)
+        {
+            return instanceId + '_dragEnd';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by LabelGroup brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
 };

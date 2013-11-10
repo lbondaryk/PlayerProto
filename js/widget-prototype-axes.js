@@ -414,7 +414,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 			// creating ordinal bands, but in the case that it's very dense you might need to
 			// trim down the number of ticks just like you do with linear -lb
 			this.yScale = d3.scale.ordinal().domain(this.yFmt.extent) //lists all ordinal y vals
-				.rangeRoundBands([dataAreaHeight, 0], 0.4);
+				.rangeRoundBands([dataAreaHeight, 0], 0.4, 0);
 
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 40% white space
@@ -459,7 +459,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		//if y ticks are specified explicitly, use them
 		Array.isArray(yTicks) ? (this.yAxis.tickValues(yTicks)) : (this.yAxis.ticks(yTicks));
 		}
-		
+
 		this.yaxis = this.group.append("g")
 			.attr("transform", "translate(" + ((yOrient == "right") ? dataAreaWidth : 0) + ",0)")
 			//move it over if the axis is at the bottom of the graph
@@ -548,7 +548,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		//using the new dimensions, redo the scale and axes
 		if (this.yFmt.type=="ordinal")
 		{
-			this.yScale.rangeRoundBands([dataAreaHeight, 0], .3);
+			this.yScale.rangeRoundBands([dataAreaHeight, 0], .3, .1);
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 30% white space
 		}

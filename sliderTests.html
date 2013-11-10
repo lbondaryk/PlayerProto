@@ -36,7 +36,7 @@
                     </h2>
                     <div class="lc_ec_leading">
                 <div class="test">
-                    <p>Test 0: One slider, no readout</p>
+                    <p>Test 0: One slider (fixed size), no readout</p>
                     Slider: <span id="t0slider"></span>
                 </div>
                 
@@ -212,7 +212,8 @@
             maxVal: t0Extent[1],
             stepVal: .01,
             label: "Test 0 slider",
-            format: '5.2f',
+            format: '>5.2f',
+            width: '200px',
             unit: '&deg;'
         }, eventManager);
     
@@ -230,6 +231,9 @@
             minVal: t1_1Extent[0],
             maxVal: t1_1Extent[1],
             stepVal: .01,
+            format: '5.2f',
+            unit: '$',
+            unitOpt: pearson.brix.UnitOpt.PREPEND,
             label: "Test 1 slider 1",
         }, eventManager);
         
@@ -494,7 +498,7 @@
             minVal: t7_1Extent[0],
             maxVal: t7_1Extent[1],
             stepVal: 1,
-            width: 100,
+            width: '40%',
             label: "Test7 sldr 1",
             format: '5.2f',
         }, eventManager);
@@ -507,7 +511,7 @@
             minVal: t7_2Extent[0],
             maxVal: t7_2Extent[1],
             stepVal: 1,
-            width: 100,
+            width: '40%',
             label: "Test7 sldr 2",
             format: '5.2f',
         }, eventManager);
@@ -566,6 +570,7 @@
             stepVal: 100,
             label: "Test 9 slider 1",
             format: '5.2f',
+            width: '43%'
         }, eventManager);
         
     t9_1Slide.draw(d3.select("#t9_1slider"));
@@ -575,8 +580,10 @@
             startVal: t9_2Extent[0],
             minVal: t9_2Extent[0],
             maxVal: t9_2Extent[1],
+            stepVal: 0.01,
             label: "Test 9 slider 2",
             format: '5.2f',
+            width: '43%'
         }, eventManager);
         
     t9_2Slide.draw(d3.select("#t9_2slider"));

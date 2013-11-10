@@ -337,7 +337,7 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
 {
     // variables to set up the difference equation
     var years = 100;
-    var n0 = this.initialPop_;    // total population - eventually slider
+    var n0 = 200;    // total population - eventually slider
     var maxAge = 100;
     var endBearingAge = 50; //age at which women become infertile(ish)
     var startBearingAge = this.ageFirstBirth_; //might want to set this on slider
@@ -377,13 +377,13 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
         // Sloped initial Popululation, Type I
             for (var a = 0; a <= maxAge; a++)
             {
-                init[a] = {x: (1 - a/100), y: a};
+                init[a] = (1 - a/100);
             }
-            init.forEach( function(o) { sum = o.x + sum; });
-          
+            init.forEach( function(o) { sum = o + sum; });
+         
             for (var a = 0; a <= maxAge; a++)
             {
-                init[a] = {x: n0 * init[a].x/(2 * sum), y: a};
+                init[a] = n0 * init[a]/(2 * sum);
             }
             break;
 
@@ -391,7 +391,7 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
         // Uniform initial population, Type II
             for (var a = 0; a <= maxAge; a++)
             {
-                init[a] = {x: n0/(2 * maxAge), y: a};
+                init[a] = n0/(2 * maxAge);
             }
             break;
             
@@ -399,62 +399,91 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
         default:
             for (var a = 0; a <= maxAge; a++)
             {
-                init[a] = {x: (a > 60 ? (init[a-1].x - 0.03) : (1 + (a + 1)/100)), y: a};
+                init[a] = a > 60 ? (init[a-1] - 0.03) : (1 + (a + 1)/100);
             }
-            init.forEach( function(o) { sum = o.x + sum; });
+            init.forEach( function(o) { sum = o + sum; });
              
             for (var a = 0; a <= maxAge; a++)
             {
-                init[a] = {x: n0 * init[a].x/(2 * sum), y: a};
+                init[a] = n0 * init[a]/(2 * sum);
             }
             break;
         }
+
+
+    // initialize with the Type I, II or III distributions
+     init=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+    var prevPopW = [], prevPopM = [];
+    var popW = [], popM = [];
+
+    popW[0] = init;
+    popM[0] = init;
+ console.log('initial', popM);
     
-    // initialize population zero year
-    populationW[0] = init;
-    populationM[0] = init;
 
-    // now fill up the rest of the array
-    for (var t = 1 ; t <= years; t++)
+    // now fill up the array with columns of populations by age group, one column per year
+    for (var t = 0 ; t <= years; t++)
     {
-        var popW = [], popM = [];
-        var prevPopW = populationW[t - 1];
-        var prevPopM = populationM[t - 1];
+        
         var Nreproductive = 0;
-
-        prevPopW.forEach( function(o,i)
+           
+        console.log('previous pop set', prevPopW);
+        if (t > 0){
+            popW[t].forEach( function(o,i)
             {
                 // for each previous year's female population, count the population across the reproductive
                 // female age range
-                Nreproductive = (i < endBearingAge && i > startBearingAge) ? Nreproductive + o.x : Nreproductive;
+                Nreproductive = (i < endBearingAge && i > startBearingAge) ? (Nreproductive + o) : Nreproductive;
             });
 
-        var birth = Nreproductive * fertilityRate/(2 * (endBearingAge - startBearingAge));
-        // Age 0-1 should be different, including the birth rate
-        popW[0] = {x: birth - prevPopW[0].x * mort(Aw, Bw, 0), y: 0};
-        popM[0] = {x: birth - prevPopM[0].x * mort(Am, Bm, 0), y: 0};
-        
+        console.log('reproductive women', Nreproductive);
+            var births = Nreproductive * fertilityRate/((endBearingAge - startBearingAge));
+            console.log('births', births);
+            // Age 0-1 should be different, including the birth rate minus death rate for infants
+            popW[t][0] = births - (popW[t-1][0] * Aw);
+            popM[t][0] = births - (popM[t-1][0] * Am);
+        console.log('first array element set', popW);
         for (var age = 1; age <= maxAge; age++)
-        {
+            {
             //while it might be more efficient to count down, the difference equation 
             //only works if you bootstrap up. Each age's population is equal to the 
             //population of the previous age from last year, times (1 - death rate).
-            popW[age] = {x: populationW[t - 1][age - 1].x * (1 - mort(Aw, Bw, age - 1)), y: age};
-            popM[age] = {x: populationM[t - 1][age - 1].x * (1 - mort(Am, Bm, age - 1)), y: age};
+                popW[t][age] = popW[t-1][age - 1] * (1 - mort(Aw, Bw, age - 1));
+                popM[t][age] = popM[t-1][age - 1] * (1 - mort(Am, Bm, age - 1));
+            }
+    
         }
+        
+        console.log('population calculated', popW);
+        var n = 5; // size of age groups
+        var groupedW = [];
        
-        populationW[t] = popW;
-        populationM[t] = popM;
+        // set up the groups to sum the 5 year populations into
+        for (var i = maxAge/n; i >= 0; i--)
+        {
+            groupedW[i] = {x: 0, y: (i < maxAge/n) ? 5 * i + ' - ' + (5 * (i + 1) - 1) : maxAge + '+'};
+        }
+
+        var groupedM = groupedW;
+
+
+        // then sum up per index
+        popW[t].forEach( function(o, i) {
+            var index = Math.floor(i / n);
+            groupedW[index].x = o + groupedW[index].x;
+        });
+  
+        popM[t].forEach( function(o, i) {
+            var index = Math.floor(i / n);
+            groupedM[index].x = o + groupedW[index].x;
+        });
+
+        this.populationWomen_[t] = groupedW;
+        this.populationMen_[t] = groupedM;
+
+
     }
 
-    var totalPop = 0;
-    populationW[years].forEach( function(o) { totalPop = o.x + totalPop; });
-    populationM[years].forEach( function(o) { totalPop = o.x + totalPop; });
-
-    this.totalPopulation = d3.format(",.0f")(totalPop);
-
-    this.populationWomen_ = populationW;
-    this.populationMen_ = populationM;
 
 
 };

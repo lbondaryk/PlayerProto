@@ -161,7 +161,8 @@ pearson.brix.CheckGroup = function (config, eventManager)
 	this.selectedEventId = this.id + '_itemSelected';
 
 	/**
-	 * @todo DOCUMENT ME! -young suk this needs to be described -mjl
+	 * This event id is published when the user tries to select more boxes than
+	 * are allowed by the maxSelects setting
 	 * @const
 	 * @type {string}
 	 */

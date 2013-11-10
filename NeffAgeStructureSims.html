@@ -33,24 +33,15 @@
 		 			<div class="lc_ec_leading">
               			<p> This simulation allows you to change the initial population distribution, type of mortality structure, the total fertility rate and the age of first childbirth for a fictitious society. </p>
 				
-						<table width="100%" margin="10">
-                    		<tr><td><span id="slider0">Starting Population: 10,000</span></td></tr>
+						<table width="100%" style="margin: 10; padding: 5">
+                    		<tr><td><span>Starting Population: 10,000 </span> <span id="readout0"></span></td></tr>
                     		<tr><td><span id="dropdown0">Initial population distribution </span></td></tr>
                     		<tr><td><span id="dropdown1">Mortality Type </span></td></tr>
 							<tr><td><span id="slider1"></span></td></tr>
 							<tr><td><span id="slider2"></span></td></tr>
             			</table>
 
-						<p>Some things to observe: 
-							<ol>
-								<li>factoid about age structures
-								<li>another fact
-								<li>another thing to notice...
-							</ol>
-						</p>
-				
-						<p>At this growth rate, the world's population would hit 9 billion around 2033. In the figure, you can see what happens if the growth rate falls or rises just a little, and as you can see, small changes in the growth rate can have big impacts on future population growth.
-						</p>
+						
 					</div>
 					<div class="lc_ec_trailing">      
 						<div id="slider3"></div>   
@@ -172,8 +163,9 @@ var fertileSlide = new Slider ({
 			minVal: 0,
 			maxVal: 6,
 			stepVal: 1,
+			width: '60%',
 			unit: "children/female",
-			label: "Total fertility rate T<sub>f</sub>",
+			label: "Total fertility rate T<sub>f</sub> =",
 			format: d3.format('.1f')
 		}, eventManager);
 		
@@ -185,8 +177,9 @@ var ageFirstBirthSlide = new Slider ({
 			minVal: 15,
 			maxVal: 30,
 			stepVal: 1,
+			width: '60%',
 			unit: "",
-			label: "Age of first birth A<sub>c</sub>",
+			label: "Age of first birth A<sub>c</sub> =",
 			format: d3.format('.1f')
 		}, eventManager);
 		
@@ -198,6 +191,7 @@ var yearSlide = new Slider ({
 			minVal: 0,
 			maxVal: years,
 			stepVal: 1,
+			width: '80%',
 			unit: "years",
 			label: "Years elapsed",
 			format: d3.format('.1f')
@@ -241,16 +235,13 @@ yearSlide.draw(d3.select("#slider3"));
 					   },
 	});
 
-	
-// configure and append the legend to the graph
-
-	var legLines = new Legend({
-		xPos: "right", yPos: "top",
-		labels: [
-				{ content: "Women",	},
-				{ content: "Men",	},],
-		type: "box"
-	},eventManager);
+	var endPop = new Readout({
+			node: d3.select("#readout0"),
+			//startVal: 100000,
+			readOnly: true,
+			size: 5,
+			label: "Population after 100 years"
+		});
 	
 	
 	var popConfig =
@@ -268,40 +259,11 @@ yearSlide.draw(d3.select("#slider3"));
 	var popMortar = new pearson.brix.mortar.AgeStructure(popConfig, eventManager);
 	barsWomen.data = [popMortar.populationWomen_[0]];
 	barsMen.data = [[], popMortar.populationMen_[0]];
+	endPop.setValue(popMortar.totalPopulation);
 
 	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .45, heightPercent: 1, widthPercent: 0.5});
 	cont1.append(barsMen, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.55});
 	
-	barsWomen.append(legLines);
-
-	
-	eventManager.subscribe(legLines.selectedEventId,
-						   handleHighlight);
-	
-	
-/************************************************************************
-* handleHighlight                                            *//**
-*
-* handleInputValueChanged is called from the event handler for one of
-* the input widgets when the user changes its value. It updates the
-* given matching input widget's value to match the new value and then
-* updates the bar chart.
-*
-* @param eventDetails			These are the keyed values returned by 
-*								the event, in this case, a selection
-*								(click).
-*************************************************************************/
-	function handleHighlight(eventDetails)
-	{
-		//Handler needs to get written into each page, 
-		//each widget will have it's own way of responding  
-	
-		barsWomen.lite(eventDetails.selectKey);
-		barsMen.lite(eventDetails.selectKey);
-		legLines.lite(eventDetails.selectKey);
-		
-	}
-
 
 	
 	
