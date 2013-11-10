@@ -119,6 +119,7 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      */
     this.targetBricLeft_ = config['targetBricLeft'];
     this.targetBricRight_ = config['targetBricRight'];
+    this.targetReadout_ = config['targetReadout'];
 
     /**
      * The population year that should be displayed in the target bric. 
@@ -323,6 +324,7 @@ pearson.brix.mortar.AgeStructure.prototype.updateTargetBric_ = function ()
     this.targetBricLeft_.redraw();
     this.targetBricRight_.data = [[], this.populationMen_[this.year_]];
     this.targetBricRight_.redraw();
+    this.targetReadout_.setValue(this.totalPopulation);
 };
 
 /* **************************************************************************

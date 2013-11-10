@@ -27,14 +27,15 @@
 		<div class="span12 lc_ec_page">
 			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
        	 		<div class="lc_ec_content">
-       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
-											<span class="setTitle"></span>
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'>Chapter 12</span> 
+											<span class="setTitle">Population Simulation</span>
 					</h2>
 		 			<div class="lc_ec_leading">
               			<p> This simulation allows you to change the initial population distribution, type of mortality structure, the total fertility rate and the age of first childbirth for a fictitious society. </p>
 				
 						<table width="100%" style="margin: 10; padding: 5">
-                    		<tr><td><span>Starting Population: 10,000 </span> <span id="readout0"></span></td></tr>
+                    		<tr><td><span>Starting Population: 10,000 </span></td></tr>
+                    		<tr><td><span id="readout0"></span></td></tr>
                     		<tr><td><span id="dropdown0">Initial population distribution </span></td></tr>
                     		<tr><td><span id="dropdown1">Mortality Type </span></td></tr>
 							<tr><td><span id="slider1"></span></td></tr>
@@ -240,7 +241,7 @@ yearSlide.draw(d3.select("#slider3"));
 			//startVal: 100000,
 			readOnly: true,
 			size: 5,
-			label: "Population after 100 years"
+			label: "Population after 100 years: "
 		});
 	
 	
@@ -253,7 +254,8 @@ yearSlide.draw(d3.select("#slider3"));
 		fertilityTopic: fertileSlide.changedValueEventId,
 		ageFirstBirthTopic: ageFirstBirthSlide.changedValueEventId,
 		targetBricLeft: barsWomen,
-		targetBricRight: barsMen
+		targetBricRight: barsMen,
+		targetReadout: endPop
 	};
 
 	var popMortar = new pearson.brix.mortar.AgeStructure(popConfig, eventManager);
