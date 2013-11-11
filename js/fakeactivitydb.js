@@ -55,7 +55,34 @@ pearson.brix.test.activities =
 				response: "It's one louder."
 				},
 		},
-
+	"energyUse": { 
+		question: "Which country uses the most energy per capita?",
+		a01: {
+				content:  "US",
+				score: 0,
+				response: "The US leads overall energy use, but that's partly because of it's large population."
+				},
+		a02: {
+				content:  "Canada",
+				score: 0,
+				response:  "The Canadians do consume power in a modern cultural fashion, but not excessively.",
+				},
+		a03: {
+				content: "Brazil",
+				score: 0,
+				response:  "",
+				},
+		a04: {
+				content: "Germany",
+				score: 1,
+				response:  "",
+				},
+		a05: {
+				content: "Egypt",
+				score: 0,
+				response:  "",
+				}
+		},
 	"co2Decrease": { 
 		question: "What is the average seasonal decrease in CO2 concentration for these three years (high &minus; low)?",
 		"001": {

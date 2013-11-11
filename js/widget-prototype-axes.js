@@ -199,12 +199,12 @@ pearson.brix.PrototypeAxes = function (container, config)
 		this.yFmt.extent = [0, 1];
 
 	//default margin is set that is meant to be updated by the constituent
-	//objects if they require more space - mostly happens with axes 
-	//margin: an associative array/object with keys for top, bottom, left and right
-	this.margin = { top: 10,
-					bottom: 0,
-					left: 10,
-					right: 20 };
+	//axis parts
+	
+	this.margin = { top: 5,
+					bottom: 5,
+					left: 5,
+					right: 5};
 
 	//axis format type is a string specifying "linear", "log", "ordinal", "time" 
 	// log and time only hooked up on x
@@ -218,34 +218,55 @@ pearson.brix.PrototypeAxes = function (container, config)
 	var hasXAxisLabel = 'label' in this.xFmt;
 	var hasYAxisLabel = 'label' in this.yFmt;
 
+
 	if (hasXAxisLabel)
 	{
+		// measure the  height, and set the associated size to match what was rendered
+		// then remove the dummy rendering
+   
+		var xlabelRendered = d3.select('body')
+						.append("div")
+						.style('visibility', 'hidden')
+						// this width ought to be the axis width, but we don't know it yet
+						.style('width', config.size.width + "px")
+						.attr("class", "axisLabel")
+						.html(this.xFmt.label);
+
+		var xlabelHeight = xlabelRendered.node().offsetHeight;
+		xlabelRendered.remove();
+
 		if (xOrient == 'top')
 		{
-			this.margin.top = this.margin.top + 40;
-			window.console.log("top margin increased for top label");
-			//catches the case where the whole graph renders to fit within the available SVG,
-			//but cuts off at the top because it doesn't get pushed down far enough
+			this.margin.top = this.margin.top + xlabelHeight;
 		}
 		else // xOrient === "bottom" (only other valid value)
 		{
-			this.margin.bottom = this.margin.bottom + 50;
+			this.margin.bottom = this.margin.bottom + xlabelHeight;
 		}
 	}
 
 	if (hasYAxisLabel)
 	{
+		var ylabelRendered = d3.select('body')
+						.append("div")
+						.style('visibility', 'hidden')
+						// this width ought to be the y axis height, but we don't know it yet
+						.style('width', config.size.height + "px")
+						.attr("class", "axisLabel")
+						.html(this.yFmt.label);
+
+		var ylabelWidth = ylabelRendered.node().offsetHeight;
+		ylabelRendered.remove();
+
 		if (yOrient === 'left')
 		{
-			this.margin.left = this.margin.left + 50;
-			window.console.log("left margin increased for y label");
+			this.margin.left = this.margin.left + ylabelWidth;
 			//catches the case where the whole graph renders to fit within the available SVG,
 			//but cuts off at the right because it gets pushed over too far
 		}
 		else // yOrient === "right" (only other valid value)
 		{
-			this.margin.right= this.margin.right + 40;
-			window.console.log("right margin increased for y label");
+			this.margin.right= this.margin.right + ylabelWidth;
 		}
 	}
 
@@ -392,7 +413,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 			this.xLabelObj = this.xaxis.append("foreignObject")
 				.attr("x", 0)
 				.attr("y", ((xOrient == "top") ? (-1.5) : 1) * (xaxisDims.height + 2))
-				.attr("width", dataAreaWidth).attr("height", 40);
+				.attr("width", dataAreaWidth).attr("height", xlabelHeight);
 
 			this.xLabelObj.append("xhtml:body").style("margin", "0px")
 				//this interior body shouldn't inherit margins from page body
@@ -461,8 +482,8 @@ pearson.brix.PrototypeAxes = function (container, config)
 		}
 
 		this.yaxis = this.group.append("g")
+			//move it over if the axis is to the right of the graph
 			.attr("transform", "translate(" + ((yOrient == "right") ? dataAreaWidth : 0) + ",0)")
-			//move it over if the axis is at the bottom of the graph
 			.call(this.yAxis).attr("class", "y axis");
 
 		// make the y-axis label, if it exists
@@ -470,11 +491,11 @@ pearson.brix.PrototypeAxes = function (container, config)
 		{
 			var yaxisDims = this.yaxis.node().getBBox();
 			var yLabelObj = this.yaxis.append("foreignObject")
-				.attr("transform", "translate(" + (((yOrient == "left") ? (-1.1) : 1.1) * (yaxisDims.width)
-				   + ((yOrient == "left") ? -20 : 0)) + ","
+				.attr("transform", "translate(" + ((yOrient == "left" ? (-1) : 1) * yaxisDims.width
+				   + (yOrient == "left" ? -ylabelWidth : 0)) + ","
 				   + (dataAreaHeight) + ") rotate(-90)")
 				// move it out of the way of the ticks to left or right depending on axis orientation
-				.attr("width", dataAreaHeight).attr("height", 40);
+				.attr("width", dataAreaHeight).attr("height", ylabelWidth);
 
 			var yLabText = yLabelObj.append("xhtml:body").style("margin", "0px")
 				//this interior body shouldn't inherit margins from page body
@@ -548,7 +569,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		//using the new dimensions, redo the scale and axes
 		if (this.yFmt.type=="ordinal")
 		{
-			this.yScale.rangeRoundBands([dataAreaHeight, 0], .3, .1);
+			this.yScale.rangeRoundBands([dataAreaHeight, 0], .1);
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 30% white space
 		}
@@ -567,9 +588,8 @@ pearson.brix.PrototypeAxes = function (container, config)
 
 		if (yLabelObj)
 		{
-			yLabelObj.attr("transform", "translate(" + d3.round(((yOrient == "left") ? (-1.1) : 1.1) * (yaxisDims.width)
-				   + ((yOrient == "left") ? -19 : 0)) + ","
-				   + (dataAreaHeight) + ") rotate(-90)")
+			yLabelObj.attr("transform", "translate(" + (yOrient == "left" ? -(ylabelWidth + 1.1 * yaxisDims.width) : 0) + ","
+				   + dataAreaHeight + ") rotate(-90)")
 				// move it out of the way of the ticks to left or right depending on axis orientation
 				.attr("width", dataAreaHeight);
 		}

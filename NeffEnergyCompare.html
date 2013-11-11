@@ -34,8 +34,6 @@
 				<div class="lc_ec_leading">
 				<p>Energy is used all over the world.</p>
 					<span style="float: left" id = "checkBoxes0">Countries: </span><span id="graph1"></span>
-					<div id="select0">Energy metric for Graph 1 </div>
-					<div id="select1">Energy metric for Graph 2 </div>
 				</p>
 				<div id="earth"></div>
 				</div>
@@ -56,29 +54,45 @@
 	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/brixlib-compiled.js"></script>
-
 	<!--
+	<script src="js/brixlib-compiled.js"></script>
+-->
+
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
+	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+    <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
-	<script src="js/widget-linegraph.js"></script>
-    <script src="js/widget-labelgroup.js"></script>
-    <script src="js/widget-callouts.js"></script>
-    <script src="js/widget-legend.js"></script>
+	<script src="js/bricworks.js"></script>
     <script src="js/widget-numeric.js"></script>
-    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
     <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
     <script src="js/widget-imageviewer.js"></script>
-	<script src="js/widget-selectgroup.js"></script>
-    <script src="js/widget-button.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
     <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
     <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
     <script src="js/widget-numericquestion.js"></script>
-    <script src="js/eventmanager.js"></script>
-	<script src="js/submitmanager.js"></script>
-	<script src="js/answerman.js"></script>
-	<script src="js/fakeactivitydb.js"></script>
-	!-->
+    <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-hilite.js"></script>
+	<script src="js/briclayer.js"></script>
+
+    <script src="js/mortar-agestructure.js"></script>
 
 	<script>
 // local aliases for convenience
@@ -130,79 +144,30 @@
 		{
 			content: "Egypt", answerKey: '4'
 		},
+		{
+			content: "South Africa", answerKey: '5'
+		},
+		{
+			content: "China", answerKey: '6'
+		},
+		{
+			content: "Japan",answerKey: '7'
+		},
+		{
+			content: "Malaysia", answerKey: '8'
+		},
+		{
+			content: "India",answerKey: '9'
+		},
+		{
+			content: "United Kingdom",answerKey: '10'
+		}
 		],
 		type: 'ordered',
 
 		}, eventManager);
 
 	countries.draw(d3.select('#checkBoxes0'));
-	//Energy Data
-	var profiles = new SelectGroup(
-		{	
-			choices: [
-			{
-			content: "Electric Generation",
-			},
-			{
-       		content: "CO<sub>2</sub> Emissions",
- 			},
-			{
-			content: "Oil Consumption",
-			},
-			{
-			content: "Oil Production",
-			}]
-			
-		}, eventManager);
-		
-	profiles.draw(d3.select("#select0"));
-
-
-eventManager.subscribe(profiles.selectedEventId, displayData);
-	
-
-/************************************************************************
-* labelLite			                                            *//**
-*
-* handleInputValueChanged is called from the event handler for one of
-* the input widgets when the user changes its value. It updates the
-* given matching input widget's value to match the new value and then
-* updates the bar chart.
-*
-* @param eventDetails			These are the keyed values returned by 
-*								the event, in this case, a selection
-*								(click).
-*************************************************************************/
-	function labelLite(eventDetails)
-	{
-		//Handler needs to get written into each page, 
-		//each widget will have it's own way of responding  
-	
-		labels1.lite(eventDetails.selectKey);
-		
-	}
-
-
-
-/************************************************************************
-* makeGraphPoints			                                            *//**
-*
-* makeGraphPoint takes vectors of x and y data and constructs the array of
-* of x: and y: keyed objects that is expected by Brix graphing routines.
-*
-* @param	{Array} x,y		These are the arrays of x and y data.
-*************************************************************************/
-	function makeGraphPoints(x,y)
-	{
-		//Handler needs to get written into each page, 
-		//each widget will have it's own way of responding  
-		var dataArray = [];
-		x.forEach( function(o, i) {
-				dataArray.push({x: o, y: y[i]});
-			});
-		return dataArray;
-	}
-
 
 
 //data for each country and energy type
@@ -214,7 +179,7 @@ var fuelSources = {
 	"Canada": [104.305257110549,	90.63477,	21.8745867965988,	21.6709865354431,	86.0330075886702,	4.32233703606348],
 	"Brazil": [125.607202719128,	26.249295141,13.4721644,	3.63113366190907,	94.494171534597,	11.2384893876996],
 	"Germany": [111.526,	67.7128116938951,	79.2012993216776,	22.5143684663075,	4.79703127121327,	25.9934380232609],
-	"Egypt": [35.236,	47.349,	1.136011295	,	0,	3.0225143684663,	0.34919139212476,],
+	"Egypt": [35.236, 47.349, 1.136011295,	0,	3.0225143684663,	0.34919139212476,],
 	"South Africa": [26.9036574377699,	3.39174,	89.776644,	3.21596406275682,	0.43517950926196,	0.07857249316883],
 	"China": [483.662640213053,	129.459654,	1873.31312,	22.0369280897858,	194.788885369053,	31.9011750476266],
 	"Japan": [218.194590348259,	105.063134135855,	124.377646411,	4.07091460379235,	18.3133457030365,	8.16332232429738],
@@ -262,8 +227,7 @@ var CO2 =
   "Canada": [],
   "Brazil": [],
   "Germany": [],
-  "Egypt": [],
-  "South Africa": [],
+  "Egypt": [],  "South Africa": [],
   "China": [],
   "Japan": [],
   "Malaysia": [],
@@ -294,13 +258,13 @@ var primaryEnergy =
   "Canada": [116.287, 156.413, 187.000999999999, 218.013825582155, 234.442793226933, 251.473507991626, 280.321594760956, 302.952333732258, 324.114568871725, 315.612196082669],
   "Brazil": [22.0828967925, 36.814887909036, 64.1629656819081, 91.5268077932725, 109.346683207368, 124.960008085105, 154.15921295434, 185.780868523241, 206.521708716608, 257.529459413611],
   "Germany": [256.11241860886, 309.57361170324, 319.869548033896, 355.864785667737, 358.85633595918, 349.561855998551, 333.282934606507, 333.007972258677, 333.104953684009, 322.421432798821],
-  "Egypt": [],
-  "South Africa": [],
-  "China": [],
-  "Japan": [],
-  "Malaysia": [],
-  "India": [],
-  "United Kingdom": [],
+  "South Africa": [30.263, 35.934, 47.0175481225722, 55.1479063112108, 78.1261425008373, 86.3870787470152, 95.0178122269027, 101.264948166144, 114.977184214525, 123.079830494486],
+  "China": [131.37, 202.132999999999, 314.648, 416.424, 530.376999999999, 664.565914242666, 886.522870332726, 980.280309011805, 1601.15318658091, 2337.98270174734],
+  "Japan": [148.959535593066, 279.923318459519, 329.293450875684, 355.588129881884, 371.703980902384, 434.131638132832, 495.758515089642, 518.219735804977, 531.371564674219, 506.722032980818],
+  "Malaysia": [2.147, 3.17, 5.285, 9.473, 16.35, 24.158, 33.8811781140257, 47.6229586985678, 61.3493361825254, 76.1122076796068],
+  "India": [52.7296338028, 64.83855550089, 81.945317606, 102.503905282, 132.66304144, 180.726830970507, 236.23101109731, 295.836064157623, 366.784411451272, 511.601758848395],
+  "United_Kingdom": [196.827580576548, 216.677383671991, 202.836443680137, 201.446691587093, 201.652920147759, 211.186700638095, 214.469784540887, 223.964641894333, 228.202413174385, 213.750459889824],
+  "Egypt": [7.7751, 7.649510372, 10.372, 17.958, 28.02, 34.151, 38.257, 49.6577128866618, 62.4586447029008, 81.1981784857672],
   'labels': {xLabel: 'Year', yLabel: 'Primary Energy Consumption (Million tonnes oil equivalent)'}
 };
 
@@ -321,22 +285,79 @@ var primaryEnergyPC =
 };
 
 
+/************************************************************************
+* makeGraphPoints			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} x,y		These are the arrays of x and y data.
+*************************************************************************/
+	function makeGraphPoints(x,y)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var dataArray = [];
+		x.forEach( function(o, i) {
+				dataArray.push({x: o, y: y[i]});
+			});
+		return dataArray;
+	}
 
+/************************************************************************
+* makeGraphData			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} dataSet	 These are the arrays of objects containing multiple
+*                         	 data series.
+* @param	{Array} groupKey The series to omit because it's the common axis
+*************************************************************************/
+	function makeGraphData(dataSet, groupKey)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var seriesArray = [];
+		var keyArray = d3.keys(dataSet).filter(function (o) {return (o != groupKey && o != "labels");});
+
+		keyArray.forEach( function(o, i) {
+				//console.log(makeGraphPoints(dataSet[groupKey], dataSet[o]));
+				seriesArray.push(makeGraphPoints(dataSet[groupKey], dataSet[o]));
+			});
+
+		return seriesArray;
+	}
+
+/************************************************************************
+* makeChartData			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} dataSet	 These are the arrays of objects containing multiple
+*                         	 data series.
+* @param	{Array} groupKey The series to omit because it's the common axis
+*************************************************************************/
+	function makeChartData(dataSet, groupKey)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var seriesArray = [];
+		var keyArray = d3.keys(dataSet).filter(function (o) {return (o != groupKey && o != "labels");});
+
+		keyArray.forEach( function(o, i) {
+				//console.log(makeGraphPoints(dataSet[groupKey], dataSet[o]));
+				seriesArray.push(makeGraphPoints(dataSet[o], dataSet[groupKey]));
+			});
+
+		return seriesArray;
+	}
 
 var fuelData = [];
 var primEnergyData = [];
-
-fuelData[0] = makeGraphPoints(fuelSources.US, fuelSources.source);
-fuelData[1] = makeGraphPoints(fuelSources.Canada, fuelSources.source);
-fuelData[2] = makeGraphPoints(fuelSources.Brazil, fuelSources.source);
-fuelData[3] = makeGraphPoints(fuelSources.Germany, fuelSources.source);
-fuelData[4] = makeGraphPoints(fuelSources.Egypt, fuelSources.source);
-primEnergyData[0] = makeGraphPoints(primaryEnergy.Year, primaryEnergy.US);
-primEnergyData[1] = makeGraphPoints(primaryEnergy.Year, primaryEnergy.Canada);
-primEnergyData[2] = makeGraphPoints(primaryEnergy.Year, primaryEnergy.Brazil);
-primEnergyData[3] = makeGraphPoints(primaryEnergy.Year, primaryEnergy.Germany);
-primEnergyData[4] = makeGraphPoints(primaryEnergy.Year, primaryEnergy.Egypt);
-
+fuelData = makeChartData(fuelSources, "source");
+primEnergyData = makeGraphData (primaryEnergy, "Year");
 
 
 var svg0 = new SVGContainer({
@@ -347,8 +368,8 @@ var svg0 = new SVGContainer({
 
 var svg1 = new SVGContainer({
 			node: d3.select("#graph1"),
-			maxWid: 477,
-			maxHt: 400
+			maxWid: 350,
+			maxHt: 500
 		});
 		
 var graph0 = new LineGraph({
@@ -384,12 +405,12 @@ var graph2 = new BarChart({
 		Data: fuelData,
 		type: 'grouped',
 		xAxisFormat: { type: "linear",
-						   ticks: 4,
+						   ticks: 3,
 						   orientation: "bottom",
 						   label: fuelSources.labels.xLabel },
 		yAxisFormat: { type: "ordinal",
 						   orientation: "left",
-						   label: fuelSources.labels.yLabel,
+						   //label: fuelSources.labels.yLabel,
 						   }
 		}, eventManager);
 
@@ -402,7 +423,8 @@ svg1.append(graph2);
 eventManager.subscribe(countries.selectedEventId,
 						   displayData);
 
-	//displayData({selectKey: '0'})
+displayData(0);
+
 /************************************************************************
 * displayData	                                           *//**
 *
@@ -415,20 +437,19 @@ eventManager.subscribe(countries.selectedEventId,
 		//each widget will have it's own way of responding  
 		var newfuelData = [];
 		var newprimEnergyData = [];
-		countries.selectedItems().forEach( function(o,i)
+		if (countries.selectedItems())
+		{
+			countries.selectedItems().forEach( function(o,i)
 			{
 				newfuelData.push(fuelData[Number(o.answerKey)]);
 				newprimEnergyData.push(primEnergyData[Number(o.answerKey)]);
 			});
-		
+		}
+
 		graph1.data = newprimEnergyData;
 		graph1.redraw();
 		graph2.data = newfuelData;
 		graph2.redraw();
-		//graph0.lite(eventDetails.selectKey);
-		//graph1.lite(eventDetails.selectKey);
-		//graph2.lite(eventDetails.selectKey);
-		
 	}
 
 	mapLegend = new Image({
@@ -440,7 +461,7 @@ eventManager.subscribe(countries.selectedEventId,
 
 
 	var Qoceans = new MultipleChoiceQuestion({
-			questionId: "oceanRegion",
+			questionId: "energyUse",
 			question: "Which country uses the most resources per capita?",
 			svgSize: [600,343],
 			svgBaseBrix: mapLegend,
@@ -466,12 +487,9 @@ eventManager.subscribe(countries.selectedEventId,
 
 	eventManager.subscribe(Qoceans.choiceWidget.selectedEventId,
 						   mapLegLite);
-	eventManager.subscribe(graph0.selectedEventId,
-						   mapLegLite);
-	eventManager.subscribe(graph1.selectedEventId,
-						   mapLegLite);
+	//eventManager.subscribe(graph1.selectedEventId, mapLegLite);
 
-	mapLegLite({selectKey: '1'})
+	//mapLegLite({selectKey: '1'})
 /************************************************************************
 * mapLegLite                                           *//**
 *
@@ -484,7 +502,7 @@ eventManager.subscribe(countries.selectedEventId,
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
 	
-		graph0.lite(eventDetails.selectKey);
+		//graph0.lite(eventDetails.selectKey);
 		graph1.lite(eventDetails.selectKey);
 		//graph2.lite(eventDetails.selectKey);
 		Qoceans.choiceWidget.lite(eventDetails.selectKey);

@@ -203,8 +203,8 @@ yearSlide.draw(d3.select("#slider3"));
 
 	var cont1 = new SVGContainer({
 			node: d3.select("#graph0"),
-			maxWid: 500,
-			maxHt: 600
+			maxWid: 477,
+			maxHt: 500
 		});
 		
 	var barsWomen = new BarChart({
@@ -263,8 +263,8 @@ yearSlide.draw(d3.select("#slider3"));
 	barsMen.data = [[], popMortar.populationMen_[0]];
 	endPop.setValue(popMortar.totalPopulation);
 
-	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .45, heightPercent: 1, widthPercent: 0.5});
-	cont1.append(barsMen, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.55});
+	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .45, heightPercent: 1, widthPercent: 0.55});
+	cont1.append(barsMen, {topPercentOffset: 0, leftPercentOffset: 0.05, heightPercent: 1, widthPercent: 0.45});
 	
 
 	

@@ -295,8 +295,8 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 			
 			//TEST: The last index  should produce the topmost bar
 			//appearing at y = 0
-		window.console.log("Grouped barChart last bar mapped to 0 offset: ",
-			groupScale(this.data.length - 1) == 0);
+		//window.console.log("Grouped barChart last bar mapped to 0 offset: ",
+			//groupScale(this.data.length - 1) == 0);
 	};
 
 
