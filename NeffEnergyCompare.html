@@ -190,18 +190,18 @@ var fuelSources = {
 };
 
 var electric = 
-{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
-  "US": [0, 0, 0, 0, 2703.222, 3185.427, 3516.76699999999, 3990.496, 4257.36941, 4331.10173124933],
-  "Canada": [],
-  "Brazil": [],
-  "Germany": [],
-  "Egypt": [],
-  "South Africa": [],
-  "China": [],
-  "Japan": [],
-  "Malaysia": [],
-  "India": [],
-  "United Kingdom": [],
+{ "Year": [ 1985, 1990, 1995, 2000, 2005, 2010],
+  "US": [2703.222, 3185.427, 3516.76699999999, 3990.496, 4257.36941, 4331.10173124933],
+  "Canada": [460.406999999999, 478.175, 551.34, 599.241999999999, 613.998809877724, 581.813265507708],
+  "Brazil": [193.681, 222.821, 275.601, 348.908999999999, 402.937999999999, 515.798999999999],
+  "Germany": [522.533999999999, 549.899999999999, 536.799999999999, 576.6, 620.6, 628.6],
+  "Egypt": [31.7, 42.9, 53.4, 73, 104, 143.5],
+  "South Africa": [141.383999999999, 165.384999999999, 188.138, 210.669999999999, 244.919999999999, 259.601],
+  "China": [410.69, 621.2, 1006.554, 1355.59999999999, 2500.26, 4207.15999999999],
+  "Japan": [671.952999999999, 841.057, 968.61, 1057.93699999999, 1153.06199999999, 1156.02299999999],
+  "Malaysia": [14.994, 25.262, 46.632, 66.678, 96.2249999999999, 116.80763506],
+  "India": [179.843799999999, 284.245999999999, 409.921499999999, 554.7445, 689.5625, 922.24883],
+  "United Kingdom": [298.089, 319.738999999999, 337.423999999999, 377.067938032861, 398.361132705616, 381.772445423394],
   'labels': {xLabel: 'Year', yLabel: 'Electricity Generation (terrawatt hours)'}
 };
 
@@ -224,15 +224,16 @@ var electricPC =
 var CO2 = 
 { "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
   "US": [3783.56319892251, 4682.76930767474, 4852.23876974642, 5158.85593661485, 4974.23139138669, 5444.6071558793, 5791.89946504643, 6377.04931894541, 6493.73405284988, 6130.36154115063],
-  "Canada": [],
-  "Brazil": [],
+  "Canada": [274.600761101999, 363.689208089999, 412.63677288, 474.7596527012, 450.620097299192, 493.924473725131, 526.295544924166, 592.430004003307, 635.584559883248, 610.806799356931],
+  "Brazil": [52.6367472839607, 86.834140036021, 148.341854329295, 193.923179223011, 213.721450883072, 241.259693420696, 296.624317314346, 352.004972768784, 377.827688846891, 472.210091899478],
   "Germany": [],
-  "Egypt": [],  "South Africa": [],
-  "China": [],
-  "Japan": [],
-  "Malaysia": [],
-  "India": [],
-  "United Kingdom": [],
+  "Egypt": [22.98580874748, 20.5542300258, 27.5916442068, 47.4386420699999, 77.508260604, 93.5411883372, 102.187152237599, 130.5811589832, 163.1312764848, 210.959948282399],  
+  "South Africa": [114.863685696, 134.6709257064, 174.809210095288, 206.474316010963, 290.926929548723, 318.099389754969, 345.850078450315, 365.985951742163, 416.426695024175, 444.939979992384],
+  "China": [489.145476851999, 749.7444525048, 1133.44256201399, 1500.3351912672, 1919.01394778759, 2395.79278974359, 3157.0370755668, 3429.90512299925, 5573.91304647688, 7945.19483758791],
+  "Japan": [446.2361852328, 857.094905444399, 982.355377381199, 1008.9489068424, 1010.05190265239, 1163.86601165994, 1295.29979343336, 1339.72985460108, 1409.8157878348, 1316.02275817585],
+  "Malaysia": [6.1880527188, 8.8323853572, 14.9716325484, 27.2496663828, 43.656768432, 66.1367192112, 92.4829644424699, 127.573055143268, 170.447858694955, 218.633875511925],
+  "India": [180.066503903662, 210.008907118774, 264.666653678649, 324.189342857055, 429.805441612188, 581.363307130037, 765.487873593856, 952.766529780117, 1179.99680502761, 1648.00247247239],
+  "United Kingdom": [694.49633568, 722.0592291312, 639.797648432399, 624.113087579999, 596.1772674792, 622.416407814, 588.377614957199, 591.344681927746, 603.72821498187, 558.208122473252],
   'labels': {xLabel: 'Year', yLabel: 'Carbon dioxide emissions (Million tonnes CO<sub>2</sub>)'}
 };
 
@@ -354,16 +355,16 @@ var primaryEnergyPC =
 		return seriesArray;
 	}
 
-var fuelData = [];
-var primEnergyData = [];
-fuelData = makeChartData(fuelSources, "source");
-primEnergyData = makeGraphData (primaryEnergy, "Year");
+var fuelData = makeChartData(fuelSources, "source");
+var electricData = makeGraphData (electric, "Year");
+var co2Data = makeGraphData (CO2, "Year");
+var primEnergyData = makeGraphData (primaryEnergy, "Year");
 
 
 var svg0 = new SVGContainer({
 			node: d3.select("#graph0"),
 			maxWid: 477,
-			maxHt: 500
+			maxHt: 600
 		});
 
 var svg1 = new SVGContainer({
@@ -373,21 +374,35 @@ var svg1 = new SVGContainer({
 		});
 		
 var graph0 = new LineGraph({
-			Data: primEnergyData, 
+			Data: electricData, 
 			type: "lines",
 			xAxisFormat: { type: "linear",
 						   ticks: 4,
 						   orientation: "bottom",
-						   label: primaryEnergy.labels.xLabel,
+						   label: electric.labels.xLabel,
 						 },
 			yAxisFormat: { type: "linear",
 						   orientation: "left",
-						   label: primaryEnergy.labels.yLabel,
-						   ticks: 4,
+						   label: electric.labels.yLabel,
+						   ticks: 3,
 						    },
 		}, eventManager);	
 
 var graph1 = new LineGraph({
+			Data: co2Data, 
+			type: "lines",
+			xAxisFormat: { type: "linear",
+						   ticks: 4,
+						   orientation: "bottom",
+						   label: CO2.labels.xLabel },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: CO2.labels.yLabel,
+						   ticks: 3,
+						    },
+		}, eventManager);	
+
+var graph2 = new LineGraph({
 			Data: primEnergyData, 
 			type: "lines",
 			xAxisFormat: { type: "linear",
@@ -397,11 +412,11 @@ var graph1 = new LineGraph({
 			yAxisFormat: { type: "linear",
 						   orientation: "left",
 						   label: primaryEnergy.labels.yLabel,
-						   ticks: 4,
+						   ticks: 3,
 						    },
 		}, eventManager);	
 
-var graph2 = new BarChart({
+var graph3 = new BarChart({
 		Data: fuelData,
 		type: 'grouped',
 		xAxisFormat: { type: "linear",
@@ -414,9 +429,11 @@ var graph2 = new BarChart({
 						   }
 		}, eventManager);
 
-svg0.append(graph0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.5, widthPercent: 1});
-svg0.append(graph1, {topPercentOffset: 0.5, leftPercentOffset: 0, heightPercent: 0.5, widthPercent: 1});
-svg1.append(graph2);
+svg0.append(graph0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+svg0.append(graph1, {topPercentOffset: 0.33, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+svg0.append(graph2, {topPercentOffset: 0.66, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+
+svg1.append(graph3);
 	
 
 
@@ -435,21 +452,29 @@ displayData(0);
 	{
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
-		var newfuelData = [];
-		var newprimEnergyData = [];
+		var fuelDataSubset = [];
+		var electricDataSubset = [];
+		var co2DataSubset = [];
+		var primEnergyDataSubset = [];
 		if (countries.selectedItems())
 		{
 			countries.selectedItems().forEach( function(o,i)
 			{
-				newfuelData.push(fuelData[Number(o.answerKey)]);
-				newprimEnergyData.push(primEnergyData[Number(o.answerKey)]);
+				fuelDataSubset.push(fuelData[Number(o.answerKey)]);
+				electricDataSubset.push(electricData[Number(o.answerKey)]);
+				co2DataSubset.push(co2Data[Number(o.answerKey)]);
+				primEnergyDataSubset.push(primEnergyData[Number(o.answerKey)]);
 			});
 		}
 
-		graph1.data = newprimEnergyData;
+		graph0.data = electricDataSubset;
+		graph0.redraw();
+		graph1.data = co2DataSubset;
 		graph1.redraw();
-		graph2.data = newfuelData;
+		graph2.data = primEnergyDataSubset;
 		graph2.redraw();
+		graph3.data = fuelDataSubset;
+		graph3.redraw();
 	}
 
 	mapLegend = new Image({

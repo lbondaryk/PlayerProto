@@ -539,7 +539,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		}
 
 		this.xAxis.scale(this.xScale);
-		window.console.log("x margins increased, new inner width is ", dataAreaWidth, " margin ", this.margin.left, this.margin.right);
+		//window.console.log("x margins increased, new inner width is ", dataAreaWidth, " margin ", this.margin.left, this.margin.right);
 		this.xaxis.call(this.xAxis);
 		if (this.yaxis)
 		{
@@ -579,7 +579,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		}
 
 		this.yAxis.scale(this.yScale);
-		window.console.log("y margins increased, new inner height is ", dataAreaHeight, " margin: ", this.margin.top, this.margin.bottom);
+		//window.console.log("y margins increased, new inner height is ", dataAreaHeight, " margin: ", this.margin.top, this.margin.bottom);
 		this.yaxis.call(this.yAxis);
 		if (this.xaxis)
 		{
@@ -588,7 +588,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 
 		if (yLabelObj)
 		{
-			yLabelObj.attr("transform", "translate(" + (yOrient == "left" ? -(ylabelWidth + 1.1 * yaxisDims.width) : 0) + ","
+			yLabelObj.attr("transform", "translate(" + (yOrient == "left" ? -1 : 1)*(ylabelWidth + 1.1 * yaxisDims.width) + ","
 				   + dataAreaHeight + ") rotate(-90)")
 				// move it out of the way of the ticks to left or right depending on axis orientation
 				.attr("width", dataAreaHeight);
