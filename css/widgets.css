@@ -251,23 +251,36 @@ div.brixRadioGroup tr>td
 {
   padding: 0;
 }
-div.brixRadioGroup table.questionTable
+div.brixRadioGroup table.questionTable, 
+div.brixCheckGroup table.questionTable
 {
   margin: 0 0 0 25px;
 }
 
-div.brixRadioGroup table.questionTable tr>td:first-child
+
+div.brixRadioGroup .choiceLabel 
+div.brixCheckGroup .choiceLabel 
+{
+  font-weight: bold;
+  margin: 0 5px; 
+}
+
+div.brixRadioGroup table.questionTable tr>td:first-child,
+div.brixCheckGroup table.questionTable tr>td:first-child
 {
   text-align:   right;
   vertical-align:top;
   padding-top: 5px; 
 }
-div.brixRadioGroup table.questionTable tr>td:nth-of-type(2)
+div.brixRadioGroup table.questionTable tr>td:nth-of-type(2),
+div.brixCheckGroup table.questionTable tr>td:nth-of-type(2)
 {
   padding-left: 8px;
 }
    
-input[type=radio] {
+input[type=radio],
+input[type=checkbox] 
+{
     border: 0px;
     width: 20px;
     height: 20px;
@@ -312,12 +325,6 @@ div.brixMultipleChoiceQuestion
 {
   font: 18px Helvetica;
   line-height: 30px;
-}
-
-.brixMultipleChoiceQuestion .choiceLabel 
-{
-  font-weight: bold;
-  margin: 0 5px; 
 }
 
 .brixMultipleChoiceQuestion .submit button:disabled
@@ -563,29 +570,6 @@ svg g.widgetSketch .shape>text {
 .math sup {
 	font-size: 80%;
 }
-
-.assessment {
-  margin: 30px 0em; }
-  .assessment#widget0 {
-    margin-top: 0; }
-  .assessment .graphTitle {
-    padding-left: 0; }
-  .assessment .quizInput {
-    margin-bottom: 0;
-    width: 100px; }
-  .assessment .alert {
-    margin-top: 10px; }
-  .assessment .questionText {
-    max-width: 40em;
-    padding: 10px 0; }
-  .assessment input[type=radio] {
-    margin-top: 0;
-    margin-right: 5px; }
-
-.hanging {
-  padding-left: 22px;
-  text-indent: -22px; }
- 
 
 
 /* title and captions and feedback messages
