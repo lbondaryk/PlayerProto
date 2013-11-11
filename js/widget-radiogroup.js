@@ -296,6 +296,33 @@ pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 };
 
 /* **************************************************************************
+ * RadioGroup.itemKeyToIndex                                           */ /**
+ *
+ * Find the first item (choice) in the list of items in this RadioGroup which
+ * has the specified answer key and return its index. If no item has that key
+ * return null.
+ * @export
+ *
+ * @param {string}  key     -The key of the item (choice) to find
+ *
+ * @return {?number} the index of the item in the list of items with the
+ *          specified key.
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.itemKeyToIndex = function (key)
+{
+    for (var i = this.choices.length - 1; i >= 0; --i)
+    {
+        if (this.choices[i].answerKey === key)
+        {
+            return i;
+        }
+    }
+
+    return null;
+};
+
+/* **************************************************************************
  * RadioGroup.getChoiceNumberToDisplayFn_                              */ /**
  *
  * Get a function which returns the string that should be prefixed to the

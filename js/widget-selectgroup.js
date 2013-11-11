@@ -325,3 +325,30 @@ pearson.brix.SelectGroup.prototype.selectItemAtIndex = function (index)
     this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
 };
 
+/* **************************************************************************
+ * SelectGroup.itemKeyToIndex                                          */ /**
+ *
+ * Find the first item (choice) in the list of items in this SelectGroup which
+ * has the specified answer key and return its index. If no item has that key
+ * return null.
+ * @export
+ *
+ * @param {string}  key     -The key of the item (choice) to find
+ *
+ * @return {?number} the index of the item in the list of items with the
+ *          specified key.
+ *
+ ****************************************************************************/
+pearson.brix.SelectGroup.prototype.itemKeyToIndex = function (key)
+{
+    for (var i = this.choices.length - 1; i >= 0; --i)
+    {
+        if (this.choices[i].answerKey === key)
+        {
+            return i;
+        }
+    }
+
+    return null;
+};
+

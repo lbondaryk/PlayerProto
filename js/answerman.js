@@ -215,7 +215,9 @@ pearson.brix.utils.LocalAnswerMan.prototype.scoreAnswer = function (seqNodeKey, 
 
     var evaluator = pearson.brix.utils.LocalAnswerMan.evaluateAnswer[assessmentType];
 
-    callback(evaluator(studentAnswer, answerKey['answers']));
+    var response = evaluator(studentAnswer, answerKey['answers']);
+    response['attemptsMade'] = 2;
+    callback(response);
 };
 
 
