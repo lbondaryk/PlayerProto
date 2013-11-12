@@ -227,8 +227,8 @@ pearson.brix.PrototypeAxes = function (container, config)
 		var xlabelRendered = d3.select('body')
 						.append("div")
 						.style('visibility', 'hidden')
-						// this width ought to be the axis width, but we don't know it yet
-						.style('width', config.size.width + "px")
+						// this width ought to be the x axis width, but we don't know it yet
+						.style('width', (config.size.width - 40) + "px")
 						.attr("class", "axisLabel")
 						.html(this.xFmt.label);
 
@@ -251,10 +251,10 @@ pearson.brix.PrototypeAxes = function (container, config)
 						.append("div")
 						.style('visibility', 'hidden')
 						// this width ought to be the y axis height, but we don't know it yet
-						.style('width', config.size.height + "px")
+						// subtract estimate of axis height 40px, plus the label if there is one
+						.style('width', (config.size.height - this.margin.bottom - this.margin.top - 40) + "px")
 						.attr("class", "axisLabel")
 						.html(this.yFmt.label);
-
 		var ylabelWidth = ylabelRendered.node().offsetHeight;
 		ylabelRendered.remove();
 
@@ -435,7 +435,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 			// creating ordinal bands, but in the case that it's very dense you might need to
 			// trim down the number of ticks just like you do with linear -lb
 			this.yScale = d3.scale.ordinal().domain(this.yFmt.extent) //lists all ordinal y vals
-				.rangeRoundBands([dataAreaHeight, 0], 0.4, 0);
+				.rangeRoundBands([dataAreaHeight, 0], 0.3, 0.1);
 
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 40% white space
@@ -569,7 +569,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		//using the new dimensions, redo the scale and axes
 		if (this.yFmt.type=="ordinal")
 		{
-			this.yScale.rangeRoundBands([dataAreaHeight, 0], .1);
+			this.yScale.rangeRoundBands([dataAreaHeight, 0], .3, .1);
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 30% white space
 		}

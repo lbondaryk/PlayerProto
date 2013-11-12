@@ -266,39 +266,11 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	this.lastdrawn.xScale = axesDrawn.xScale;
 	this.lastdrawn.yScale = axesDrawn.yScale;
 	var barsId = this.id + '_bars';
-	
-	
+
 
 	//get the size of the bars and spacing produced by ordinal scale
 	//TODO: would need to be xScale if the bars are vertical
 	this.lastdrawn.bandsize = axesDrawn.yScale.rangeBand();
-	var bandsize = this.lastdrawn.bandsize;
-	
-	if (this.type == "grouped")
-	{
-		//grouped bar charts find the common labels in each data set and draw non-overlapping
-		//bars in a group, one bar in each series for that label.
-		//The effect of the following code is to calculate a "subspacing" that fans
-		//the individual bars in each label/group out around the central point for the data
-		//label on the axis.
-		var indices = [];
-
-		for (var i = 0; i < this.data.length; i++)
-		{
-			indices.push(i); //needed to space out grouped barcharts
-		}
-
-		var groupScale = d3.scale.ordinal()
-			.domain(indices) //creates an extra ordinal set that encloses the data label,
-			//one for each group (element in data array)
-			.rangeRoundBands([bandsize, 0]);
-			
-			//TEST: The last index  should produce the topmost bar
-			//appearing at y = 0
-		//window.console.log("Grouped barChart last bar mapped to 0 offset: ",
-			//groupScale(this.data.length - 1) == 0);
-	};
-
 
 	// Draw any 'before' child brix that got appended before draw was called
 	this.childBrix.beforeData.forEach(this.drawBric_, this);
@@ -306,9 +278,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 	var graph = axesDrawn.group.append("g") //make a group to hold bars
 		.attr("class","brixBarChart").attr("id", barsId);
 
-	
 	this.lastdrawn.graph = graph;
-	this.lastdrawn.groupScale = groupScale;
 	
 	// Draw the data (traces and/or points as specified by the graph type)
 	this.drawData_();
@@ -399,6 +369,33 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 	// get the group that contains the graph lines
 	var graph = this.lastdrawn.graph;
 	
+	var bandsize = this.lastdrawn.bandsize;
+	
+	if (this.type == "grouped")
+	{
+		//grouped bar charts find the common labels in each data set and draw non-overlapping
+		//bars in a group, one bar in each series for that label.
+		//The effect of the following code is to calculate a "subspacing" that fans
+		//the individual bars in each label/group out around the central point for the data
+		//label on the axis.
+		var indices = [];
+
+		for (var i = 0; i < this.data.length; i++)
+		{
+			indices.push(i); //needed to space out grouped barcharts
+		}
+
+		var groupScale = d3.scale.ordinal()
+			.domain(indices) //creates an extra ordinal set that encloses the data label,
+			//one for each group (element in data array)
+			.rangeRoundBands([bandsize, 0]);
+			
+			//TEST: The last index  should produce the topmost bar
+			//appearing at y = 0
+		//window.console.log("Grouped barChart last bar mapped to 0 offset: ",
+			//groupScale(this.data.length - 1) == 0);
+	};
+
 	//draw the series
 	// bind all the series data to a group element w/ a series class
 	// creating or removing group elements so that each series has its own group.
