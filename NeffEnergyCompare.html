@@ -32,7 +32,7 @@
 					</h2>
 		 			 
 				<div class="lc_ec_leading">
-				<p>Energy is used all over the world.</p>
+				<p>Select one or more countries to compare their energy usage.</p>
 					<span style="float: left" id = "checkBoxes0">Countries: </span><span id="graph1"></span>
 				</p>
 				<div id="earth"></div>
@@ -226,7 +226,7 @@ var CO2 =
   "US": [3783.56319892251, 4682.76930767474, 4852.23876974642, 5158.85593661485, 4974.23139138669, 5444.6071558793, 5791.89946504643, 6377.04931894541, 6493.73405284988, 6130.36154115063],
   "Canada": [274.600761101999, 363.689208089999, 412.63677288, 474.7596527012, 450.620097299192, 493.924473725131, 526.295544924166, 592.430004003307, 635.584559883248, 610.806799356931],
   "Brazil": [52.6367472839607, 86.834140036021, 148.341854329295, 193.923179223011, 213.721450883072, 241.259693420696, 296.624317314346, 352.004972768784, 377.827688846891, 472.210091899478],
-  "Germany": [],
+  "Germany": [918.574022404799, 1058.26210778159, 1038.3756200208, 1126.1539000584, 1088.0401784976, 1030.5031590468, 930.8827538568, 902.5099532532, 883.2846087112, 833.682541894],
   "Egypt": [22.98580874748, 20.5542300258, 27.5916442068, 47.4386420699999, 77.508260604, 93.5411883372, 102.187152237599, 130.5811589832, 163.1312764848, 210.959948282399],  
   "South Africa": [114.863685696, 134.6709257064, 174.809210095288, 206.474316010963, 290.926929548723, 318.099389754969, 345.850078450315, 365.985951742163, 416.426695024175, 444.939979992384],
   "China": [489.145476851999, 749.7444525048, 1133.44256201399, 1500.3351912672, 1919.01394778759, 2395.79278974359, 3157.0370755668, 3429.90512299925, 5573.91304647688, 7945.19483758791],
@@ -345,14 +345,21 @@ var primaryEnergyPC =
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
 		var seriesArray = [];
+		var legendArray = [];
 		var keyArray = d3.keys(dataSet).filter(function (o) {return (o != groupKey && o != "labels");});
 
 		keyArray.forEach( function(o, i) {
 				//console.log(makeGraphPoints(dataSet[groupKey], dataSet[o]));
 				seriesArray.push(makeGraphPoints(dataSet[o], dataSet[groupKey]));
+				legendArray.push({content: o})
 			});
 
-		return seriesArray;
+		var chartLegendConfig = {
+			xPos: "right", yPos: "top",
+			type: 'box',
+			labels: legendArray
+		}
+		return [seriesArray, chartLegendConfig];
 	}
 
 var fuelData = makeChartData(fuelSources, "source");
@@ -364,20 +371,20 @@ var primEnergyData = makeGraphData (primaryEnergy, "Year");
 var svg0 = new SVGContainer({
 			node: d3.select("#graph0"),
 			maxWid: 477,
-			maxHt: 600
+			maxHt: 650
 		});
 
 var svg1 = new SVGContainer({
 			node: d3.select("#graph1"),
 			maxWid: 350,
-			maxHt: 500
+			maxHt: 600
 		});
 		
 var graph0 = new LineGraph({
 			Data: electricData, 
 			type: "lines",
-			xAxisFormat: { type: "linear",
-						   ticks: 4,
+			xAxisFormat: { type: "ordinal",
+						   ticks: 6,
 						   orientation: "bottom",
 						   label: electric.labels.xLabel,
 						 },
@@ -391,7 +398,7 @@ var graph0 = new LineGraph({
 var graph1 = new LineGraph({
 			Data: co2Data, 
 			type: "lines",
-			xAxisFormat: { type: "linear",
+			xAxisFormat: { type: "ordinal",
 						   ticks: 4,
 						   orientation: "bottom",
 						   label: CO2.labels.xLabel },
@@ -405,7 +412,7 @@ var graph1 = new LineGraph({
 var graph2 = new LineGraph({
 			Data: primEnergyData, 
 			type: "lines",
-			xAxisFormat: { type: "linear",
+			xAxisFormat: { type: "ordinal",
 						   ticks: 4,
 						   orientation: "bottom",
 						   label: primaryEnergy.labels.xLabel },
@@ -417,7 +424,7 @@ var graph2 = new LineGraph({
 		}, eventManager);	
 
 var graph3 = new BarChart({
-		Data: fuelData,
+		Data: fuelData[0],
 		type: 'grouped',
 		xAxisFormat: { type: "linear",
 						   ticks: 3,
@@ -429,18 +436,22 @@ var graph3 = new BarChart({
 						   }
 		}, eventManager);
 
-svg0.append(graph0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-svg0.append(graph1, {topPercentOffset: 0.33, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-svg0.append(graph2, {topPercentOffset: 0.66, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+svg0.append(graph0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.33, widthPercent: 1});
+svg0.append(graph1, {topPercentOffset: 0.33, leftPercentOffset: 0, heightPercent: 0.33, widthPercent: 1});
+svg0.append(graph2, {topPercentOffset: 0.66, leftPercentOffset: 0, heightPercent: 0.33, widthPercent: 1});
 
 svg1.append(graph3);
 	
+// configure and append the legend to the bargraph
 
+	var fuelLegend = new Legend(fuelData[1],eventManager);
+	
+	graph3.append(fuelLegend);
 
 eventManager.subscribe(countries.selectedEventId,
 						   displayData);
 
-displayData(0);
+countries.selectItemAtIndex(0);
 
 /************************************************************************
 * displayData	                                           *//**
@@ -453,19 +464,28 @@ displayData(0);
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
 		var fuelDataSubset = [];
+		var fuelLegendSubset = [];
 		var electricDataSubset = [];
 		var co2DataSubset = [];
 		var primEnergyDataSubset = [];
-		if (countries.selectedItems())
-		{
-			countries.selectedItems().forEach( function(o,i)
+			
+		for (var i = 0; i <= 10; i++) 
 			{
-				fuelDataSubset.push(fuelData[Number(o.answerKey)]);
-				electricDataSubset.push(electricData[Number(o.answerKey)]);
-				co2DataSubset.push(co2Data[Number(o.answerKey)]);
-				primEnergyDataSubset.push(primEnergyData[Number(o.answerKey)]);
-			});
-		}
+				fuelDataSubset[i] = [];
+				electricDataSubset[i] = [];
+				co2DataSubset[i] = [];
+				primEnergyDataSubset[i] = [];
+			}
+
+		countries.selectedItems().forEach( function (o,i) 
+			{
+				var index = Number(o.answerKey);
+				fuelDataSubset[index] = fuelData[0][index];
+				electricDataSubset[index] = electricData[index];
+				co2DataSubset[index] = co2Data[index];
+				primEnergyDataSubset[index] = primEnergyData[index];
+			}
+		);
 
 		graph0.data = electricDataSubset;
 		graph0.redraw();
@@ -475,6 +495,8 @@ displayData(0);
 		graph2.redraw();
 		graph3.data = fuelDataSubset;
 		graph3.redraw();
+		//fuelLegend.labels = fuelLegendSubset;
+		//fuelLegend.redraw();
 	}
 
 	mapLegend = new Image({
