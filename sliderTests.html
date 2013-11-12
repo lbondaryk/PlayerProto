@@ -36,12 +36,12 @@
                     </h2>
                     <div class="lc_ec_leading">
                 <div class="test">
-                    <p>Test 0: One slider (fixed size), no readout</p>
+                    <p>Test 0: One slider, fixed bric width, internal readout with appended 'degree' unit. No external readout</p>
                     Slider: <span id="t0slider"></span>
                 </div>
                 
                 <div class="test">
-                    <p>Test 1: Two sliders, no readout</p>
+                    <p>Test 1: Two sliders, internal readout with prepend unit. No external readout</p>
                     <div id="t1sliders">
                         <span id="t1_1slider"></span>
                         <span id="t1_2slider"></span>
@@ -49,13 +49,13 @@
                 </div>
                 
                 <div class="test">
-                    <p>Test 2: One slider, one readout</p>
+                    <p>Test 2: One slider, no format, micron unit appended. One external readout</p>
                     <span id="t2slider"></span>
                     <p>Test 2 slider value = <span id="t2val"></span></p>
                 </div>
                 
                 <div class="test">
-                    <p>Test 3: Two sliders, one readout</p>
+                    <p>Test 3: Two sliders. One external calculated readout</p>
                     <div id="t3sliders">
                         <span id="t3_1slider"></span>
                         <span id="t3_2slider"></span>
@@ -64,7 +64,7 @@
                 </div>
                 
                 <div class="test">
-                    <p>Test 4: Two sliders, two readouts</p>
+                    <p>Test 4: Two sliders. Two external readouts</p>
                     <div id="t4sliders">
                         <span id="t4_1slider"></span>
                         <span id="t4_2slider"></span>
@@ -74,7 +74,7 @@
                 </div>
                 
                 <div class="test">
-                    <p>Test 5: Three sliders, one readout</p>
+                    <p>Test 5: Three sliders, step value of one. One readout</p>
                     <div id="t5sliders">
                         <span id="t5_1slider"></span><br />
                         <span id="t5_2slider"></span><br />
@@ -100,7 +100,7 @@
             <div class="lc_ec_trailing">
                 
                 <div class="test">
-                    <p>Test 8: Slider next to readout</p>
+                    <p>Test 8: Slider next to external readout</p>
                     <div >
                         Slider value = <span id="t8val"></span>
                         <span id="t8slider"></span>
@@ -108,7 +108,7 @@
                 </div>
                 
                 <div class="test">
-                    <p>Test 9: Two sliders next to each other</p>
+                    <p>Test 9: Two sliders next to each other (side by side)</p>
                     <div id="t9sliders">
                         <span id="t9_1slider"></span>
                         <span id="t9_2slider"></span>
@@ -245,6 +245,9 @@
             minVal: t1_2Extent[0],
             maxVal: t1_2Extent[1],
             stepVal: .01,
+            format: '5.2f',
+            unit: '$',
+            unitOpt: pearson.brix.UnitOpt.PREPEND,
             label: "Test 1 slider 2",
         }, eventManager);
         
@@ -262,7 +265,6 @@
             maxVal: t2Extent[1],
             stepVal: .01,
             label: "Test 2 slider",
-            format: '5.2f',
             unit: 'µ',
         }, eventManager);
         
@@ -531,6 +533,7 @@
             stepVal: 1,
             label: "Test 8 slider",
             format: '5.2f',
+            width: '200px'
         }, eventManager);
         
     t8Slide.draw(d3.select("#t8slider"));
