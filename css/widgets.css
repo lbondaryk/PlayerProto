@@ -195,7 +195,7 @@ svg g.brixLabel.lit .descLabel
 {
   margin: 2px;
   padding: 8px;
-  background-color: #F8F8F8;
+  background-color: #fff;
   border-radius: 8px;
   display: inline-block;
 }
@@ -226,18 +226,19 @@ svg g.brixLabel.lit .descLabel
 
 .goog-slider-horizontal .bricSlider-thumb {
     top: 0;
-    width: 8px;
-    height: 8px;
-    background-color: #fff;
-    border: 6px solid black;
+    width: 18px;
+    height: 18px;
+    background-color: #444;
+    border: 1px solid black;
     border-radius:15px;
     /*box-shadow: 2px 2px 2px #888888;*/
 }
 
 .bricSlider-rail {
-    border: 1px solid #aaaaaa;
+    border: 1px solid #cccccc;
     height: .7em;
-    margin-top: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     background-color: #d0d0d0;
 }
 

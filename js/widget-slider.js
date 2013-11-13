@@ -10,7 +10,6 @@
  * Created on       April 15, 2013
  * @author          Leslie Bondaryk
  * @author          Michael Jay Lippert
- * @author          Greg Davis
  * @author          Young-Suk Ahn
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
@@ -425,11 +424,11 @@ pearson.brix.Slider.prototype.getFormattedValue = function (unitOpt, value)
 
     if (unitOpt == pearson.brix.UnitOpt.APPEND)
     {
-        return this.format(valueToFormat) + this.unit;
+        return this.format(valueToFormat) + (this.unit !== '&deg;' ? '\u2007' : '') + this.unit;
     }
     else if (unitOpt == pearson.brix.UnitOpt.PREPEND)
     {
-        return this.unit + this.format(valueToFormat);
+        return this.unit  + this.format(valueToFormat);
     }
     return this.format(valueToFormat);
 };
