@@ -22,7 +22,7 @@
 
         var ipsProxy = null;
         before(function (done) {
-            ipsProxy = new pearson.brix.IpsProxy({serverBaseUrl:"http://localhost:8088"});
+            ipsProxy = new pearson.brix.utils.IpsProxy({serverBaseUrl:"http://localhost:8088"});
 
             ipsProxy.retrieveSequenceNode(testInitializationEnvelope, function(error, result){
                 try {

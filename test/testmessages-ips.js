@@ -6,7 +6,8 @@
  * A test Hub session
  * @type {String}
  */
-var testHubBaseUrl = 'http://hub.paf.dev.pearsoncmg.com';
+var testHubBaseUrl = 'http://localtest'; // to trigger Nock in the server.
+//var testHubBaseUrl = 'http://hub.paf.dev.pearsoncmg.com';
 
 
 /**
@@ -67,7 +68,7 @@ var testSubmissionMessage = {
     "timestamp": "2013-05-25T13:21:22.001Z",
     "type": "submission",
     "body": {
-        "submissionData": "...some stuff..."
+        "studentSubmission": { "submission":"option000" }
     }
 };
 
