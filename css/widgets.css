@@ -195,21 +195,23 @@ svg g.brixLabel.lit .descLabel
 {
   margin: 2px;
   padding: 8px;
-  background-color: #fff;
+  /*background-color: #fff;*/
   border-radius: 8px;
   display: inline-block;
+  font: 16px Helvetica;
 }
 
 .bricSlider-container .readout
 {
-  margin-left: .5em;
-  background-color: #fff;
+  margin-left: 10px;
   font-weight: bold;
 }
 
 .bricSlider-widget {
   /*background-color: ThreeDFace;*/
   overflow: hidden;
+  margin-top: 18px;
+  margin-bottom: 10px;
 }
 
 .bricSlider-thumb {
@@ -225,21 +227,21 @@ svg g.brixLabel.lit .descLabel
 }
 
 .goog-slider-horizontal .bricSlider-thumb {
-    top: 0;
-    width: 18px;
-    height: 18px;
-    background-color: #444;
-    border: 1px solid black;
+    top: 0px;
+    width: 20px;
+    height: 20px;
+    background-color: #3C434D;
+    border: 0px solid black;
     border-radius:15px;
     /*box-shadow: 2px 2px 2px #888888;*/
 }
 
 .bricSlider-rail {
-    border: 1px solid #cccccc;
-    height: .7em;
+    border: 0px solid #cccccc;
+    height: 10px;
     margin-top: 5px;
     margin-bottom: 5px;
-    background-color: #d0d0d0;
+    background-color: #e4e4e4;
 }
 
 .goog-slider-disabled {
