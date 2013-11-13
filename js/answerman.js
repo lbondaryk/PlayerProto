@@ -16,10 +16,8 @@
 
 goog.provide('pearson.brix.utils.LocalAnswerMan');
 
+goog.require('goog.debug.Logger');
 goog.require('pearson.brix.utils.IpsProxy');
-
-// YSAP - Changed from function to class with method.
-// Proposal: change from AnswerMan to EvalProvider
 
 /**
  * The common answerKey structure for all question types, they vary in the
@@ -80,6 +78,13 @@ pearson.brix.utils.IAnswerMan.prototype.scoreAnswer = function (seqNodeKey, stud
 pearson.brix.utils.IpsAnswerMan = function (ipsProxy)
 {
     /**
+     * A logger to help debugging
+     * @type {goog.debug.Logger}
+     * @private
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.utils.IpsAnswerMan');
+
+    /**
      * The IpsProxy used to communicate w/ the IPS
      * @private
      * @type {!pearson.brix.utils.IpsProxy}
@@ -134,6 +139,7 @@ pearson.brix.utils.IpsAnswerMan.prototype.ipsSubmissionResponseHandler = functio
 {
     if (error)
     {
+        this.logger_.warning('IpsProxy.postSubmission returned error: ' + JSON.stringify(error));
         // @todo - (ysa) Is this response enough, even for system errors such as no network? 
         // Also how do we handle last attempt and beyond?
         callback({'score': null, 'response': 'no response' });
@@ -142,6 +148,7 @@ pearson.brix.utils.IpsAnswerMan.prototype.ipsSubmissionResponseHandler = functio
     {
         // @todo - What do we do with result.data.attemptsMade
         var scoreResponse = {'score': result.data.correctness, 'response': result.data.feedback };
+        this.logger_.fine('IpsProxy.postSubmission returned: ' + JSON.stringify(scoreResponse));
         callback(scoreResponse);
     }
 };

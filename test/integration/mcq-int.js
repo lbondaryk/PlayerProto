@@ -32,7 +32,7 @@
                     expect(result).to.be.an('object');
                     seqNodeKey = result.data.sequenceNodeKey;
 
-window.console.log(JSON.stringify(result.data));
+//window.console.log(JSON.stringify(result.data));
 
                     expect(result.data.activityConfig).to.have.property('containerConfig').and.not.null;
                     expect(result.data.activityConfig).to.have.property('maxAttempts').and.to.be.at.least(1);
@@ -45,13 +45,11 @@ window.console.log(JSON.stringify(result.data));
                 }
             });
         });
-
         
         describe('IpsAnswerMan ', function () {
-            it('should receive data on submission', function (done) {
+            it('should receive scoring result on submission', function (done) {
 
                 var scoreResponseHandler = function(scoringResponse) {
-                    window.console.log("[scoringResp] "+JSON.stringify(scoringResponse));
                     try
                     {
                         expect(scoringResponse.score).not.null;

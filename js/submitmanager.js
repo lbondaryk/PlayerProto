@@ -6,8 +6,8 @@
  *
  * The SubmitManager does some stuff.
  *
- * Created on		June 4, 2013
- * @author			Seann Ives
+ * Created on       June 4, 2013
+ * @author          Seann Ives
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -25,10 +25,10 @@ goog.require('pearson.brix.utils.LocalAnswerMan');
  * @constructor
  *
  * @param {!pearson.utils.EventManager}
- * 						eventManager	-The event manager to use for publishing events
- * 									 	 and subscribing to them.
+ *                      eventManager    -The event manager to use for publishing events
+ *                                       and subscribing to them.
  * @param {!pearson.brix.IAnswerMan=}
- * 						answerMan		-The correctness engine to process the selected answer.
+ *                      answerMan       -The correctness engine to process the selected answer.
  *
  * @classdesc
  * The submit manager handles your submissions, yo.
@@ -41,26 +41,26 @@ goog.require('pearson.brix.utils.LocalAnswerMan');
  ****************************************************************************/
 pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
 {
-	/**
-	 * The answerMan provides feedback to submissions 
+    /**
+     * The answerMan provides feedback to submissions 
      * @private
-	 * @type {!pearson.brix.utils.IAnswerMan}
-	 */
-	this.answerMan_ = answerMan || new pearson.brix.utils.LocalAnswerMan();
-	
-	/**
-	 * The event manager to use to publish (and subscribe to) events
-	 * @type {!pearson.utils.EventManager}
-	 */
-	this.eventManager = eventManager;
+     * @type {!pearson.brix.utils.IAnswerMan}
+     */
+    this.answerMan_ = answerMan || new pearson.brix.utils.LocalAnswerMan();
+    
+    /**
+     * The event manager to use to publish (and subscribe to) events
+     * @type {!pearson.utils.EventManager}
+     */
+    this.eventManager = eventManager;
 
-	/**
-	 * map of all submitted answers awaiting a response from
-	 * the scoring engine.
-	 * @type {Object.<pearson.brix.Ipc.SequenceNodeKey, pearson.brix.utils.SubmitManager.PendingDetails>}
-	 * @private
-	 */
-	this.requestsAwaitingResponse_ = {};
+    /**
+     * map of all submitted answers awaiting a response from
+     * the scoring engine.
+     * @type {Object.<pearson.brix.Ipc.SequenceNodeKey, pearson.brix.utils.SubmitManager.PendingDetails>}
+     * @private
+     */
+    this.requestsAwaitingResponse_ = {};
 };
 
 /**
@@ -69,16 +69,16 @@ pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
  *
  * @typedef {Object} pearson.brix.utils.SubmitManager.PendingDetails
  * @property {pearson.brix.Ipc.SequenceNodeKey}
- * 								sequenceNodeKey	-The PAF Activity Id which identifies the
- * 												 activity being scored.
- * @property {string}			answer			-The 'key' of the chosen answer to be scored.
- * @property {number|undefined}	value			-If the answer selection is not from a discrete list
- * 												 this is the numeric value chosen.
- * @property {function(Object)}	responseCallback
- * 												-The function to call w/ the response from
- * 												 the scoring engine.
- * @property {Object}			requestDetails	-The details from the score
- * 												 request event from the question widget.
+ *                              sequenceNodeKey -The PAF Activity Id which identifies the
+ *                                               activity being scored.
+ * @property {string}           answer          -The 'key' of the chosen answer to be scored.
+ * @property {number|undefined} value           -If the answer selection is not from a discrete list
+ *                                               this is the numeric value chosen.
+ * @property {function(Object)} responseCallback
+ *                                              -The function to call w/ the response from
+ *                                               the scoring engine.
+ * @property {Object}           requestDetails  -The details from the score
+ *                                               request event from the question widget.
  */
 pearson.brix.utils.SubmitManager.PendingDetails;
 
@@ -89,16 +89,16 @@ pearson.brix.utils.SubmitManager.PendingDetails;
  * submitScoreRequest events the widget may publish.
  * @export
  *
- * @param {Object}	questionWidget		-The question widget that may submit a
- * 										 request for an answer to an activity to
- * 										 be scored.
+ * @param {Object}  questionWidget      -The question widget that may submit a
+ *                                       request for an answer to an activity to
+ *                                       be scored.
  *
  ****************************************************************************/
 pearson.brix.utils.SubmitManager.prototype.handleRequestsFrom = function(questionWidget)
 {
-	var that = this;
-	this.eventManager.subscribe(questionWidget.submitScoreRequestEventId,
-								function (eventDetails) {that.handleScoreRequest_(eventDetails);});
+    var that = this;
+    this.eventManager.subscribe(questionWidget.submitScoreRequestEventId,
+                                function (eventDetails) {that.handleScoreRequest_(eventDetails);});
 };
 
 /* **************************************************************************
@@ -107,30 +107,30 @@ pearson.brix.utils.SubmitManager.prototype.handleRequestsFrom = function(questio
  * The event handler of this SubmitManager for submitScoreRequest events
  * from registered question widgets.
  *
- * @param {Object}	eventDetails		-The details of the score request must include:
- * 										 questionId and answerKey. Optionally it may
- * 										 also include a responseCallback, and any other
- * 										 properties that responseCallback may need.
+ * @param {Object}  eventDetails        -The details of the score request must include:
+ *                                       questionId and answerKey. Optionally it may
+ *                                       also include a responseCallback, and any other
+ *                                       properties that responseCallback may need.
  * @private
  *
  ****************************************************************************/
 pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 {
-	var pendingDetails =
-		{
-			sequenceNodeKey: eventDetails['questionId'],
-			answer: eventDetails['answerKey'],
-			value: eventDetails['submissionValue'],
-			responseCallback: eventDetails['responseCallback'],
-			requestDetails: eventDetails,
-		};
+    var pendingDetails =
+        {
+            sequenceNodeKey: eventDetails['questionId'],
+            answer: eventDetails['answerKey'],
+            value: eventDetails['submissionValue'],
+            responseCallback: eventDetails['responseCallback'],
+            requestDetails: eventDetails,
+        };
 
-	if (this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] !== undefined)
-	{
-		alert("there's already an outstanding submission request for the sequenceNode: " + pendingDetails.sequenceNodeId);
-	}
+    if (this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] !== undefined)
+    {
+        alert("there's already an outstanding submission request for the sequenceNode: " + pendingDetails.sequenceNodeId);
+    }
 
-	this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] = pendingDetails;
+    this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] = pendingDetails;
 
     this.answerMan_.scoreAnswer(pendingDetails.sequenceNodeKey,
                                 {key: pendingDetails.answer},
@@ -144,9 +144,9 @@ pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventD
  * to access that scoring engine.
  *
  * @param {pearson.brix.utils.SubmitManager.PendingDetails}
- * 							submitDetails	-Information identifying the question
- * 											 and answer to be scored, in the properties:
- * 											 sequenceNodeId and answer.
+ *                          submitDetails   -Information identifying the question
+ *                                           and answer to be scored, in the properties:
+ *                                           sequenceNodeId and answer.
  * @private
  *
  * @note Currently this method is using a local scoring engine that returns
@@ -159,16 +159,16 @@ pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventD
  ****************************************************************************/
 pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (seqNodeKey, submissionResponse)
 {
-	// We handle the reply from the scoring engine (in the event handler eventually)
-	// by removing the request from the list of pending request
-	// and calling the given callback if it exists
-	var pendingDetails = this.requestsAwaitingResponse_[seqNodeKey];
-	delete this.requestsAwaitingResponse_[seqNodeKey];
-	if (typeof pendingDetails.responseCallback === "function")
-	{
-		submissionResponse.submitDetails = pendingDetails.requestDetails;
-		pendingDetails.responseCallback(submissionResponse);
-	}
+    // We handle the reply from the scoring engine (in the event handler eventually)
+    // by removing the request from the list of pending request
+    // and calling the given callback if it exists
+    var pendingDetails = this.requestsAwaitingResponse_[seqNodeKey];
+    delete this.requestsAwaitingResponse_[seqNodeKey];
+    if (typeof pendingDetails.responseCallback === "function")
+    {
+        submissionResponse.submitDetails = pendingDetails.requestDetails;
+        pendingDetails.responseCallback(submissionResponse);
+    }
 };
 
 /* **************************************************************************
@@ -184,13 +184,13 @@ pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (se
  * @export
  *
  * @param {!d3.selection}
- * 					container		-The html element to write the formatted
- * 									 response into.
- * @param {Object}	responseDetails	-The response details returned by the
- * 									 scoring engine.
- * 									 The details must contain the following
- * 									 properties:
- * 									 score, submission, response.
+ *                  container       -The html element to write the formatted
+ *                                   response into.
+ * @param {Object}  responseDetails -The response details returned by the
+ *                                   scoring engine.
+ *                                   The details must contain the following
+ *                                   properties:
+ *                                   score, submission, response.
  *
  * @note It would be nice if the score property of the responseDetails was
  * changed from the possible values of -1, 0, 1 or undefined to either a
@@ -200,49 +200,49 @@ pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (se
  ****************************************************************************/
 pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
 {
-	var responseFormat = {
-			correct: {
-				icon: "icon-ok-sign",
-				answerPrefix: 'Correct. "',
-				answerSuffix:  '" is the right answer. ',
-				responseClass: 'feedback-correct'
-			},
-			incorrect: {
-				icon: "icon-remove",
-				answerPrefix: 'Incorrect. "',
-				answerSuffix:  '" is not the right answer.',
-				responseClass: "feedback-incorrect"
-			},
-			partial: {
-				icon: "icon-adjust",
-				answerPrefix: 'Partial credit. "',
-				answerSuffix:  '" is partially correct. ',
-				responseClass: "feedback-partial"
-			},
-			unknown: {
-				icon: "icon-adjust",
-				answerPrefix: "something has gone horribly awry - we can't score this answer.",
-				responseClass: ""
-			}
-		};
+    var responseFormat = {
+            correct: {
+                icon: "icon-ok-sign",
+                answerPrefix: 'Correct. "',
+                answerSuffix:  '" is the right answer. ',
+                responseClass: 'feedback-correct'
+            },
+            incorrect: {
+                icon: "icon-remove",
+                answerPrefix: 'Incorrect. "',
+                answerSuffix:  '" is not the right answer.',
+                responseClass: "feedback-incorrect"
+            },
+            partial: {
+                icon: "icon-adjust",
+                answerPrefix: 'Partial credit. "',
+                answerSuffix:  '" is partially correct. ',
+                responseClass: "feedback-partial"
+            },
+            unknown: {
+                icon: "icon-adjust",
+                answerPrefix: "something has gone horribly awry - we can't score this answer.",
+                responseClass: ""
+            }
+        };
 
-	var scoreAnsType = ["unknown", "incorrect", "correct", "partial"];
+    var scoreAnsType = ["unknown", "incorrect", "correct", "partial"];
 
-	var ansType = "unknown";
-	if (typeof responseDetails.score === "number")
-	{
-		ansType = scoreAnsType[responseDetails.score + 1];
-	}
+    var ansType = "unknown";
+    if (typeof responseDetails.score === "number")
+    {
+        ansType = scoreAnsType[responseDetails.score + 1];
+    }
 
-	var responseHtml = "<i class='" + responseFormat[ansType].icon + "'></i> " +
-				responseFormat[ansType].answerPrefix +
-				(responseDetails.submission || "") +
-				(responseFormat[ansType].answerSuffix || "") + " " +
-				('<div class="custom-feedback">' + responseDetails.response + '</div>' || "");
+    var responseHtml = "<i class='" + responseFormat[ansType].icon + "'></i> " +
+                responseFormat[ansType].answerPrefix +
+                (responseDetails.submission || "") +
+                (responseFormat[ansType].answerSuffix || "") + " " +
+                ('<div class="custom-feedback">' + responseDetails.response + '</div>' || "");
 
-	// display the results of the submission in the given container
-	container.append("div")
-		.attr('class', responseFormat[ansType].responseClass)
-		.html(responseHtml);
+    // display the results of the submission in the given container
+    container.append("div")
+        .attr('class', responseFormat[ansType].responseClass)
+        .html(responseHtml);
 };
 
