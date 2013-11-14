@@ -161,8 +161,8 @@ pearson.brix.RadioGroup.autoIdPrefix = "rg_auto_";
  * @description The following is here until jsdoc supports the inheritDoc tag.
  * Draw this RadioGroup in the given container.
  *
- * @param {!d3.selection}	container	-The container html element to append
- * 										 this HtmlBric element tree to.
+ * @param {!d3.selection}   container   -The container html element to append
+ *                                       this HtmlBric element tree to.
  *
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.draw = function (container)
