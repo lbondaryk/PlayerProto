@@ -15,6 +15,7 @@
 
 goog.provide('pearson.brix.utils.SubmitManager');
 
+goog.require('goog.debug.Logger');
 goog.require('pearson.brix.utils.LocalAnswerMan');
 
 /* **************************************************************************
@@ -41,6 +42,13 @@ goog.require('pearson.brix.utils.LocalAnswerMan');
  ****************************************************************************/
 pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
 {
+    /**
+     * A logger to help debugging
+     * @type {goog.debug.Logger}
+     * @private
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.utils.SubmitManager');
+
     /**
      * The answerMan provides feedback to submissions 
      * @private
@@ -133,7 +141,7 @@ pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventD
     this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] = pendingDetails;
 
     this.answerMan_.scoreAnswer(pendingDetails.sequenceNodeKey,
-                                {key: pendingDetails.answer},
+                                {submission: pendingDetails.answer},
                                 goog.bind(this.handleScoringResponse_, this, pendingDetails.sequenceNodeKey));
 };
 

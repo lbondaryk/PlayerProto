@@ -104,6 +104,18 @@ pearson.brix.Ipc = function (config, eventManager)
      */
     this.containerId = null;
 
+    /**
+     * The AnserMan
+     * @type {pearson.brix.utils.IAnswerMan}
+     */
+    this.answerMan = new pearson.brix.utils.IpsAnswerMan(this.ipsProxy);
+
+     /**
+     * The SubmitManager
+     * @type {pearson.brix.utils.SubmitManager}
+     */
+    this.submitManager = new pearson.brix.utils.SubmitManager(eventManager, this.answerMan);
+
     var bricLayerConfig = null;
 
     /**
@@ -111,7 +123,7 @@ pearson.brix.Ipc = function (config, eventManager)
      * @todo - Check if it changes to singleton
      * @type {!pearson.brix.BricLayer}
      */
-    this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager);
+    this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager, this.submitManager);
 };
 
 /**
@@ -320,8 +332,8 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
                         else
                         {
                             // in the absence of error, result is containerConfig
-                            that.logger_.fine("Building brix...");
-                            that.bricLayer.build(result.data.containerConfig);
+                            that.logger_.fine("Building brix from : " + JSON.stringify(result.data.activityConfig));
+                            that.bricLayer.build(result.data.activityConfig);
                             that.logger_.fine("Building brix completed.");
                         }
                     }); // Does the AJAX call to IPS

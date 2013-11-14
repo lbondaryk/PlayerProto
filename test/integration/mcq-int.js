@@ -6,7 +6,8 @@
  * If you are getting error in the Browser console saying: 
  * "XMLHttpRequest cannot load http://localhost:8088/sequencenodes/. 
  * Origin null is not allowed by Access-Control-Allow-Origin"
- * 
+ *
+ * Any issue with the server, try refreshing the Redis cache
  *
  * @author Young-Suk Ahn Park 
  */
@@ -62,7 +63,7 @@
                 };
                 var answerMan = new pearson.brix.utils.IpsAnswerMan(ipsProxy);
                 var submitManager = new pearson.brix.utils.SubmitManager(eventManager, answerMan);
-                answerMan.scoreAnswer(seqNodeKey, {submission:"option000" }, scoreResponseHandler);
+                answerMan.scoreAnswer(seqNodeKey, testSubmissionMessage.body.studentSubmission, scoreResponseHandler);
 
             });
         });

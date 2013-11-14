@@ -27,3 +27,15 @@ java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m PUT \
 # Not working...
 java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m DELETE \
 	-u http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.neff.1b
+
+##########
+# MultipleChoice Question
+java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m POST \
+	-h "Content-Type: application/vnd.pearson.paf.v1.envelope+json;body=\"application/vnd.pearson.sanvan.v1.activity\"\"" \
+	-d sanvan_mcq_item_1.activity.json \
+	-u http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities -c
+
+java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m POST \
+	-h "Content-Type: application/vnd.pearson.paf.v1.envelope+json;body=\"application/vnd.pearson.paf.v1.assignment+json\"\"" \
+	-d sanvan_mcq.assign.json \
+	-u http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities -c

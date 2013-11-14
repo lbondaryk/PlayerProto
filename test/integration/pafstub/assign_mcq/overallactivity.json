@@ -1,0 +1,44 @@
+{
+    "guid":"Course::557f5d39-24ea-48ef-8d14-04d619750527::test1",
+    "nodes":[
+        
+    ],
+    "user":null,
+    "learningContext":null,
+    "nodeCollection":"/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1/nodes",
+    "overallActivity":{
+        "guid":"557f5d39-24ea-48ef-8d14-04d6ab4592d2",
+        "@context":"http://purl.org/pearson/paf/v1/ctx/core/StructuredAssignment",
+        "assignmentContents":{
+            "binding":[
+                {
+                    "activityFormat":"application/vnd.pearson.qti.v2p1.asi+xml",
+                    "activityTitle":"Neff Geography",
+                    "bindingIndex":0,
+                    "boundActivity":"http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_mcq",
+                    "credit":null,
+                    "guid":"f0212e44-39a4-4b22-977b-2629fd4199d9",
+                    "normalMaximum":null,
+                    "extraCreditMaximum":null,
+                    "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/05c6465a-a8fa-4182-8f0b-e63304037d2f/bindings/0"
+                }
+            ],
+            "guid":"05c6465a-a8fa-4182-8f0b-e63304037d2f",
+            "normalMaximum":null,
+            "extraCreditMaximum":null,
+            "@contentType":"application/vnd.pearson.paf.v1.container+json",
+            "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/05c6465a-a8fa-4182-8f0b-e63304037d2f",
+            "@context":"http://purl.org/pearson/paf/v1/ctx/core/ActivityContainer",
+            "@type":"ActivityContainer"
+        },
+        "title":"Chapter 10: Social Psychology",
+        "@contentType":"application/vnd.pearson.paf.v1.assignment+json",
+        "extraCreditMaximum":null,
+        "@type":"StructuredAssignment",
+        "@id":"http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/557f5d39-24ea-48ef-8d14-04d6ab4592d2",
+        "normalMaximum":null
+    },
+    "@context":"http://purl.org/pearson/paf/v1/ctx/core/RichActivitySequence",
+    "@id":"/paf-hub/resources/sequences/Course::557f5d39-24ea-48ef-8d14-04d6ab4592d2::test1",
+    "@type":"ActivitySequence"
+}
