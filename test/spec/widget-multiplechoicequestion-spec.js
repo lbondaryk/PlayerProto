@@ -161,14 +161,18 @@
 							{ name: 'DIV', class: 'brixMultipleChoiceQuestion', children:
 								[ { name: 'FIELDSET', children:
 									[ { name: 'LEGEND', class: 'question' },
-										{ name: 'DIV', class: 'choices', children:
-											[ { name: 'DIV', class: 'brixRadioGroup' } ]
-										},
+									  { name: 'DIV', class: 'choices', children:
+										  [ { name: 'DIV', class: 'brixRadioGroup' } ] },
 									] },
+								  { name: 'DIV', children:
+                                    [ { name: 'DIV', class: 'submit', children:
+                                          [ { name: 'DIV', class: 'brixButton' } ] },
+                                      { name: 'SPAN', class: 'attempts', children:
+                                          [ { name: 'SPAN', class: 'count' },
+                                            { name: 'SPAN', class: 'descr' },
+                                          ] },
+                                    ] },
 								  { name: 'DIV', class: 'feedback' },
-								  { name: 'DIV', class: 'submit', children:
-									  [ { name: 'DIV', class: 'brixButton' } ]
-								  },
 								]
 							};
 
@@ -221,7 +225,7 @@
 					});
 				});
 
-				describe('.selectedItem()', function () {
+				describe('.selectedChoice()', function () {
 					before(function () {
 						cntrNode && d3.select(cntrNode).remove();
 						cntrNode = helper.createNewDiv();
@@ -229,21 +233,21 @@
 					});
 
 					it('should return null when no item is selected', function () {
-						expect(myMultipleChoiceQuestion.selectedItem()).to.be.null;
+						expect(myMultipleChoiceQuestion.selectedChoice()).to.be.null;
 					});
 
 					it('should return the selected choice, even after the choice has been changed', function () {
 						// 1st selection
 						myMultipleChoiceQuestion.selectItemAtIndex(1);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[1]);
+						expect(myMultipleChoiceQuestion.selectedChoice()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[1]);
 
 						// 2nd selection is after the current selection
 						myMultipleChoiceQuestion.selectItemAtIndex(3);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[3]);
+						expect(myMultipleChoiceQuestion.selectedChoice()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[3]);
 
 						// 3rd selection is before the current selection
 						myMultipleChoiceQuestion.selectItemAtIndex(0);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[0]);
+						expect(myMultipleChoiceQuestion.selectedChoice()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[0]);
 					});
 				});
 			});	
@@ -351,10 +355,15 @@
 											[ { name: 'SPAN', class: 'widgetSelectGroup' } ]
 										},
 									] },
+								  { name: 'DIV', children:
+                                    [ { name: 'DIV', class: 'submit', children:
+                                          [ { name: 'DIV', class: 'brixButton' } ] },
+                                      { name: 'SPAN', class: 'attempts', children:
+                                          [ { name: 'SPAN', class: 'count' },
+                                            { name: 'SPAN', class: 'descr' },
+                                          ] },
+                                    ] },
 								  { name: 'DIV', class: 'feedback' },
-								  { name: 'DIV', class: 'submit', children:
-									  [ { name: 'DIV', class: 'brixButton' } ]
-								  },
 								]
 							};
 
@@ -403,7 +412,7 @@
 				});
 
 				// The SelectGroup bric doesn't support this method yet.
-				describe.skip('.selectedItem()', function () {
+				describe.skip('.selectedChoice()', function () {
 					before(function () {
 						cntrNode && d3.select(cntrNode).remove();
 						cntrNode = helper.createNewDiv();
@@ -411,21 +420,21 @@
 					});
 
 					it('should return null when no item is selected', function () {
-						expect(myMultipleChoiceQuestion.selectedItem()).to.be.null;
+						expect(myMultipleChoiceQuestion.selectedChoice()).to.be.null;
 					});
 
 					it('should return the selected choice, even after the choice has been changed', function () {
 						// 1st selection
 						myMultipleChoiceQuestion.selectItemAtIndex(1);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[1]);
+						expect(myMultipleChoiceQuestion.selectedChoice()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[1]);
 
 						// 2nd selection is after the current selection
 						myMultipleChoiceQuestion.selectItemAtIndex(3);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[3]);
+						expect(myMultipleChoiceQuestion.selectedChoice()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[3]);
 
 						// 3rd selection is before the current selection
 						myMultipleChoiceQuestion.selectItemAtIndex(0);
-						expect(myMultipleChoiceQuestion.selectedItem()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[0]);
+						expect(myMultipleChoiceQuestion.selectedChoice()).is.deep.equal(myMultipleChoiceQuestion.presenterBric.choices[0]);
 					});
 				});
 			});	
