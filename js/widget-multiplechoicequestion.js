@@ -74,22 +74,6 @@ goog.require('pearson.brix.HtmlBric');
     };
 });
 
-/**
- * Answers are presented to users by certain brix that allow the user to
- * select one (or more of them).
- *
- * @typedef {Object} pearson.brix.Answer
- * @property {string}   content     -The content of the answer, which presents the
- *                                   meaning of the answer.
- * @property {string}   answerKey   -This is the unique ID that will be returned
- *                                   to the scoring engine to identify that the
- *                                   user has chosen this answer.
- *
- * @todo: the content currently must be text (a string) however, we are likely
- * to want to make the content be any bric.
- */
-pearson.brix.Answer;
-
 
 /* **************************************************************************
  * MultipleChoiceQuestion                                              */ /**
@@ -109,7 +93,7 @@ pearson.brix.Answer;
  *                                      -Scoring engine Id of this question
  * @param {htmlString}  config.question -The question being posed to the user which should
  *                                       be answered by choosing one of the presented choices.
- * @param {!Array.<!pearson.brix.Answer>}
+ * @param {!Array.<!pearson.brix.KeyedAnswer>}
  *                      config.choices  -The list of choices (answers) to be presented
  *                                       by the MultipleChoiceQuestion.
  * @param {string=}     config.order    -The order in which the choices should be presented.
@@ -381,7 +365,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
         {
             question: this,
             questionId: this.questionId,
-            answerKey: this.presenterBric.selectedItem().answerKey,
+            answerKey: this.presenterBric.selectedChoice().answerKey,
             responseCallback: goog.bind(this.handleSubmitResponse_, this)
         };
 
@@ -415,10 +399,10 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function (
  * MultipleChoiceQuestion.handleSubmitResponse_                        */ /**
  *
  * Handle the response to submitting an answer.
+ * @private
  *
  * @param {Object}  responseDetails -An object containing details about how
  *                                   the submitted answer was scored.
- * @private
  *
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (responseDetails)
@@ -437,13 +421,23 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     this.updateAttemptsMade_(responseDetails.attemptsMade);
 
     // For now just use the helper function to write the response
-    responseDetails.submission = this.presenterBric.selectedItem().content;
+    var selectedChoice = this.presenterBric.selectedChoice();
+    responseDetails.submission = selectedChoice.content;
     pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 
+    // if they answered correctly we will want the answerKey later
+    var correctAnswerKey = null;
+    if (responseDetails.score === 1)
+    {
+        correctAnswerKey = selectedChoice.answerKey;
+    }
+
+    // if the response contains the correct answer we should display its feedback
     if ('correctAnswer' in responseDetails)
     {
         var correctAnswer = responseDetails['correctAnswer'];
-        var correctChoiceIndex = this.presenterBric.itemKeyToIndex(correctAnswer['key']);
+        correctAnswerKey = correctAnswer['key'];
+        var correctChoiceIndex = this.presenterBric.itemKeyToIndex(correctAnswerKey);
         var correctChoice = this.presenterBric.choices[correctChoiceIndex];
         correctAnswer.submission = correctChoice(correctChoiceIndex).content;
         pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer);
@@ -454,6 +448,12 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
         this.maxAttempts_ !== null && this.attemptsMade_ < this.maxAttempts_)
     {
         this.submitButton.setEnabled(true);
+    }
+
+    // If we know the correct answer, tell the presenter bric to flag it
+    if (correctAnswerKey !== null)
+    {
+        this.presenterBric.flagChoice(correctAnswerKey);
     }
 };
 
@@ -550,15 +550,18 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 /* **************************************************************************
  * MultipleChoiceQuestion.drawAttempts_                                */ /**
  *
- * [Description of drawAttempts_]
+ * Draw the attempts count and description which varies based on whether
+ * the last submission was correct and how many attempts are left.
+ * @private
  *
- * @param {Object}  cntr        -[Description of cntr]
+ * @param {!d3.selection}   cntr   -The container html element to append
+ *                                  the attempts count and description spans
+ *                                  to.
  *
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.drawAttempts_ = function (cntr)
 {
     var count = cntr.append('span').attr('class', 'count');
-    cntr.append('span').text(' ');
     var cntDescr = cntr.append('span').attr('class', 'descr');
 
     this.redrawAttempts_();
@@ -567,7 +570,9 @@ pearson.brix.MultipleChoiceQuestion.prototype.drawAttempts_ = function (cntr)
 /* **************************************************************************
  * MultipleChoiceQuestion.redrawAttempts_                              */ /**
  *
- * [Description of redrawAttempts_]
+ * Update the displayed attempts count and description text which varies based
+ * on whether the last submission was correct and how many attempts are left.
+ * @private
  *
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.redrawAttempts_ = function ()
@@ -575,15 +580,23 @@ pearson.brix.MultipleChoiceQuestion.prototype.redrawAttempts_ = function ()
     var count = this.lastdrawn.widgetGroup.select('span.attempts span.count');
     var cntDescr = this.lastdrawn.widgetGroup.select('span.attempts span.descr');
 
-    if (this.maxAttempts_ === null)
+    if (this.correctlyAnswered())
     {
-        count.text('');
-        cntDescr.text('');
+        count.text(this.attemptsMade_);
+        cntDescr.text('Attempts Used');
     }
     else
     {
-        count.text(this.maxAttempts_ - this.attemptsMade_);
-        cntDescr.text('remaining attempts');
+        if (this.maxAttempts_ === null)
+        {
+            count.text('');
+            cntDescr.text('');
+        }
+        else
+        {
+            count.text(this.maxAttempts_ - this.attemptsMade_);
+            cntDescr.text('Remaining Attempts');
+        }
     }
 };
 
@@ -592,6 +605,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.redrawAttempts_ = function ()
  *
  * Update the attemptsMade property w/ the new value, and update
  * where it presented to the user.
+ * @private
  *
  * @param {number}  attemptsMade    -The number of attempts that have been
  *                                   submitted so far.
@@ -612,16 +626,17 @@ pearson.brix.MultipleChoiceQuestion.prototype.updateAttemptsMade_ = function (at
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.selectedItem                                 */ /**
+ * MultipleChoiceQuestion.selectedChoice                               */ /**
  *
- * Return the selected choice from the choice widget or null if nothing has been
- * selected.
- * @export
+ * Return the choice element corresponding to the current selection in the
+ * presenter or null if nothing has been selected.
+ * Note that this does not return the index of the selected choice.
  *
- * @return {Object} the choice which is currently selected or null.
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the choice which is currently selected or null.
  *
  ****************************************************************************/
-pearson.brix.MultipleChoiceQuestion.prototype.selectedItem = function ()
+pearson.brix.MultipleChoiceQuestion.prototype.selectedChoice = function ()
 {
     return this.presenterBric.selectedItem();
 };
@@ -640,6 +655,6 @@ pearson.brix.MultipleChoiceQuestion.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.selectItemAtIndex = function (index)
 {
-    this.presenterBric.selectItemAtIndex(index);
+    this.presenterBric.selectChoice(index);
 };
 

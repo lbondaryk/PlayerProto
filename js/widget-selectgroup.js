@@ -96,6 +96,7 @@ pearson.brix.Answer;
  *
  * @constructor
  * @extends {pearson.brix.HtmlBric}
+ * @implements {pearson.brix.IChoicePresenter}
  * @export
  *
  * @param {Object}      config          -The settings to configure this SelectGroup
@@ -111,6 +112,10 @@ pearson.brix.Answer;
  *                      eventManager    -The event manager to use for publishing events
  *                                       and subscribing to them.
  *
+ * @note This class needs to be reviewed and refactored! I am making some cursory
+ *       changes to allow it to continue to work as a presenter only because there
+ *       are some demo pages which use it. Currently RadioGroup is the only
+ *       'real' IChoicePresenter. -mjl 11/13/2013
  ****************************************************************************/
 pearson.brix.SelectGroup = function (config, eventManager)
 {
@@ -352,3 +357,83 @@ pearson.brix.SelectGroup.prototype.itemKeyToIndex = function (key)
     return null;
 };
 
+/* **************************************************************************
+ * SelectGroup.selectedChoice                                          */ /**
+ *
+ * Return the choice element corresponding to the current selection in the
+ * presenter or null if nothing has been selected.
+ * Note that this does not return the index of the selected choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the choice which is currently selected or null.
+ *
+ ****************************************************************************/
+pearson.brix.SelectGroup.prototype.selectedChoice = function ()
+{
+    return this.selectedItem();
+};
+
+/* **************************************************************************
+ * SelectGroup.getChoiceByKey                                          */ /**
+ *
+ * Return the choice element corresponding to the given key or null if the
+ * key doesn't match any choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the given key, or null.
+ *
+ ****************************************************************************/
+pearson.brix.SelectGroup.prototype.getChoiceByKey = function (key)
+{
+    var index = this.itemKeyToIndex(key);
+
+    if (index === null)
+    {
+        return null;
+    }
+
+    return this.choices[index];
+};
+
+/* **************************************************************************
+ * SelectGroup.selectChoice                                            */ /**
+ *
+ * Select the choice in the presenter represented by the given key or index.
+ * If the choice is already selected, do nothing.
+ *
+ * @param {string|number}   choiceSelector  -Either the key (if a string) or
+ *                                           the index (if a number) of the
+ *                                           choice to be selected
+
+ ****************************************************************************/
+pearson.brix.SelectGroup.prototype.selectChoice = function (choiceSelector)
+{
+    var index;
+    if (typeof choiceSelector === 'string')
+    {
+        index = this.itemKeyToIndex(choiceSelector);
+        if (index === null)
+        {
+            return;
+        }
+    }
+    else
+    {
+        index = choiceSelector;
+    }
+
+    this.selectItemAtIndex(index);
+};
+
+/* **************************************************************************
+ * SelectGroup.flagChoice                                              */ /**
+ *
+ * Flag the choice with the given key in some way to make it stand out.
+ * This is currently used to flag the correct answer.
+ *
+ * @param {string}  key     -The key that identifies the choice to be flagged
+ *
+ ****************************************************************************/
+pearson.brix.SelectGroup.prototype.flagChoice = function (key)
+{
+};

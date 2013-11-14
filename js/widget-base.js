@@ -39,7 +39,7 @@ goog.exportSymbol('pearson', pearson);
 pearson.utils;
 
 /**
- * The pearson.brix namespace contains all the classes and support functions and
+ * The pearson.brix namespace contains all the classes and Msupport functions and
  * variables specific to the Brix widgets.
  * @namespace {!Object} pearson.brix
  */
@@ -515,6 +515,107 @@ pearson.brix.ILightable = function () {};
  *
  ****************************************************************************/
 pearson.brix.ILightable.prototype.lite = function (liteKey) {};
+
+
+/**
+ * KeyedAnswers are presented to users by certain brix that allow the user to
+ * select one (or more of them).
+ *
+ * @typedef {Object} pearson.brix.KeyedAnswer
+ * @property {htmlString}
+ *                      content     -The content of the answer, which presents the
+ *                                   meaning of the answer.
+ * @property {string}   answerKey   -This is the unique ID that will be returned
+ *                                   to the scoring engine to identify that the
+ *                                   user has chosen this answer.
+ *
+ * @todo: the content currently must be text (an htmlString) however, we are likely
+ * to want to also let the content be various bric types in the future.
+ */
+pearson.brix.KeyedAnswer;
+
+/* **************************************************************************
+ * IChoicePresenter                                                    */ /**
+ *
+ * An IChoicePresenter bric is one which may be used to present the choices
+ * of a MultipleChoiceQuestion to the user.
+ *
+ * To serve this purpose it must be an HTMLBric that provides this interface
+ * AND also supports certain config properties.
+ *
+ * The config properties it must support are:
+ *  - {!Array.<!pearson.brix.KeyedAnswer>} choices
+ *    The list of choices (answers) to be presented.
+ *
+ * @interface
+ ****************************************************************************/
+pearson.brix.IChoicePresenter = function () {};
+ 
+/* **************************************************************************
+ * IChoicePresenter.selectedEventId                                    */ /**
+ *
+ * The event id published when a choice is selected.
+ *
+ * The event details will contain the following properties:
+ *  - {string} selectKey -The answerKey associated with the selected answer.
+ *  - {number} index     -The index of the selected answer from the list of choices.
+ *
+ * @const
+ * @type {string}
+ *
+ * @note Having this property may also imply that the class support the
+ * static method getEventTopic and an event name of 'selected'.
+ ****************************************************************************/
+pearson.brix.IChoicePresenter.prototype.selectedEventId;
+
+/* **************************************************************************
+ * IChoicePresenter.selectedChoice                                     */ /**
+ *
+ * Return the choice element corresponding to the current selection in the
+ * presenter or null if nothing has been selected.
+ * Note that this does not return the index of the selected choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the choice which is currently selected or null.
+ *
+ ****************************************************************************/
+pearson.brix.IChoicePresenter.prototype.selectedChoice = function () {};
+
+/* **************************************************************************
+ * IChoicePresenter.getChoiceByKey                                     */ /**
+ *
+ * Return the choice element corresponding to the given key or null if the
+ * key doesn't match any choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the given key, or null.
+ *
+ ****************************************************************************/
+pearson.brix.IChoicePresenter.prototype.getChoiceByKey = function (key) {};
+
+/* **************************************************************************
+ * IChoicePresenter.selectChoice                                       */ /**
+ *
+ * Select the choice in the presenter represented by the given key or index.
+ * If the choice is already selected, do nothing.
+ *
+ * @param {string|number}   choiceSelector  -Either the key (if a string) or
+ *                                           the index (if a number) of the
+ *                                           choice to be selected
+
+ ****************************************************************************/
+pearson.brix.IChoicePresenter.prototype.selectChoice = function (choiceSelector) {};
+
+/* **************************************************************************
+ * IChoicePresenter.flagChoice                                         */ /**
+ *
+ * Flag the choice with the given key in some way to make it stand out.
+ * This is currently used to flag the correct answer.
+ *
+ * @param {string}  key     -The key that identifies the choice to be flagged
+ *
+ ****************************************************************************/
+pearson.brix.IChoicePresenter.prototype.flagChoice = function (key) {};
 
 
 /* **************************************************************************

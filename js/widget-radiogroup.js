@@ -26,23 +26,19 @@ goog.require('pearson.brix.HtmlBric');
     [
         {
             content: "Because as the population increases, the absolute number of births increases even though the growth rate stays constant.",
-            response: "Growth rate stays constant.",
             answerKey: "correct"
         },
         {
             content: "Because the growth rate increases as the population rises.",
-            response: "Does the growth rate change with population size?",
             answerKey: "wrong1"
         },
         {
             content: "Because the total fertility rate increases with population.",
-            response: "Does the fertility rate change with population size?",
             answerKey: "wrong2"
 
         },
         {
             content: "Because social behaviors change and people decide to have more children.",
-            response: "This might happen but is it something is necessarily occurs?",
             answerKey: "wrong3"
         }
     ];
@@ -64,26 +60,6 @@ goog.require('pearson.brix.HtmlBric');
     };
 });
 
-/**
- * KeyedAnswers are presented to users by certain brix that allow the user to
- * select one (or more of them).
- *
- * @typedef {Object} pearson.brix.KeyedAnswer
- * @property {htmlString}
- *                      content     -The content of the answer, which presents the
- *                                   meaning of the answer.
- * @property {string}   response    -The response is presented to the user when
- *                                   they choose this answer.
- * @property {string}   answerKey   -This is the unique ID that will be returned
- *                                   to the scoring engine to identify that the
- *                                   user has chosen this answer.
- *
- * @todo: the content currently must be text (a string) however, we are likely
- * to want to make the content be any widget.
- */
-pearson.brix.KeyedAnswer;
-
-
 /* **************************************************************************
  * RadioGroup                                                          */ /**
  *
@@ -91,6 +67,7 @@ pearson.brix.KeyedAnswer;
  *
  * @constructor
  * @extends {pearson.brix.HtmlBric}
+ * @implements {pearson.brix.IChoicePresenter}
  * @export
  *
  * @param {Object}      config          -The settings to configure this RadioGroup
@@ -152,6 +129,7 @@ pearson.brix.RadioGroup = function (config, eventManager)
      * The event details for this.selectedEventId events
      * @typedef {Object} SelectedEventDetails
      * @property {string} selectKey -The answerKey associated with the selected answer.
+     * @property {number} index     -The index of the selected answer from the list of choices.
      */
     var SelectedEventDetails;
 
@@ -178,12 +156,13 @@ pearson.brix.RadioGroup.autoIdPrefix = "rg_auto_";
 /* **************************************************************************
  * RadioGroup.draw                                                     */ /**
  *
- * Draw this RadioGroup in the given container.
+ * @inheritDoc
  * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this RadioGroup in the given container.
  *
- * @param {!d3.selection}
- *                  container   -The container html element to append the radio
- *                               group element tree to.
+ * @param {!d3.selection}	container	-The container html element to append
+ * 										 this HtmlBric element tree to.
  *
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.draw = function (container)
@@ -248,13 +227,10 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
 /* **************************************************************************
  * RadioGroup.selectedItem                                             */ /**
  *
- * Return the selected choice in the radio group and it's data,
+ * Return the selected choice in the radio group and its data,
  * or null if nothing has been selected. Used in multiple choice questions.
  * Note that this does not return the index of the checked item.
  * @export
- *
- * @todo: implement lite for this and keys so it can be used as a regular
- * ui selection widget for mutually exclusive selections. -lb
  *
  * @return {Object} the radio group data corresponding to the choice
  * which is currently selected or null.
@@ -265,6 +241,89 @@ pearson.brix.RadioGroup.prototype.selectedItem = function ()
     var selectedInputSelector = "input[name='" + this.id + "']:checked";
     var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
     return !selectedInput.empty() ? selectedInput.datum() : null;
+};
+
+/* **************************************************************************
+ * RadioGroup.selectedChoice                                           */ /**
+ *
+ * Return the choice element corresponding to the current selection in the
+ * presenter or null if nothing has been selected.
+ * Note that this does not return the index of the selected choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the choice which is currently selected or null.
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.selectedChoice = function ()
+{
+    return /**@type {pearson.brix.KeyedAnswer}*/ (this.selectedItem());
+};
+
+/* **************************************************************************
+ * RadioGroup.getChoiceByKey                                           */ /**
+ *
+ * Return the choice element corresponding to the given key or null if the
+ * key doesn't match any choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the given key, or null.
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.getChoiceByKey = function (key)
+{
+    var index = this.itemKeyToIndex(key);
+
+    if (index === null)
+    {
+        return null;
+    }
+
+    return this.choices[index];
+};
+
+/* **************************************************************************
+ * RadioGroup.selectChoice                                             */ /**
+ *
+ * Select the choice in the presenter represented by the given key or index.
+ * If the choice is already selected, do nothing.
+ *
+ * @param {string|number}   choiceSelector  -Either the key (if a string) or
+ *                                           the index (if a number) of the
+ *                                           choice to be selected
+
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.selectChoice = function (choiceSelector)
+{
+    var index;
+    if (typeof choiceSelector === 'string')
+    {
+        index = this.itemKeyToIndex(choiceSelector);
+        if (index === null)
+        {
+            return;
+        }
+    }
+    else
+    {
+        index = choiceSelector;
+    }
+
+    this.selectItemAtIndex(index);
+};
+
+/* **************************************************************************
+ * RadioGroup.flagChoice                                               */ /**
+ *
+ * Flag the choice with the given key in some way to make it stand out.
+ * This is currently used to flag the correct answer.
+ *
+ * @param {string}  key     -The key that identifies the choice to be flagged
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.flagChoice = function (key)
+{
+    // This needs to be implemented to replace the radio button element
+    // of the specified choice w/ a checked icon.
 };
 
 /* **************************************************************************
