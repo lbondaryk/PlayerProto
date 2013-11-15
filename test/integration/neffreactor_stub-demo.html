@@ -22,12 +22,6 @@
     <link href="css/content_styles.css" rel="stylesheet" media="screen">
 
 
-    <!--<link rel="stylesheet" href="../lib/mocha/mocha.css">
-    <script src="../lib/mocha/mocha.js"></script>
-    <script>mocha.setup('bdd')</script>
-    <script src="../lib/chai.js"></script>
-    <script>var expect = chai.expect</script>
-    -->
     <!-- function created by David Bau to allow seeding Math.random -->
     <!-- downloaded from github https://github.com/davidbau/seedrandom -->
     <script src="../lib/seedrandom.js"></script>
@@ -49,6 +43,10 @@
     -->
 
     <script src="../../js/eventmanager.js"></script>
+
+    <script src="../../js/domhelper.js"></script>
+    <script src="../../js/ipsproxy.js"></script>
+
     <script src="../../js/fakeactivitydb.js"></script>
     <script src="../../js/answerman.js"></script>
     <script src="../../js/submitmanager.js"></script>
@@ -78,10 +76,9 @@
     <script src="../../js/widget-slider.js"></script>
     <script src="../../js/mortar-hilite.js"></script>
     <script src="../../js/briclayer.js"></script>
-
-    <script src="../../js/domhelper.js"></script>
-    <script src="../../js/ipsproxy.js"></script>
     <script src="../../js/ipc.js"></script>
+    
+    <script src="demo-boilerplate.js"></script>
 
     <script>
     var debugConsole = new goog.debug.Console();
@@ -95,13 +92,14 @@
 </head>
 
 <body>
-    <h1>NeffReactor Integration test (complete)</h1>
+    <h1>NeffReactor Integration test (AMS PAF Stub)</h1>
     <div style="border: orange 1px solid; padding: 10px">
-    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Server (Node.js) up</p>
+    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Server (Node.js) up.</p>
+    <p>Reminder: Make sure that laspaf.properties's paf.stub.enabled=true</p>
     <pre>
 [Tomcat/bin]$ ./catalina.sh run
 [BrixServer]$ make testsvr</pre>
-    <b>The Reactor's image label sould say "... from PAF"</b>
+    <b>The Reactor's image label should say "... from AMS"</b>
     </div>
 
     <!-- TEST CONTENT {{ -->
@@ -115,17 +113,16 @@
                     </h2>
                     <div class="lc_ec_leading">
                         <p>Nuclear reactors use heat from fission reactions to turn water into steam, which spins turbines connected to generators that produce electricity. The figure shows a common design known as a pressurized water reactor.</p>
-                        <!-- The div is is used by the Bric factory to map the containerId -->
                         <div id="imgReactor" habitat-id="some_habitat_id1" class="brix" 
-                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assignment.2"
-                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.neff.2"
+                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/assign_neff"
+                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_reactor"
                             data-containerid="imgReactor"
                             data-type="brix" >
                         </div>
                     </div>
                     <div id="steps" habitat-id="some_habitat_id2" class="brix" 
-                        data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assignment.2" 
-                        data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.neff.2"
+                        data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/assign_neff" 
+                        data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_reactor"
                         data-containerid="steps"
                         data-type="brix"></div>
             </div>
@@ -139,12 +136,7 @@
     <script src="div-integration.js"></script>
     -->
     <script>
-    // NOTE:
-    // There is a issue with AMC's initialization message's header
-    // The server does not recognize the presence of Hub-session nor Content-Type,
-    // thus the JSON schema validation fails and the Nock's cannot match the headers
-    // As temporary solution The Schema was chaned by removing the header requirement, 
-    // and Nocks headerMatch was removed as well.
+    
     function brixInitDiv()
     {
         var eventManager = new pearson.utils.EventManager();
@@ -156,7 +148,7 @@
         var PAF = window.Ecourses.Paf;
 
         // Note: Configure the IPS server base url accordingly.
-        //       In this configuration is runninng on local machine port 8088
+        //       In this configuration is running on local machine port 8088
         //       The server configuration is in /BrixServer/config/ 
         var ipcConfig = {ipsBaseUrl:"http://localhost:8088"};
         var ipc = new pearson.brix.Ipc(ipcConfig, eventManager);

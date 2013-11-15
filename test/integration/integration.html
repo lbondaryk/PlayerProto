@@ -12,6 +12,7 @@
 <body>
     <p>Integration will require to have the Brix (test) Server up</p>
     <pre>[BrixServer]$ make testsvr</pre>
+    <pre>[CorrectnessEngine]$ node ceapp.js</pre>
 
     <div id="mocha"></div>
     <script src="../lib/mocha/mocha.js"></script>
@@ -28,16 +29,28 @@
     <script src="../../js/d3.v3.min.js"></script>
     <script src="../../../closure/closure-library/closure/goog/base.js"></script>
     <script src="../../../closure/closure-library/closure/goog/deps.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/debug/logger.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/debug/console.js"></script>
+    <script src="../../js/jquery-latest.js"></script>
 
     <script src="../../js/eventmanager.js"></script>
     <script src="../../js/widget-base.js"></script>
     <script src="../../js/ipsproxy.js"></script>
+    <script src="../../js/answerman.js"></script>
+    <script src="../../js/submitmanager.js"></script>
 
     <script src="../helper.js"></script>
     <!-- include spec files here... -->
     <script src="../testmessages-ips.js"></script>
     <script src="ipsproxy-int.js"></script>
+    <script src="mcq-int.js"></script>
     
+    <script>
+    var debugConsole = new goog.debug.Console();
+    debugConsole.setCapturing(true);
+    goog.debug.Logger.getLogger('pearson').setLevel(goog.debug.Logger.Level.FINER);
+    </script>
+
     <script>
     mocha.run()
     </script>

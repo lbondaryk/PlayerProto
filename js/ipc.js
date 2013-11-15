@@ -40,8 +40,9 @@ goog.provide('pearson.brix.Ipc');
 
 goog.require('goog.debug.Logger');
 
-goog.require("pearson.brix.utils.IpsProxy");
-goog.require("pearson.brix.BricLayer");
+goog.require('pearson.brix.utils.IpsProxy');
+goog.require('pearson.brix.utils.IpsAnswerMan');
+goog.require('pearson.brix.BricLayer');
 
 
 /* **************************************************************************
@@ -64,16 +65,6 @@ goog.require("pearson.brix.BricLayer");
  ****************************************************************************/
 pearson.brix.Ipc = function (config, eventManager)
 {
-    if (!config.ipsBaseUrl)
-    {
-        throw new Error('IPS server URL not provided.');
-    }
-
-    /**
-     * The event manager to use to publish (and subscribe to) events
-     * @type {!pearson.utils.IEventManager}
-     */
-    this.eventManager = eventManager;
 
     /**
      * A logger to help debugging
@@ -81,6 +72,19 @@ pearson.brix.Ipc = function (config, eventManager)
      * @private
      */
     this.logger_ = goog.debug.Logger.getLogger('pearson.brix.Ipc');
+
+    if (!config.ipsBaseUrl)
+    {
+        var errorMessage = 'IPS server base URL not provided.';
+        this.logger_.severe(errorMessage);
+        throw new Error(errorMessage);
+    }
+
+    /**
+     * The event manager to use to publish (and subscribe to) events
+     * @type {!pearson.utils.IEventManager}
+     */
+    this.eventManager = eventManager;
 
     /**
      * The IpsProxy used by this Ipc to communicate w/ the IPS
@@ -104,6 +108,22 @@ pearson.brix.Ipc = function (config, eventManager)
      */
     this.containerId = null;
 
+    /**
+     * The AnserMan, in this case the IPS answerman.
+     * @type {pearson.brix.utils.IAnswerMan}
+     */
+    this.answerMan = new pearson.brix.utils.IpsAnswerMan(this.ipsProxy);
+
+     /**
+     * The SubmitManager
+     * @type {pearson.brix.utils.SubmitManager}
+     */
+    this.submitManager = new pearson.brix.utils.SubmitManager(eventManager, this.answerMan);
+
+    /** 
+     * BricLayer configuration. For the moment is null, left for future.
+     * @type {Object}
+     */
     var bricLayerConfig = null;
 
     /**
@@ -111,7 +131,7 @@ pearson.brix.Ipc = function (config, eventManager)
      * @todo - Check if it changes to singleton
      * @type {!pearson.brix.BricLayer}
      */
-    this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager);
+    this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager, this.submitManager);
 };
 
 /**
@@ -287,9 +307,9 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
             that.logger_.config("Subscribing to: " + topic);
             that.eventManager.subscribe(topic, function(initMessage) {
                 that.logger_.config("Initialization message received for topic: " + topic);
-                if (initMessage.status != 'success')
+                if (initMessage.status != 'success') // I.e., status == 'fail'
                 {
-                    that.logger_.warning("initMessage returned error status. " + JSON.stringify(initMessage.sourcemessage));
+                    that.logger_.warning("initMessage returned error status. " + JSON.stringify(initMessage));
                 }
                 else
                 {
@@ -320,8 +340,8 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
                         else
                         {
                             // in the absence of error, result is containerConfig
-                            that.logger_.fine("Building brix...");
-                            that.bricLayer.build(result.data.containerConfig);
+                            that.logger_.fine("Building brix from : " + JSON.stringify(result.data['activityConfig']));
+                            that.bricLayer.build(result.data['activityConfig']);
                             that.logger_.fine("Building brix completed.");
                         }
                     }); // Does the AJAX call to IPS

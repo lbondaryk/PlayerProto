@@ -1,12 +1,13 @@
 /*****************************************************************************
- * Integration test for IpsProxy making AJAX calls to the server.
+ * Integration test for Submissions.
  *
  * This test is integration test and is meant to run while IPS server is up.
  *
- * If you are getting error in the Browser console saying: 
+ * If you are getting error in the browser console saying: 
  * "XMLHttpRequest cannot load http://localhost:8088/sequencenodes/. 
  * Origin null is not allowed by Access-Control-Allow-Origin"
- * 
+ * Double check the server was configured to access CORS (Cross Origin Resource Sharing).
+ * The IPS server was programmatic configured to allow CORS, but an HTTP proxy may override it.
  *
  * @author Young-Suk Ahn Park 
  */
@@ -22,7 +23,7 @@
 
         var ipsProxy = null;
         before(function (done) {
-            ipsProxy = new pearson.brix.IpsProxy({serverBaseUrl:"http://localhost:8088"});
+            ipsProxy = new pearson.brix.utils.IpsProxy({serverBaseUrl:"http://localhost:8088"});
 
             ipsProxy.retrieveSequenceNode(testInitializationEnvelope, function(error, result){
                 try {
@@ -134,11 +135,13 @@
         it('should post submission data successfully', function (done) {
 
             var message = helper.cloneObject(testSubmissionMessage);
+            // @todo - temp hack as the server expects 'submission' instead of 'key'
+            message.body.studentSubmission.submission = message.body.studentSubmission.key;
             message.sequenceNodeKey = seqNodeKey;
             ipsProxy.postSubmission(message, function(error, result){
 
-console.log("*EX.ERROR*:"+JSON.stringify(error));
-console.log("*EX.RESULT*:"+JSON.stringify(result));
+console.log("*EX.ERROR SUBM:"+JSON.stringify(error));
+console.log("*EX.RESULT SUBM:"+JSON.stringify(result));
                 try {
                     expect(error).to.equal(null);
                     expect(result).to.be.an('object');
