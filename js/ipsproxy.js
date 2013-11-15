@@ -36,11 +36,6 @@ goog.require("goog.net.XhrIo");
  ****************************************************************************/
 pearson.brix.utils.IpsProxy = function (config)
 {
-    /**
-     * The URL to the IPS server.
-     * @type {string|undefined}
-     */
-    this.serverBaseUrl = config.serverBaseUrl;
 
     /**
      * A logger to help debugging
@@ -48,6 +43,12 @@ pearson.brix.utils.IpsProxy = function (config)
      * @private
      */
     this.logger_ = goog.debug.Logger.getLogger('pearson.brix.utils.IpsProxy');
+
+    /**
+     * The URL to the IPS server.
+     * @type {string|undefined}
+     */
+    this.serverBaseUrl = config.serverBaseUrl;
 
 };
 
