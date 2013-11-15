@@ -20,6 +20,7 @@
 goog.provide('pearson.brix.utils.LocalAnswerMan');
 
 goog.require('pearson.brix.utils.IAnswerMan');
+goog.require('goog.object');
 
 /* **************************************************************************
  * LocalAnswerMan                                                      */ /**
@@ -34,11 +35,36 @@ goog.require('pearson.brix.utils.IAnswerMan');
 pearson.brix.utils.LocalAnswerMan = function ()
 {
     /**
+     * The maximum attempts allowed. If null unlimited attempts are
+     * allowed. This value is used to return the correct answer in the
+     * score response when the last attempt allowed is incorrect.
+     * @type {?number}
+     */
+    this.maxAttempts_ = null;
+
+    /**
      * Database of registered answer keys, indexed by sequenceNodeKey
      * @private
      * @type {Object.<string, !pearson.brix.utils.AnswerKey>}
      */
     this.answerKeyDB_ = {};
+};
+
+/* **************************************************************************
+ * LocalAnswerMan.setMaxAttempts                                       */ /**
+ *
+ * Set the maximum number of attempts this LocalAnswerMan will use where
+ * relevant.
+ *
+ * @param {number}	maxAttempts     -The number of maximum scoring attempts
+ *                                   allowed. This really only affects whether
+ *                                   the correct answer will be returned along
+ *                                   w/ the incorrect answer feedback.
+ *
+ ****************************************************************************/
+pearson.brix.utils.LocalAnswerMan.prototype.setMaxAttempts = function (maxAttempts)
+{
+   this.maxAttempts_ = maxAttempts;
 };
 
 /* **************************************************************************
@@ -60,7 +86,11 @@ pearson.brix.utils.LocalAnswerMan = function ()
  ****************************************************************************/
 pearson.brix.utils.LocalAnswerMan.prototype.registerAnswerKey = function (seqNodeKey, answerKey)
 {
-    this.answerKeyDB_[seqNodeKey] = answerKey;
+    // Create a copy of the answer key object that can be modified
+    var answerKeyPlus = {};
+    goog.object.extend(answerKeyPlus, answerKey);
+    answerKeyPlus['attemptsMade'] = 0;
+    this.answerKeyDB_[seqNodeKey] = answerKeyPlus;
 };
 
 /* **************************************************************************
@@ -97,7 +127,8 @@ pearson.brix.utils.LocalAnswerMan.prototype.scoreAnswer = function (seqNodeKey, 
     var evaluator = pearson.brix.utils.LocalAnswerMan.evaluateAnswer[assessmentType];
 
     var response = evaluator(studentAnswer, answerKey['answers']);
-    response['attemptsMade'] = 2;
+    ++answerKey.attemptsMade;
+    response['attemptsMade'] = answerKey.attemptsMade;
     callback(response);
 };
 
