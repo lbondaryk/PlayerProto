@@ -16,6 +16,8 @@
  * **************************************************************************/
 
 goog.provide('pearson.brix.utils.LocalAnswerMan');
+goog.provide('pearson.brix.utils.IpsAnswerMan');
+goog.provide('pearson.brix.utils.IAnswerMan');
 
 goog.require('goog.debug.Logger');
 goog.require('pearson.brix.utils.IpsProxy');
@@ -109,13 +111,19 @@ pearson.brix.utils.IpsAnswerMan = function (ipsProxy)
  ****************************************************************************/
 pearson.brix.utils.IpsAnswerMan.prototype.scoreAnswer = function (seqNodeKey, studentAnswer, callback)
 {
+    // Currently the IPS correctness engine expects the key property to be named 'submission'
+    var ipsStudentAnswer = {};
+    goog.object.extend(ipsStudentAnswer, studentAnswer);
+    ipsStudentAnswer['submission'] = ipsStudentAnswer['key'];
+    delete ipsStudentAnswer['key'];
+
     var timestamp = (new Date()).toISOString();
     var param =
         {
             'sequenceNodeKey': seqNodeKey,
             'timestamp': timestamp,
             'type': 'submission',
-            'body': { 'studentSubmission': studentAnswer }
+            'body': { 'studentSubmission': ipsStudentAnswer }
         };
 
     var ipsRespHandler = goog.bind(this.ipsSubmissionResponseHandler, this, seqNodeKey, callback);
@@ -143,12 +151,22 @@ pearson.brix.utils.IpsAnswerMan.prototype.ipsSubmissionResponseHandler = functio
         this.logger_.warning('IpsProxy.postSubmission returned error: ' + JSON.stringify(error));
         // @todo - (ysa) Is this response enough, even for system errors such as no network? 
         // Also how do we handle last attempt and beyond?
-        callback({'score': null, 'response': 'no response' });
+        callback({ 'score': null, 'response': 'no response' });
     }
     else
     {
+        // change the property names from the Ips response to those currently expected by
+        // the brix.
+        // @todo change the brix (and LocalAnswerMan) to expect the structure returned from the Ips -mjl
         // @todo - Handle result.data.attemptsMade, as well as the answer returned upon last attempt
-        var scoreResponse = {'score': result.data.correctness, 'response': result.data.feedback };
+        var scoreResponse =
+            {
+                'score': result.data['correctness'],
+                'response': result.data['feedback'],
+                'attemptsMade': result.data['attemptsMade'],
+                'correctAnswer': result.data['correctAnswer']
+            };
+
         this.logger_.fine('IpsProxy.postSubmission returned: ' + JSON.stringify(scoreResponse));
         callback(scoreResponse);
     }

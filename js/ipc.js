@@ -40,8 +40,9 @@ goog.provide('pearson.brix.Ipc');
 
 goog.require('goog.debug.Logger');
 
-goog.require("pearson.brix.utils.IpsProxy");
-goog.require("pearson.brix.BricLayer");
+goog.require('pearson.brix.utils.IpsProxy');
+goog.require('pearson.brix.utils.IpsAnswerMan');
+goog.require('pearson.brix.BricLayer');
 
 
 /* **************************************************************************
@@ -339,8 +340,8 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
                         else
                         {
                             // in the absence of error, result is containerConfig
-                            that.logger_.fine("Building brix from : " + JSON.stringify(result.data.activityConfig));
-                            that.bricLayer.build(result.data.activityConfig);
+                            that.logger_.fine("Building brix from : " + JSON.stringify(result.data['activityConfig']));
+                            that.bricLayer.build(result.data['activityConfig']);
                             that.logger_.fine("Building brix completed.");
                         }
                     }); // Does the AJAX call to IPS

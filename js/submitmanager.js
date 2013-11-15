@@ -25,7 +25,7 @@ goog.require('pearson.brix.utils.LocalAnswerMan');
  *
  * @constructor
  *
- * @param {!pearson.utils.EventManager}
+ * @param {!pearson.utils.IEventManager}
  *                      eventManager    -The event manager to use for publishing events
  *                                       and subscribing to them.
  * @param {!pearson.brix.IAnswerMan=}
@@ -58,7 +58,7 @@ pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
     
     /**
      * The event manager to use to publish (and subscribe to) events
-     * @type {!pearson.utils.EventManager}
+     * @type {!pearson.utils.IEventManager}
      */
     this.eventManager = eventManager;
 
@@ -140,9 +140,8 @@ pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventD
 
     this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] = pendingDetails;
 
-    // @todo [ysa] The second parameter, instead of 'submission', the original 'key' is more intuitive. 
     this.answerMan_.scoreAnswer(pendingDetails.sequenceNodeKey,
-                                {submission: pendingDetails.answer},
+                                {key: pendingDetails.answer},
                                 goog.bind(this.handleScoringResponse_, this, pendingDetails.sequenceNodeKey));
 };
 
