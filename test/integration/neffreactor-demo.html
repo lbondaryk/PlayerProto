@@ -22,12 +22,6 @@
     <link href="css/content_styles.css" rel="stylesheet" media="screen">
 
 
-    <!--<link rel="stylesheet" href="../lib/mocha/mocha.css">
-    <script src="../lib/mocha/mocha.js"></script>
-    <script>mocha.setup('bdd')</script>
-    <script src="../lib/chai.js"></script>
-    <script>var expect = chai.expect</script>
-    -->
     <!-- function created by David Bau to allow seeding Math.random -->
     <!-- downloaded from github https://github.com/davidbau/seedrandom -->
     <script src="../lib/seedrandom.js"></script>
@@ -49,6 +43,10 @@
     -->
 
     <script src="../../js/eventmanager.js"></script>
+
+    <script src="../../js/domhelper.js"></script>
+    <script src="../../js/ipsproxy.js"></script>
+
     <script src="../../js/fakeactivitydb.js"></script>
     <script src="../../js/answerman.js"></script>
     <script src="../../js/submitmanager.js"></script>
@@ -78,9 +76,6 @@
     <script src="../../js/widget-slider.js"></script>
     <script src="../../js/mortar-hilite.js"></script>
     <script src="../../js/briclayer.js"></script>
-
-    <script src="../../js/domhelper.js"></script>
-    <script src="../../js/ipsproxy.js"></script>
     <script src="../../js/ipc.js"></script>
 
     <script>
@@ -139,12 +134,6 @@
     <script src="div-integration.js"></script>
     -->
     <script>
-    // NOTE:
-    // There is a issue with AMC's initialization message's header
-    // The server does not recognize the presence of Hub-session nor Content-Type,
-    // thus the JSON schema validation fails and the Nock's cannot match the headers
-    // As temporary solution The Schema was chaned by removing the header requirement, 
-    // and Nocks headerMatch was removed as well.
     function brixInitDiv()
     {
         var eventManager = new pearson.utils.EventManager();

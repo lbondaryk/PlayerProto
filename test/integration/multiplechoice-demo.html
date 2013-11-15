@@ -21,13 +21,6 @@
     <!-- content_styles.css contains styling for the narrative layout and responsive design -->
     <link href="css/content_styles.css" rel="stylesheet" media="screen">
 
-
-    <!--<link rel="stylesheet" href="../lib/mocha/mocha.css">
-    <script src="../lib/mocha/mocha.js"></script>
-    <script>mocha.setup('bdd')</script>
-    <script src="../lib/chai.js"></script>
-    <script>var expect = chai.expect</script>
-    -->
     <!-- function created by David Bau to allow seeding Math.random -->
     <!-- downloaded from github https://github.com/davidbau/seedrandom -->
     <script src="../lib/seedrandom.js"></script>
@@ -99,13 +92,14 @@
 </head>
 
 <body>
-    <h1>Submission (MultipleChoiceQuestion) Integration demo</h1>
+    <h1>Submission (MultipleChoiceQuestion) Integration demo (with PAF)</h1>
     <div style="border: orange 1px solid; padding: 10px">
-    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Server (Node.js) up</p>
-    <p>Remember to configure laspaf.properties to use the PAF Stub.</p>
+    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Servers (IPS & CorrectnessEngine) up</p>
+    <p>Remember to configure laspaf.properties to NOT use the PAF Stub.</p>
     <pre>
 [Tomcat/bin]$ ./catalina.sh run
-[BrixServer]$ make testsvr</pre>
+[BrixServer]$ make testsvr
+[CorrectnessEngine]$ node ceapp.js</pre>
     <b></b>
     </div>
 
@@ -119,14 +113,12 @@
                                             <span class="setTitle"></span>
                     </h2>
                     <div class="lc_ec_leading">
-                        <!-- When using AMS PAF Stub feature
-                        the data-assignmenturl's ending denotes the folder, and 
-                        the  data-activityurl's is the boundActivity within ghe overallactivity.json
-                        Remember to change
+                        <!-- When using PAF, make sure the ID matches with what
+                        was added to the server (DEV | CERT)
                          -->
                         <div id="target1" habitat-id="some_habitat_id1" class="brix" 
-                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/assign_mcq"
-                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_mcq"
+                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1a"
+                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1a"
                             data-containerid="target1"
                             data-type="brix" >
                         <p>Q1-test. Multiple Choice question, randomized</p></div>

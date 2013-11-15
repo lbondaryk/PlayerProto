@@ -3,7 +3,7 @@
   "@type" : "Envelope",
   "metadata" : {
     "title" : "MCP Demo 1",
-    "guid" : "test.sanvan.activity.mcq1",
+    "guid" : "test.sanvan.activity.mcq1a",
     "description" : "",
     "contentTypeTier1" : "Demonstration",
     "contentTypeTier2" : [ "DemonstrationImage" ],

@@ -140,6 +140,7 @@ pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventD
 
     this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] = pendingDetails;
 
+    // @todo [ysa] The second parameter, instead of 'submission', the original 'key' is more intuitive. 
     this.answerMan_.scoreAnswer(pendingDetails.sequenceNodeKey,
                                 {submission: pendingDetails.answer},
                                 goog.bind(this.handleScoringResponse_, this, pendingDetails.sequenceNodeKey));

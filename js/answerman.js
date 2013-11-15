@@ -9,6 +9,7 @@
  *
  * Created on       June 17, 2013
  * @author          Leslie Bondaryk
+ * @author          Young Suk Ahn
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -66,7 +67,7 @@ pearson.brix.utils.IAnswerMan.prototype.scoreAnswer = function (seqNodeKey, stud
  * @constructor
  * @implements {pearson.brix.utils.IAnswerMan}
  *
- * @param {!pearson.brix.utils.IpsProxy}
+ * @param {pearson.brix.utils.IpsProxy}
  *                          ipsProxy   -The IpsProxy that will be used to
  *                                      communicate w/ the IPS.
  *
@@ -87,7 +88,7 @@ pearson.brix.utils.IpsAnswerMan = function (ipsProxy)
     /**
      * The IpsProxy used to communicate w/ the IPS
      * @private
-     * @type {!pearson.brix.utils.IpsProxy}
+     * @type {pearson.brix.utils.IpsProxy}
      */
     this.ipsProxy_ = ipsProxy;
 };
@@ -146,7 +147,7 @@ pearson.brix.utils.IpsAnswerMan.prototype.ipsSubmissionResponseHandler = functio
     }
     else
     {
-        // @todo - What do we do with result.data.attemptsMade
+        // @todo - Handle result.data.attemptsMade, as well as the answer returned upon last attempt
         var scoreResponse = {'score': result.data.correctness, 'response': result.data.feedback };
         this.logger_.fine('IpsProxy.postSubmission returned: ' + JSON.stringify(scoreResponse));
         callback(scoreResponse);

@@ -13,7 +13,7 @@
             "binding":[
                 {
                     "activityFormat":"application/vnd.pearson.qti.v2p1.asi+xml",
-                    "activityTitle":"Neff Geography",
+                    "activityTitle":"Multiple Choice Question Demo",
                     "bindingIndex":0,
                     "boundActivity":"http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/activity_mcq",
                     "credit":null,

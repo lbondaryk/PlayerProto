@@ -4,7 +4,7 @@
    "@type" : "Envelope",
    "metadata" : {
      "title" : "Sanvan MCQ Demo 1",
-     "guid" : "test.sanvan.assignment.mcq1",
+     "guid" : "test.sanvan.assign.mcq1a",
      "description" : "Sanvan MultipleChoiceQuestion demo",
      "contentTypeTier1" : "Assessment",
      "contentTypeTier2" : [ "AssessmentItem" ],
@@ -23,11 +23,11 @@
        "binding" : [
            {
            "bindingIndex" : 1,
-           "boundActivity"  : "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1",
+           "boundActivity"  : "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1a",
            "activityFormat" : "application/vnd.pearson.sanvan.v1.activity",
-           "activityTitle" : "Neff Reactor Stepped Image",
+           "activityTitle" : "MultipleChoiceQuestion Sample 1",
            "credit" : "ForCredit",
-           "guid" : "test.sanvan.activity.mcq1"
+           "guid" : "test.sanvan.activity.mcq1a"
          }]
     }
   }
