@@ -794,5 +794,7 @@ pearson.brix.SVGContainer.prototype.append_one_ = function (svgWidget, location)
 pearson.brix.SVGContainer.prototype.remove = function (svgBric)
 {
 	svgBric.lastdrawn.container.remove();
+	svgBric.lastdrawn.container = null;
+	svgBric.lastdrawn.size = null;
 	
 };

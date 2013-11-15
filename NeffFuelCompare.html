@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Jason Neff" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Our Changing Planet" name="description" />
+	<title class="setTitle">Ch. 18 Energy Usage Comparisons</title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_minorMajor lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle">Ch. 18 Fuel Type Comparisons</span>
+					</h2>
+		 			 
+				<div class="lc_ec_leading">
+				<p>Select one or more countries to compare their energy usage. Highlight one country in the legend to see the data for just that country.</p>
+					<span id = "checkBoxes0">Countries: </span>
+				
+				<div id="earth"></div>
+				</div>
+				<div class="lc_ec_trailing">
+				 
+				<div id="graph1"></div>
+				
+				</div>
+			</div>
+		</section>
+	</div>
+	</div>
+	
+   <script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
+	<script src="js/d3.v3.min.js"></script>
+
+	<!--
+	<script src="js/brixlib-compiled.js"></script>
+-->
+
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
+	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+    <script src="js/mortar-base.js"></script>
+	<script src="js/widget-base.js"></script>
+	<script src="js/bricworks.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-hilite.js"></script>
+	<script src="js/briclayer.js"></script>
+
+    <script src="js/mortar-agestructure.js"></script>
+
+	<script>
+// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SubmitManager = pearson.brix.SubmitManager;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var RadioGroup = pearson.brix.RadioGroup;
+	var CheckGroup = pearson.brix.CheckGroup;
+	var SelectGroup = pearson.brix.SelectGroup;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+	var Sketch = pearson.brix.Sketch;
+	var Readout = pearson.brix.Readout;
+	var NumericInput = pearson.brix.NumericInput;
+	var Slider = pearson.brix.Slider;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var NumericQuestion = pearson.brix.NumericQuestion;
+
+	//the eventManager and submitManager are created for every page for Brix on that page
+	var eventManager = new EventManager();
+	var submitManager = new SubmitManager(eventManager);
+
+	//country selector
+	var countries = new CheckGroup ({
+		choices: [
+		{
+			content: "US", answerKey: '0'
+		},
+		{
+			content: "Germany", answerKey: '1'
+		},
+		{
+			content: "China", answerKey: '2'
+		},
+		{
+			content: "Japan",answerKey: '3'
+		},
+		{
+			content: "Malaysia", answerKey: '4'
+		},
+		{
+			content: "India",answerKey: '5'
+		},
+		
+		],
+		type: 'ordered',
+
+		}, eventManager);
+
+	countries.draw(d3.select('#checkBoxes0'));
+
+
+//data for each country and energy type
+//
+//
+var fuelSources = {
+	"source": ['Oil', 'Natural Gas', 'Coal', 'Nuclear Energy', 'Hydroelectric', 'Renewables'],
+	"US": [819.87189587887,	654.030201580966, 437.755692740848,	183.242604735581, 63.2050497736556, 50.7217530882212],
+	"Germany": [111.526, 67.7128116938951, 79.2012993216776, 22.5143684663075, 4.79703127121327, 25.9934380232609],
+	"China": [483.662640213053,	129.459654,	1873.31312,	22.0369280897858, 194.788885369053,	31.9011750476266],
+	"Japan": [218.194590348259,	105.063134135855, 124.377646411, 4.07091460379235, 18.3133457030365, 8.16332232429738],
+	"Malaysia": [29.8206660057211, 29.9974998107764, 14.3363, 0, 1.842729,	0.31759756923807],
+	"India": [171.596151999999,	49.102434, 298.253834859999, 7.49868986740278,	26.1698239580032, 10.8693908760238],
+	
+	"labels": {xLabel: 'Million tonnes oil equivalent', yLabel: 'Fuel Sources'}
+};
+
+/************************************************************************
+* makeGraphPoints			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} x,y		These are the arrays of x and y data.
+*************************************************************************/
+	function makeGraphPoints(x,y)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var dataArray = [];
+		x.forEach( function(o, i) {
+				dataArray.push({x: o, y: y[i]});
+			});
+		return dataArray;
+	}
+
+/************************************************************************
+* makeGraphData			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} dataSet	 These are the arrays of objects containing multiple
+*                         	 data series.
+* @param	{Array} groupKey The series to omit because it's the common axis
+*************************************************************************/
+	function makeGraphData(dataSet, groupKey)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var seriesArray = [];
+		var keyArray = d3.keys(dataSet).filter(function (o) {return (o != groupKey && o != "labels");});
+
+		keyArray.forEach( function(o, i) {
+				seriesArray.push(makeGraphPoints(dataSet[groupKey], dataSet[o]));
+			});
+
+		return seriesArray;
+	}
+
+/************************************************************************
+* makeChartData			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} dataSet	 These are the arrays of objects containing multiple
+*                         	 data series.
+* @param	{Array} groupKey The series to omit because it's the common axis
+*************************************************************************/
+	function makeChartData(dataSet, groupKey)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var seriesArray = [];
+		var legendArray = [];
+		var keyArray = d3.keys(dataSet).filter(function (o) {return (o != groupKey && o != "labels");});
+
+		keyArray.forEach( function(o, i) {
+				seriesArray.push(makeGraphPoints(dataSet[o], dataSet[groupKey]));
+				legendArray.push({content: o})
+			});
+
+		var chartLegendConfig = {
+			xPos: "right", yPos: "top",
+			type: 'box',
+			labels: legendArray
+		}
+		return [seriesArray, chartLegendConfig];
+	}
+
+var fuelData = makeChartData(fuelSources, "source");
+
+var svg1 = new SVGContainer({
+			node: d3.select("#graph1"),
+			maxWid: 577,
+			maxHt: 650
+		});
+		
+//exploded view graph
+var graph0 = new BarChart({
+		Data: [fuelData[0][0]],
+		xAxisFormat: { type: "linear",
+						   ticks: 3,
+						   orientation: "top",
+						   //label: fuelSources.labels.xLabel 
+						   },
+		yAxisFormat: { type: "ordinal",
+						   orientation: "left",
+						   ticks: [],
+						   label: d3.keys(fuelSources)[1],
+						   }
+		}, eventManager);
+
+// large grouped bar graph showing all fuel sources for all countries
+var graph3 = new BarChart({
+		Data: fuelData[0],
+		type: 'grouped',
+		xAxisFormat: { type: "linear",
+						   ticks: 3,
+						   orientation: "bottom",
+						   label: fuelSources.labels.xLabel 
+						   },
+		yAxisFormat: { type: "ordinal",
+						   orientation: "left",
+						   label: fuelSources.labels.yLabel,
+						   }
+		}, eventManager);
+
+
+svg1.append(graph3);
+svg1.append(graph0, {topPercentOffset: .6, leftPercentOffset: .65, heightPercent: 0.3, widthPercent: 0.3});
+	
+// configure and append the legend to the bargraph
+
+	var fuelLegend = new Legend(fuelData[1], eventManager);
+	
+	graph3.append(fuelLegend);
+
+eventManager.subscribe(countries.selectedEventId,
+						   displayData);
+
+eventManager.subscribe(fuelLegend.selectedEventId,
+						   liteData);
+
+countries.selectItemAtIndex(0);
+
+/************************************************************************
+* displayData	                                           *//**
+*
+* displays the data associated with the selected items in the Checkgroup
+*
+*************************************************************************/
+	function displayData(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+
+		var fuelDataSubset = [];
+			
+		for (var i = 0; i <= fuelData[0].length; i++) 
+			{
+				fuelDataSubset[i] = [];
+			}
+
+		countries.selectedItems().forEach( function (o,i) 
+			{
+				var index = Number(o.answerKey);
+				fuelDataSubset[index] = fuelData[0][index];
+			}
+		);
+		
+		liteData(eventDetails);
+
+		graph3.data = fuelDataSubset;
+		graph3.redraw();
+
+		
+		
+
+	}
+
+
+/************************************************************************
+* liteData	                                           *//**
+*
+* Lites up the data associated with the selection in the legend, and 
+* draws the detailed graph of just that data
+*
+*************************************************************************/
+	function liteData(eventDetails)
+	{	
+		var index = eventDetails.selectKey;
+		var fuelDataSmall = [];
+
+		if(index){
+		for (var i = 0; i <= fuelData[0].length - 1; i++) 
+			{
+				// fill the data array with empty series (to spoof color)
+				fuelDataSmall[i] = [];
+			}
+			console.log(index);
+		fuelDataSmall[index] = fuelData[0][index];
+				
+		yLabelSmall = fuelData[1].labels[index].content;
+		
+
+		//get rid of the tiny graph, update it's data, then put it back with new axes
+		svg1.remove(graph0);
+		graph0.data = fuelDataSmall;
+		graph0.yAxisFormat.label = yLabelSmall;
+		svg1.append(graph0, {topPercentOffset: .6, leftPercentOffset: .65, heightPercent: 0.3, widthPercent: 0.3});
+		graph3.lite(index);
+		fuelLegend.lite(index);
+		}
+	}
+
+
+	</script>
+</body>
+</html>
