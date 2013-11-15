@@ -68,7 +68,7 @@ var testSubmissionMessage = {
     "timestamp": "2013-05-25T13:21:22.001Z",
     "type": "submission",
     "body": {
-        "studentSubmission": { "submission":"answer1" }
+        "studentSubmission": { "key":"answer1" }
     }
 };
 

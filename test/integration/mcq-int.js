@@ -3,11 +3,13 @@
  *
  * This test is integration test and is meant to run while IPS server is up.
  *
- * If you are getting error in the Browser console saying: 
+ * If you are getting error in the browser console saying: 
  * "XMLHttpRequest cannot load http://localhost:8088/sequencenodes/. 
  * Origin null is not allowed by Access-Control-Allow-Origin"
+ * Double check the server was configured to access CORS (Cross Origin Resource Sharing).
+ * The IPS server was programmatic configured to allow CORS, but an HTTP proxy may override it.
  *
- * Any issue with the server, try refreshing the Redis cache
+ * Any issue with related to sequence node mismatch try refreshing the Redis cache.
  *
  * @author Young-Suk Ahn Park 
  */
