@@ -139,6 +139,7 @@ pearson.brix.utils.LocalAnswerMan.prototype.scoreAnswer = function (seqNodeKey, 
  */
 pearson.brix.utils.QuestionTypes =
 {
+    ALWAYSCORRECT:  "alwayscorrect",
     MULTIPLECHOICE: "multiplechoice",
     MULTISELECT:    "multiselect",
     NUMERIC:        "numeric"
@@ -160,6 +161,26 @@ pearson.brix.utils.ScoreResponse;
  */
 pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
 {
+    /* **************************************************************************
+     * evaluateAnswer.alwayscorrect                                        */ /**
+     *
+     * Function which evaluates the answer to always be correct.
+     *
+     * @param {Object}  answer      -the answer submitted by the student to be evaluated.
+     * @param {!pearson.brix.utils.AnswerKey}
+     *                  questionSolution
+     *                              -the object which describes the question and
+     *                               its solution. For an always correct question
+     *                               its contents are irrelevant.
+     *
+     * @returns {pearson.brix.utils.ScoreResponse}
+     *
+     ****************************************************************************/
+    'alwayscorrect': function(answer, questionSolution)
+    {
+        return { "score": 1, "response": null };
+    },
+
     /* **************************************************************************
      * evaluateAnswer.multiplechoice                                       */ /**
      *
