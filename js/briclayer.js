@@ -35,6 +35,7 @@ goog.require('pearson.brix.Carousel');
 goog.require('pearson.brix.CheckGroup');
 goog.require('pearson.brix.Image');
 goog.require('pearson.brix.ImageViewer');
+goog.require('pearson.brix.Journal');
 goog.require('pearson.brix.LabelGroup');
 goog.require('pearson.brix.Legend');
 goog.require('pearson.brix.LineGraph');
@@ -75,6 +76,7 @@ pearson.brix.BricTypes =
     CHECKGROUP:             "CheckGroup",
     IMAGE:                  "Image",
     IMAGEVIEWER:            "ImageViewer",
+    JOURNAL:                "Journal",
     LABELGROUP:             "LabelGroup",
     LEGEND:                 "Legend",
     LINEGRAPH:              "LineGraph",
@@ -185,6 +187,7 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
     bricWorks.registerBricMold(BricTypes.CHECKGROUP, pearson.brix.CheckGroup);
     bricWorks.registerBricMold(BricTypes.IMAGE, pearson.brix.Image);
     bricWorks.registerBricMold(BricTypes.IMAGEVIEWER, pearson.brix.ImageViewer);
+    bricWorks.registerBricMold(BricTypes.JOURNAL, pearson.brix.Journal);
     bricWorks.registerBricMold(BricTypes.LABELGROUP, pearson.brix.LabelGroup);
     bricWorks.registerBricMold(BricTypes.LEGEND, pearson.brix.Legend);
     bricWorks.registerBricMold(BricTypes.LINEGRAPH, pearson.brix.LineGraph);
