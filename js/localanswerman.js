@@ -129,6 +129,13 @@ pearson.brix.utils.LocalAnswerMan.prototype.scoreAnswer = function (seqNodeKey, 
     var response = evaluator(studentAnswer, answerKey['answers']);
     ++answerKey.attemptsMade;
     response['attemptsMade'] = answerKey.attemptsMade;
+
+    if (response['score'] !== 1 && this.maxAttempts_ != null && answerKey.attemptsMade >= this.maxAttempts_)
+    {
+        var getCorrectAnswer = pearson.brix.utils.LocalAnswerMan.getCorrectAnswer[assessmentType];
+        response['correctAnswer'] = getCorrectAnswer(answerKey['answers']);
+    }
+
     callback(response);
 };
 
@@ -250,8 +257,8 @@ pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
         if (answer.value >= correctValue - acceptableError &&
             answer.value <= correctValue + acceptableError)
         {
-            result.score = 1;
-            result.score = questionSolution['correctResponse'];
+            result['score'] = 1;
+            result['response'] = questionSolution['correctResponse'];
         }
 
         return result;
@@ -293,3 +300,108 @@ pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
         return result;
     },
 };
+
+/**
+ * Functions to get the correct answer from the various types of answerKeys.
+ * @type {Object.<pearson.brix.utils.QuestionTypes, function(!pearson.brix.utils.AnswerKey):pearson.brix.utils.ScoreResponse>}
+ */
+pearson.brix.utils.LocalAnswerMan.getCorrectAnswer =
+{
+    /* **************************************************************************
+     * getCorrectAnswer.alwayscorrect                                      */ /**
+     *
+     * Function which returns the correct answer from an alwayscorrect answerKey.
+     * This is never a valid call, as all answers are correct, and the structure
+     * of the answerKey is irrelevant and hence unknown.
+     *
+     * @param {!pearson.brix.utils.AnswerKey}
+     *                  questionSolution
+     *                              -the object which describes the question and
+     *                               its solution. For an always correct question
+     *                               its contents are irrelevant.
+     *
+     * @returns {pearson.brix.utils.ScoreResponse}
+     *
+     ****************************************************************************/
+    'alwayscorrect': function(questionSolution)
+    {
+        throw Error('There should never be the need to request the correct answer of an alwayscorrect answerKey');
+    },
+
+    /* **************************************************************************
+     * getCorrectAnswer.multiplechoice                                     */ /**
+     *
+     * Function which gets the correct answer for a multiple choice question.
+     *
+     * @param {!pearson.brix.utils.AnswerKey}
+     *                  questionSolution
+     *                              -the object which describes the question and
+     *                               its solution. For a multiple choice question
+     *                               it contains a property for each choice which
+     *                               specifies the result for selecting that choice.
+     *
+     * @returns {pearson.brix.utils.ScoreResponse}
+     *
+     ****************************************************************************/
+    'multiplechoice': function(questionSolution)
+    {
+        for (var key in questionSolution)
+        {
+            var keyObj = questionSolution[key];
+            if (keyObj['score'] === 1)
+            {
+                return { "key": key, "score": keyObj['score'], "response": keyObj['response'] };
+            }
+        }
+
+        return { "key": null, "score": null, "response": 'Something went awry, there is no correct answer.' };
+    },
+
+    /* **************************************************************************
+     * getCorrectAnswer.numeric                                            */ /**
+     *
+     * Function which evaluates the answer to a numeric question.
+     *
+     * @param {!pearson.brix.utils.AnswerKey}
+     *                  questionSolution
+     *                                  -the object which describes the question and
+     *                                   its solution. For a numeric question
+     *                                   it contains the correct numeric answer as
+     *                                   well as an acceptable error by which the
+     *                                   student's answer may vary from the correct answer
+     *                                   and still be considered correct.
+     *                                   It also contains a response for a correct answer
+     *                                   and for an incorrect answer.
+     *
+     * @returns {pearson.brix.utils.ScoreResponse}
+     *
+     ****************************************************************************/
+    'numeric': function(questionSolution)
+    {
+        return { "value": questionSolution['correctValue'],
+                 "score": 1,
+                 "response": questionSolution['correctResponse'] };
+    },
+
+    /* **************************************************************************
+     * getCorrectAnswer.multiselect                                        */ /**
+     *
+     * Function which evaluates the answer to a numeric question.
+     *
+     * @param {!pearson.brix.utils.AnswerKey}
+     *                  questionSolution
+     *                                  -the object which describes the question and
+     *                                   its solution. For a multiselect question
+     *                                   it contains SOMETHING that hasn't been defined
+     *                                   yet, but should be similar to the solutions
+     *                                   of other question types. -mjl
+     *
+     * @returns {pearson.brix.utils.ScoreResponse}
+     *
+     ****************************************************************************/
+    'multiselect': function(questionSolution)
+    {
+        throw Error("Determining the correct answer of a multiselect has not been implmeented");
+    },
+};
+

@@ -215,7 +215,7 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
     var submitBtnConfig =
     {
         id: this.mcqId_ + "_sbmtBtn",
-        text: "Select an answer",
+        text: "Submit",
         enabled: false
     };
 
@@ -359,11 +359,10 @@ pearson.brix.MultipleChoiceQuestion.getEventTopic = function (eventName, instanc
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function ()
 {
-    this.logger_.fine('MCQ: handling submit requested');
+    this.logger_.fine('handling submit requested');
 
     var submitAnsDetails =
         {
-            question: this,
             questionId: this.questionId,
             answerKey: this.presenterBric.selectedChoice().answerKey,
             responseCallback: goog.bind(this.handleSubmitResponse_, this)
@@ -385,9 +384,10 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function ()
 {
-    this.logger_.fine('MCQ: handling answer selected');
+    this.logger_.fine('handling answer selected');
 
-    this.submitButton.setText('Submit');
+    // The button text should no longer be changed when an answer is selected
+    //this.submitButton.setText('Submit');
     this.submitButton.setEnabled(true);
 
     // unsubscribe because we don't want subsequent answer selections
@@ -407,7 +407,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function (
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (responseDetails)
 {
-    this.logger_.fine('MCQ: handling submit response');
+    this.logger_.fine('handling submit response');
+    this.logger_.finer('responseDetails: ' + JSON.stringify(responseDetails));
 
     this.responses.push(responseDetails);
 
@@ -437,9 +438,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     {
         var correctAnswer = responseDetails['correctAnswer'];
         correctAnswerKey = correctAnswer['key'];
-        var correctChoiceIndex = this.presenterBric.itemKeyToIndex(correctAnswerKey);
-        var correctChoice = this.presenterBric.choices[correctChoiceIndex];
-        correctAnswer.submission = correctChoice(correctChoiceIndex).content;
+        var correctChoice = this.presenterBric.getChoiceByKey(correctAnswerKey);
+        correctAnswer.submission = correctChoice.content;
         pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer);
     }
 
