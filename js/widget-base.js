@@ -23,6 +23,9 @@ goog.provide('pearson.brix.HtmlBric');
 goog.provide('pearson.brix.ILightable');
 goog.provide('pearson.brix.SVGContainer');
 
+goog.require('goog.debug.Logger');
+goog.require('goog.debug.Console');
+
 /**
  * The pearson namespace is the top level namespace for all Pearson created
  * javascript variables.
@@ -58,6 +61,46 @@ pearson.brix.utils;
  * *********************************************************************/ /**
  * @todo These need to be moved out of global scope! -mjl
  * **************************************************************************/
+
+/* **************************************************************************
+ * pearson.utils.logToConsole                                          */ /**
+ *
+ * Have some of the logger messages go to the console.
+ *
+ * @param {boolean} enable      -true to start logging to the console, false
+ *                               to stop.
+ * @param {string}  levelName   -The name of the log level, ie 'ERROR' or 'FINE'
+ *                               defaults to 'CONFIG'
+ * @param {string}  logName     -The name that identifies the logger that should
+ *                               output to the console.
+ *
+ ****************************************************************************/
+pearson.utils.logToConsole = function (enable, levelName, logName)
+{
+    // create a new console only if we haven't already created one
+    var debugConsole = pearson.utils.logToConsole.debugConsole;
+    if (!debugConsole)
+    {
+        debugConsole = new goog.debug.Console();
+        pearson.utils.logToConsole.debugConsole = debugConsole;
+    }
+
+    // Any value (but in particular undefined) means turn on logging
+    if (enable !== false)
+    {
+        enable = true;
+    }
+
+    // Default the log level to 'CONFIG'
+    levelName = levelName || 'CONFIG';
+    var logLevel = goog.debug.Logger.Level.getPredefinedLevel(levelName);
+
+    // Default the log name to the top of the pearson hierarchy
+    logName = logName !== undefined ? logName : 'pearson';
+
+    debugConsole.setCapturing(enable);
+    goog.debug.Logger.getLogger(logName).setLevel(logLevel);
+};
 
 pearson.brix.utils.measure = function (container)
 {
