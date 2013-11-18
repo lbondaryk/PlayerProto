@@ -30,6 +30,11 @@
                     "description": "The maximum number of attempts allowed for Submission brix",
                     "type": "integer"
                 },
+            "imgBaseUrl":
+                {
+                    "description": "The URL to prepend to any relative-path images, generally providing a server path",
+                    "type": "string"
+                }
             "description":
                 {
                     "description": "A descriptive comment about this activity",
@@ -212,10 +217,11 @@
                         [
                             {"$ref": "#/definitions/dynamicValue-d3select"},
                             {"$ref": "#/definitions/dynamicValue-brix-topic"},
-                            {"$ref": "#/definitions/dynamicValue-property-of-ref"},
                             {"$ref": "#/definitions/dynamicValue-ref"},
+                            {"$ref": "#/definitions/dynamicValue-property-of-ref"},
                             {"$ref": "#/definitions/dynamicValue-array"},
                             {"$ref": "#/definitions/dynamicValue-array-element"},
+                            {"$ref": "#/definitions/dynamicValue-join"},
                             {"$ref": "#/definitions/dynamicValue-constant"},
                         ]
                 },
@@ -345,7 +351,7 @@
                 },
             "dynamicValue-array":
                 {
-                    "description": "a runtime value that is an array whose elements are defined by dynamicValues)",
+                    "description": "a runtime value that is an array whose elements are defined by dynamicValues",
                     "type": "object",
                     "required": ["type", "elements"],
                     "properties":
@@ -398,6 +404,31 @@
                                     "type": "string"
                                 }
                         }
+                },
+            "dynamicValue-join":
+                {
+                    "description": "a runtime value that is the concatenation of an array whose elements are defined by dynamicValues",
+                    "type": "object",
+                    "required": ["type", "parts"],
+                    "properties":
+                    {
+                        "type":
+                            {
+                                "description": "identifies this value as a join",
+                                "type": "string",
+                                "enum": ["join"]
+                            },
+                        "parts":
+                            {
+                                "description": "an array containing dynamic values",
+                                "type": "array"
+                            },
+                        "description":
+                            {
+                                "description": "A descriptive comment about this dynamic value",
+                                "type": "string"
+                            }
+                    }
                 },
             "dynamicValue-constant":
                 {
