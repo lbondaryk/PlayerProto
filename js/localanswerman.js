@@ -89,7 +89,7 @@ pearson.brix.utils.LocalAnswerMan.prototype.registerAnswerKey = function (seqNod
     // Create a copy of the answer key object that can be modified
     var answerKeyPlus = {};
     goog.object.extend(answerKeyPlus, answerKey);
-    answerKeyPlus['attemptsMade'] = 0;
+    answerKeyPlus.attemptsMade = 0;
     this.answerKeyDB_[seqNodeKey] = answerKeyPlus;
 };
 
@@ -153,16 +153,6 @@ pearson.brix.utils.QuestionTypes =
 };
 
 /**
- * The ScoreResponse is the object returned describing the result of
- * evaluating the answer choice to a question.
- *
- * @typedef {Object} pearson.brix.utils.ScoreResponse
- * @property {number}   score       -Description of score
- * @property {string}   response    -Description of response
- */
-pearson.brix.utils.ScoreResponse;
-
-/**
  * Functions to evaluate the various types of answers.
  * @type {Object.<pearson.brix.utils.QuestionTypes, function(Object, !pearson.brix.utils.AnswerKey):pearson.brix.utils.ScoreResponse>}
  */
@@ -185,7 +175,7 @@ pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
      ****************************************************************************/
     'alwayscorrect': function(answer, questionSolution)
     {
-        return { "score": 1, "response": null };
+        return { "correctness": 1, "feedback": null };
     },
 
     /* **************************************************************************
@@ -213,10 +203,10 @@ pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
         if (chosenKey in questionSolution)
         {
             var solution = questionSolution[chosenKey];
-            return { "score": solution['score'], "response": solution['response'] };
+            return { "correctness": solution['score'], "feedback": solution['response'] };
         }
 
-        return { "score": null, "response": 'Something went awry, your answer was unexpected.' };
+        return { "correctness": null, "feedback": 'Something went awry, your answer was unexpected.' };
     },
 
     /* **************************************************************************
@@ -246,9 +236,8 @@ pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
         // assert that answer.type === "numeric"
 
         // Assume answer is incorrect
-        var result = { "score": 0,
-                       "submission": "your answer: " + answer.value + ",",
-                       "response": questionSolution['incorrectResponse'] };
+        var result = { "correctness": 0,
+                       "feedback": questionSolution['incorrectResponse'] };
 
         var correctValue = questionSolution['correctValue'];
         var acceptableError = questionSolution['acceptableError'];
@@ -257,8 +246,8 @@ pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
         if (answer.value >= correctValue - acceptableError &&
             answer.value <= correctValue + acceptableError)
         {
-            result['score'] = 1;
-            result['response'] = questionSolution['correctResponse'];
+            result['correctness'] = 1;
+            result['feedback'] = questionSolution['correctResponse'];
         }
 
         return result;
@@ -290,9 +279,8 @@ pearson.brix.utils.LocalAnswerMan.evaluateAnswer =
         // assert that answer.type === "multiselect"
 
         // Assume answer is incorrect
-        var result = { "score": 0,
-                       "submission": "your answer: " + answer.value + ",",
-                       "response": questionSolution['incorrectResponse'] };
+        var result = { "correctness": 0,
+                       "feedback": questionSolution['incorrectResponse'] };
 
         // if answer is correct, update result to reflect that
         // Don't know how to do that yet as the solution structure hasn't been defined.
@@ -350,11 +338,11 @@ pearson.brix.utils.LocalAnswerMan.getCorrectAnswer =
             var keyObj = questionSolution[key];
             if (keyObj['score'] === 1)
             {
-                return { "key": key, "score": keyObj['score'], "response": keyObj['response'] };
+                return { "key": key, "correctness": keyObj['score'], "feedback": keyObj['response'] };
             }
         }
 
-        return { "key": null, "score": null, "response": 'Something went awry, there is no correct answer.' };
+        return { "key": null, "correctness": null, "feedback": 'Something went awry, there is no correct answer.' };
     },
 
     /* **************************************************************************
@@ -379,8 +367,8 @@ pearson.brix.utils.LocalAnswerMan.getCorrectAnswer =
     'numeric': function(questionSolution)
     {
         return { "value": questionSolution['correctValue'],
-                 "score": 1,
-                 "response": questionSolution['correctResponse'] };
+                 "correctness": 1,
+                 "feedback": questionSolution['correctResponse'] };
     },
 
     /* **************************************************************************

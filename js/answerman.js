@@ -36,6 +36,18 @@ goog.require('pearson.brix.utils.IpsProxy');
  */
 pearson.brix.utils.AnswerKey;
 
+/**
+ * The ScoreResponse is the object returned describing the result of
+ * evaluating the answer choice to a question.
+ *
+ * @typedef {Object} pearson.brix.utils.ScoreResponse
+ * @property {number}   correctness -A rational value from 0-1 inclusive
+ *                                   that reflects how correct the given
+ *                                   answer is; 0=incorrect, 1=correct
+ * @property {string}   feedback    -The feedback for the given answer
+ */
+pearson.brix.utils.ScoreResponse;
+
 /* **************************************************************************
  * IAnswerMan                                                          */ /**
  *
@@ -152,23 +164,15 @@ pearson.brix.utils.IpsAnswerMan.prototype.ipsSubmissionResponseHandler = functio
         this.logger_.warning('IpsProxy.postSubmission returned error: ' + JSON.stringify(error));
         // @todo - (ysa) Is this response enough, even for system errors such as no network? 
         // Also how do we handle last attempt and beyond?
-        callback({ 'score': null, 'response': 'no response' });
+        callback({ 'correctness': null, 'feedback': 'no response' });
     }
     else
     {
         // change the property names from the Ips response to those currently expected by
-        // the brix.
-        // @todo change the brix (and LocalAnswerMan) to expect the structure returned from the Ips -mjl
-        // @todo - Handle result.data.attemptsMade, as well as the answer returned upon last attempt
-        var scoreResponse =
-            {
-                'score': result.data['correctness'],
-                'response': result.data['feedback'],
-                'attemptsMade': result.data['attemptsMade'],
-                'correctAnswer': result.data['correctAnswer']
-            };
+        // the brix. Currently the property names match so no massaging is needed.
+        var scoreResponse = result.data;
 
-        this.logger_.fine('IpsProxy.postSubmission returned: ' + JSON.stringify(scoreResponse));
+        this.logger_.finer('IpsProxy.postSubmission returned: ' + JSON.stringify(scoreResponse));
         callback(scoreResponse);
     }
 };

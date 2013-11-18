@@ -124,55 +124,54 @@ pearson.brix.utils.SubmitManager.prototype.handleRequestsFrom = function(questio
  ****************************************************************************/
 pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventDetails)
 {
+    this.logger_.fine('handleScoreRequest_: ed.submissionId="' + eventDetails.submissionId + '"');
+    this.logger_.finer('ed.answer=' + JSON.stringify(eventDetails.answer));
+
+    // @todo reevaluate whether we still need this intermediary object -mjl 11/18/2013
     var pendingDetails =
         {
-            sequenceNodeKey: eventDetails['questionId'],
-            answer: eventDetails['answerKey'],
-            value: eventDetails['submissionValue'],
-            responseCallback: eventDetails['responseCallback'],
+            sequenceNodeKey: eventDetails.submissionId,
+            answer: eventDetails.answer,
+            responseCallback: eventDetails.responseCallback,
             requestDetails: eventDetails,
         };
 
-    if (this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] !== undefined)
+    if (this.requestsAwaitingResponse_[eventDetails.submissionId] !== undefined)
     {
-        alert("there's already an outstanding submission request for the sequenceNode: " + pendingDetails.sequenceNodeId);
+        var msg = "there's already an outstanding submission request for the submission ID: " + eventDetails.submissionId;
+        this.logger_.warning(msg);
+        alert(msg);
     }
 
-    this.requestsAwaitingResponse_[pendingDetails.sequenceNodeKey] = pendingDetails;
+    this.requestsAwaitingResponse_[eventDetails.submissionId] = pendingDetails;
 
     this.answerMan_.scoreAnswer(pendingDetails.sequenceNodeKey,
-                                {key: pendingDetails.answer},
-                                goog.bind(this.handleScoringResponse_, this, pendingDetails.sequenceNodeKey));
+                                pendingDetails.answer,
+                                goog.bind(this.handleScoringResponse_, this, eventDetails.submissionId));
 };
 
 /* **************************************************************************
  * SubmitManager.handleScoringResponse_                                */ /**
  *
- * Send the score request to the scoring engine using whatever means required
- * to access that scoring engine.
- *
- * @param {pearson.brix.utils.SubmitManager.PendingDetails}
- *                          submitDetails   -Information identifying the question
- *                                           and answer to be scored, in the properties:
- *                                           sequenceNodeId and answer.
+ * This is the callback passed to the scoring engine (IAnswerMan) which
+ * is called with the results of scoring a particular answer.
  * @private
  *
- * @note Currently this method is using a local scoring engine that returns
- * the response immediately. Eventually the scoring engine will be remote
- * and the response should be asynchronous, meaning that it will have to be
- * handled in a separate method probably an event handler of some sort. The
- * code here that deals w/ the current synchronous response will have to be
- * moved to this new method. -mjl
+ * @param {string}  submissionId        -The submission id of the request which
+ *                                       this is a response to.
+ * @param {pearson.brix.utils.ScoreResponse}                                  
+ *                  submissionResponse  -The response to the score request
  *
  ****************************************************************************/
-pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (seqNodeKey, submissionResponse)
+pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (submissionId, submissionResponse)
 {
-    // We handle the reply from the scoring engine (in the event handler eventually)
-    // by removing the request from the list of pending request
+    // We handle the reply from the scoring engine
+    // by removing the request from the list of pending requests
     // and calling the given callback if it exists
-    var pendingDetails = this.requestsAwaitingResponse_[seqNodeKey];
-    delete this.requestsAwaitingResponse_[seqNodeKey];
-    if (typeof pendingDetails.responseCallback === "function")
+    var pendingDetails = this.requestsAwaitingResponse_[submissionId];
+    delete this.requestsAwaitingResponse_[submissionId];
+
+    if (typeof pendingDetails.responseCallback === 'function')
     {
         submissionResponse.submitDetails = pendingDetails.requestDetails;
         pendingDetails.responseCallback(submissionResponse);
@@ -198,55 +197,60 @@ pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (se
  *                                   scoring engine.
  *                                   The details must contain the following
  *                                   properties:
- *                                   score, submission, response.
- *
- * @note It would be nice if the score property of the responseDetails was
- * changed from the possible values of -1, 0, 1 or undefined to either a
- * string (perhaps matching the responseFormat table below), or at least
- * a whole number that could be used as an index w/o manipulation. -mjl
+ *                                   correctness, submission, feedback.
  *
  ****************************************************************************/
 pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
 {
     var responseFormat = {
             correct: {
-                icon: "icon-ok-sign",
+                icon: 'icon-ok-sign',
                 answerPrefix: 'Correct. "',
                 answerSuffix:  '" is the right answer. ',
                 responseClass: 'feedback-correct'
             },
             incorrect: {
-                icon: "icon-remove",
+                icon: 'icon-remove',
                 answerPrefix: 'Incorrect. "',
                 answerSuffix:  '" is not the right answer.',
-                responseClass: "feedback-incorrect"
+                responseClass: 'feedback-incorrect'
             },
             partial: {
-                icon: "icon-adjust",
+                icon: 'icon-adjust',
                 answerPrefix: 'Partial credit. "',
                 answerSuffix:  '" is partially correct. ',
-                responseClass: "feedback-partial"
+                responseClass: 'feedback-partial'
             },
             unknown: {
-                icon: "icon-adjust",
+                icon: 'icon-adjust',
                 answerPrefix: "something has gone horribly awry - we can't score this answer.",
-                responseClass: ""
+                responseClass: ''
             }
         };
 
-    var scoreAnsType = ["unknown", "incorrect", "correct", "partial"];
-
-    var ansType = "unknown";
-    if (typeof responseDetails.score === "number")
+    var ansType = 'unknown';
+    if (typeof responseDetails.correctness === "number")
     {
-        ansType = scoreAnsType[responseDetails.score + 1];
+        var correctness = responseDetails.correctness;
+        if (correctness === 0)
+        {
+            ansType = 'incorrect';
+        }
+        else if (correctness === 1)
+        {
+            ansType = 'correct';
+        }
+        else if (correctness > 0 && correctness < 1)
+        {
+            ansType = 'partial';
+        }
     }
 
     var responseHtml = "<i class='" + responseFormat[ansType].icon + "'></i> " +
                 responseFormat[ansType].answerPrefix +
                 (responseDetails.submission || "") +
                 (responseFormat[ansType].answerSuffix || "") + " " +
-                ('<div class="custom-feedback">' + responseDetails.response + '</div>' || "");
+                ('<div class="custom-feedback">' + responseDetails.feedback + '</div>' || "");
 
     // display the results of the submission in the given container
     container.append("div")

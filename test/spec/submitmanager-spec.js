@@ -62,8 +62,8 @@
 				var returnedResponseDetails = null;
 				var scoreEventDetails =
 					{
-						questionId: "http://hub.paf.pearson.com/resources/sequences/123/nodes/1",
-						answerKey: "1",
+						submissionId: "http://hub.paf.pearson.com/resources/sequences/123/nodes/1",
+						answer: { key: "1" },
 						responseCallback: function (responseDetails)
 							{
 								returnedResponseDetails = responseDetails;

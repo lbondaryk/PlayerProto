@@ -264,13 +264,12 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
     /**
      * The event details for this.submitScoreRequestEventId events
      * @typedef {Object} SubmitAnswerRequest
-     * @property {pearson.brix.IQuestionBric}
-     *                              question    -This question bric
-     * @property {string}           questionId  -The id which identifies this question to the scoring engine.
-     * @property {string}           answerKey   -The answerKey associated with the selected answer.
+     * @property {string}           submissionId -The id which identifies this question to the scoring engine.
+     * @property {Object}           answer       -The multiple choice answer object
+     * @property {string}           answer.key   -The answerKey associated with the selected answer.
      * @property {function(Object)} responseCallback
-     *                                          -[optional] function to call with the response when it is
-     *                                           returned by the scoring engine.
+     *                                           -[optional] function to call with the response when it is
+     *                                            returned by the scoring engine.
      */
     var SubmitAnswerRequest;
 
@@ -363,8 +362,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
 
     var submitAnsDetails =
         {
-            questionId: this.questionId,
-            answerKey: this.presenterBric.selectedChoice().answerKey,
+            submissionId: this.questionId,
+            answer: { 'key': this.presenterBric.selectedChoice().answerKey },
             responseCallback: goog.bind(this.handleSubmitResponse_, this)
         };
 
@@ -468,7 +467,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
 pearson.brix.MultipleChoiceQuestion.prototype.correctlyAnswered = function ()
 {
     if (this.responses.length === 0 ||
-        this.responses[this.responses.length - 1].score !== 1)
+        this.responses[this.responses.length - 1].correctness !== 1)
     {
         return false;
     }
