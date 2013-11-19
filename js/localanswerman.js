@@ -130,7 +130,7 @@ pearson.brix.utils.LocalAnswerMan.prototype.scoreAnswer = function (seqNodeKey, 
     ++answerKey.attemptsMade;
     response['attemptsMade'] = answerKey.attemptsMade;
 
-    if (response['score'] !== 1 && this.maxAttempts_ != null && answerKey.attemptsMade >= this.maxAttempts_)
+    if (response['correctness'] !== 1 && this.maxAttempts_ != null && answerKey.attemptsMade >= this.maxAttempts_)
     {
         var getCorrectAnswer = pearson.brix.utils.LocalAnswerMan.getCorrectAnswer[assessmentType];
         response['correctAnswer'] = getCorrectAnswer(answerKey['answers']);
