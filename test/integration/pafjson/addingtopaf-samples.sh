@@ -39,10 +39,11 @@ java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m PUT \
 # MultipleChoice Question
 
 # @id: http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1
-java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m PUT \
+java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m POST \
 	-h "Content-Type: application/vnd.pearson.paf.v1.envelope+json;body=\"application/vnd.pearson.sanvan.v1.activity\"\"" \
 	-d sanvan_mcq_item_1.activity.json \
 	-u http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities -c
+
 
 # @id: http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1
 java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m POST \
@@ -50,3 +51,12 @@ java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m POST \
 	-d sanvan_mcq.assign.json \
 	-u http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities -c
 
+# @id: http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1
+java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m PUT \
+	-h "Content-Type: application/vnd.pearson.paf.v1.envelope+json;body=\"application/vnd.pearson.paf.v1.assignment+json\"\"" \
+	-d sanvan_mcq.assign.json \
+	-u http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1 -c
+
+# To retrieve: notice the -m GET
+java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m GET \
+	-u http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1 -c
