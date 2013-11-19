@@ -444,7 +444,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
 
     // Re-enable the submit button if the answer was incorrect and there are attempts remaining
     if (!this.correctlyAnswered() &&
-        this.maxAttempts_ !== null && this.attemptsMade_ < this.maxAttempts_)
+        (this.maxAttempts_ === null || this.attemptsMade_ < this.maxAttempts_))
     {
         this.submitButton.setEnabled(true);
     }
