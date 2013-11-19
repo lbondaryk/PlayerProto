@@ -433,9 +433,9 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     }
 
     // if the response contains the correct answer we should display its feedback
-    if ('correctAnswer' in responseDetails)
+    var correctAnswer = 'correctAnswer' in responseDetails ? responseDetails['correctAnswer'] : null;
+    if (correctAnswer !== null && typeof correctAnswer === 'object')
     {
-        var correctAnswer = responseDetails['correctAnswer'];
         correctAnswerKey = correctAnswer['key'];
         var correctChoice = this.presenterBric.getChoiceByKey(correctAnswerKey);
         correctAnswer.submission = correctChoice.content;
