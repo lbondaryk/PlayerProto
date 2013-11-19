@@ -3,7 +3,7 @@
    "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
    "@type" : "Envelope",
    "metadata" : {
-     "title" : "Sanvan MCQ Demo 1",
+     "title" : "Sanvan MCQ Demo 1 (r)",
      "guid" : "test.sanvan.assign.mcq1",
      "description" : "Sanvan MultipleChoiceQuestion demo",
      "contentTypeTier1" : "Assessment",
@@ -17,7 +17,7 @@
      "@context" : "http://purl.org/pearson/paf/v1/ctx/core/StructuredAssignment",
      "@type" : "StructuredAssignment",
      "title" : "Sanvan MCQ Demo 1",
-     "guid" : "test.sanvan.assignment.mcq11",
+     "guid" : "test.sanvan.assignment.mcq1",
      "assignmentContents" : {
        "@contentType":"application/vnd.pearson.paf.v1.container+json",
        "binding" : [
