@@ -439,5 +439,145 @@
                 });
             });
         });
+
+        describe.skip('Submission and submit responses', function () {
+            describe('before 1st choice is selected', function () {
+                it('should have no choice selected', function () {
+                
+                });
+
+                it('should have a disabled submit button', function () {
+                
+                });
+            });
+
+            describe('after initial choice is selected', function () {
+                it('should no longer be subscribed to the choicepresenter\'s selected event', function () {
+                
+                });
+            
+                it('should have an enabled submit button', function () {
+                
+                });
+            });
+
+            describe('when submit button is pressed', function () {
+                it('should publish the submitScoreRequestEventId w/ event details containing submissionId, answer and responseCallback properties', function () {
+                
+                });
+
+                it('should disable the submit button', function () {
+                
+                });
+            });
+
+            describe('A MultipleChoiceQuesiton with unlimited attempts (maxAttempts = null or undefined)', function() {
+                describe('when the choice submitted is correct', function() {
+                    it('should display the feedback for that correct choice', function () {
+                   
+                    }); 
+
+                    it('should display 1 attempt used', function () {
+                   
+                    });
+
+                    it('should have a disabled submit button', function () {
+                    
+                    });
+
+                    it('should call the choicepresenter flagChoice method w/ the key of the correct choice', function () {
+                    
+                    });
+                });
+
+                describe('when the choice submitted is incorrect', function() {
+                    it('should display the feedback for that incorrect choice', function () {
+                   
+                    }); 
+
+                    it('should not display anything about attempts', function () {
+                   
+                    });
+
+                    it('should have an enabled submit button', function () {
+                    
+                    });
+                });
+            });
+        
+            describe('A MultipleChoiceQuesiton with a maximum of 2 attempts (maxAttempts = 2)', function() {
+                describe('when the 1st choice submitted is correct', function() {
+                    it('should display the feedback for that correct choice', function () {
+                   
+                    }); 
+
+                    it('should display 1 attempt used', function () {
+                   
+                    });
+
+                    it('should have a disabled submit button', function () {
+                    
+                    });
+
+                    it('should call the choicepresenter flagChoice method w/ the key of the correct choice', function () {
+                    
+                    });
+                });
+
+                describe('when the 1st choice submitted is incorrect', function() {
+                    it('should display the feedback for that incorrect choice', function () {
+                   
+                    }); 
+
+                    it('should display 1 attempts remaining', function () {
+                   
+                    });
+
+                    it('should have an enabled submit button', function () {
+                    
+                    });
+                });
+                
+                describe('when the 2nd choice submitted is incorrect', function() {
+                    it('should display the feedback for that incorrect choice', function () {
+                   
+                    }); 
+
+                    it('should display the feedback for the correct choice', function () {
+                   
+                    }); 
+
+                    it('should display 0 attempts remaining', function () {
+                   
+                    });
+
+                    it('should have a disabled submit button', function () {
+                    
+                    });
+
+                    it('should call the choicepresenter flagChoice method w/ the key of the correct choice', function () {
+                    
+                    });
+                });
+                
+                describe('when the 2nd choice submitted is correct', function() {
+                    it('should display the feedback for the correct choice', function () {
+                   
+                    }); 
+
+                    it('should display 2 attempts used', function () {
+                   
+                    });
+
+                    it('should have a disabled submit button', function () {
+                    
+                    });
+
+                    it('should call the choicepresenter flagChoice method w/ the key of the correct choice', function () {
+                    
+                    });
+                });
+            });
+        });
     });
 })();

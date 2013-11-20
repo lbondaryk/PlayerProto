@@ -228,6 +228,62 @@
                         expect(myRadioGroup.selectedItem()).is.deep.equal(myRadioGroup.choices[0]);
                     });
                 });
+
+                describe.skip('IChoicePresenter interface', function () {
+                    describe('.selectedChoice', function () {
+                        it('should return null when there is no selected choice', function () {
+                        
+                        });
+
+                        it('should return the correct selected choice item from the array of choices given to the config', function () {
+                        
+                        });
+                    });
+
+                    describe('.getChoiceByKey', function () {
+                        it('should return null when the given key does not match any choice', function () {
+                        
+                        });
+
+                        it('should return the correct matching choice item from the array of choices given to the config', function () {
+                        
+                        });
+                    });
+
+                    describe('.selectChoice', function () {
+                        it('should set the selected choice to the choice matching the given key and publish the selected event', function () {
+                        
+                        });
+
+                        it('should do nothing when the choice matching the key is already selected', function () {
+                        
+                        });
+
+                        it('should do nothing when there is no choice matching the given key', function () {
+                        
+                        });
+
+                        it('should set the selected choice to the choice matching the given index and publish the selected event', function () {
+                        
+                        });
+
+                        it('should do nothing when the choice at the given index is already selected', function () {
+                        
+                        });
+
+                        it('should do nothing when there is no choice at the given index', function () {
+                        
+                        });
+                    });
+                
+                    describe('.flagChoice', function () {
+                        it('should flag the displayed choice matching the given key', function () {
+                        
+                        });
+
+                    });
+                
+                });
             });
         });
     });
