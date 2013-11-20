@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Muliple Choice Demo</title>
+    <title>Image Server Demo</title>
 
 
     <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
@@ -37,10 +37,10 @@
     <script src="../../../closure/closure-library/closure/goog/debug/console.js"></script>
     <script src="../../js/jquery-latest.js"></script>
 
-    
-    <script src="../../js/brixlib-compiled.js"></script>
-    
     <!--
+    <script src="../../js/brixlib-compiled.js"></script>
+    -->
+    
     <script src="../../js/eventmanager.js"></script>
 
     <script src="../../js/domhelper.js"></script>
@@ -77,7 +77,7 @@
     <script src="../../js/mortar-hilite.js"></script>
     <script src="../../js/briclayer.js"></script>
     <script src="../../js/ipc.js"></script>
-    -->
+    
     <script src="demo-boilerplate.js"></script>
 
 
@@ -118,9 +118,21 @@
                         <!-- When using PAF, make sure the ID matches with what
                         was added to the server (DEV | CERT)
                          -->
+                         <!-- THIS IS THE FIRST ONE, first to Dev then Cert -->
+                        <!-- <div id="target1" habitat-id="some_habitat_id1" class="brix" 
+                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/t93fcb0fe-4e94-49f0-8a7b-348773686196"
+                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/c3417e83-b3d1-4361-a2be-3525542981c9"
+                            data-containerid="target1"
+                            data-type="brix" > -->
+                        <!-- <div id="target1" habitat-id="some_habitat_id1" class="brix" 
+                            data-assignmenturl="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/t93fcb0fe-4e94-49f0-8a7b-348773686196"
+                            data-activityurl  ="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/c3417e83-b3d1-4361-a2be-3525542981c9"
+                            data-containerid="target1"
+                            data-type="brix" >  -->  
+                        <!-- This is the second attempt --> 
                         <div id="target1" habitat-id="some_habitat_id1" class="brix" 
-                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1a"
-                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1a"
+                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/eaf7f767-a4ad-42f9-b036-871d6a7f6e74"
+                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/e579114a-2b65-4d9e-8ed5-26a7c15d8ad8"
                             data-containerid="target1"
                             data-type="brix" >
                         <p>Q1-test. Multiple Choice question, randomized</p></div>

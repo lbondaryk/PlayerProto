@@ -2,8 +2,8 @@
   "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
   "@type" : "Envelope",
   "metadata" : {
-    "title" : "Neff Reactor from Image Server",
-    "guid" : "c3417e83-b3d1-4361-a2be-3525542981c9",
+    "title" : "Neff Reactor from Image Server 2",
+    "guid" : "e579114a-2b65-4d9e-8ed5-26a7c15d8ad8",
     "description" : "",
     "contentTypeTier1" : "Demonstration",
     "contentTypeTier2" : [ "DemonstrationImage" ],
