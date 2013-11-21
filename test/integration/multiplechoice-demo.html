@@ -48,6 +48,7 @@
 
     <script src="../../js/fakeactivitydb.js"></script>
     <script src="../../js/answerman.js"></script>
+    <script src="../../js/localanswerman.js"></script>
     <script src="../../js/submitmanager.js"></script>
     <script src="../../js/widget-base.js"></script>
     <script src="../../js/mortar-base.js"></script>
@@ -81,6 +82,8 @@
 
 
     <script>
+		// (mjl->ysap) may want to replace these lines with:
+	// pearson.utils.logToConsole(true, 'FINER', 'pearson');
     var debugConsole = new goog.debug.Console();
     debugConsole.setCapturing(true);
     goog.debug.Logger.getLogger('pearson').setLevel(goog.debug.Logger.Level.FINER);
@@ -94,13 +97,13 @@
 <body>
     <h1>Submission (MultipleChoiceQuestion) Integration demo (with PAF)</h1>
     <div style="border: orange 1px solid; padding: 10px">
-    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Servers (IPS & CorrectnessEngine) up</p>
+    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Servers (IPS &amp; CorrectnessEngine) up</p>
     <p>Remember to configure laspaf.properties to NOT use the PAF Stub.</p>
     <pre>
 [Tomcat/bin]$ ./catalina.sh run
 [BrixServer]$ make testsvr
-[CorrectnessEngine]$ node ceapp.js</pre>
-    <b></b>
+[CorrectnessEngine]$ node ceapp.js
+[~]$ redis-server</pre>
     </div>
 
     <!-- TEST CONTENT {{ -->
