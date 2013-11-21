@@ -29,14 +29,14 @@ goog.require('pearson.brix.PrototypeAxes');
 			Data: [],
 			type: "grouped",
 			xAxisFormat: { type: "linear",
-						   mode: "reverse",
-						   ticks: 5,
-						   orientation: "bottom",
-						   label: "linear bar value (%)" },
+                           mode: "reverse",
+                           ticks: 5,
+                           orientation: "bottom",
+                           label: "linear bar value (%)" },
 			yAxisFormat: { type: "ordinal",
-						   ticks: 5,
-						   orientation: "left",
-						   label: "Bar category labels" },
+                           ticks: 5,
+                           orientation: "left",
+                           label: "Bar category labels" },
 		};
 });
 	
@@ -363,13 +363,11 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 	var xScale = this.lastdrawn.xScale;
 	var yScale = this.lastdrawn.yScale;
 	var bandsize = this.lastdrawn.bandsize;
-	var groupScale = this.lastdrawn.groupScale;
 	var that = this;
 	
 	// get the group that contains the graph lines
 	var graph = this.lastdrawn.graph;
 	
-	var bandsize = this.lastdrawn.bandsize;
 	
 	if (this.type == "grouped")
 	{
@@ -385,18 +383,20 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 			indices.push(i); //needed to space out grouped barcharts
 		}
 
+		// groupscale creates an extra ordinal set that encloses the data label,
+		// one for each group (element/series in data array)
+		// padding of 20% and no padding on the ends of the range
 		var groupScale = d3.scale.ordinal()
-			.domain(indices) //creates an extra ordinal set that encloses the data label,
-			//one for each group (element in data array)
-			.rangeRoundBands([bandsize, 0]);
+			.domain(indices)
+			.rangeRoundBands([1.1 * bandsize, 0], 0.05, 0.2);
 			
 			//TEST: The last index  should produce the topmost bar
 			//appearing at y = 0
 		//window.console.log("Grouped barChart last bar mapped to 0 offset: ",
 			//groupScale(this.data.length - 1) == 0);
-	};
+	}
 
-	//draw the series
+    // draw each series
 	// bind all the series data to a group element w/ a series class
 	// creating or removing group elements so that each series has its own group.
 	var barSeries = graph.selectAll("g.series")
@@ -409,11 +409,11 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 					return "series fill" + i;
 				});
 	//on redraw, get rid of any series which now have no data
-	barSeries.exit().remove();  
+	barSeries.exit().remove();
 
 	// autokey entries which have no key with the data index for highlighting
 	// can't use the y label because it might contain spaces. 
-	barSeries.each(function (d, i) { 
+	barSeries.each(function (d, i) {
 					// if there is no key assigned, make one from the index
 					d.key = 'key' in d ? d.key : i.toString();
 					});
@@ -437,7 +437,7 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 	// so you could choose to label the ends with data or label
 	//  and have it stick to the bar by putting it in the same group -lb
 	var bars = barSeries.selectAll("g.bar")
-		.data(function(d) {return d;}); 	//drill down into the nested data
+		.data(function(d) {return d;});	//drill down into the nested data
 
 	bars.exit().remove();
  
@@ -449,31 +449,31 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 	// TODO: figure out a strategy for highlighting and selecting individual bars -lb 
 
 	bars.transition().attr("transform",
-				  function(d)
-				  {
+                function(d)
+                {
 				// move each group to the x=0 position horizontally if it's a
 				// positive bar, or start at it's negative x value if negative,
 				// or at it's positive value if reversedx.
 				// The negative value logic allows us to draw pyramid charts, normally bar 
 				// charts are bin counts and all positive. 
-				      var x = (d.x < 0 || that.lastdrawn.axes.xFmt.mode === "reverse") ? xScale(d.x) : xScale(0);
-					  var y = yScale(d.y);
-				      return "translate(" + x + "," + y + ")";
-				  });
-				  
+                      var x = (d.x < 0 || that.lastdrawn.axes.xFmt.mode === "reverse") ? xScale(d.x) : xScale(0);
+                      var y = yScale(d.y);
+                      return "translate(" + x + "," + y + ")";
+                });
+  
 	// Update the height and width of the bar rects based on the data points bound above.
 	bars.select("rect").transition()
-	//if grouped, each bar is only 1/(# groups) of the available height around 
-	// an ordinal tickmark
+	// if grouped, each bar's height is only 1/(# groups + 1) of the available height around 
+	// an ordinal tickmark. The +1 is to create a little space between bars
 		.attr("height", (this.type == "grouped") ? (bandsize / (this.data.length + 1)) : bandsize)
 		.attr("width",
-			  function(d)
-			  {
-				  return Math.abs(xScale(0) - xScale(d.x));
-			  });
-			  
+            function(d)
+            {
+				return Math.abs(xScale(0) - xScale(d.x));
+
+            });
 	
-	bars.on('click',
+	barSeries.on('click',
 				function (d, i)
 				{
 					that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
@@ -493,14 +493,14 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
  * @export
  *
  * @param {!pearson.brix.SvgBric|Array.<!pearson.brix.SvgBric>}
- * 						svgBrix		-The bric or array of brix to be drawn in
- *									 this line graph's data area.
+ *                      svgBrix		-The bric or array of brix to be drawn in
+ *                                   this line graph's data area.
  * @param {string|undefined}
- * 						zOrder		-Optional. Specifies whether to append this
- * 									 bric to the list of brix that are
- * 									 drawn before the graph data or the list that
- * 									 is drawn after. "after" | "before", defaults
- * 									 to "after".
+ *                      zOrder		-Optional. Specifies whether to append this
+ *                                   bric to the list of brix that are
+ *                                   drawn before the graph data or the list that
+ *                                   is drawn after. "after" | "before", defaults
+ *                                   to "after".
  *
  ****************************************************************************/
 pearson.brix.BarChart.prototype.append = function(svgBrix, zOrder)
@@ -515,7 +515,7 @@ pearson.brix.BarChart.prototype.append = function(svgBrix, zOrder)
 	}
 
 	// Deal w/ drawing the appended brix before already drawn data.
-	if (zOrder === "before" && this.lastdrawn.container != null)
+	if (zOrder === "before" && this.lastdrawn.container !== null)
 	{
 		// we need to remove the existing drawn elements and execute draw again
 		var container = this.lastdrawn.container;
@@ -583,9 +583,8 @@ pearson.brix.BarChart.prototype.lite = function(liteKey)
 	// Turn off all current highlights
 	var allBars = this.lastdrawn.bars;
 	allBars
-		.classed("lit", false);
+		.classed("lit", false).transition();
 
-	allBars.selectAll('rect').attr('transform', 'scale(1,1)');
 		
 	//var allSeries = this.lastdrawn.series;
 	//allSeries
@@ -599,9 +598,8 @@ pearson.brix.BarChart.prototype.lite = function(liteKey)
 
 	// Highlight the labels w/ the matching key
 	barsToLite
-		.classed("lit", true);
+		.classed("lit", true).transition();
 
-	barsToLite.selectAll('rect').transition().attr('transform', 'scale(1,1.1)');
 
 	if (barsToLite.empty())
 	{

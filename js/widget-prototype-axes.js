@@ -569,7 +569,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		//using the new dimensions, redo the scale and axes
 		if (this.yFmt.type=="ordinal")
 		{
-			this.yScale.rangeRoundBands([dataAreaHeight, 0], .3, .1);
+			this.yScale.rangeRoundBands([dataAreaHeight, 0], .2, .1);
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 30% white space
 		}

@@ -730,14 +730,14 @@ svg g .stroke11 {
 svg g.brixBarChart .bar,
 svg g.widgetLegend rect,
 svg g.bricPieChart path {
-  opacity: 0.7; 
+  opacity: 0.8; 
   }
 
 svg g.brixBarChart .lit .bar,
 svg g.widgetLegend .lit rect,
 svg g.bricPieChart path .lit  {
   opacity: 1;
-  stroke-width: 2;
+  stroke-width: 1;
   stroke: #999;
   }
 
