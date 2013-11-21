@@ -438,7 +438,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     {
         correctAnswerKey = correctAnswer['key'];
         var correctChoice = this.presenterBric.getChoiceByKey(correctAnswerKey);
-        correctAnswer.submission = correctChoice.content;
+        correctAnswer['correctness'] = 1;
+        correctAnswer['submission'] = correctChoice.content;
         pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer);
     }
 

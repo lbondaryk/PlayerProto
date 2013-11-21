@@ -338,11 +338,12 @@ pearson.brix.utils.LocalAnswerMan.getCorrectAnswer =
             var keyObj = questionSolution[key];
             if (keyObj['score'] === 1)
             {
-                return { "key": key, "correctness": keyObj['score'], "feedback": keyObj['response'] };
+                // don't bother returning the score, it should be 1.
+                return { "key": key, "feedback": keyObj['response'] };
             }
         }
 
-        return { "key": null, "correctness": null, "feedback": 'Something went awry, there is no correct answer.' };
+        return { "key": null, "feedback": 'Something went awry, there is no correct answer.' };
     },
 
     /* **************************************************************************
@@ -367,7 +368,6 @@ pearson.brix.utils.LocalAnswerMan.getCorrectAnswer =
     'numeric': function(questionSolution)
     {
         return { "value": questionSolution['correctValue'],
-                 "correctness": 1,
                  "feedback": questionSolution['correctResponse'] };
     },
 
