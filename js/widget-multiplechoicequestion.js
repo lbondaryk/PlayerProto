@@ -16,6 +16,8 @@
 
 goog.provide('pearson.brix.MultipleChoiceQuestion');
 
+goog.require('goog.debug.Logger');
+
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.utils.EventManager');
 goog.require('pearson.brix.utils.SubmitManager');
@@ -66,26 +68,11 @@ goog.require('pearson.brix.HtmlBric');
         question: "Why?",
         choices: Q1Choices,
         order: "randomized", //default, even if not specified
+        maxAttempts: 3,
         presenterType: "RadioGroup",
         presenterConfig: { numberFormat: "latin-upper" } // id and choices will be added by MultipleChoiceQuestion
     };
 });
-
-/**
- * Answers are presented to users by certain brix that allow the user to
- * select one (or more of them).
- *
- * @typedef {Object} pearson.brix.Answer
- * @property {string}   content     -The content of the answer, which presents the
- *                                   meaning of the answer.
- * @property {string}   answerKey   -This is the unique ID that will be returned
- *                                   to the scoring engine to identify that the
- *                                   user has chosen this answer.
- *
- * @todo: the content currently must be text (a string) however, we are likely
- * to want to make the content be any bric.
- */
-pearson.brix.Answer;
 
 
 /* **************************************************************************
@@ -106,13 +93,15 @@ pearson.brix.Answer;
  *                                      -Scoring engine Id of this question
  * @param {htmlString}  config.question -The question being posed to the user which should
  *                                       be answered by choosing one of the presented choices.
- * @param {!Array.<!pearson.brix.Answer>}
+ * @param {!Array.<!pearson.brix.KeyedAnswer>}
  *                      config.choices  -The list of choices (answers) to be presented
  *                                       by the MultipleChoiceQuestion.
- * @param {string|undefined}
- *                      config.order    -The order in which the choices should be presented.
+ * @param {string=}     config.order    -The order in which the choices should be presented.
  *                                       either "randomized" or "ordered". Default is
  *                                       "randomized" if not specified.
+ * @param {number=}     config.maxAttempts
+ *                                      -The maximum number of submissions allowed attempting
+ *                                       to answer correctly. Default is unlimited.
  * @param {pearson.brix.BrixTypes}
  *                      config.presenterType
  *                                      -The type of bric to use for presenting the choices.
@@ -139,10 +128,19 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
     // call the base class constructor
     goog.base(this);
 
+    /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.MultipleChoiceQuestion');
+
     // Without a valid BricWorks we can't construct this MultipleChoiceBric
     if (!bricWorks)
     {
-        throw new Error('MultipleChoiceQuestion requires a valid BricWorks to create the presenterType and Button brix that it uses');
+        var msg = 'MultipleChoiceQuestion requires a valid BricWorks to create the presenterType and Button brix that it uses';
+        this.logger_.severe(msg);
+        throw new Error(msg);
     }
 
     /**
@@ -164,6 +162,25 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
      * @type {htmlString}
      */
     this.question = config.question;
+
+    /**
+     * The maximum number of submissions allowed attempting to get the correct
+     * answer. Null means unlimited.
+     * @type {?number}
+     */
+    this.maxAttempts_ = null;
+
+    if (typeof config.maxAttempts === 'number' && config.maxAttempts >= 1)
+    {
+        this.maxAttempts_ = Math.round(config.maxAttempts);
+    }
+
+    /**
+     * The number of attempts that have been made. Must be less than or equal to the
+     * maximum number of attempts. Initially will be 0.
+     * @type {number}
+     */
+    this.attemptsMade_ = 0;
 
     /**
      * The configuration options for the bric that will display the choices that
@@ -198,7 +215,7 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
     var submitBtnConfig =
     {
         id: this.mcqId_ + "_sbmtBtn",
-        text: "Select an answer",
+        text: "Submit",
         enabled: false
     };
 
@@ -247,19 +264,25 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
     /**
      * The event details for this.submitScoreRequestEventId events
      * @typedef {Object} SubmitAnswerRequest
-     * @property {pearson.brix.IQuestionBric}
-     *                              question    -This question bric
-     * @property {string}           questionId  -The id which identifies this question to the scoring engine.
-     * @property {string}           answerKey   -The answerKey associated with the selected answer.
+     * @property {string}           submissionId -The id which identifies this question to the scoring engine.
+     * @property {Object}           answer       -The multiple choice answer object
+     * @property {string}           answer.key   -The answerKey associated with the selected answer.
      * @property {function(Object)} responseCallback
-     *                                          -[optional] function to call with the response when it is
-     *                                           returned by the scoring engine.
+     *                                           -[optional] function to call with the response when it is
+     *                                            returned by the scoring engine.
      */
     var SubmitAnswerRequest;
 
     // subscribe to events of our 'child' brix
     eventManager.subscribe(this.submitButton.pressedEventId, goog.bind(this.handleSubmitRequested_, this));
-    eventManager.subscribe(this.presenterBric.selectedEventId, goog.bind(this.handleAnswerSelected_, this));
+
+    /**
+     * The answer selected handler given to the eventmanager and used
+     * to subscribe and unsubscribe.
+     * @type {Function}
+     */
+    this.answerSelectedHandler_ = goog.bind(this.handleAnswerSelected_, this);
+    eventManager.subscribe(this.presenterBric.selectedEventId, this.answerSelectedHandler_);
 
     /**
      * Information about the last drawn instance of this bric (from the draw method)
@@ -335,15 +358,17 @@ pearson.brix.MultipleChoiceQuestion.getEventTopic = function (eventName, instanc
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function ()
 {
-    window.console.log('MCQ: handling submit requested');
+    this.logger_.fine('handling submit requested');
 
     var submitAnsDetails =
         {
-            question: this,
-            questionId: this.questionId,
-            answerKey: this.presenterBric.selectedItem().answerKey,
+            submissionId: this.questionId,
+            answer: { 'key': this.presenterBric.selectedChoice().answerKey },
             responseCallback: goog.bind(this.handleSubmitResponse_, this)
         };
+
+    // Disable the submit button at least until we get a response to the score request
+    this.submitButton.setEnabled(false);
 
     this.eventManager.publish(this.submitScoreRequestEventId, submitAnsDetails);
 };
@@ -358,25 +383,31 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitRequested_ = function 
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function ()
 {
-    window.console.log('MCQ: handling answer selected');
+    this.logger_.fine('handling answer selected');
 
-    this.submitButton.setText('Submit');
+    // The button text should no longer be changed when an answer is selected
+    //this.submitButton.setText('Submit');
     this.submitButton.setEnabled(true);
+
+    // unsubscribe because we don't want subsequent answer selections
+    // to enable the submit button if we've deliberately disabled it.
+    this.eventManager.unsubscribe(this.presenterBric.selectedEventId, this.answerSelectedHandler_);
 };
 
 /* **************************************************************************
  * MultipleChoiceQuestion.handleSubmitResponse_                        */ /**
  *
  * Handle the response to submitting an answer.
+ * @private
  *
  * @param {Object}  responseDetails -An object containing details about how
  *                                   the submitted answer was scored.
- * @private
  *
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (responseDetails)
 {
-    window.console.log('MCQ: handling submit response');
+    this.logger_.fine('handling submit response');
+    this.logger_.finer('responseDetails: ' + JSON.stringify(responseDetails));
 
     this.responses.push(responseDetails);
 
@@ -386,9 +417,79 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     var prevFeedback = this.lastdrawn.widgetGroup.selectAll('div.feedback > *');
     prevFeedback.remove();
 
-    // For now just use the helper function to write the response.
-    responseDetails.submission = this.presenterBric.selectedItem().content;
+    // Update attempts remaining from the value in the response
+    this.updateAttemptsMade_(responseDetails.attemptsMade);
+
+    // For now just use the helper function to write the response
+    var selectedChoice = this.presenterBric.selectedChoice();
+    responseDetails.submission = selectedChoice.content;
     pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
+
+    // if they answered correctly we will want the answerKey later
+    var correctAnswerKey = null;
+    if (responseDetails.score === 1)
+    {
+        correctAnswerKey = selectedChoice.answerKey;
+    }
+
+    // if the response contains the correct answer we should display its feedback
+    var correctAnswer = 'correctAnswer' in responseDetails ? responseDetails['correctAnswer'] : null;
+    if (correctAnswer !== null && typeof correctAnswer === 'object')
+    {
+        correctAnswerKey = correctAnswer['key'];
+        var correctChoice = this.presenterBric.getChoiceByKey(correctAnswerKey);
+        correctAnswer['correctness'] = 1;
+        correctAnswer['submission'] = correctChoice.content;
+        pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer);
+    }
+
+    // Re-enable the submit button if the answer was incorrect and there are attempts remaining
+    if (!this.correctlyAnswered() &&
+        (this.maxAttempts_ === null || this.attemptsMade_ < this.maxAttempts_))
+    {
+        this.submitButton.setEnabled(true);
+    }
+
+    // If we know the correct answer, tell the presenter bric to flag it
+    if (correctAnswerKey !== null)
+    {
+        this.presenterBric.flagChoice(correctAnswerKey);
+    }
+};
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.correctlyAnswered                            */ /**
+ *
+ * Determine if the last submitted answer was the correct answer.
+ *
+ * @returns {boolean} true if the last submitted answer was the correct answer.
+ *
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.prototype.correctlyAnswered = function ()
+{
+    if (this.responses.length === 0 ||
+        this.responses[this.responses.length - 1].correctness !== 1)
+    {
+        return false;
+    }
+
+    return true;
+};
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.getId                                        */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.prototype.getId = function ()
+{
+    return this.mcqId_;
 };
 
 /* **************************************************************************
@@ -423,47 +524,119 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
     // draw the choices
     this.presenterBric.draw(presenterBricCntr);
 
+    // We need a block container for the submit button and the attempts
+    var submitAndAttemptsCntr  = widgetGroup.append('div');
+
+    // draw the submit button below
+    var submitButtonCntr = submitAndAttemptsCntr.append('div')
+        .attr('class', 'submit')
+        .style('display', 'inline-block');
+
+    this.submitButton.draw(submitButtonCntr);
+
+    var attemptsCntr = submitAndAttemptsCntr.append('span')
+        .attr('class', 'attempts');
+
     // make a target for feedback when the question is answered
     widgetGroup.append('div')
         .attr('class', 'feedback');
 
-    // draw the submit button below
-    var submitButtonCntr = widgetGroup.append("div")
-        .attr("class", "submit");
-
-    this.submitButton.draw(submitButtonCntr);
-
     this.lastdrawn.widgetGroup = widgetGroup;
+
+    this.drawAttempts_(attemptsCntr);
 
 }; // end of MultipleChoiceQuestion.draw()
 
 /* **************************************************************************
- * MultipleChoiceQuestion.getId                                        */ /**
+ * MultipleChoiceQuestion.drawAttempts_                                */ /**
  *
- * @inheritDoc
- * @export
- * @description The following is here until jsdoc supports the inheritDoc tag.
- * Returns the ID of this bric.
+ * Draw the attempts count and description which varies based on whether
+ * the last submission was correct and how many attempts are left.
+ * @private
  *
- * @returns {string} The ID of this Bric.
+ * @param {!d3.selection}   cntr   -The container html element to append
+ *                                  the attempts count and description spans
+ *                                  to.
  *
  ****************************************************************************/
-pearson.brix.MultipleChoiceQuestion.prototype.getId = function ()
+pearson.brix.MultipleChoiceQuestion.prototype.drawAttempts_ = function (cntr)
 {
-    return this.mcqId_;
+    var count = cntr.append('span').attr('class', 'count');
+    var cntDescr = cntr.append('span').attr('class', 'descr');
+
+    this.redrawAttempts_();
 };
 
 /* **************************************************************************
- * MultipleChoiceQuestion.selectedItem                                 */ /**
+ * MultipleChoiceQuestion.redrawAttempts_                              */ /**
  *
- * Return the selected choice from the choice widget or null if nothing has been
- * selected.
- * @export
- *
- * @return {Object} the choice which is currently selected or null.
+ * Update the displayed attempts count and description text which varies based
+ * on whether the last submission was correct and how many attempts are left.
+ * @private
  *
  ****************************************************************************/
-pearson.brix.MultipleChoiceQuestion.prototype.selectedItem = function ()
+pearson.brix.MultipleChoiceQuestion.prototype.redrawAttempts_ = function ()
+{
+    var count = this.lastdrawn.widgetGroup.select('span.attempts span.count');
+    var cntDescr = this.lastdrawn.widgetGroup.select('span.attempts span.descr');
+
+    if (this.correctlyAnswered())
+    {
+        count.text(this.attemptsMade_);
+        cntDescr.text('Attempts Used');
+    }
+    else
+    {
+        if (this.maxAttempts_ === null)
+        {
+            count.text('');
+            cntDescr.text('');
+        }
+        else
+        {
+            count.text(this.maxAttempts_ - this.attemptsMade_);
+            cntDescr.text('Remaining Attempts');
+        }
+    }
+};
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.updateAttemptsMade_                          */ /**
+ *
+ * Update the attemptsMade property w/ the new value, and update
+ * where it presented to the user.
+ * @private
+ *
+ * @param {number}  attemptsMade    -The number of attempts that have been
+ *                                   submitted so far.
+ *                                   Must be a whole integer.
+ *
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.prototype.updateAttemptsMade_ = function (attemptsMade)
+{
+    this.attemptsMade_ = attemptsMade;
+
+    // attempts used may not exceed the max attempts
+    if (this.maxAttempts_ !== null && this.maxAttempts_ < attemptsMade)
+    {
+        this.attemptsMade_ = this.maxAttempts_;
+    }
+
+    this.redrawAttempts_();
+};
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.selectedChoice                               */ /**
+ *
+ * Return the choice element corresponding to the current selection in the
+ * presenter or null if nothing has been selected.
+ * Note that this does not return the index of the selected choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the choice which is currently selected or null.
+ *
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.prototype.selectedChoice = function ()
 {
     return this.presenterBric.selectedItem();
 };
@@ -482,6 +655,6 @@ pearson.brix.MultipleChoiceQuestion.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.selectItemAtIndex = function (index)
 {
-    this.presenterBric.selectItemAtIndex(index);
+    this.presenterBric.selectChoice(index);
 };
 

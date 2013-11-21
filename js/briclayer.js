@@ -231,6 +231,13 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
     // Define the building info properties
     building['info']['sequenceNodeKey'] = activityConfig['sequenceNodeKey'];
 
+    // optional info properties
+    var maxAttempts = activityConfig['maxAttempts'];
+    if (maxAttempts !== undefined)
+    {
+        building['info']['maxAttempts'] = maxAttempts;
+    }
+
     // Define the building data domain from the activityConfig
     if ('data' in activityConfig)
     {

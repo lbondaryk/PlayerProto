@@ -77,6 +77,14 @@ goog.require('goog.object');
                 expect(building.info).to.be.an('object');
             });
 
+            it('should have a sequenceNodeKey property in the info object', function () {
+                expect(building.info).to.have.a.property('sequenceNodeKey');
+            });
+
+            it('should not have a maxAttempts property in the info object', function () {
+                expect(building.info).to.not.have.a.property('maxAttempts');
+            });
+
             it('should return an object w/ a data property which is an object w/ no properties', function () {
                 expect(building).to.have.a.property('data');
                 expect(building.brix).to.be.an('object');
@@ -93,6 +101,18 @@ goog.require('goog.object');
                 expect(building).to.have.a.property('mortar');
                 expect(building.mortar).to.be.an('object');
                 expect(goog.object.getCount(building.mortar)).to.equal(0);
+            });
+        });
+
+        describe('BricLayer.build with activity config w/ maxAttempts property', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var activityConfig = createActivityConfigSkeleton();
+            activityConfig.maxAttempts = 12;
+            var building = bricLayer.build(activityConfig);
+
+            it('should have a maxAttempts property in the info object', function () {
+                expect(building.info).to.have.a.property('maxAttempts');
+                expect(building.info.maxAttempts).to.equal(12);
             });
         });
 

@@ -7,8 +7,8 @@
  * The RadioGroup bric draws a list of choices and allows the user to
  * select one of the choices.
  *
- * Created on		May 29, 2013
- * @author			Michael Jay Lippert
+ * Created on       May 29, 2013
+ * @author          Michael Jay Lippert
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -22,67 +22,43 @@ goog.require('pearson.brix.HtmlBric');
 // Sample configuration objects for classes defined here
 (function()
 {
-	var Q1Choices =
-	[
-		{
-			content: "Because as the population increases, the absolute number of births increases even though the growth rate stays constant.",
-			response: "Growth rate stays constant.",
-			answerKey: "correct"
-		},
-		{
-			content: "Because the growth rate increases as the population rises.",
-			response: "Does the growth rate change with population size?",
-			answerKey: "wrong1"
-		},
-		{
-			content: "Because the total fertility rate increases with population.",
-			response: "Does the fertility rate change with population size?",
-			answerKey: "wrong2"
-	
-		},
-		{
-			content: "Because social behaviors change and people decide to have more children.",
-			response: "This might happen but is it something is necessarily occurs?",
-			answerKey: "wrong3"
-		}
-	];
-	
-	// RadioButton widget config
-	var rbConfig =
-		{
-			id: "RG1",
-			choices: Q1Choices,
-			numberFormat: "latin-upper"
-		};
-	
-	// RadioButtonQuestion widget config
-	var rbqConfig =
-	{
-		id: "Q1",
-		choices: Q1Choices,
-		type: "randomized", //default, even if not specified
-	};
+    var Q1Choices =
+    [
+        {
+            content: "Because as the population increases, the absolute number of births increases even though the growth rate stays constant.",
+            answerKey: "correct"
+        },
+        {
+            content: "Because the growth rate increases as the population rises.",
+            answerKey: "wrong1"
+        },
+        {
+            content: "Because the total fertility rate increases with population.",
+            answerKey: "wrong2"
+
+        },
+        {
+            content: "Because social behaviors change and people decide to have more children.",
+            answerKey: "wrong3"
+        }
+    ];
+
+    // RadioButton widget config
+    var rbConfig =
+        {
+            id: "RG1",
+            choices: Q1Choices,
+            numberFormat: "latin-upper"
+        };
+
+    // RadioButtonQuestion widget config
+    var rbqConfig =
+    {
+        id: "Q1",
+        choices: Q1Choices,
+        type: "randomized", //default, even if not specified
+    };
 });
-
-/**
- * KeyedAnswers are presented to users by certain brix that allow the user to
- * select one (or more of them).
- *
- * @typedef {Object} pearson.brix.KeyedAnswer
- * @property {htmlString}
- *                      content     -The content of the answer, which presents the
- * 									 meaning of the answer.
- * @property {string}	response	-The response is presented to the user when
- * 									 they choose this answer.
- * @property {string}	answerKey	-This is the unique ID that will be returned
- * 									 to the scoring engine to identify that the
- * 									 user has chosen this answer.
- *
- * @todo: the content currently must be text (a string) however, we are likely
- * to want to make the content be any widget.
- */
-pearson.brix.KeyedAnswer;
-
 
 /* **************************************************************************
  * RadioGroup                                                          */ /**
@@ -91,20 +67,21 @@ pearson.brix.KeyedAnswer;
  *
  * @constructor
  * @extends {pearson.brix.HtmlBric}
+ * @implements {pearson.brix.IChoicePresenter}
  * @export
  *
- * @param {Object}		config			-The settings to configure this RadioGroup
+ * @param {Object}      config          -The settings to configure this RadioGroup
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this RadioGroup.
- * 										 if undefined a unique id will be assigned.
+ *                      config.id       -String to uniquely identify this RadioGroup.
+ *                                       if undefined a unique id will be assigned.
  * @param {!Array.<!pearson.brix.KeyedAnswer>}
- *						config.choices	-The list of choices (answers) to be presented by the RadioGroup.
+ *                      config.choices  -The list of choices (answers) to be presented by the RadioGroup.
  * @param {string|undefined}
- *						config.numberFormat
- *										-The format for numbering the choices. default is "none"
+ *                      config.numberFormat
+ *                                      -The format for numbering the choices. default is "none"
  * @param {!pearson.utils.IEventManager=}
- * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them.
+ *                      eventManager    -The event manager to use for publishing events
+ *                                       and subscribing to them.
  *
  * @classdesc
  * The RadioGroup widget draws a list of choices and allows the user to
@@ -113,58 +90,59 @@ pearson.brix.KeyedAnswer;
  ****************************************************************************/
 pearson.brix.RadioGroup = function (config, eventManager)
 {
-	// call the base class constructor
-	goog.base(this);
+    // call the base class constructor
+    goog.base(this);
 
-	/**
-	 * A unique id for this instance of the radio group widget
-	 * @type {string}
-	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.RadioGroup);
+    /**
+     * A unique id for this instance of the radio group widget
+     * @type {string}
+     */
+    this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.RadioGroup);
 
-	/**
-	 * The list of choices presented by the RadioGroup.
-	 * @type {!Array.<!pearson.brix.KeyedAnswer>}
-	 */
-	this.choices = config.choices;
+    /**
+     * The list of choices presented by the RadioGroup.
+     * @type {!Array.<!pearson.brix.KeyedAnswer>}
+     */
+    this.choices = config.choices;
 
-	/**
-	 * The format for numbering the choices.
-	 * "none", "latin-upper", "latin-lower", "number", "roman-lower-number"
-	 * @type {string}
-	 */
-	this.numberFormat = config.numberFormat || "none";
+    /**
+     * The format for numbering the choices.
+     * "none", "latin-upper", "latin-lower", "number", "roman-lower-number"
+     * @type {string}
+     */
+    this.numberFormat = config.numberFormat || "none";
 
-	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {!pearson.utils.IEventManager}
-	 */
-	this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
+    /**
+     * The event manager to use to publish (and subscribe to) events for this widget
+     * @type {!pearson.utils.IEventManager}
+     */
+    this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
-	/**
-	 * The event id published when an item in this carousel is selected.
-	 * @const
-	 * @type {string}
-	 */
-	this.selectedEventId = this.id + '_itemSelected';
-	
-	/**
-	 * The event details for this.selectedEventId events
-	 * @typedef {Object} SelectedEventDetails
-	 * @property {string} selectKey	-The answerKey associated with the selected answer.
-	 */
-	var SelectedEventDetails;
+    /**
+     * The event id published when an item in this carousel is selected.
+     * @const
+     * @type {string}
+     */
+    this.selectedEventId = this.id + '_itemSelected';
 
-	/**
-	 * Information about the last drawn instance of this image (from the draw method)
-	 * @type {Object}
-	 */
-	this.lastdrawn =
-		{
-			container: null,
-			widgetGroup: null,
-			choiceSelected: null,
-		};
+    /**
+     * The event details for this.selectedEventId events
+     * @typedef {Object} SelectedEventDetails
+     * @property {string} selectKey -The answerKey associated with the selected answer.
+     * @property {number} index     -The index of the selected answer from the list of choices.
+     */
+    var SelectedEventDetails;
+
+    /**
+     * Information about the last drawn instance of this image (from the draw method)
+     * @type {Object}
+     */
+    this.lastdrawn =
+        {
+            container: null,
+            widgetGroup: null,
+            choiceSelected: null,
+        };
 }; // end of RadioGroup constructor
 goog.inherits(pearson.brix.RadioGroup, pearson.brix.HtmlBric);
 
@@ -178,93 +156,174 @@ pearson.brix.RadioGroup.autoIdPrefix = "rg_auto_";
 /* **************************************************************************
  * RadioGroup.draw                                                     */ /**
  *
- * Draw this RadioGroup in the given container.
+ * @inheritDoc
  * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Draw this RadioGroup in the given container.
  *
- * @param {!d3.selection}
- *					container	-The container html element to append the radio
- *								 group element tree to.
+ * @param {!d3.selection}   container   -The container html element to append
+ *                                       this HtmlBric element tree to.
  *
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.draw = function (container)
 {
-	this.lastdrawn.container = container;
+    this.lastdrawn.container = container;
 
-	var that = this;
-	
-	// make a div to hold the radio group
-	var widgetGroup = container.append("div")
-		.attr("class", "brixRadioGroup")
-		.attr("id", this.id);
+    var that = this;
 
-	// We will use a table to provide structure for the radio group
-	// and put each answer in its own row of the table.
-	var table = widgetGroup.append("table")
-		.attr("class", "questionTable");
+    // make a div to hold the radio group
+    var widgetGroup = container.append("div")
+        .attr("class", "brixRadioGroup")
+        .attr("id", this.id);
 
-	// create the table body to contain the answer rows
-	var tbody = table.append("tbody");
+    // We will use a table to provide structure for the radio group
+    // and put each answer in its own row of the table.
+    var table = widgetGroup.append("table")
+        .attr("class", "questionTable");
 
-	// Create a group for each item then draw the item in that group
-	var ansRows = tbody.selectAll("tr").data(this.choices);
-	ansRows.enter().append("tr");
+    // create the table body to contain the answer rows
+    var tbody = table.append("tbody");
 
-	/** @type {d3DataFunc} */
-	var getButtonId = function (d, i) {return that.id + "_btn" + i;};
+    // Create a group for each item then draw the item in that group
+    var ansRows = tbody.selectAll("tr").data(this.choices);
+    ansRows.enter().append("tr");
 
-	var choiceIndex = this.getChoiceNumberToDisplayFn_();
-	var choiceSeparator = (this.numberFormat != 'none') ? ')' : '';
+    /** @type {d3DataFunc} */
+    var getButtonId = function (d, i) {return that.id + "_btn" + i;};
 
-	var buttonCell = ansRows.append("td");
-	buttonCell
-		.append("input")
-			.attr("id", getButtonId)
-			.attr("type", "radio")
-			.attr("name", this.id)
-			.attr("value", function (d) {return d.answerKey;});
+    var choiceIndex = this.getChoiceNumberToDisplayFn_();
+    var choiceSeparator = (this.numberFormat != 'none') ? ')' : '';
 
-	var labelCell = ansRows.append("td");
-	labelCell
-		.append("label")
-			.attr("for", getButtonId)
-			.html(function (d, i)
+    var buttonCell = ansRows.append("td");
+    buttonCell
+        .append("input")
+            .attr("id", getButtonId)
+            .attr("type", "radio")
+            .attr("name", this.id)
+            .attr("value", function (d) {return d.answerKey;});
+
+    var labelCell = ansRows.append("td");
+    labelCell
+        .append("label")
+            .attr("for", getButtonId)
+            .html(function (d, i)
                   {
                       var choiceLabel = '<span class="choiceLabel">' +
                                         choiceIndex(i) + choiceSeparator + '</span> ';
                       return  choiceLabel + d.content;
                   });
-	
-	var choiceInputs = widgetGroup.selectAll("input[name='" + this.id + "']");
-	choiceInputs
-		.on("change", function (d, i)
-				{
-					that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey, index: i});
-				});
-	
-	this.lastdrawn.widgetGroup = widgetGroup;
+
+    var choiceInputs = widgetGroup.selectAll("input[name='" + this.id + "']");
+    choiceInputs
+        .on("change", function (d, i)
+                {
+                    that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey, index: i});
+                });
+
+    this.lastdrawn.widgetGroup = widgetGroup;
 
 }; // end of RadioGroup.draw()
 
 /* **************************************************************************
  * RadioGroup.selectedItem                                             */ /**
  *
- * Return the selected choice in the radio group and it's data, 
+ * Return the selected choice in the radio group and its data,
  * or null if nothing has been selected. Used in multiple choice questions.
  * Note that this does not return the index of the checked item.
  * @export
  *
- * @todo: implement lite for this and keys so it can be used as a regular
- * ui selection widget for mutually exclusive selections. -lb
- *
- * @return {Object} the radio group data corresponding to the choice 
+ * @return {Object} the radio group data corresponding to the choice
  * which is currently selected or null.
  *
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.selectedItem = function ()
 {
-	var selectedInputSelector = "input[name='" + this.id + "']:checked";
-	var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
-	return !selectedInput.empty() ? selectedInput.datum() : null;
+    var selectedInputSelector = "input[name='" + this.id + "']:checked";
+    var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
+    return !selectedInput.empty() ? selectedInput.datum() : null;
+};
+
+/* **************************************************************************
+ * RadioGroup.selectedChoice                                           */ /**
+ *
+ * Return the choice element corresponding to the current selection in the
+ * presenter or null if nothing has been selected.
+ * Note that this does not return the index of the selected choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the choice which is currently selected or null.
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.selectedChoice = function ()
+{
+    return /**@type {pearson.brix.KeyedAnswer}*/ (this.selectedItem());
+};
+
+/* **************************************************************************
+ * RadioGroup.getChoiceByKey                                           */ /**
+ *
+ * Return the choice element corresponding to the given key or null if the
+ * key doesn't match any choice.
+ *
+ * @return {pearson.brix.KeyedAnswer} the element from the configuration
+ * choice array corresponding to the given key, or null.
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.getChoiceByKey = function (key)
+{
+    var index = this.itemKeyToIndex(key);
+
+    if (index === null)
+    {
+        return null;
+    }
+
+    return this.choices[index];
+};
+
+/* **************************************************************************
+ * RadioGroup.selectChoice                                             */ /**
+ *
+ * Select the choice in the presenter represented by the given key or index.
+ * If the choice is already selected, do nothing.
+ *
+ * @param {string|number}   choiceSelector  -Either the key (if a string) or
+ *                                           the index (if a number) of the
+ *                                           choice to be selected
+
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.selectChoice = function (choiceSelector)
+{
+    var index;
+    if (typeof choiceSelector === 'string')
+    {
+        index = this.itemKeyToIndex(choiceSelector);
+        if (index === null)
+        {
+            return;
+        }
+    }
+    else
+    {
+        index = choiceSelector;
+    }
+
+    this.selectItemAtIndex(index);
+};
+
+/* **************************************************************************
+ * RadioGroup.flagChoice                                               */ /**
+ *
+ * Flag the choice with the given key in some way to make it stand out.
+ * This is currently used to flag the correct answer.
+ *
+ * @param {string}  key     -The key that identifies the choice to be flagged
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.flagChoice = function (key)
+{
+    // This needs to be implemented to replace the radio button element
+    // of the specified choice w/ a checked icon.
 };
 
 /* **************************************************************************
@@ -274,25 +333,52 @@ pearson.brix.RadioGroup.prototype.selectedItem = function ()
  * already selected, do nothing.
  * @export
  *
- * @param {number}	index	-the 0-based index of the choice to mark as selected.
+ * @param {number}  index   -the 0-based index of the choice to mark as selected.
  *
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 {
-	var choiceInputs = this.lastdrawn.widgetGroup.selectAll("input");
-	var selectedInput = choiceInputs[0][index];
+    var choiceInputs = this.lastdrawn.widgetGroup.selectAll("input");
+    var selectedInput = choiceInputs[0][index];
 
-	if (selectedInput.checked)
-	{
-		return;
-	}
+    if (selectedInput.checked)
+    {
+        return;
+    }
 
-	// choice at index is not selected, so select it and publish selected event
-	selectedInput.checked = true;
+    // choice at index is not selected, so select it and publish selected event
+    selectedInput.checked = true;
 
-	var d = /** @type {!pearson.brix.KeyedAnswer} */ (d3.select(selectedInput).datum());
+    var d = /** @type {!pearson.brix.KeyedAnswer} */ (d3.select(selectedInput).datum());
 
-	this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
+    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
+};
+
+/* **************************************************************************
+ * RadioGroup.itemKeyToIndex                                           */ /**
+ *
+ * Find the first item (choice) in the list of items in this RadioGroup which
+ * has the specified answer key and return its index. If no item has that key
+ * return null.
+ * @export
+ *
+ * @param {string}  key     -The key of the item (choice) to find
+ *
+ * @return {?number} the index of the item in the list of items with the
+ *          specified key.
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.itemKeyToIndex = function (key)
+{
+    for (var i = this.choices.length - 1; i >= 0; --i)
+    {
+        if (this.choices[i].answerKey === key)
+        {
+            return i;
+        }
+    }
+
+    return null;
 };
 
 /* **************************************************************************
@@ -306,27 +392,27 @@ pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 {
-	var formatIndexUsing =
-	{
-		"none": function (i)
-				{
-					return "";
-				},
-		"latin-upper": function (i)
-				{
-					return String.fromCharCode("A".charCodeAt(0) + i);
-				},
-		"latin-lower": function (i)
-				{
-					return String.fromCharCode("a".charCodeAt(0) + i);
-				},
-		"number": function (i)
-				{
-					return (i+1).toString();
-				},
-	};
+    var formatIndexUsing =
+    {
+        "none": function (i)
+                {
+                    return "";
+                },
+        "latin-upper": function (i)
+                {
+                    return String.fromCharCode("A".charCodeAt(0) + i);
+                },
+        "latin-lower": function (i)
+                {
+                    return String.fromCharCode("a".charCodeAt(0) + i);
+                },
+        "number": function (i)
+                {
+                    return (i+1).toString();
+                },
+    };
 
-	return (this.numberFormat in formatIndexUsing) ? formatIndexUsing[this.numberFormat]
-												   : formatIndexUsing["none"];
+    return (this.numberFormat in formatIndexUsing) ? formatIndexUsing[this.numberFormat]
+                                                   : formatIndexUsing["none"];
 };
 
