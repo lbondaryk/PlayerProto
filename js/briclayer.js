@@ -237,6 +237,11 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
     {
         building['info']['maxAttempts'] = maxAttempts;
     }
+    var imgBaseUrl = activityConfig['imgBaseUrl'];
+    if (imgBaseUrl !== undefined)
+    {
+        building['info']['imgBaseUrl'] = imgBaseUrl;
+    }
 
     // Define the building data domain from the activityConfig
     if ('data' in activityConfig)
@@ -595,6 +600,28 @@ pearson.brix.BricLayer.dynamicValueHandlers =
         var a = this.getDynamicValue(building, dynamicValueConfig['array']);
         var o = a[dynamicValueConfig['index']];
         return o;
+    },
+
+    /* **************************************************************************
+     * dynamicValueHandlers.join                                           */ /**
+     *
+     * Return the concatenation of the elements defined by the dynamic values 
+     * in the configuration parts array.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the join dynamicValue config object
+     *
+     * @returns {*} The concatenation of the values specified.
+     ****************************************************************************/
+    'join': function (building, dynamicValueConfig)
+    {
+        var a = dynamicValueConfig['parts'].map(
+               function (dynVal) { return this.getDynamicValue(building, dynVal); },
+               this);
+
+        return a.join('');
     },
 
     /* **************************************************************************

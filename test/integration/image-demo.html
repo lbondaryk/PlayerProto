@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Muliple Choice Demo</title>
+    <title>Image Server Demo</title>
 
 
     <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
@@ -40,7 +40,7 @@
     <!--
     <script src="../../js/brixlib-compiled.js"></script>
     -->
-
+    
     <script src="../../js/eventmanager.js"></script>
 
     <script src="../../js/domhelper.js"></script>
@@ -82,8 +82,6 @@
 
 
     <script>
-		// (mjl->ysap) may want to replace these lines with:
-	// pearson.utils.logToConsole(true, 'FINER', 'pearson');
     var debugConsole = new goog.debug.Console();
     debugConsole.setCapturing(true);
     goog.debug.Logger.getLogger('pearson').setLevel(goog.debug.Logger.Level.FINER);
@@ -95,15 +93,16 @@
 </head>
 
 <body>
-    <h1>Submission (MultipleChoiceQuestion) Integration demo (with PAF)</h1>
+    <h1>Brix Imageserver Integration demo (with PAF)</h1>
     <div style="border: orange 1px solid; padding: 10px">
-    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Servers (IPS &amp; CorrectnessEngine) up</p>
-    <p>Remember to configure laspaf.properties to NOT use the PAF Stub.</p>
+    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Servers (IPS & CorrectnessEngine) up
+        with the IPS pointing to a local deployment of the Brix image repo.</p>
+    <p>Remember to configure laspaf.properties to NOT use the PAF Stub.  This page is currently pointing at the PAF Dev env.</p>
     <pre>
 [Tomcat/bin]$ ./catalina.sh run
 [BrixServer]$ make testsvr
-[CorrectnessEngine]$ node ceapp.js
-[~]$ redis-server</pre>
+[CorrectnessEngine]$ node ceapp.js</pre>
+    <b></b>
     </div>
 
     <!-- TEST CONTENT {{ -->
@@ -119,12 +118,12 @@
                         <!-- When using PAF, make sure the ID matches with what
                         was added to the server (DEV | CERT)
                          -->
-                       <div id="target1" habitat-id="some_habitat_id1" class="brix" 
-                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1a"
-                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1a"
+                        <div id="target1" habitat-id="some_habitat_id1" class="brix" 
+                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/eaf7f767-a4ad-42f9-b036-871d6a7f6e74"
+                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/e579114a-2b65-4d9e-8ed5-26a7c15d8ad8"
                             data-containerid="target1"
                             data-type="brix" >
-                        <p>Q1-test. Multiple Choice question, randomized</p></div>
+                        <p>Image test.  Image coming from BrixServer.</p></div>
                     </div>
             </div>
         </section>
