@@ -421,7 +421,8 @@
                         "parts":
                             {
                                 "description": "an array containing dynamic values",
-                                "type": "array"
+                                "type": "array",
+                                "items": { "$ref": "#/definitions/dynamicValue" }
                             },
                         "description":
                             {

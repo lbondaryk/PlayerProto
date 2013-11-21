@@ -611,7 +611,7 @@ pearson.brix.BricLayer.dynamicValueHandlers =
      * @this {pearson.brix.BricLayer}
      * @param {Object}  building    -the under construction (by the build method) building
      * @param {Object}  dynamicValueConfig
-     *                              -the parts dynamicValue config object
+     *                              -the join dynamicValue config object
      *
      * @returns {*} The concatenation of the values specified.
      ****************************************************************************/
