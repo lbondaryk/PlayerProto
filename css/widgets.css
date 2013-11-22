@@ -248,77 +248,101 @@ div.brixMultipleChoiceQuestion fieldset
 div.brixMultipleChoiceQuestion fieldset legend 
 {
   line-height: 40px;
-  color: #333333;
-  font: bold 21px HelveticaNeue, Helvetica;
+  color: #4d4d4d;
+  font: 20px Helvetica;
   margin-bottom: 5px; 
 }
 
 div.brixMultipleChoiceQuestion label 
 {
-  font: 18px Helvetica;
+  font: 16px Helvetica;
+  color: #4d4d4d;
   line-height: 30px;
 }
 
 div.brixMultipleChoiceQuestion .choiceLabel 
 {
-  font-weight: bold;
+  font: bold 16px Helvetica;
+  color: #4d4d4d;
   margin: 0 5px; 
 }
 
-div.brixMultipleChoiceQuestion .submit button:disabled
+div.brixMultipleChoiceQuestion .submit
 {
-  opacity: .5;
+  float: left;
+}
+
+div.brixMultipleChoiceQuestion span.attempts 
+{
+  margin-top: 5px;
+  display: inline-block;
 }
 
 div.brixMultipleChoiceQuestion span.attempts span.count
 {
-  font: bold 33px Helvetica;
+  font: bold 33px/28px Helvetica;
   color: #686868;
   margin-left: 16px;
+  margin-right: 5px;
+  float: left;
 }
 
 div.brixMultipleChoiceQuestion span.attempts span.descr
 {
-  font: 13px Helvetica;
+  font: 13px/14px Helvetica;
   color: #686868;
   margin-left: 6px;
+  display: inline-block;
+  width: 80px;
+}
+
+div.brixMultipleChoiceQuestion .submit button:disabled
+{
+  color: #686868;
+  border-color: #e0e0e0;
+  background-color: #e0e0e0;
+  background-image: -moz-linear-gradient(top, #e0e0e0, #e0e0e0);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e0e0e0), to(#e0e0e0));
+  background-image: -webkit-linear-gradient(top, #e0e0e0);
+  background-image: -o-linear-gradient(top, #e0e0e0, #e0e0e0);
+  background-image: linear-gradient(to bottom, #e0e0e0, #e0e0e0);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffe0e0e0', endColorstr='#ffe0e0e0', GradientType=0);
+  
 }
 
 .brixButton button
 {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #006dcc;
-  background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
-  background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
-  background-image: -o-linear-gradient(top, #0088cc, #0044cc);
-  background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+  background-color: #107aca;
+  background-image: -moz-linear-gradient(top, #368fd2, #107aca);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#368fd2), to(#107aca));
+  background-image: -webkit-linear-gradient(top, #368fd2, #107aca);
+  background-image: -o-linear-gradient(top, #368fd2, #107aca);
+  background-image: linear-gradient(to bottom, #368fd2, #107aca);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
-  border-color: #0044cc #0044cc #002a80;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff368fd2', endColorstr='#ff107aca', GradientType=0);
   margin-bottom: 0;
-  margin-left: 20px;
-  font: 14px Helvetica;
+  margin-left: 15px;
+  font: 16px Helvetica;
   line-height: 20px;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
   color: #fff;
-  border-color: #005f80;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  padding: 4px 30px;
+  border-color: #0d65a6;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  padding: 4px 25px;
 }
 
 .brixMultipleChoiceQuestion .feedback
 {
   padding: 20px;
   font: bold 18px Helvetica;
+  color: #4d4d4d;
   bottom: 20px;
   left: 0;
   width: 100%;
@@ -340,9 +364,16 @@ div.brixMultipleChoiceQuestion span.attempts span.descr
 .brixMultipleChoiceQuestion .feedback .feedback-incorrect,
 .brixMultipleChoiceQuestion .feedback .feedback-partial
 {
-  background-color: #efefef;
-  border-top: 1px solid #ccc;
-  box-shadow: 0 4px 0 #ddd inset;
+  background-color: #fff;
+  border: 1px solid #c7e5fc;
+  padding: 20px;
+}
+
+.brixMultipleChoiceQuestion .feedback .feedback-incorrect,
+.brixMultipleChoiceQuestion .feedback .feedback-partial
+{
+  background-color: #f0f7fc;
+  border: 1px solid #c7e5fc;
   padding: 20px;
 }
 
@@ -413,13 +444,13 @@ div.brixMultipleChoiceQuestion span.attempts span.descr
 .icon-ok-sign:before 
 {
   content: "\f058"; 
-  color: #468847;
+  color: #00a05e;
 }
 
 .icon-remove:before 
 {
-  content: "\f05c";
-  color: #b94a48; 
+  content: "\f057";
+  color: #dc3535; 
 }
 
 
