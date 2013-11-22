@@ -440,7 +440,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
         var correctChoice = this.presenterBric.getChoiceByKey(correctAnswerKey);
         correctAnswer['correctness'] = 1;
         correctAnswer['submission'] = correctChoice.content;
-        pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer);
+        pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer, true);
     }
 
     // Re-enable the submit button if the answer was incorrect and there are attempts remaining

@@ -360,15 +360,14 @@ div.brixMultipleChoiceQuestion .submit button:disabled
   font: 16px Helvetica;
 }
 
-.brixMultipleChoiceQuestion .feedback .feedback-correct,
-.brixMultipleChoiceQuestion .feedback .feedback-incorrect,
-.brixMultipleChoiceQuestion .feedback .feedback-partial
+.brixMultipleChoiceQuestion .feedback .feedback-correctAfterWrong
 {
   background-color: #fff;
   border: 1px solid #c7e5fc;
   padding: 20px;
 }
 
+.brixMultipleChoiceQuestion .feedback .feedback-correct,
 .brixMultipleChoiceQuestion .feedback .feedback-incorrect,
 .brixMultipleChoiceQuestion .feedback .feedback-partial
 {
@@ -447,7 +446,19 @@ div.brixMultipleChoiceQuestion .submit button:disabled
   color: #00a05e;
 }
 
-.icon-remove:before 
+.icon-check:before 
+{
+  content: "\f00c"; 
+  color: #00a05e;
+}
+
+.icon-wrong:before 
+{
+  content: "\f057";
+  color: #dc3535; 
+}
+
+.icon-adjust:before 
 {
   content: "\f057";
   color: #dc3535; 
