@@ -94,7 +94,9 @@
 <body>
     <h1>Submission (MultipleChoiceQuestion) Integration demo (with PAF)</h1>
     <div style="border: orange 1px solid; padding: 10px">
-    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Servers (IPS & CorrectnessEngine) up</p>
+    <p>This test will require to have the AMS server (Java webapp in Tomcat) 
+        and Brix test Servers (IPS & CorrectnessEngine) up, along with 
+        the required components: Redis (for IPS) and Cassanra (for AMS)</p>
     <p>Remember to configure laspaf.properties to NOT use the PAF Stub.</p>
     <pre>
 [Tomcat/bin]$ ./catalina.sh run
@@ -117,8 +119,8 @@
                         was added to the server (DEV | CERT)
                          -->
                         <div id="target1" habitat-id="some_habitat_id1" class="brix" 
-                            data-assignmenturl="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1a"
-                            data-activityurl  ="http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1a"
+                            data-assignmenturl="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1b"
+                            data-activityurl  ="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1b"
                             data-containerid="target1"
                             data-type="brix" >
                         <p>Q1-test. Multiple Choice question, randomized</p></div>

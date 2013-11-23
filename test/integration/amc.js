@@ -6,41 +6,15 @@
 	/*
 	 * Configture the PAF/Ecourses Namespaces.
 	 */
-	window.Ecourses = window.Ecourses || {};
-	window.Ecourses.Paf = window.Ecourses.Paf || {};
 	
-	var PAF = window.Ecourses.Paf;
+	var global = (window ? window : (function (){return this;})()) ;
+	global.Ecourses = global.Ecourses || {};
+	global.Ecourses.Paf = global.Ecourses.Paf || {};
 	
-	/*
-	 * Initialize console.
-	 */
-	window.con = function (msg) {
-		if (window.con.active) {
-			var con = $('#console');
-			if (con.length > 0) {
-				con.append ("<div>" + msg + "</div>");
-				con.append ('<div class="consep">&nbsp;</div>');
-				con[0].scrollTop = con[0].scrollHeight;
-			}
-		}
-	};	
-	
-	/*
-	 * Called by Launcher if needed.
-	 */
-	window.con.init = function (bool) {
-		if (bool === true) {
-			$('#console').show();
-			window.con.active = true;
-		} else {
-			$('#console').hide();
-			window.con.active = false;
-		}
-		
-	};	
+	var PAF = global.Ecourses.Paf;
 	
 	var log = function (e) {
-		//console.log (e ? ("[AMC] " + e) : e);
+		console.log (e ? ("[AMC] " + e) : e);
 	};
 	
 	PAF.AMC = PAF.AMC || {};
@@ -49,7 +23,7 @@
 	 * AMC Level Helper function
 	 */
 	PAF.AMC.detectEventManager = function () {
-		return window["eventManager"] ;
+		return global["eventManager"] ;
 	};	
 	
 	/**
@@ -63,7 +37,7 @@
 
 		io.laspafurl = io.laspafurl ? io.laspafurl : "";
 		log ("Using paf url = [" + io.laspafurl + "]. " +
-				"Empty url implies current context will be used.")
+				"Empty url implies current context will be used.");
 		if (!io.eventmanager) {
 			var msg = "Init failed. AMC needs an event manager.";
 			log (msg);
@@ -136,7 +110,7 @@
 		_msgQ : null,
 		
 		requestbinding : function (message) {
-			log ("AMC Recieved binding request = " + message.data.activityurl)
+			log ("AMC Recieved binding request = " + message.data.activityurl);
 			var context = this;
 			// Create handler
 			if (!message.data.assignmenturl || !message.data.activityurl
@@ -178,7 +152,7 @@
 						" and param = " + JSON.stringify (param) );
 				// Default URL is for PAF hub directly.
 				param = $.extend ({
-					asRequestForAms : false,
+					asRequestForAms : false
 				}, param);
 				
 				log (JSON.stringify (param));
@@ -204,7 +178,7 @@
 				var asreq =  {
 					header : {
 						"Hub-Session" : hubsession,
-						"Content-Type" : "application/vnd.pearson.paf.v1.node+json",
+						"Content-Type" : "application/vnd.pearson.paf.v1.node+json"
 					},
 					content : {
 						"@context": "http://purl.org/pearson/paf/v1/ctx/core/SequenceNode",

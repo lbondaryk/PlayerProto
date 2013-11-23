@@ -3,8 +3,8 @@
    "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
    "@type" : "Envelope",
    "metadata" : {
-     "title" : "Sanvan MCQ Demo 1 (r)",
-     "guid" : "test.sanvan.assign.mcq1",
+     "title" : "Sanvan MCQ Demo mcq1a",
+     "guid" : "test.sanvan.assign.mcq1b",
      "description" : "Sanvan MultipleChoiceQuestion demo",
      "contentTypeTier1" : "Assessment",
      "contentTypeTier2" : [ "AssessmentItem" ],
@@ -16,18 +16,18 @@
    "body" : {
      "@context" : "http://purl.org/pearson/paf/v1/ctx/core/StructuredAssignment",
      "@type" : "StructuredAssignment",
-     "title" : "Sanvan MCQ Demo 1",
-     "guid" : "test.sanvan.assignment.mcq1",
+     "title" : "Sanvan MCQ Demo mcq1a",
+     "guid" : "test.sanvan.assign.mcq1b",
      "assignmentContents" : {
        "@contentType":"application/vnd.pearson.paf.v1.container+json",
        "binding" : [
            {
            "bindingIndex" : 1,
-           "boundActivity"  : "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1",
+           "boundActivity"  : "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1b",
            "activityFormat" : "application/vnd.pearson.sanvan.v1.activity",
-           "activityTitle" : "MultipleChoiceQuestion Sample 1",
+           "activityTitle" : "MultipleChoiceQuestion Sample mcq1a",
            "credit" : "ForCredit",
-           "guid" : "test.sanvan.activity.mcq1"
+           "guid" : "test.sanvan.activity.mcq1b"
          }]
     }
   }
