@@ -94,6 +94,7 @@ pearson.brix.BarChart = function (config, eventManager)
 	 * Array of bar series, where each series is an array of objects/bars, and each object is a
 	 * bar lengths and category w/ a {number/size} x and {string} y property.
 	 * Negative bar lengths Mean bars should face the other way.
+     * @private
 	 * @type {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
 	 *
 	 * @example
@@ -107,7 +108,7 @@ pearson.brix.BarChart = function (config, eventManager)
 	 *   // with other bric events in the page, such as clicks on
 	 *   // the legend.
 	 */
-	this.data = config.Data;
+	this.data_ = config.Data;
 
 	/**
 	 * The render type is one of:
@@ -251,6 +252,61 @@ pearson.brix.BarChart.prototype.getId = function ()
 };
 
 /* **************************************************************************
+ * BarChart.getData                                                    */ /**
+ *
+ * Get the data being used by this BarChart.
+ *
+ * @returns {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
+ * the data being used by this BarChart.
+ *
+ ****************************************************************************/
+pearson.brix.BarChart.prototype.getData = function ()
+{
+    return this.data_;
+};
+
+/* **************************************************************************
+ * BarChart.setData                                                    */ /**
+ *
+ * Set the data that this BarChart should display.
+ *
+ * @param {Object} newData       -The new data for this BarChart to display
+ *
+ ****************************************************************************/
+pearson.brix.BarChart.prototype.setData = function (newData)
+{
+    this.data_ = newData;
+
+    // If we're currently drawn someplace, redraw w/ the new data
+    if (this.lastdrawn.container != null)
+    {
+        this.redraw();
+    }
+};
+
+/* **************************************************************************
+ * BarChart.setTrace                                                   */ /**
+ *
+ * Set one of the traces that this BarChart should display.
+ *
+ * @param {number}  traceIndex      -The (0-based) index of the trace data to
+ *                                   replace.
+ * @param {Array.<{x: number, y: string, key: (string|undefined)}>}
+ *                  newTrace        -The new trace data
+ *
+ ****************************************************************************/
+pearson.brix.BarChart.prototype.setTrace = function (traceIndex, newTrace)
+{
+    this.data_[traceIndex] = newTrace;
+
+    // If we're currently drawn someplace, redraw w/ the new data
+    if (this.lastdrawn.container != null)
+    {
+        this.redraw();
+    }
+};
+
+/* **************************************************************************
  * BarChart.draw                                                       */ /**
  *
  * @inheritDoc
@@ -277,7 +333,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 			yAxisFormat: this.yAxisFormat,
 		};
 		
-	var dataPts = d3.merge(this.data);
+	var dataPts = d3.merge(this.data_);
 	
 	//all the data in each dimension is merged to use for the domain  
 	//on the axis (autoranging)
@@ -337,7 +393,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 		//label on the axis.
 		var indices = [];
 
-		for (var i = 0; i < this.data.length; i++)
+		for (var i = 0; i < this.data_.length; i++)
 		{
 			indices.push(i); //needed to space out grouped barcharts
 		}
@@ -350,7 +406,7 @@ pearson.brix.BarChart.prototype.draw = function(container, size)
 			//TEST: The last index  should produce the topmost bar
 			//appearing at y = 0
 		window.console.log("Grouped barChart last bar mapped to 0 offset: ",
-			groupScale(this.data.length - 1) == 0);
+			groupScale(this.data_.length - 1) == 0);
 	};
 
 
@@ -457,7 +513,7 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 	// bind all the series data to a group element w/ a series class
 	// creating or removing group elements so that each series has its own group.
 	var barSeries = graph.selectAll("g.series")
-		.data(this.data);
+		.data(this.data_);
 
 	barSeries.enter()
 		.append("g")
@@ -522,7 +578,7 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 	bars.select("rect")
 	//if grouped, each bar is only 1/(# groups) of the available height around 
 	// an ordinal tickmark
-		.attr("height", (this.type == "grouped") ? (bandsize / (this.data.length + 1)) : bandsize)
+		.attr("height", (this.type == "grouped") ? (bandsize / (this.data_.length + 1)) : bandsize)
 		.attr("width",
 			  function(d)
 			  {

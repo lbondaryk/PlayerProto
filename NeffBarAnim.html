@@ -66,9 +66,11 @@
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+	<script src="js/ipsproxy.js"></script>
 	<script src="js/eventmanager.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
 	<script src="js/answerman.js"></script>
+	<script src="js/localanswerman.js"></script>
 	<script src="js/submitmanager.js"></script>
     <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
@@ -1641,10 +1643,10 @@
 		var sliderStep = 5;
 		var newDataIndex = (selYr - baseYr) / sliderStep;
 
-		a.building.brix["bar5"].data = [[], a.building.data['histMen'][newDataIndex]];
+		a.building.brix["bar5"].setTrace(1, a.building.data['histMen'][newDataIndex]);
 		a.building.brix["bar5"].redraw();
 
-		a.building.brix["bar6"].data = [a.building.data['histWomen'][newDataIndex]];
+		a.building.brix["bar6"].setTrace(0,a.building.data['histWomen'][newDataIndex]);
 		a.building.brix["bar6"].redraw();
 
 		//a.building.brix["ratioReadout"].setValue(d3.format(",.2f")(depRat(a.building.data['histMen'][newDataIndex])));
