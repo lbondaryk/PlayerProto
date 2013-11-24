@@ -66,6 +66,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=eventmanager.js
 	--input=localanswerman.js
 	--input=mortar-base.js
+	--input=mortar-dataswap.js
 	--input=mortar-hilite.js
 	--input=ipc.js
 	--input=ipsproxy.js

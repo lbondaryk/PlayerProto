@@ -53,6 +53,7 @@ goog.require('pearson.brix.Slider');
 // mortar
 goog.require('pearson.brix.mortar.Mortar');
 goog.require('pearson.brix.mortar.Hilite');
+goog.require('pearson.brix.mortar.Dataswap');
 
 
 /* **************************************************************************
@@ -94,7 +95,7 @@ pearson.brix.BricTypes =
 /* **************************************************************************
  * MortarTypes                                                         */ /**
  *
- * This is the enumeration of all known mortart types that will be registered
+ * This is the enumeration of all known mortar types that will be registered
  * with the BricWorks instance of a BricLayer.
  *
  * @enum {string}
@@ -102,6 +103,7 @@ pearson.brix.BricTypes =
  ****************************************************************************/
 pearson.brix.MortarTypes =
 {
+    DATASWAP:               "Dataswap",
     HILITE:                 "Hilite"
 };
 
@@ -202,6 +204,7 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
 
     // register all mortar
     var MortarTypes = pearson.brix.MortarTypes;
+    bricWorks.registerMortarMix(MortarTypes.DATASWAP, pearson.brix.mortar.Dataswap);
     bricWorks.registerMortarMix(MortarTypes.HILITE, pearson.brix.mortar.Hilite);
 
     this.bricWorks_ = bricWorks;
