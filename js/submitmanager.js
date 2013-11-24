@@ -16,6 +16,8 @@
 goog.provide('pearson.brix.utils.SubmitManager');
 
 goog.require('goog.debug.Logger');
+goog.require('pearson.utils.IEventManager');
+goog.require('pearson.brix.utils.IAnswerMan');
 goog.require('pearson.brix.utils.LocalAnswerMan');
 
 /* **************************************************************************
@@ -28,7 +30,7 @@ goog.require('pearson.brix.utils.LocalAnswerMan');
  * @param {!pearson.utils.IEventManager}
  *                      eventManager    -The event manager to use for publishing events
  *                                       and subscribing to them.
- * @param {!pearson.brix.IAnswerMan=}
+ * @param {!pearson.brix.utils.IAnswerMan=}
  *                      answerMan       -The correctness engine to process the selected answer.
  *
  * @classdesc
@@ -50,12 +52,12 @@ pearson.brix.utils.SubmitManager = function (eventManager, answerMan)
     this.logger_ = goog.debug.Logger.getLogger('pearson.brix.utils.SubmitManager');
 
     /**
-     * The answerMan provides feedback to submissions 
+     * The answerMan provides feedback to submissions
      * @private
      * @type {!pearson.brix.utils.IAnswerMan}
      */
     this.answerMan_ = answerMan || new pearson.brix.utils.LocalAnswerMan();
-    
+
     /**
      * The event manager to use to publish (and subscribe to) events
      * @type {!pearson.utils.IEventManager}
@@ -159,7 +161,7 @@ pearson.brix.utils.SubmitManager.prototype.handleScoreRequest_ = function(eventD
  *
  * @param {string}  submissionId        -The submission id of the request which
  *                                       this is a response to.
- * @param {pearson.brix.utils.ScoreResponse}                                  
+ * @param {pearson.brix.utils.ScoreResponse}
  *                  submissionResponse  -The response to the score request
  *
  ****************************************************************************/
