@@ -14,12 +14,14 @@
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.BrixLayer');
+goog.provide('pearson.brix.BricLayer');
 goog.provide('pearson.brix.BricTypes');
+goog.provide('pearson.brix.MortarTypes');
 
 goog.require('goog.object');
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.utils.EventManager');
+goog.require('pearson.brix.utils.SubmitManager');
 goog.require('pearson.brix.BricWorks');
 
 // brix
@@ -117,13 +119,16 @@ pearson.brix.MortarTypes =
  * @param {!pearson.utils.IEventManager=}
  *                      eventManager    -The event manager to use for publishing events
  *                                       and subscribing to them.
+ * @param {!pearson.brix.utils.SubmitManager=}
+ *                      submitManager   -The submit manager to use for submitting
+ *                                       scoring requests from question brix.
  *
  * @classdesc
  * A BricLayer creates brix and connecting mortar as defined by a master
  * configuration object.
  *
  ****************************************************************************/
-pearson.brix.BricLayer = function (config, eventManager)
+pearson.brix.BricLayer = function (config, eventManager, submitManager)
 {
     /**
      * The event manager to use to publish (and subscribe to) events for the
@@ -132,6 +137,14 @@ pearson.brix.BricLayer = function (config, eventManager)
      * @type {!pearson.utils.IEventManager}
      */
     this.eventManager_ = eventManager || new pearson.utils.EventManager();
+
+    /**
+     * The submit manager to use for submitting scoring requests from question
+     * brix.
+     * @private
+     * @type {pearson.brix.utils.SubmitManager}
+     */
+    this.submitManager_ = submitManager || null;
 
     /**
      * The bricWorks is the factory which builds all brix. It should
@@ -217,6 +230,18 @@ pearson.brix.BricLayer.prototype.build = function (activityConfig)
 
     // Define the building info properties
     building['info']['sequenceNodeKey'] = activityConfig['sequenceNodeKey'];
+
+    // optional info properties
+    var maxAttempts = activityConfig['maxAttempts'];
+    if (maxAttempts !== undefined)
+    {
+        building['info']['maxAttempts'] = maxAttempts;
+    }
+    var imgBaseUrl = activityConfig['imgBaseUrl'];
+    if (imgBaseUrl !== undefined)
+    {
+        building['info']['imgBaseUrl'] = imgBaseUrl;
+    }
 
     // Define the building data domain from the activityConfig
     if ('data' in activityConfig)
@@ -578,6 +603,28 @@ pearson.brix.BricLayer.dynamicValueHandlers =
     },
 
     /* **************************************************************************
+     * dynamicValueHandlers.join                                           */ /**
+     *
+     * Return the concatenation of the elements defined by the dynamic values 
+     * in the configuration parts array.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the join dynamicValue config object
+     *
+     * @returns {*} The concatenation of the values specified.
+     ****************************************************************************/
+    'join': function (building, dynamicValueConfig)
+    {
+        var a = dynamicValueConfig['parts'].map(
+               function (dynVal) { return this.getDynamicValue(building, dynVal); },
+               this);
+
+        return a.join('');
+    },
+
+    /* **************************************************************************
      * dynamicValueHandlers.property-of-ref                                */ /**
      *
      * Return the value of a property of some specified object (the value may be
@@ -617,6 +664,24 @@ pearson.brix.BricLayer.dynamicValueHandlers =
         var bricWorks = this.getBricWorks();
 
         return bricWorks.getBricTopic(bricType, eventName, instanceId);
+    },
+
+    /* **************************************************************************
+     * dynamicValueHandlers.submit-manager                                 */ /**
+     *
+     * Return this BricLayer's SubmitManager which may be null if no SubmitManager
+     * was supplied to the BricLayer constructor.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the submit-manager dynamicValue config object
+     *
+     * @returns {pearson.brix.utils.SubmitManager} This BricLayer's SubmitManager
+     ****************************************************************************/
+    'submit-manager': function (building, dynamicValueConfig)
+    {
+        return this.submitManager_;
     },
 
     /* **************************************************************************

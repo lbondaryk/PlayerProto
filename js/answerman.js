@@ -7,116 +7,173 @@
  * The AnswerMan engine does simple comparisons between its record of an item's
  * data and whether the submitted answer is correct or not.
  *
- * Created on		June 17, 2013
- * @author			Leslie Bondaryk
+ * Created on       June 17, 2013
+ * @author          Leslie Bondaryk
+ * @author          Young Suk Ahn
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
  * **************************************************************************/
 
-goog.provide('pearson.brix.AnswerMan');
 
-goog.require('pearson.brix.test.activities');
+goog.provide('pearson.brix.utils.IpsAnswerMan');
+goog.provide('pearson.brix.utils.IAnswerMan');
 
-// YSAP - Changed from function to class with method.
-// Proposal: change from AnswerMan to EvalProvider
+goog.require('goog.object');
+goog.require('goog.debug.Logger');
+goog.require('pearson.brix.utils.IpsProxy');
+
+/**
+ * The common answerKey structure for all question types, they vary in the
+ * contents of the answers property.
+ *
+ * @typedef {Object} pearson.brix.utils.AnswerKey
+ * @property {string}   assessmentType  -The type of assessment (question)
+ *                                       this is an answer key for.
+ * @property {!Object}  answers         -The information needed to determine
+ *                                       correctness and feedback for any
+ *                                       answer of this particular question.
+ */
+pearson.brix.utils.AnswerKey;
+
+/**
+ * The ScoreResponse is the object returned describing the result of
+ * evaluating the answer choice to a question.
+ *
+ * @typedef {Object} pearson.brix.utils.ScoreResponse
+ * @property {number}   correctness -A rational value from 0-1 inclusive
+ *                                   that reflects how correct the given
+ *                                   answer is; 0=incorrect, 1=correct
+ * @property {string}   feedback    -The feedback for the given answer
+ */
+pearson.brix.utils.ScoreResponse;
 
 /* **************************************************************************
- * AnswerMan                                                           */ /**
+ * IAnswerMan                                                          */ /**
  *
- * The AnswerMan widget creates a clickable html button that publishes events.
+ * Interface for classes that provide a scoreAnswer method that evaluates
+ * a student's answer and returns feedback about it.
+ * @interface
+ ****************************************************************************/
+pearson.brix.utils.IAnswerMan = function () {};
+
+/* **************************************************************************
+ * IAnswerMan.scoreAnswer                                              */ /**
+ *
+ * Score (determine the correctness) of a student's answer to a question and
+ * return feedback.
+ *
+ * @param {string}  seqNodeKey      -The sequence node key that identifies the question
+ *                                   being scored.
+ * @param {Object}  studentAnswer   -The student's answer to the question.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback        -Callback function to be invoked w/ the
+ *                                   correctness feedback from scoring the given
+ *                                   answer.
+ ****************************************************************************/
+pearson.brix.utils.IAnswerMan.prototype.scoreAnswer = function (seqNodeKey, studentAnswer, callback) {};
+
+
+/* **************************************************************************
+ * IpsAnswerMan                                                        */ /**
+ *
+ * The IpsAnswerMan constructor.
  *
  * @constructor
- * @export
+ * @implements {pearson.brix.utils.IAnswerMan}
+ *
+ * @param {pearson.brix.utils.IpsProxy}
+ *                          ipsProxy   -The IpsProxy that will be used to
+ *                                      communicate w/ the IPS.
+ *
+ * @classdesc
+ * The IpsAnswerMan is a correctness engine which sends the student's answer
+ * to the IPS to be scored.
  *
  **************************************************************************/
-pearson.brix.AnswerMan = function ()
+pearson.brix.utils.IpsAnswerMan = function (ipsProxy)
 {
+    /**
+     * A logger to help debugging
+     * @type {goog.debug.Logger}
+     * @private
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.utils.IpsAnswerMan');
+
+    /**
+     * The IpsProxy used to communicate w/ the IPS
+     * @private
+     * @type {pearson.brix.utils.IpsProxy}
+     */
+    this.ipsProxy_ = ipsProxy;
 };
 
+/* **************************************************************************
+ * IpsAnswerMan.scoreAnswer                                            */ /**
+ *
+ * Score (determine the correctness) of a student's answer to a question and
+ * return feedback.
+ *
+ * @param {string}  seqNodeKey      -The sequence node key that identifies the question
+ *                                   being scored.
+ * @param {Object}  studentAnswer   -The student's answer to the question.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback        -Callback function to be invoked w/ the
+ *                                   correctness feedback from scoring the given
+ *                                   answer.
+ ****************************************************************************/
+pearson.brix.utils.IpsAnswerMan.prototype.scoreAnswer = function (seqNodeKey, studentAnswer, callback)
+{
+    // Currently the IPS correctness engine expects the key property to be named 'submission'
+    var ipsStudentAnswer = {};
+    goog.object.extend(ipsStudentAnswer, studentAnswer);
+    ipsStudentAnswer['submission'] = ipsStudentAnswer['key'];
+    delete ipsStudentAnswer['key'];
+
+    var timestamp = (new Date()).toISOString();
+    var param =
+        {
+            'sequenceNodeKey': seqNodeKey,
+            'timestamp': timestamp,
+            'type': 'submission',
+            'body': { 'studentSubmission': ipsStudentAnswer }
+        };
+
+    var ipsRespHandler = goog.bind(this.ipsSubmissionResponseHandler, this, seqNodeKey, callback);
+    this.ipsProxy_.postSubmission(param, ipsRespHandler);
+};
 
 /* **************************************************************************
- * AnswerMan.submitAnswer                                              */ /**
+ * IpsAnswerMan.ipsSubmissionResponseHandler                           */ /**
  *
- * Mock scoring engine.
- * @export
+ * [Description of ipsSubmissionResponseHandler]
  *
- * @param {string} 		sequenceNode	-The sequence node id of the activity being scored.
- * @param {string} 		studAnswerKey	-The student's answer key.
- * @param {string} 		studAnswerValue	-The student's answer value.
+ * @param {string}  seqNodeKey  -The sequence node key that identifies the question
+ *                               being scored.
+ * @param {function(pearson.brix.utils.ScoreResponse)}
+ *                  callback    -Callback function to be invoked w/ the
+ *                               correctness feedback from scoring the given answer.
+ * @param {*}       error       -[Description of error]
+ * @param {*}       result      -[Description of result]
+ *
  ****************************************************************************/
-pearson.brix.AnswerMan.prototype.submitAnswer = function (sequenceNode, studAnswerKey, studAnswerValue)
-{ 
-	//lookup the student answer in the answer key in fakeactivitydb.js, which
-	//got loaded with the page
-	var activities = pearson.brix.test.activities;
-	var activity = (sequenceNode in activities) ? activities[sequenceNode] : "activity not found";
-	var solution = (studAnswerKey in activity) ? activity[studAnswerKey] : "solution key not found";
+pearson.brix.utils.IpsAnswerMan.prototype.ipsSubmissionResponseHandler = function (seqNodeKey, callback, error, result)
+{
+    if (error)
+    {
+        this.logger_.warning('IpsProxy.postSubmission returned error: ' + JSON.stringify(error));
+        // @todo - (ysa) Is this response enough, even for system errors such as no network? 
+        // Also how do we handle last attempt and beyond?
+        callback({ 'correctness': null, 'feedback': 'no response' });
+    }
+    else
+    {
+        // change the property names from the Ips response to those currently expected by
+        // the brix. Currently the property names match so no massaging is needed.
+        var scoreResponse = result.data;
 
-	// stash the answer score and response in some variables
-	//var ansKey = ('score' in solution) ? activity.score : "answer key not found";
-	
-	// what follows is an unbelievably bogus implementation of numerical answer
-	// scoring.  There is only one answer key for numerical problems, and it always
-	// returns correct.  The numerical right answer is stored in the correctValue key.
-	// This can only be absolutely compared with the submitted value.  If they match,
-	// you get one, otherwise, 0, and the content (used in the response generator),
-	// is set to the value the student submitted.
-	
-	var feedback = solution.response;
-	var ansKey;
-	if (studAnswerValue)
-	{
-		ansKey = studAnswerValue != solution.correctValue ? 0 : 1;
-		solution.content = studAnswerValue;
-	}
-	else
-	{
-		ansKey = solution.score;
-	}
-	
-	//initialized the scored return object.  We'll need to know it's container
-	//(specifies where to write the responses), the value of the student submission,
-	//the score, and any specialized response.
-	var scored = {
-					submission: solution.content,
-					response: feedback
-				 };
-				
-	//then we switch on the lookup right or wrong response.  This is hard-coded
-	//to student answer now, but needs to come from the lookup vs. the student 
-	//response.  Should be either 0 for wrong, 1 for right, or anything else for
-	//partial credit for the fallthrough case.
-				
-	//note that the current implementation of the submitmanager uses the score
-	//as an array index, and so these must be integers.  Not sure if we'll want
-	//to keep doing that in the long term, but eventually we'll need some kind of 
-	//sliding scale functionality that allows some answers to be more correct
-	//and some less -lb
-	switch(ansKey)
-	{
-		case 1:
-  		// You got it right, hooray!
-			scored.score = 1;
- 			break;
-			
-		case 0:
-		// You're always WRONG!  HAHAHHAHAHA.
-			scored.score = 0;
-  			break;
-			
-		case undefined: 
-			scored.score = -1;
-			break;
-			
-		//fallthrough case for partially correct answers.
-		default:
-  			scored.score = 2;
-			//scored.response =" Sorta kinda.";
-  			break;
-	}
-	
-	//the return the scored object to the submitting page.
-	return scored;
-	
-}; //end answerMan function
+        this.logger_.finer('IpsProxy.postSubmission returned: ' + JSON.stringify(scoreResponse));
+        callback(scoreResponse);
+    }
+};
+

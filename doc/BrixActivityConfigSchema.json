@@ -25,6 +25,16 @@
                     "description": "Various named data (values, arrays, objects) that are used by brix in this activity",
                     "type": "object"
                 },
+            "maxAttempts":
+                {
+                    "description": "The maximum number of attempts allowed for Submission brix",
+                    "type": "integer"
+                },
+            "imgBaseUrl":
+                {
+                    "description": "The URL to prepend to any relative-path images, generally providing a server path",
+                    "type": "string"
+                }
             "description":
                 {
                     "description": "A descriptive comment about this activity",
@@ -108,6 +118,10 @@
                                 {
                                     "description": "The answer key defining how to determine if a student's answer is correct, and the various responses that may be returned",
                                     "type": "object",
+                                    "oneOf":
+                                        [
+                                            {"$ref": "#/definitions/answerKey-multiplechoice"},
+                                        ]
                                 },
                             "description":
                                 {
@@ -158,7 +172,7 @@
                 },
             "configFixup":
                 {
-                    "description": "runtime action to be applied to the config for the associated bric before constructing that bric",
+                    "description": "runtime action to be applied to the config for the associated bric or mortar before constructing that bric/mortar",
                     "type": "object",
                     "oneOf":
                         [
@@ -203,10 +217,11 @@
                         [
                             {"$ref": "#/definitions/dynamicValue-d3select"},
                             {"$ref": "#/definitions/dynamicValue-brix-topic"},
-                            {"$ref": "#/definitions/dynamicValue-property-of-ref"},
                             {"$ref": "#/definitions/dynamicValue-ref"},
+                            {"$ref": "#/definitions/dynamicValue-property-of-ref"},
                             {"$ref": "#/definitions/dynamicValue-array"},
                             {"$ref": "#/definitions/dynamicValue-array-element"},
+                            {"$ref": "#/definitions/dynamicValue-join"},
                             {"$ref": "#/definitions/dynamicValue-constant"},
                         ]
                 },
@@ -336,7 +351,7 @@
                 },
             "dynamicValue-array":
                 {
-                    "description": "a runtime value that is an array whose elements are defined by dynamicValues)",
+                    "description": "a runtime value that is an array whose elements are defined by dynamicValues",
                     "type": "object",
                     "required": ["type", "elements"],
                     "properties":
@@ -389,6 +404,32 @@
                                     "type": "string"
                                 }
                         }
+                },
+            "dynamicValue-join":
+                {
+                    "description": "a runtime value that is the concatenation of an array whose elements are defined by dynamicValues",
+                    "type": "object",
+                    "required": ["type", "parts"],
+                    "properties":
+                    {
+                        "type":
+                            {
+                                "description": "identifies this value as a join",
+                                "type": "string",
+                                "enum": ["join"]
+                            },
+                        "parts":
+                            {
+                                "description": "an array containing dynamic values",
+                                "type": "array",
+                                "items": { "$ref": "#/definitions/dynamicValue" }
+                            },
+                        "description":
+                            {
+                                "description": "A descriptive comment about this dynamic value",
+                                "type": "string"
+                            }
+                    }
                 },
             "dynamicValue-constant":
                 {
@@ -490,31 +531,54 @@
                             "Slider"
                         ],
                 },
-            "foo":
+            "answerKey-multiplechoice":
                 {
-                    "description": "",
+                    "description": "The answer key used to determine the correctness of a student's multiple choice selection, and the feedback for their answer",
                     "type": "object",
-                    "required": [],
+                    "required": ["assessmentType", "answers"],
                     "properties":
                         {
-                        }
-                },
-            "foo":
-                {
-                    "description": "",
-                    "type": "object",
-                    "required": [],
-                    "properties":
-                        {
-                        }
-                },
-            "foo":
-                {
-                    "description": "",
-                    "type": "object",
-                    "required": [],
-                    "properties":
-                        {
+                            "assessmentType":
+                                {
+                                    "description": "identifies this answer key as being for a multiple choice type question",
+                                    "type": "string",
+                                    "enum": ["multiplechoice"]
+                                },
+                            "answers":
+                                {
+                                    "description": "the feedback and score of all possible choices for this multiple choice question indexed by the choice key value",
+                                    "type": "object",
+                                    "additionalProperties":
+                                        {
+                                            "type": "object",
+                                            "required": ["score", "response"],
+                                            "properties":
+                                                {
+                                                    "score":
+                                                        {
+                                                            "description": "A number between 0 and 1 where 0 is incorrect and 1 is correct",
+                                                            "type": "number",
+                                                            "minimum": 0,
+                                                            "maximum": 1
+                                                        },
+                                                    "response":
+                                                        {
+                                                            "description": "The feedback for the student who selected this answer",
+                                                            "type": "string"
+                                                        }
+                                                }
+                                        }
+                                },
+                            "nonRecordable":
+                                {
+                                    "description": "A flag that denotes whether the assessment should be recorded in PAF",
+                                    "type": "boolean"
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this answer key",
+                                    "type": "string"
+                                }
                         }
                 },
         }

@@ -10,7 +10,7 @@
  * specific to it's container (either the whole document or a container
  * iframe) and instantiating the brix defined in that configuration.
  *
- * Message structure as received By IPC from the AMC through EventManager 
+ * Message structure as received By IPC from the AMC through EventManager
  * message = {
  *     status: <fail | success>
  *     sourcemessage: <message when there was error>
@@ -40,8 +40,9 @@ goog.provide('pearson.brix.Ipc');
 
 goog.require('goog.debug.Logger');
 
-goog.require("pearson.brix.IpsProxy");
-goog.require("pearson.brix.BrixLayer");
+goog.require('pearson.brix.utils.IpsProxy');
+goog.require('pearson.brix.utils.IpsAnswerMan');
+goog.require('pearson.brix.BricLayer');
 
 
 /* **************************************************************************
@@ -49,7 +50,7 @@ goog.require("pearson.brix.BrixLayer");
  *
  * The IPC (Item Player Client) listens for AMC's (Activity Manager Client)
  * sequenceNodeIdentifier. Upon receipt of the sequenceNodeIdentifier,
- * it retrieves the brix' containerConfig from IPS and 
+ * it retrieves the brix' containerConfig from IPS and
  * instantiates and wires the brix and mortars using the BricLayer.
  *
  * @constructor
@@ -65,7 +66,7 @@ goog.require("pearson.brix.BrixLayer");
 pearson.brix.Ipc = function (config, eventManager)
 {
     /**
-     * A logger to help debugging 
+     * A logger to help debugging
      * @type {goog.debug.Logger}
      * @private
      */
@@ -73,37 +74,53 @@ pearson.brix.Ipc = function (config, eventManager)
 
     if (!config.ipsBaseUrl)
     {
-        throw new Error('IPS server URL not provided.');
+        var errorMessage = 'IPS server base URL not provided.';
+        this.logger_.severe(errorMessage);
+        throw new Error(errorMessage);
     }
-    
+
     /**
      * The event manager to use to publish (and subscribe to) events
      * @type {!pearson.utils.IEventManager}
      */
     this.eventManager = eventManager;
-
-    /**
      * The IpsProxy used by this Ipc to communicate w/ the IPS
-     * @type {pearson.brix.IpsProxy}
+     * @type {pearson.brix.utils.IpsProxy}
      */
-    this.ipsProxy = new pearson.brix.IpsProxy({"serverBaseUrl": config.ipsBaseUrl});
+    this.ipsProxy = new pearson.brix.utils.IpsProxy({"serverBaseUrl": config.ipsBaseUrl});
 
     /**
      * List of activity identification records used to obtain the sequence node id
      * from the AMC.
-     * 
+     *
      * @type {!Array.<{assignmenturl: string, activityurl: string, type: (string|undefined)}>}
      */
     this.items = [];
 
     /**
      * The container ID is used in the iframe mode.
-     * Having a value will make the IPC to retrieve a specific conatinerId 
+     * Having a value will make the IPC to retrieve a specific conatinerId
      * from the IPS.
      * @type {?string}
      */
     this.containerId = null;
 
+    /**
+     * The AnserMan, in this case the IPS answerman.
+     * @type {pearson.brix.utils.IAnswerMan}
+     */
+    this.answerMan = new pearson.brix.utils.IpsAnswerMan(this.ipsProxy);
+
+     /**
+     * The SubmitManager
+     * @type {pearson.brix.utils.SubmitManager}
+     */
+    this.submitManager = new pearson.brix.utils.SubmitManager(eventManager, this.answerMan);
+
+    /** 
+     * BricLayer configuration. For the moment is null, left for future.
+     * @type {Object}
+     */
     var bricLayerConfig = null;
 
     /**
@@ -111,25 +128,34 @@ pearson.brix.Ipc = function (config, eventManager)
      * @todo - Check if it changes to singleton
      * @type {!pearson.brix.BricLayer}
      */
-    this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager);
+    this.bricLayer = new pearson.brix.BricLayer(bricLayerConfig, eventManager, this.submitManager);
 };
+
+/**
+ * The SequenceNodeKey is defined by the IPS and uniquely identifies this
+ * PAF Activity, user (student) and course. The IPS adds it to the activity
+ * config returned to the IPC.
+ *
+ * @typedef {string} pearson.brix.Ipc.SequenceNodeKey
+ */
+pearson.brix.Ipc.SequenceNodeKey;
 
 /* **************************************************************************
  * Ipc.init                                                            */ /**
  *
  * Initializes the IPC depending on the different parameters are passed.
  * The different parameters defines the mode: div or iframe.
- * In div-mode, the items contains an array of possibly multiple items, and 
+ * In div-mode, the items contains an array of possibly multiple items, and
  * the optional opt_containerId is not defined (or null).
  * In iframe-mode, there is only one single item and opt_containerId is passed
  * with the containerId for that particular iframe.
- * 
+ *
  * IMPORTANT: The Ipc.init() should be called prior AMC's initialization.
  *            This is because IPC mus have subscribed before AMC publishes
  *            init messages.
- *             
+ *
  * @export
- * 
+ *
  * @param  {!Array.<Object>} items            Array of {assignmentId=<val>, itemid=<val>, type=<val>}
  * @param  {string=}         opt_containerId  The containerId that this IPC is
  *                                            handling. Only in iframe mode.
@@ -157,11 +183,11 @@ pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
             throw new Error('In the iframe mode, there should be only one item but '
                 + this.items.length + ' were provided.');
         }
-        
+
         // This means that we are in Iframe mode
         this.containerId = opt_containerId;
 
-        // IPS shall also subscribe to "pageLoaded" event that is originated 
+        // IPS shall also subscribe to "pageLoaded" event that is originated
         // from the master page
         this.eventManager.subscribe('__system_pageLoaded', function (message) {
             that.logger_.config("Page loaded message received.");
@@ -195,7 +221,7 @@ pearson.brix.Ipc.prototype.init = function (items, opt_containerId)
  * Notice that the repeated combination of assignmenturl="A", activityurl="B" were
  * merged into one.
  * This will guarantee that the bricLayer calls build() only once per same sequence node.
- * 
+ *
  * @param  {!Array.<Object>} items  Array of {assignmentId=<val>, itemid=<val>, type=<val>}
  * @return {!Array.<Object>}        Normalized array.
  ****************************************************************************/
@@ -235,11 +261,11 @@ pearson.brix.Ipc.prototype.normalizeByTopic = function (items)
  * Ipc.activityBindingReplyTopic                                       */ /**
  *
  * Returns the topic name for the init event subscription.
- * Must be exactly same as laspaf.js's 
- * 
+ * Must be exactly same as laspaf.js's
+ *
  * @param  {Object} item     An object that represents an item.
  *                           assignmenturl and activityurl properties are required.
- * 
+ *
  * @return {string}          The topic name
  ****************************************************************************/
 pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
@@ -257,7 +283,7 @@ pearson.brix.Ipc.prototype.activityBindingReplyTopic = function (item)
 /* **************************************************************************
  * Ipc.subscribeInitTopic                                              */ /**
  *
- * Subscribes to initialization topic using the provided item(s) information 
+ * Subscribes to initialization topic using the provided item(s) information
  * (formerly known as itemId)
  ****************************************************************************/
 pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
@@ -278,9 +304,9 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
             that.logger_.config("Subscribing to: " + topic);
             that.eventManager.subscribe(topic, function(initMessage) {
                 that.logger_.config("Initialization message received for topic: " + topic);
-                if (initMessage.status != 'success')
+                if (initMessage.status != 'success') // I.e., status == 'fail'
                 {
-                    that.logger_.warning("initMessage returned error status. " + JSON.stringify(initMessage.sourcemessage));
+                    that.logger_.warning("initMessage returned error status. " + JSON.stringify(initMessage));
                 }
                 else
                 {
@@ -311,14 +337,14 @@ pearson.brix.Ipc.prototype.subscribeInitTopic = function ()
                         else
                         {
                             // in the absence of error, result is containerConfig
-                            that.logger_.fine("Building brix...");
-                            that.bricLayer.build(result.data.containerConfig);
+                            that.logger_.fine("Building brix from : " + JSON.stringify(result.data['activityConfig']));
+                            that.bricLayer.build(result.data['activityConfig']);
                             that.logger_.fine("Building brix completed.");
                         }
                     }); // Does the AJAX call to IPS
 
                 }
-                
+
             });
         })(currTopic);
     }

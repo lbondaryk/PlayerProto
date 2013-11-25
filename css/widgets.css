@@ -281,8 +281,8 @@ div.brixCheckGroup table.questionTable tr>td:nth-of-type(2)
   padding-left: 8px;
 }
    
-input[type=radio],
-input[type=checkbox] 
+div.brixRadioGroup table.questionTable input[type=radio],
+div.brixCheckGroup table.questionTable input[type=checkbox]
 {
     border: 0px;
     width: 20px;
@@ -304,7 +304,7 @@ div.brixMultipleChoiceQuestion
   cursor: default; 
 }
 
-.brixMultipleChoiceQuestion fieldset 
+div.brixMultipleChoiceQuestion fieldset 
 {
   display: inline-block;
   border: 0;
@@ -316,7 +316,7 @@ div.brixMultipleChoiceQuestion
   -webkit-padding-after: 0.625em;
 }
 
-.brixMultipleChoiceQuestion fieldset legend 
+div.brixMultipleChoiceQuestion fieldset legend 
 {
   line-height: 40px;
   color: #333333;
@@ -324,15 +324,29 @@ div.brixMultipleChoiceQuestion
   margin-bottom: 5px; 
 }
 
-.brixMultipleChoiceQuestion label 
+div.brixMultipleChoiceQuestion label 
 {
   font: 18px Helvetica;
   line-height: 30px;
 }
 
-.brixMultipleChoiceQuestion .submit button:disabled
+div.brixMultipleChoiceQuestion .submit button:disabled
 {
   opacity: .5;
+}
+
+div.brixMultipleChoiceQuestion span.attempts span.count
+{
+  font: bold 33px Helvetica;
+  color: #686868;
+  margin-left: 16px;
+}
+
+div.brixMultipleChoiceQuestion span.attempts span.descr
+{
+  font: 13px Helvetica;
+  color: #686868;
+  margin-left: 6px;
 }
 
 .brixButton button

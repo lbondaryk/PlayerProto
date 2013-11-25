@@ -76,9 +76,10 @@ pearson.brix.Legend = function (config, eventManager)
 
 	/**
 	 * A unique id for this instance of the widget
+     * @private
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Legend);
+	this.legendId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Legend);
 
 	/**
 	 * Array of strings for the labels, one per row 
@@ -125,7 +126,7 @@ pearson.brix.Legend = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.selectedEventId = this.id + '_legendSelected';
+    this.selectedEventId = pearson.brix.Legend.getEventTopic('selected', this.legendId_);
 
 	/**
 	 * Information about the last drawn instance of this widget (from the draw method)
@@ -135,7 +136,6 @@ pearson.brix.Legend = function (config, eventManager)
 		{
 			container: null,
 			size: {height: 0, width: 0},
-			legendId: 'legend',
 			legendRows: null,
 		};
 		
@@ -148,6 +148,45 @@ goog.inherits(pearson.brix.Legend, pearson.brix.SvgBric);
  * @type {string}
  */
 pearson.brix.Legend.autoIdPrefix = "lgnd_auto_";
+
+/* **************************************************************************
+ * Legend.getEventTopic (static)                                       */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * Legend bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of Legend with the given instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.Legend.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            return instanceId + '_legendSelected';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by Legend brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
 
 
 /* **************************************************************************
@@ -168,10 +207,6 @@ pearson.brix.Legend.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
-	
-	
-	this.lastdrawn.legendId = this.id + '_legend';
-	var legendId = this.lastdrawn.legendId;
 	
  	var boxLength = 15, //attractive length for the colored lines or boxes
 		inset = 10;//attractive spacing from edge of axes boxes (innerWid/Ht)
@@ -211,7 +246,7 @@ pearson.brix.Legend.prototype.draw = function (container, size)
 	//make a new group to hold the legend
 	this.legendBox = container.append("g")
 	.attr("class","widgetLegend")
-	.attr('id', this.id)
+	.attr('id', this.legendId_)
 	//move it to left/right/top/bottom position
 	.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')');
 
@@ -395,7 +430,7 @@ pearson.brix.Legend.prototype.lite = function (liteKey)
 
 	if (rowsToLite.empty())
 	{
-		window.console.log("No key '" + liteKey + "' in legend " + this.id );
+		window.console.log("No key '" + liteKey + "' in legend " + this.legendId_ );
 	}
 };
 

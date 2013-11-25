@@ -1,0 +1,109 @@
+{
+  "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
+  "@type" : "Envelope",
+  "metadata" : {
+    "title" : "Neff Reactor from Image Server 2",
+    "guid" : "e579114a-2b65-4d9e-8ed5-26a7c15d8ad8",
+    "description" : "",
+    "contentTypeTier1" : "Demonstration",
+    "contentTypeTier2" : [ "DemonstrationImage" ],
+    "subject" : [ "EnvironmentalScience" ],
+    "intendedEndUserRole" : [ "Student" ],
+    "format" : [ 
+      "application/vnd.pearson.sanvan.v1.activity"
+    ],
+    "timeRequired" : "PT20S",
+    "created" : "2013-11-19T20:19:44+00:00",
+    "educationalAlignment" : [ "http://purl.org/pearson/objectives/183725473384362" ]
+  },
+  "body" : {
+    "containerConfig":
+        [
+            {
+                "description": "This 'imgReactor' container contains the image",
+                "containerId": "imgContainer",
+                "brixConfig":
+                    [
+                        {
+                            "bricId": "cimage1",
+                            "bricType": "CaptionedImage",
+                            "config":
+                                {
+                                    "id": "cimg0n",
+                                    "caption": "Nuclear Reactor Schematic Diagram",
+                                    "actualSize": {"height": 310, "width": 680},
+                                    "captionPosition": "below"
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "URI",
+                                        "value":
+                                            {
+                                                "type": "join",
+                                                "parts":
+                                                [
+                                                    {
+                                                        "type": "ref",
+                                                        "domain": "info",
+                                                        "refId": "imgBaseUrl"
+                                                    },
+                                                    {
+                                                        "type": "constant",
+                                                        "value": "img/reactor.jpg"
+                                                    }
+                                                ]
+                                            }
+                                    }
+                                ]
+                        },
+                        {
+                            "bricId": "cntr1",
+                            "bricType": "SvgContainer",
+                            "config":
+                                {
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "node",
+                                        "value":
+                                            {
+                                                "type": "d3select",
+                                                "selector": "#target1"
+                                            }
+                                    },
+                                    {
+                                        "type": "set-property",
+                                        "name": "maxSize",
+                                        "value":
+                                            {
+                                                "type": "property-of-ref",
+                                                "domain": "brix",
+                                                "refId": "cimage1",
+                                                "accessor": "getSizeAt100Pct"
+                                            }
+                                    }
+                                ]
+                        }
+                    ],
+                "hookupActions":
+                    [
+                        {
+                            "description": "Append the captioned image to the svg container",
+                            "type": "method-call",
+                            "instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+                            "methodName": "append",
+                            "args":
+                                [
+                                    { "type": "ref", "domain": "brix", "refId": "cimage1" },
+                                    { "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
+                                ]
+                        }
+                    ]
+            }
+        ]    
+    }
+}
