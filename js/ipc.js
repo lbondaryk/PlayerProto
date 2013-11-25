@@ -84,6 +84,8 @@ pearson.brix.Ipc = function (config, eventManager)
      * @type {!pearson.utils.IEventManager}
      */
     this.eventManager = eventManager;
+
+    /**
      * The IpsProxy used by this Ipc to communicate w/ the IPS
      * @type {pearson.brix.utils.IpsProxy}
      */
