@@ -261,7 +261,7 @@ div.brixCheckGroup table.questionTable
 }
 
 
-div.brixRadioGroup .choiceLabel 
+div.brixRadioGroup .choiceLabel, 
 div.brixCheckGroup .choiceLabel 
 {
   font-weight: bold;
