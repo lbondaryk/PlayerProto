@@ -70,7 +70,7 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      /**
      * The year slider object is needed so we can reset it's value on recalc.
      * @private
-     * @type {!pearson.brix.ISlider}
+     * @type {!pearson.brix.Slider}
      */
     this.yearSlider_ = config['yearSlider'];
 
@@ -88,6 +88,7 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      * @type {string}
      */
     this.popDistributionTopic_ = config['popDistributionTopic'];
+     
      /**
      * The initialMort topic to handle by updating the mortality profile, then 
      * recalculating the data and redrawing the target bric.
