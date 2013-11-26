@@ -53,7 +53,7 @@ goog.require('pearson.utils.EventManager');
  *                                           if undefined a unique id will be assigned.
  * @param {Array.<!pearson.brix.Image>}
  *                          config.items    -The list of Image brix to be presented by the ImageViewer.
- * @param {number}          config.displayWidth 
+ * @param {number}          config.displayWidth
  *                                          -The intended width of the imageviewer
  * @param {!pearson.utils.IEventManager=}
  *                          eventManager    -allows the widget to publish and subscribe to events

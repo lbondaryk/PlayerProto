@@ -11,9 +11,9 @@
  * {@link pearson.brix.Image} bric below the LabelSelector.
  * The initial implementation was based on ImageViewer.
  *
- * Created on		Sept 15, 2013
- * @author			Leslie Bondaryk 
- * @author			Michael Jay Lippert
+ * Created on       Sept 15, 2013
+ * @author          Leslie Bondaryk
+ * @author          Michael Jay Lippert
  *
  * @copyright (c) 2013 Pearson, All rights reserved.
  *
@@ -31,13 +31,13 @@ goog.require('pearson.utils.IEventManager');
 // Sample configuration objects for classes defined here
 (function()
 {
-	// config for ImageViewer class
-	var labelCarouselConfig =
-		{
-			id: "imgvwr1",
-			images: [{}],
-			imagesActualSize: {height: 380, width: 550},
-		};
+    // config for ImageViewer class
+    var labelCarouselConfig =
+        {
+            id: "imgvwr1",
+            images: [{}],
+            imagesActualSize: {height: 380, width: 550},
+        };
 });
 
 /* **************************************************************************
@@ -51,124 +51,124 @@ goog.require('pearson.utils.IEventManager');
  * @extends {pearson.brix.SvgBric}
  * @export
  *
- * @param {Object}			config			-The settings to configure this LabelCarousel
+ * @param {Object}          config          -The settings to configure this LabelCarousel
  * @param {string|undefined}
- *							config.id		-String to uniquely identify this LabelCarousel.
- *											 if undefined a unique id will be assigned.
+ *                          config.id       -String to uniquely identify this LabelCarousel.
+ *                                           if undefined a unique id will be assigned.
  * @param {!Array.<{URI: string, caption: string, selectorLabel: string}>}
- *							config.images	-The list of info to load the images for the carousel.
+ *                          config.images   -The list of info to load the images for the carousel.
  * @param {!pearson.utils.ISize}
- *							config.imagesActualSize
- *											-The actual size of all of the images.
+ *                          config.imagesActualSize
+ *                                          -The actual size of all of the images.
   * @param {integer}
- *							config.displayWidth
- *											-The column width at which carousel displays full size.
+ *                          config.displayWidth
+ *                                          -The column width at which carousel displays full size.
  * @param {!pearson.utils.IEventManager}
- *							eventManager	-allows the bric to publish and subscribe to events
- *											 required for correct internal operation.
+ *                          eventManager    -allows the bric to publish and subscribe to events
+ *                                           required for correct internal operation.
  *
  ****************************************************************************/
 pearson.brix.LabelCarousel = function (config, eventManager)
 {
-	// call the base class constructor
-	goog.base(this);
+    // call the base class constructor
+    goog.base(this);
 
-	var that = this;
-	
-	/**
-	 * A unique id for this instance of the LabelCarousel bric
-	 * @type {string}
-	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelCarousel);
+    var that = this;
 
-	/**
-	 * The list of info for each image to be presented by this LabelCarousel.
-	 * @type {!Array.<{URI: string, caption: string, selectorLabel: string}>}
-	 */
-	this.imagesInfo = config.images;
+    /**
+     * A unique id for this instance of the LabelCarousel bric
+     * @type {string}
+     */
+    this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelCarousel);
 
-	this.assignMissingItemKeys_();
+    /**
+     * The list of info for each image to be presented by this LabelCarousel.
+     * @type {!Array.<{URI: string, caption: string, selectorLabel: string}>}
+     */
+    this.imagesInfo = config.images;
 
-	// The ImageViewer uses a standard layout of the Carousel to make its
-	// configuration simpler.
-	var lblselConfig =
-		{
-			id: this.id + "_labels",
-			labels: (config.type == 'textLabels') ? 
-				config.images.map(function (e, i) {return e.selectorLabel || '&nbsp;';}) :
-				config.images.length,
-			layout: "horizontal",
-			type: (config.type == 'textLabels') ? 'none' : 'numbered',
-			itemMargin: {top: 15, bottom: 0, left: 0, right: 0}
-		};
+    this.assignMissingItemKeys_();
+
+    // The ImageViewer uses a standard layout of the Carousel to make its
+    // configuration simpler.
+    var lblselConfig =
+        {
+            id: this.id + "_labels",
+            labels: (config.type == 'textLabels') ?
+                config.images.map(function (e, i) {return e.selectorLabel || '&nbsp;';}) :
+                config.images.length,
+            layout: "horizontal",
+            type: (config.type == 'textLabels') ? 'none' : 'numbered',
+            itemMargin: {top: 15, bottom: 0, left: 0, right: 0}
+        };
 
 
-	/**
-	 * The selector bric used by this LabelCarousel to present the images.
-	 * @type {!pearson.brix.LabelSelector}
-	 */
-	this.labelSelector = new pearson.brix.LabelSelector(lblselConfig, eventManager);
+    /**
+     * The selector bric used by this LabelCarousel to present the images.
+     * @type {!pearson.brix.LabelSelector}
+     */
+    this.labelSelector = new pearson.brix.LabelSelector(lblselConfig, eventManager);
 
-	// We may want to eventually support an empty image, but for now
-	// we'll just copy the 1st image into the display image.
-	var cimgConfig =
-		{
-			id: this.id + "_cimg",
-			URI: this.imagesInfo[0].URI,
-			caption: this.imagesInfo[0].caption,
-			displayWidth: config.displayWidth || 477,
-			actualSize: config.imagesActualSize,
-			captionPosition: "below"
-		};
+    // We may want to eventually support an empty image, but for now
+    // we'll just copy the 1st image into the display image.
+    var cimgConfig =
+        {
+            id: this.id + "_cimg",
+            URI: this.imagesInfo[0].URI,
+            caption: this.imagesInfo[0].caption,
+            displayWidth: config.displayWidth || 477,
+            actualSize: config.imagesActualSize,
+            captionPosition: "below"
+        };
 
-	/**
-	 * The captioned image bric which displays the image selected
-	 * in the carousel.
-	 * @type {!pearson.brix.CaptionedImage}
-	 */
-	this.image = new pearson.brix.CaptionedImage(cimgConfig);
+    /**
+     * The captioned image bric which displays the image selected
+     * in the carousel.
+     * @type {!pearson.brix.CaptionedImage}
+     */
+    this.image = new pearson.brix.CaptionedImage(cimgConfig);
 
-	/**
-	 * The event manager to use to publish (and subscribe to) events for this widget
-	 * @type {!pearson.utils.IEventManager}
-	 */
-	this.eventManager = eventManager;
+    /**
+     * The event manager to use to publish (and subscribe to) events for this widget
+     * @type {!pearson.utils.IEventManager}
+     */
+    this.eventManager = eventManager;
 
-	/**
-	 * The event id published when an item in this carousel is selected.
-	 * @const
-	 * @type {string}
-	 */
-	this.selectedEventId = this.labelSelector.selectedEventId;
-	
-	/**
-	 * The event details for this.selectedEventId events
-	 * @typedef {Object} SelectedEventDetails
-	 * @property {string} selectKey	-The key associated with the selected item.
-	 */
-	var SelectedEventDetails;
+    /**
+     * The event id published when an item in this carousel is selected.
+     * @const
+     * @type {string}
+     */
+    this.selectedEventId = this.labelSelector.selectedEventId;
 
-	// event handler that connects the label selector selection to changing and redrawing
-	// the image below.
-	var handleLabelSelection = function (eventDetails)
-	{
-		that.image.changeImage(that.imagesInfo[eventDetails.index].URI,
-								that.imagesInfo[eventDetails.index].caption);
-		that.image.redraw();
-	};
+    /**
+     * The event details for this.selectedEventId events
+     * @typedef {Object} SelectedEventDetails
+     * @property {string} selectKey -The key associated with the selected item.
+     */
+    var SelectedEventDetails;
 
-	eventManager.subscribe(this.labelSelector.selectedEventId, handleLabelSelection);
-	
-	/**
-	 * Information about the last drawn instance of this image (from the draw method)
-	 * @type {Object}
-	 */
-	this.lastdrawn =
-		{
-			container: null,
-			size: {height: 0, width: config.displayWidth},
-			widgetGroup: null,
-		};
+    // event handler that connects the label selector selection to changing and redrawing
+    // the image below.
+    var handleLabelSelection = function (eventDetails)
+    {
+        that.image.changeImage(that.imagesInfo[eventDetails.index].URI,
+                                that.imagesInfo[eventDetails.index].caption);
+        that.image.redraw();
+    };
+
+    eventManager.subscribe(this.labelSelector.selectedEventId, handleLabelSelection);
+
+    /**
+     * Information about the last drawn instance of this image (from the draw method)
+     * @type {Object}
+     */
+    this.lastdrawn =
+        {
+            container: null,
+            size: {height: 0, width: config.displayWidth},
+            widgetGroup: null,
+        };
 }; // end of LabelCarousel constructor
 goog.inherits(pearson.brix.LabelCarousel, pearson.brix.SvgBric);
 
@@ -187,44 +187,44 @@ pearson.brix.LabelCarousel.autoIdPrefix = 'labCrsl_';
  * @description The following is here until jsdoc supports the inheritDoc tag.
  * Draw this ImageViewer in the given container.
  *
- * @param {!d3.selection}	container	-The container svg element to append
- * 										 this SvgBric element tree to.
+ * @param {!d3.selection}   container   -The container svg element to append
+ *                                       this SvgBric element tree to.
  * @param {!pearson.utils.ISize}
- * 							size		-The size (in pixels) of the area this
- * 										 SvgBric has been allocated.
+ *                          size        -The size (in pixels) of the area this
+ *                                       SvgBric has been allocated.
  ****************************************************************************/
 pearson.brix.LabelCarousel.prototype.draw = function (container, size)
 {
-	this.lastdrawn.container = container;
+    this.lastdrawn.container = container;
 
-	// aliases of utility functions for readability
-	var attrFnVal = pearson.brix.utils.attrFnVal;
+    // aliases of utility functions for readability
+    var attrFnVal = pearson.brix.utils.attrFnVal;
 
-	var that = this;
-	
-	// make a group to hold the imageviewer
-	var widgetGroup = container.append("g")
-		.attr("class", "brixLabelCarousel")
-		.attr("id", this.id);
+    var that = this;
 
-	// currently hard set height.  We might want to measure labels in future.
-	var selectorHeight = 44;
+    // make a group to hold the imageviewer
+    var widgetGroup = container.append("g")
+        .attr("class", "brixLabelCarousel")
+        .attr("id", this.id);
 
-	// Carousel goes at the top
-	var selectorGroup = widgetGroup.append("g");
- 	this.labelSelector.draw(selectorGroup, {height: selectorHeight, width: size.width});
+    // currently hard set height.  We might want to measure labels in future.
+    var selectorHeight = 44;
 
-	// Image goes below carousel with 15 px margin
-	var imageGroup = widgetGroup.append("g")
-		.attr("transform", attrFnVal("translate", 0, selectorHeight + 15));
+    // Carousel goes at the top
+    var selectorGroup = widgetGroup.append("g");
+    this.labelSelector.draw(selectorGroup, {height: selectorHeight, width: size.width});
 
-	this.image.draw(imageGroup, {height: size.height - selectorHeight - 15, width: size.width});
+    // Image goes below carousel with 15 px margin
+    var imageGroup = widgetGroup.append("g")
+        .attr("transform", attrFnVal("translate", 0, selectorHeight + 15));
 
-	this.lastdrawn.widgetGroup = widgetGroup;
-	this.lastdrawn.size.height = this.image.captioned_lastdrawn.size.height + selectorHeight;
+    this.image.draw(imageGroup, {height: size.height - selectorHeight - 15, width: size.width});
 
-	// Initial selection is the 1st image
-	this.selectItemAtIndex(0);
+    this.lastdrawn.widgetGroup = widgetGroup;
+    this.lastdrawn.size.height = this.image.captioned_lastdrawn.size.height + selectorHeight;
+
+    // Initial selection is the 1st image
+    this.selectItemAtIndex(0);
 
 }; // end of ImageViewer.draw()
 
@@ -250,7 +250,7 @@ pearson.brix.LabelCarousel.prototype.redraw = function ()
  ****************************************************************************/
 pearson.brix.LabelCarousel.prototype.selectedItem = function ()
 {
-	return {};
+    return {};
 };
 
 /* **************************************************************************
@@ -259,12 +259,12 @@ pearson.brix.LabelCarousel.prototype.selectedItem = function ()
  * Select the item in the carousel at the given index.
  * @export
  *
- * @param {number}	index	-the 0-based index of the item to flag as selected.
+ * @param {number}  index   -the 0-based index of the item to flag as selected.
  *
  ****************************************************************************/
 pearson.brix.LabelCarousel.prototype.selectItemAtIndex = function (index)
 {
-	this.labelSelector.selectItemAtIndex(index);
+    this.labelSelector.selectItemAtIndex(index);
 };
 
 /* **************************************************************************
@@ -274,15 +274,15 @@ pearson.brix.LabelCarousel.prototype.selectItemAtIndex = function (index)
  * specified key and return its index. If no item has that key return null.
  * @export
  *
- * @param {string}	key		-The key of the item to find
+ * @param {string}  key     -The key of the item to find
  *
  * @return {?number} the index of the item in the list of items with the
- * 			specified key.
+ *          specified key.
  *
  ****************************************************************************/
 pearson.brix.LabelCarousel.prototype.itemKeyToIndex = function(key)
 {
-	return this.labelSelector.itemKeyToIndex(key);
+    return this.labelSelector.itemKeyToIndex(key);
 };
 
 /* **************************************************************************
@@ -305,21 +305,21 @@ pearson.brix.LabelCarousel.prototype.assignMissingItemKeys_ = function ()
  * carousel, and select the 1st highlighted image.
  * @export
  *
- * @param {string}		liteKey		-The key associated with the image(s) to be highlighted.
+ * @param {string}      liteKey     -The key associated with the image(s) to be highlighted.
  *
  ****************************************************************************/
 pearson.brix.LabelCarousel.prototype.lite = function (liteKey)
 {
-	window.console.log("called LabelCarousel.lite( " + liteKey + " )");
+    window.console.log("called LabelCarousel.lite( " + liteKey + " )");
 
-	var i = this.itemKeyToIndex(liteKey);
+    var i = this.itemKeyToIndex(liteKey);
 
-	if (i !== null)
-	{
-		this.selectItemAtIndex(i);
-	}
+    if (i !== null)
+    {
+        this.selectItemAtIndex(i);
+    }
 
  this.labelSelector.lite(liteKey);
-		
+
 }; // end of ImageViewer.lite()
 
