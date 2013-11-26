@@ -153,7 +153,7 @@
 							{ name: 'DIV', class: 'widgetMultiSelectQuestion', children:
 								[ { name: 'P', class: 'question' },
 								  { name: 'DIV', class: 'choices', children:
-									  [ { name: 'DIV', class: 'widgetCheckGroup' } ]
+									  [ { name: 'DIV', class: 'brixCheckGroup' } ]
 								  },
 								  { name: 'DIV', class: 'submit', children:
 									  [ { name: 'DIV', class: 'brixButton' } ]
