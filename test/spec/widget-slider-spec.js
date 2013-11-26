@@ -1,5 +1,5 @@
 /* **************************************************************************
- * widget-slider-spec.js                                                $
+ * widget-slider-spec.js                                                    $
  * **********************************************************************//**
  *
  * @fileoverview Slider bric unit tests
@@ -65,7 +65,7 @@ goog.require('goog.testing.events');
             });
             
             it('should have the id that was specified in the config', function () {
-                expect(mySlider.id).to.equal(sliderConfig.id);
+                expect(mySlider.getId()).to.equal(sliderConfig.id);
             });
 
             it('should have the eventManager given to the constructor', function () {
@@ -95,7 +95,7 @@ goog.require('goog.testing.events');
                     expect(mySlider.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
                 });
 
-                it('should not alter value when disabled', function(){
+                it('should not alter value when disabled', function() {
                     // Check that a slider is enabled by default
                     expect(mySlider.isEnabled()).to.be.true;
 
