@@ -515,6 +515,7 @@
                             "CheckGroup",
                             "Image",
                             "ImageViewer",
+                            "Journal",
                             "LabelGroup",
                             "Legend",
                             "LineGraph",
@@ -581,5 +582,30 @@
                                 }
                         }
                 },
+            "answerKey-journal":
+                {
+                    "description": "The answer key used to determine the (always) correctness of a student's journal entry",
+                    "type": "object",
+                    "required": ["assessmentType"],
+                    "properties":
+                        {
+                            "assessmentType":
+                                {
+                                    "description": "identifies this answer key as being for a always correct type question",
+                                    "type": "string",
+                                    "enum": ["alwayscorrect"]
+                                },
+                            "nonRecordable":
+                                {
+                                    "description": "A flag that denotes whether the assessment should be recorded in PAF",
+                                    "type": "boolean"
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this answer key",
+                                    "type": "string"
+                                }
+                        }
+                },    
         }
 }

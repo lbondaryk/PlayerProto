@@ -18,6 +18,11 @@ goog.provide('pearson.brix.Journal');
 
 goog.require('goog.debug.Logger');
 
+goog.require('goog.dom');
+goog.require('goog.dom.query');
+goog.require('goog.events.EventHandler');
+goog.require('goog.events.KeyHandler');
+
 goog.require('pearson.brix.HtmlBric');
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.utils.EventManager');
@@ -79,7 +84,7 @@ pearson.brix.Journal = function (config, eventManager, bricWorks)
      */
     this.logger_ = goog.debug.Logger.getLogger('pearson.brix.Journal');
 
-    // Without a valid BricWorks we can't construct this MultipleChoiceBric
+    // Without a valid BricWorks we can't construct this JournalBric
     if (!bricWorks)
     {
         var msg = 'Journal requires a valid BricWorks to create the Button brix that it uses';
@@ -293,9 +298,11 @@ pearson.brix.Journal.prototype.getId = function ()
  ****************************************************************************/
 pearson.brix.Journal.prototype.draw = function (container)
 {
+    this.logger_.fine('drawing');
+
     this.lastdrawn.container = container;
 
-    // make a div to hold the multiple choice question
+    // make a div to hold the journal question
     var widgetGroup = container.append("div")
         .attr("class", "brixJournal");
 
@@ -306,8 +313,11 @@ pearson.brix.Journal.prototype.draw = function (container)
         .attr("class", "title")
         .html(this.title_);
 
+this.logger_.fine('id ' + this.getId());
+
     var textentry = jCntr.append("textarea")
-        .attr("class", "entry");
+        .attr("class", "entry")
+        .attr("id", this.getId());
 
     // draw the submit button below
     var submitButtonCntr = widgetGroup.append('div')
@@ -318,6 +328,32 @@ pearson.brix.Journal.prototype.draw = function (container)
     // make a target for feedback when the submission is successful (or not)
     widgetGroup.append('div')
         .attr('class', 'feedback');
+
+    // listen for keyboard events on the textarea
+    var textArea = goog.dom.getElement(this.getId());
+    var keyHandler = new goog.events.KeyHandler(textArea);
+    goog.events.listen(keyHandler,
+        goog.events.KeyHandler.EventType.KEY,
+        function(e)
+        {
+            //var keyEvent = (e);
+            //this.logger_.fine(e);
+            console.log(e.target.textLength);
+            console.log(this.element_.textLength);
+
+            //console.log("e:");
+            //console.log(e);
+            var textArea = goog.dom.getElement(e.target).value;
+            console.log(textArea);
+            //console.log(textArea.content);
+            if (goog.events.KeyCodes.isCharacterKey)
+            {
+                console.log('yay');
+            }
+
+            /*var content = goog.dom.getTextContent(elt);
+            console.log(content);*/
+        });
 
     this.lastdrawn.widgetGroup = widgetGroup;
 
