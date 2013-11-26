@@ -187,7 +187,8 @@ var cntr = new SVGContainer(cntrConfig);
 			stepVal: .1,
 			unit: "m/s",
 			label: "Initial Velocity",
-			format: '.1f'
+			format: '.1f',
+			width: '43%'
 		}, eventManager);
 		
 	velocity.draw(d3.select("#veloSlider"));
@@ -202,7 +203,8 @@ var cntr = new SVGContainer(cntrConfig);
 			stepVal: 1,
 			unit: "&deg;",
 			label: "Angle of velocity &theta;",
-			format: '.1f'
+			format: '.1f',
+			width: '43%'
 		}, eventManager);
 		
 	angle.draw(d3.select("#angleSlider"));

@@ -161,7 +161,8 @@ pearson.brix.CheckGroup = function (config, eventManager)
 	this.selectedEventId = this.id + '_itemSelected';
 
 	/**
-	 * @todo DOCUMENT ME! -young suk this needs to be described -mjl
+	 * This event id is published when the user tries to select more boxes than
+	 * are allowed by the maxSelects setting
 	 * @const
 	 * @type {string}
 	 */
@@ -216,7 +217,7 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
 	
 	// make a div to hold the Check group
 	var widgetGroup = container.append("div")
-		.attr("class", "widgetCheckGroup")
+		.attr("class", "brixCheckGroup")
 		.attr("id", this.id);
 
 	// We will use a table to provide structure for the Check group
@@ -233,15 +234,11 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
 
 	var getButtonId = function (d, i) {return that.id + "_btn" + i;};
 
+
+	var choiceIndex = this.getChoiceNumberToDisplayFn_();
+	var choiceSeparator = (this.numberFormat != 'none') ? ')' : ' ';
+
 	var buttonCell = ansRows.append("td");
-
-	if (this.numberFormat !== "none")
-	{
-		var choiceIndex = this.getChoiceNumberToDisplayFn_();
-
-		buttonCell
-			.text(function (d, i) {return choiceIndex(i) + ") ";});
-	}
 
 	buttonCell
 		.append("input")
@@ -255,7 +252,12 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
 	labelCell
 		.append("label")
 			.attr("for", getButtonId)
-			.text(function (d) {return d.content;});
+			.html(function (d, i)
+                  {
+                      var choiceLabel = '<span class="choiceLabel">' +
+                                        choiceIndex(i) + choiceSeparator + '</span> ';
+                      return  choiceLabel + d.content;
+                  });
 	
 	var choiceInputs = widgetGroup.selectAll("input[name='" + this.id + "']");
 

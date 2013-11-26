@@ -551,10 +551,7 @@ section.lc_ec_pageInner {
     overflow: hidden;
     z-index: -1;
     margin: -20px; }
-    @media (min-width: 1200px) {
-      section.lc_ec_pageInner .lc_ec_fixedTop {
-        width: 1170px; } }
-    @media (min-width: 940px) and (max-width: 1024px) {
+    @media (min-width: 940px) {
       section.lc_ec_pageInner .lc_ec_fixedTop {
         width: 940px; } }
     @media (max-width: 939px) {

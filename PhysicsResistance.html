@@ -185,7 +185,7 @@
 			stepVal: .01,
 			unit: "&Omega;&nbsp;cm",
 			label: "Resistivity, &rho; =",
-			format:  '5.2f',
+			format:  d3.format('5.2f'),
 		}, eventManager);
 		
 	rhoSlide.draw(d3.select("#rhoSlider"));
@@ -198,7 +198,7 @@
 			stepVal: .1,
 			unit: "cm",
 			label: "Length, L = ", 
-			format:  '5.2f',
+			format:  d3.format('5.2f'),
 		}, eventManager);
 		
 	LSlide.draw(d3.select("#LSlider"));
@@ -211,7 +211,7 @@
 			stepVal: .1,
 			unit: "cm<sup>2</sup>",
 			label: "Area, A = ",
-			format:  '5.2f',
+			format: d3.format('5.2f'),
 		}, eventManager);
 		
 	ASlide.draw(d3.select("#ASlider"));

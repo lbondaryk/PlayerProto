@@ -70,6 +70,7 @@
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+	<script src="js/ipsproxy.js"></script>
 	<script src="js/eventmanager.js"></script>
 	<script src="js/answerman.js"></script>
 	<script src="js/localanswerman.js"></script>
@@ -329,6 +330,24 @@
 													{"cols": ["Asian",    "16.8%"]}
 												]
 										}
+								},
+								{
+									"bricId": "graphReadout",
+									"bricType": "Callouts",
+									"config":
+										{
+											"id": "grphRdTbl",
+											// Note: data copied from data table because no dynamic values
+											// support extracting those pieces or creating these structures
+											"headers": ["Homicide Deaths", "Infant Mortality", "HIV Deaths", "Coronary Deaths"],
+											"textBits":
+												[
+													{"cols": [ "2.7",  "5.58",  "8.2", "134.2"]},
+													{"cols": ["23.1", "13.36", "73.7", "161.6"]},
+													{"cols": [ "7.6",  "5.41", "25",   "106.4"]},
+													{"cols": [ "2.4",  "4.55",  "7.2",  "77.1"]}
+												]
+										}
 								}
 							],
                         "mortarConfig":
@@ -386,6 +405,87 @@
                                                 "value": { "type": "ref", "domain": "brix", "refId": "insTable" }
                                             }
                                         ]
+                                },
+                                {
+                                    "mortarId": "hilite6",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Legend",
+                                                        "instanceId": "legdeath",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "graphReadout" }
+                                            }
+                                        ]
+                                },
+                                {
+                                    "mortarId": "hilite7",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "BarChart",
+                                                        "instanceId": "death",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "graphReadout" }
+                                            }
+                                        ]
+                                },
+                                {
+                                    "mortarId": "hilite8",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Callouts",
+                                                        "instanceId": "insTbl",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "graphReadout" }
+                                            }
+                                        ]
                                 }
                             ],
 						"hookupActions":
@@ -394,6 +494,16 @@
 									"description": "Draw the insurance table",
 									"type": "method-call",
 									"instance": {"type": "ref", "domain": "brix", "refId": "insTable"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#table0" },
+										]
+								},
+								{
+									"description": "Draw the graph readout table",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "graphReadout"},
 									"methodName": "draw",
 									"args":
 										[
@@ -421,16 +531,24 @@
 													"numberFormat": "none",
 													"question": true
 												},
-											"question": "Does the difference in insurance rates explain the high mortality rate from homicide for African Americans?",
+											"question": "Disparities in health exist among racial groups because of",
 											"choices":
 												[
 													{
-														"content": "Yes, some homicides might not be fatal if health care were available.",
+														"content": "differing socioeconomic and environmental conditions",
 														"answerKey": "answer000"
 													},
 													{
-														"content": "No, that's a different socioeconomic indicator.",
+														"content": "availability/affordability of insurance",
 														"answerKey": "answer001"
+													},
+													{
+														"content": "barriers to health literacy",
+														"answerKey": "answer002"
+													},
+													{
+														"content": "linguistic barriers",
+														"answerKey": "answer003"
 													},
 											]
 										},
@@ -450,12 +568,22 @@
 													"answer000":
 														{
 															"score": 1,
-															"response": "Wow, that's a surprise."
+															"response": "A variety of conditions, including cultural perspectives, financial resources, and structural or societal barriers contribute to the imbalance."
 														},
 													"answer001":
 														{
-															"score": 1,
-															"response": "This does seem more likely, doesn't it?",
+															"score": 0.5,
+															"response": "This is certainly a contributing factor, but is it the only reason?"
+														},
+													"answer002":
+														{
+															"score": 0.5,
+															"response": "This is certainly a contributing factor, but is it the only reason?"
+														},
+													"answer003":
+														{
+															"score": 0.5,
+															"response": "This is certainly a contributing factor, but is it the only reason?"
 														}
 												}
 										}
