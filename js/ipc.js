@@ -65,7 +65,6 @@ goog.require('pearson.brix.BricLayer');
  ****************************************************************************/
 pearson.brix.Ipc = function (config, eventManager)
 {
-
     /**
      * A logger to help debugging
      * @type {goog.debug.Logger}

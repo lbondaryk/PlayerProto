@@ -924,3 +924,21 @@ pearson.brix.SVGContainer.prototype.append_one_ = function (svgWidget, location)
     }
 };
 
+
+/* **************************************************************************
+ * SVGContainer.remove                                            */ /**
+ *
+ * Removes the given bric from the container.
+ *
+ * @param {Object}	svgBric			-The bric to remove from the SVG container
+ *
+ * @private
+ *
+ ****************************************************************************/
+pearson.brix.SVGContainer.prototype.remove = function (svgBric)
+{
+	svgBric.lastdrawn.container.remove();
+	svgBric.lastdrawn.container = null;
+	svgBric.lastdrawn.size = null;
+	
+};

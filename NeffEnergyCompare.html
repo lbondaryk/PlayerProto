@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Jason Neff" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Our Changing Planet" name="description" />
+	<title class="setTitle">Ch. 18 Energy Usage Comparisons</title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle">Ch. 18 Energy Usage Comparisons</span>
+					</h2>
+		 			 
+				<div class="lc_ec_leading">
+				<p>Select one or more countries to compare their energy usage.</p>
+					<span style="float: left" id = "checkBoxes0">Countries: </span><span id="graph1"></span>
+				</p>
+				<div id="earth"></div>
+				</div>
+				<div class="lc_ec_trailing">
+				 
+				<div id="graph0"></div>
+				
+				</div>
+			</div>
+		</section>
+	</div>
+	</div>
+	
+   <script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
+	<script src="js/d3.v3.min.js"></script>
+
+	<!--
+	<script src="js/brixlib-compiled.js"></script>
+-->
+
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+	<script src="../closure/closure-library/closure/goog/deps.js"></script>
+
+	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/submitmanager.js"></script>
+    <script src="js/mortar-base.js"></script>
+	<script src="js/widget-base.js"></script>
+	<script src="js/bricworks.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-hilite.js"></script>
+	<script src="js/briclayer.js"></script>
+
+    <script src="js/mortar-agestructure.js"></script>
+
+	<script>
+// local aliases for convenience
+	var EventManager = pearson.utils.EventManager;
+	var Rect = pearson.utils.Rect;
+	var Size = pearson.utils.Size;
+	var SubmitManager = pearson.brix.SubmitManager;
+	var SVGContainer = pearson.brix.SVGContainer;
+	var Image = pearson.brix.Image;
+	var CaptionedImage = pearson.brix.CaptionedImage;
+	var Carousel = pearson.brix.Carousel;
+	var ImageViewer = pearson.brix.ImageViewer;
+	var Callouts = pearson.brix.Callouts;
+	var RadioGroup = pearson.brix.RadioGroup;
+	var CheckGroup = pearson.brix.CheckGroup;
+	var SelectGroup = pearson.brix.SelectGroup;
+	var LabelGroup = pearson.brix.LabelGroup;
+	var MarkerGroup = pearson.brix.MarkerGroup;
+	var BarChart = pearson.brix.BarChart;
+	var LineGraph = pearson.brix.LineGraph;
+	var PieChart = pearson.brix.PieChart;
+	var Legend = pearson.brix.Legend;
+	var Sketch = pearson.brix.Sketch;
+	var Readout = pearson.brix.Readout;
+	var NumericInput = pearson.brix.NumericInput;
+	var Slider = pearson.brix.Slider;
+	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
+	var NumericQuestion = pearson.brix.NumericQuestion;
+
+	//the eventManager and submitManager are created for every page for Brix on that page
+	var eventManager = new EventManager();
+	var submitManager = new SubmitManager(eventManager);
+
+	//country selector
+	var countries = new CheckGroup ({
+		choices: [
+		{
+			content: "US", answerKey: '0'
+		},
+		{
+			content: "Canada", answerKey: '1'
+		},
+		{
+			content: "Brazil", answerKey: '2'
+		},
+		{
+			content: "Germany", answerKey: '3'
+		},
+		{
+			content: "Egypt", answerKey: '4'
+		},
+		{
+			content: "South Africa", answerKey: '5'
+		},
+		{
+			content: "China", answerKey: '6'
+		},
+		{
+			content: "Japan",answerKey: '7'
+		},
+		{
+			content: "Malaysia", answerKey: '8'
+		},
+		{
+			content: "India",answerKey: '9'
+		},
+		{
+			content: "United Kingdom",answerKey: '10'
+		}
+		],
+		type: 'ordered',
+
+		}, eventManager);
+
+	countries.draw(d3.select('#checkBoxes0'));
+
+
+//data for each country and energy type
+//
+//
+var fuelSources = {
+	"source": ['Oil', 'Natural Gas', 'Coal', 'Nuclear Energy', 'Hydroelectric', 'Renewables'],
+	"US": [819.87189587887,	654.030201580966, 437.755692740848,	183.242604735581, 63.2050497736556, 50.7217530882212],
+	"Canada": [104.305257110549, 90.63477, 21.8745867965988, 21.6709865354431, 86.0330075886702, 4.32233703606348],
+	"Brazil": [125.607202719128, 26.249295141, 13.4721644, 3.63113366190907, 94.494171534597, 11.2384893876996],
+	"Germany": [111.526, 67.7128116938951, 79.2012993216776, 22.5143684663075, 4.79703127121327, 25.9934380232609],
+	"Egypt": [35.236, 47.349, 1.136011295,	0, 3.0225143684663,	0.34919139212476,],
+	"South Africa": [26.9036574377699,	3.39174, 89.776644,	3.21596406275682, 0.43517950926196,	0.07857249316883],
+	"China": [483.662640213053,	129.459654,	1873.31312,	22.0369280897858, 194.788885369053,	31.9011750476266],
+	"Japan": [218.194590348259,	105.063134135855, 124.377646411, 4.07091460379235, 18.3133457030365, 8.16332232429738],
+	"Malaysia": [29.8206660057211, 29.9974998107764, 14.3363, 0, 1.842729,	0.31759756923807],
+	"India": [171.596151999999,	49.102434, 298.253834859999, 7.49868986740278,	26.1698239580032, 10.8693908760238],
+	"United Kingdom": [68.4559597367377, 70.4564653020843, 39.1149705987351, 15.9309114088577, 1.18279082754553, 8.42650604192053],
+	"labels": {xLabel: 'Million tonnes oil equivalent', yLabel: 'Fuel Sources'}
+};
+
+var electric = 
+{ "Year": [ 1985, 1990, 1995, 2000, 2005, 2010],
+  "US": [2703.222, 3185.427, 3516.76699999999, 3990.496, 4257.36941, 4331.10173124933],
+  "Canada": [460.406999999999, 478.175, 551.34, 599.241999999999, 613.998809877724, 581.813265507708],
+  "Brazil": [193.681, 222.821, 275.601, 348.908999999999, 402.937999999999, 515.798999999999],
+  "Germany": [522.533999999999, 549.899999999999, 536.799999999999, 576.6, 620.6, 628.6],
+  "Egypt": [31.7, 42.9, 53.4, 73, 104, 143.5],
+  "South Africa": [141.383999999999, 165.384999999999, 188.138, 210.669999999999, 244.919999999999, 259.601],
+  "China": [410.69, 621.2, 1006.554, 1355.59999999999, 2500.26, 4207.15999999999],
+  "Japan": [671.952999999999, 841.057, 968.61, 1057.93699999999, 1153.06199999999, 1156.02299999999],
+  "Malaysia": [14.994, 25.262, 46.632, 66.678, 96.2249999999999, 116.80763506],
+  "India": [179.843799999999, 284.245999999999, 409.921499999999, 554.7445, 689.5625, 922.24883],
+  "United Kingdom": [298.089, 319.738999999999, 337.423999999999, 377.067938032861, 398.361132705616, 381.772445423394],
+  'labels': {xLabel: 'Year', yLabel: 'Electricity Generation (terrawatt hours)'}
+};
+
+var electricPC = 
+{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
+  "US": [11.1763426634142, 12.5160683203212, 13.1203066706461, 14.0217151450839, 14.2785207233554, 13.8707553034916],
+  "Canada": [],
+  "Brazil": [],
+  "Germany": [],
+  "Egypt": [],
+  "South Africa": [],
+  "China": [],
+  "Japan": [5.60012167782046, 6.87986813798068, 7.78106247439409, 8.41536013999912, 9.08072988446901, 9.0773126663682],
+  "Malaysia": [],
+  "India": [],
+  "United Kingdom": [],
+  'labels': {xLabel: 'Year', yLabel: 'Per Capita Electricity Generation (terrawatt hours/person)'}
+};
+
+var CO2 = 
+{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
+  "US": [3783.56319892251, 4682.76930767474, 4852.23876974642, 5158.85593661485, 4974.23139138669, 5444.6071558793, 5791.89946504643, 6377.04931894541, 6493.73405284988, 6130.36154115063],
+  "Canada": [274.600761101999, 363.689208089999, 412.63677288, 474.7596527012, 450.620097299192, 493.924473725131, 526.295544924166, 592.430004003307, 635.584559883248, 610.806799356931],
+  "Brazil": [52.6367472839607, 86.834140036021, 148.341854329295, 193.923179223011, 213.721450883072, 241.259693420696, 296.624317314346, 352.004972768784, 377.827688846891, 472.210091899478],
+  "Germany": [918.574022404799, 1058.26210778159, 1038.3756200208, 1126.1539000584, 1088.0401784976, 1030.5031590468, 930.8827538568, 902.5099532532, 883.2846087112, 833.682541894],
+  "Egypt": [22.98580874748, 20.5542300258, 27.5916442068, 47.4386420699999, 77.508260604, 93.5411883372, 102.187152237599, 130.5811589832, 163.1312764848, 210.959948282399],  
+  "South Africa": [114.863685696, 134.6709257064, 174.809210095288, 206.474316010963, 290.926929548723, 318.099389754969, 345.850078450315, 365.985951742163, 416.426695024175, 444.939979992384],
+  "China": [489.145476851999, 749.7444525048, 1133.44256201399, 1500.3351912672, 1919.01394778759, 2395.79278974359, 3157.0370755668, 3429.90512299925, 5573.91304647688, 7945.19483758791],
+  "Japan": [446.2361852328, 857.094905444399, 982.355377381199, 1008.9489068424, 1010.05190265239, 1163.86601165994, 1295.29979343336, 1339.72985460108, 1409.8157878348, 1316.02275817585],
+  "Malaysia": [6.1880527188, 8.8323853572, 14.9716325484, 27.2496663828, 43.656768432, 66.1367192112, 92.4829644424699, 127.573055143268, 170.447858694955, 218.633875511925],
+  "India": [180.066503903662, 210.008907118774, 264.666653678649, 324.189342857055, 429.805441612188, 581.363307130037, 765.487873593856, 952.766529780117, 1179.99680502761, 1648.00247247239],
+  "United Kingdom": [694.49633568, 722.0592291312, 639.797648432399, 624.113087579999, 596.1772674792, 622.416407814, 588.377614957199, 591.344681927746, 603.72821498187, 558.208122473252],
+  'labels': {xLabel: 'Year', yLabel: 'Carbon dioxide emissions (Million tonnes CO<sub>2</sub>)'}
+};
+
+var CO2PC = 
+{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
+  "US": [18.9475636695738, 22.3104816675071, 22.1120164134289, 22.4126578644813, 20.5657228733894, 21.3927599471893, 21.6083400427042, 22.4075325514431, 21.7789219859068, 19.6330518504602],
+  "Canada": [],
+  "Brazil": [],
+  "Germany": [],
+  "Egypt": [],
+  "South Africa": [],
+  "China": [],
+  "Japan": [],
+  "Malaysia": [],
+  "India": [],
+  "United Kingdom": [],
+  'labels': {xLabel: 'Year', yLabel: 'Per Capita Carbon dioxide emissions (Million tonnes CO<sub>2</sub>/person)'}
+};
+
+var primaryEnergy = 
+{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
+  "US": [1287.27820475463, 1627.67154360524, 1717.5017401888, 1812.64002002025, 1756.41662576132, 1968.39375347818, 2121.8998572491, 2313.70914077054, 2351.17872420366, 2281.20360828836],
+  "Canada": [116.287, 156.413, 187.000999999999, 218.013825582155, 234.442793226933, 251.473507991626, 280.321594760956, 302.952333732258, 324.114568871725, 315.612196082669],
+  "Brazil": [22.0828967925, 36.814887909036, 64.1629656819081, 91.5268077932725, 109.346683207368, 124.960008085105, 154.15921295434, 185.780868523241, 206.521708716608, 257.529459413611],
+  "Germany": [256.11241860886, 309.57361170324, 319.869548033896, 355.864785667737, 358.85633595918, 349.561855998551, 333.282934606507, 333.007972258677, 333.104953684009, 322.421432798821],
+  "Egypt": [7.7751, 7.649510372, 10.372, 17.958, 28.02, 34.151, 38.257, 49.6577128866618, 62.4586447029008, 81.1981784857672],
+  "South Africa": [30.263, 35.934, 47.0175481225722, 55.1479063112108, 78.1261425008373, 86.3870787470152, 95.0178122269027, 101.264948166144, 114.977184214525, 123.079830494486],
+  "China": [131.37, 202.132999999999, 314.648, 416.424, 530.376999999999, 664.565914242666, 886.522870332726, 980.280309011805, 1601.15318658091, 2337.98270174734],
+  "Japan": [148.959535593066, 279.923318459519, 329.293450875684, 355.588129881884, 371.703980902384, 434.131638132832, 495.758515089642, 518.219735804977, 531.371564674219, 506.722032980818],
+  "Malaysia": [2.147, 3.17, 5.285, 9.473, 16.35, 24.158, 33.8811781140257, 47.6229586985678, 61.3493361825254, 76.1122076796068],
+  "India": [52.7296338028, 64.83855550089, 81.945317606, 102.503905282, 132.66304144, 180.726830970507, 236.23101109731, 295.836064157623, 366.784411451272, 511.601758848395],
+  "United_Kingdom": [196.827580576548, 216.677383671991, 202.836443680137, 201.446691587093, 201.652920147759, 211.186700638095, 214.469784540887, 223.964641894333, 228.202413174385, 213.750459889824],
+  
+  'labels': {xLabel: 'Year', yLabel: 'Primary Energy Consumption (Million tonnes oil equivalent)'}
+};
+
+var primaryEnergyPC = 
+{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
+  "US": [6.44651204768802, 7.75484200659028, 7.82678439196679, 7.8750174649844, 7.26182091934229, 7.7341438682558, 7.91635523522273, 8.12985917050444, 7.88546891397296, 7.30576629491512],
+  "Canada": [],
+  "Brazil": [],
+  "Germany": [],
+  "Egypt": [],
+  "South Africa": [],
+  "China": [],
+  "Japan": [],
+  "Malaysia": [],
+  "India": [],
+  "United Kingdom": [],
+  'labels': {xLabel: 'Year', yLabel: 'Primary Energy Consumption (Million tonnes oil equivalent)'}
+};
+
+
+/************************************************************************
+* makeGraphPoints			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} x,y		These are the arrays of x and y data.
+*************************************************************************/
+	function makeGraphPoints(x,y)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var dataArray = [];
+		x.forEach( function(o, i) {
+				dataArray.push({x: o, y: y[i]});
+			});
+		return dataArray;
+	}
+
+/************************************************************************
+* makeGraphData			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} dataSet	 These are the arrays of objects containing multiple
+*                         	 data series.
+* @param	{Array} groupKey The series to omit because it's the common axis
+*************************************************************************/
+	function makeGraphData(dataSet, groupKey)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var seriesArray = [];
+		var keyArray = d3.keys(dataSet).filter(function (o) {return (o != groupKey && o != "labels");});
+
+		keyArray.forEach( function(o, i) {
+				//console.log(makeGraphPoints(dataSet[groupKey], dataSet[o]));
+				seriesArray.push(makeGraphPoints(dataSet[groupKey], dataSet[o]));
+			});
+
+		return seriesArray;
+	}
+
+/************************************************************************
+* makeChartData			                                            *//**
+*
+* makeGraphPoint takes vectors of x and y data and constructs the array of
+* of x: and y: keyed objects that is expected by Brix graphing routines.
+*
+* @param	{Array} dataSet	 These are the arrays of objects containing multiple
+*                         	 data series.
+* @param	{Array} groupKey The series to omit because it's the common axis
+*************************************************************************/
+	function makeChartData(dataSet, groupKey)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var seriesArray = [];
+		var legendArray = [];
+		var keyArray = d3.keys(dataSet).filter(function (o) {return (o != groupKey && o != "labels");});
+
+		keyArray.forEach( function(o, i) {
+				//console.log(makeGraphPoints(dataSet[groupKey], dataSet[o]));
+				seriesArray.push(makeGraphPoints(dataSet[o], dataSet[groupKey]));
+				legendArray.push({content: o})
+			});
+
+		var chartLegendConfig = {
+			xPos: "right", yPos: "top",
+			type: 'box',
+			labels: legendArray
+		}
+		return [seriesArray, chartLegendConfig];
+	}
+
+var fuelData = makeChartData(fuelSources, "source");
+var electricData = makeGraphData (electric, "Year");
+var co2Data = makeGraphData (CO2, "Year");
+var primEnergyData = makeGraphData (primaryEnergy, "Year");
+
+
+var svg0 = new SVGContainer({
+			node: d3.select("#graph0"),
+			maxWid: 477,
+			maxHt: 650
+		});
+
+var svg1 = new SVGContainer({
+			node: d3.select("#graph1"),
+			maxWid: 350,
+			maxHt: 600
+		});
+		
+var graph0 = new LineGraph({
+			Data: electricData, 
+			type: "lines",
+			xAxisFormat: { type: "ordinal",
+						   ticks: 6,
+						   orientation: "bottom",
+						   label: electric.labels.xLabel,
+						 },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: electric.labels.yLabel,
+						   ticks: 3,
+						    },
+		}, eventManager);	
+
+var graph1 = new LineGraph({
+			Data: co2Data, 
+			type: "lines",
+			xAxisFormat: { type: "ordinal",
+						   ticks: 4,
+						   orientation: "bottom",
+						   label: CO2.labels.xLabel },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: CO2.labels.yLabel,
+						   ticks: 3,
+						    },
+		}, eventManager);	
+
+var graph2 = new LineGraph({
+			Data: primEnergyData, 
+			type: "lines",
+			xAxisFormat: { type: "ordinal",
+						   ticks: 4,
+						   orientation: "bottom",
+						   label: primaryEnergy.labels.xLabel },
+			yAxisFormat: { type: "linear",
+						   orientation: "left",
+						   label: primaryEnergy.labels.yLabel,
+						   ticks: 3,
+						    },
+		}, eventManager);	
+
+
+svg0.append(graph0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.33, widthPercent: 1});
+svg0.append(graph1, {topPercentOffset: 0.33, leftPercentOffset: 0, heightPercent: 0.33, widthPercent: 1});
+svg0.append(graph2, {topPercentOffset: 0.66, leftPercentOffset: 0, heightPercent: 0.33, widthPercent: 1});
+	
+// configure and append the legend to the bargraph
+
+	var fuelLegend = new Legend(fuelData[1],eventManager);
+	
+	
+eventManager.subscribe(countries.selectedEventId,
+						   displayData);
+
+countries.selectItemAtIndex(0);
+
+/************************************************************************
+* displayData	                                           *//**
+*
+* displays the data associated with the selected items in the Checkgroup
+*
+*************************************************************************/
+	function displayData(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+		var fuelDataSubset = [];
+		var fuelLegendSubset = [];
+		var electricDataSubset = [];
+		var co2DataSubset = [];
+		var primEnergyDataSubset = [];
+			
+		for (var i = 0; i <= 10; i++) 
+			{
+				fuelDataSubset[i] = [];
+				electricDataSubset[i] = [];
+				co2DataSubset[i] = [];
+				primEnergyDataSubset[i] = [];
+			}
+
+		countries.selectedItems().forEach( function (o,i) 
+			{
+				var index = Number(o.answerKey);
+				fuelDataSubset[index] = fuelData[0][index];
+				electricDataSubset[index] = electricData[index];
+				co2DataSubset[index] = co2Data[index];
+				primEnergyDataSubset[index] = primEnergyData[index];
+			}
+		);
+
+		console.log(graph0);
+		graph0.data = electricDataSubset;
+		graph0.redraw();
+		graph1.data = co2DataSubset;
+		graph1.redraw();
+		graph2.data = primEnergyDataSubset;
+		graph2.redraw();
+		
+		//fuelLegend.labels = fuelLegendSubset;
+		//fuelLegend.redraw();
+	}
+
+	mapLegend = new Image({
+				URI: 'img/worldmap.jpg',
+				caption: '',
+				actualSize: {height: 530, width: 930}
+				});
+
+
+
+	var Qoceans = new MultipleChoiceQuestion({
+			questionId: "energyUse",
+			question: "Which country uses the most resources per capita?",
+			svgSize: [600,343],
+			svgBaseBrix: mapLegend,
+			choices: [	
+					{content: "US", xyPos:[0.05, 0.6], width: 80, answerKey: "a01", key: '0'},
+					{content: "Canada", xyPos:[0.12, 0.75], width: 80, answerKey: "a02", key: '1'},
+					{content: "Brazil", xyPos:[0.3, 0.3], width: 80, answerKey: "a03", key: '2' },
+					{content: "Germany", xyPos:[0.5, 0.7], width: 80, answerKey: "a04", key: '3' },
+					{content: "Egypt", xyPos:[0.45, 0.5], width: 80, answerKey: "a05", key: '4' }
+		  			],
+			order: "ordered",
+			widget: LabelGroup,
+			widgetConfig: {
+				 //type: "latin-upper",
+				 question: true
+			},
+		}, eventManager);
+
+	Qoceans.draw(d3.select("#earth"));
+
+	submitManager.handleRequestsFrom(Qoceans);
+		
+
+	eventManager.subscribe(Qoceans.choiceWidget.selectedEventId,
+						   mapLegLite);
+	//eventManager.subscribe(graph1.selectedEventId, mapLegLite);
+
+	//mapLegLite({selectKey: '1'})
+/************************************************************************
+* mapLegLite                                           *//**
+*
+* highlights lines on the graphs corresponding to the labelled regions
+* on the map
+*
+*************************************************************************/
+	function mapLegLite(eventDetails)
+	{
+		//Handler needs to get written into each page, 
+		//each widget will have it's own way of responding  
+	
+		//graph0.lite(eventDetails.selectKey);
+		graph1.lite(eventDetails.selectKey);
+		//graph2.lite(eventDetails.selectKey);
+		Qoceans.choiceWidget.lite(eventDetails.selectKey);
+		
+	}
+
+	</script>
+</body>
+</html>
