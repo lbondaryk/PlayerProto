@@ -34,7 +34,6 @@ function brixInitDiv()
         //       <tomcat>/config/server.xml:70 <Connector port="8080" protocol="HTTP/1.1"
         PAF.AMC.initialize ({
             //laspafurl : "http://localhost:9080",
-            //laspafurl : "http://dev-414158649.us-west-1.elb.amazonaws.com/las-paf",
             laspafurl : "http://dev-414158649.us-west-1.elb.amazonaws.com",
             eventmanager : eventManager,
             requestbinding : itemsNormalized
