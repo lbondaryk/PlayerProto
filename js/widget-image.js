@@ -553,6 +553,8 @@ pearson.brix.CaptionedImage = function (config, eventManager)
 	this.captionSize_.height = captionRendered.node().offsetHeight + 2 * this.marginSize_;
 	captionRendered.remove();
 
+	var aspectRatio = this.actualSize.height/this.actualSize.width;
+	var viewboxWidth = this.displayWidth_ - 2 * this.marginSize_;
 	/** 
 	* The the viewbox size (in pixels) for the captioned image 
 	* @note Subtract the margin from either side of the image display width to get the
@@ -562,9 +564,6 @@ pearson.brix.CaptionedImage = function (config, eventManager)
 	* @private
     * @type {!pearson.utils.ISize}
 	*/
-
-	var aspectRatio = this.actualSize.height/this.actualSize.width;
-	var viewboxWidth = this.displayWidth_ - 2 * this.marginSize_;
 	this.imageDisplaySize_ = new pearson.utils.Size(aspectRatio * viewboxWidth, viewboxWidth);
 
 	/**

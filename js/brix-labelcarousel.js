@@ -264,7 +264,7 @@ pearson.brix.LabelCarousel.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.LabelCarousel.prototype.selectItemAtIndex = function (index)
 {
- this.labelSelector.selectItemAtIndex(index);
+	this.labelSelector.selectItemAtIndex(index);
 };
 
 /* **************************************************************************

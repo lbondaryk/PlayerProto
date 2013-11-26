@@ -41,13 +41,14 @@ goog.require('pearson.utils.IEventManager');
  *
  * @constructor
  * @extends {pearson.brix.SvgBric}
+ * @implements {pearson.brix.ILightable}
  * @export
  *
  * @param {Object}		config			-The settings to configure this bric
  * @param {string|undefined}
  * 						config.id		-String to uniquely identify this LabelSelector.
  * 										 if undefined a unique id will be assigned.
- * @param {!Array.<string>}
+ * @param {!Array.<string>|number}
  *						config.labels	-The list of label strings to be presented by the Selector.
  * @param {string}		config.layout	-How the selector will layout the items (vertical or horizontal).
  * @param {{top: number, bottom: number, left: number, right: number}}
@@ -74,7 +75,7 @@ pearson.brix.LabelSelector = function (config, eventManager)
 
 	/**
 	 * The list of label strings presented by the LabelSelector.
-	 * @type {!Array.<string>}
+	 * @type {!Array.<string>|number} 
 	 */
 	this.labels = config.labels;
 
@@ -279,6 +280,31 @@ pearson.brix.LabelSelector.prototype.selectItemAtIndex = function (index)
 };
 
 
+/* **************************************************************************
+ * LabelSelector.itemKeyToIndex                                        */ /**
+ *
+ * Find the first item in the list of items in this Carousel which has the
+ * specified key and return its index. If no item has that key return null.
+ * @export
+ *
+ * @param {string}  key     -The key of the item to find
+ *
+ * @return {?number} the index of the item in the list of items with the
+ *          specified key.
+ *
+ ****************************************************************************/
+pearson.brix.LabelSelector.prototype.itemKeyToIndex = function (key)
+{
+	var index = /** @type {number} */ (Number(key).valueOf());
+
+	if (isNaN(index) && index >= 0 && index < this.labels.length)
+	{
+		return index;
+	}
+
+    return null;
+};
+
 
 /* **************************************************************************
  * LabelSelector.lite                                                  */ /**
@@ -287,7 +313,7 @@ pearson.brix.LabelSelector.prototype.selectItemAtIndex = function (index)
  * remove any highlighting on all other labels.
  * @export
  *
- * @param {string|number}	liteKey	-The key associated with the label(s) to be highlighted.
+ * @param {string}	liteKey	-The key associated with the label(s) to be highlighted.
  *
  ****************************************************************************/
 pearson.brix.LabelSelector.prototype.lite = function (liteKey)
@@ -297,5 +323,5 @@ pearson.brix.LabelSelector.prototype.lite = function (liteKey)
 	// todo: this works well when all the items are Images but not so well for other widget types
 	this.labelItems.lite(liteKey);
 	
-}; // end of Carousel.lite()
+}; // end of LabelSelector.lite()
 
