@@ -333,11 +333,18 @@ pearson.brix.Journal.prototype.draw = function (container)
         .attr("class", "entry")
         .attr("id", this.getId());
 
+    // We need a block container for the submit button and the attempts
+    var submitAndAttemptsCntr  = widgetGroup.append('div');
+
     // draw the submit button below
     var submitButtonCntr = widgetGroup.append('div')
-        .attr('class', 'submit');
+        .attr('class', 'submit')
+        .style('display', 'inline-block');
 
     this.submitButton.draw(submitButtonCntr);
+
+    var attemptsCntr = submitAndAttemptsCntr.append('span')
+        .attr('class', 'attempts');
 
     // make a target for feedback when the submission is successful (or not)
     widgetGroup.append('div')

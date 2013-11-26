@@ -270,6 +270,7 @@ div.brixMultipleChoiceQuestion .choiceLabel
   margin: 0 5px; 
 }
 
+div.brixJournal .submit,
 div.brixMultipleChoiceQuestion .submit
 {
   float: left;
