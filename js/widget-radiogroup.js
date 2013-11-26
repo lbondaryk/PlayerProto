@@ -324,6 +324,13 @@ pearson.brix.RadioGroup.prototype.flagChoice = function (key)
 {
     // This needs to be implemented to replace the radio button element
     // of the specified choice w/ a checked icon.
+      
+    var index = this.itemKeyToIndex(key);
+    var buttonId = this.id + "_btn" + index;
+    var buttonField = d3.select('#' + buttonId);
+    buttonField.remove();
+    d3.select('td:empty').append('i').attr('class','icon-ok-sign');
+
 };
 
 /* **************************************************************************
