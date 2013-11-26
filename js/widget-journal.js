@@ -119,7 +119,7 @@ pearson.brix.Journal = function (config, eventManager, bricWorks)
     {
         id: this.jrnlId_ + "_sbmtBtn",
         text: "Submit",
-        enabled: true
+        enabled: false
     };
 
     /**
@@ -270,6 +270,20 @@ pearson.brix.Journal.prototype.handleSubmitResponse_ = function (responseDetails
 };
 
 /* **************************************************************************
+ * Journal.toggleEnabler                                               */ /**
+
+ */
+pearson.brix.Journal.prototype.toggleEnabler = function ()
+{
+    this.logger_.fine('Journal: handling submit requested');
+
+    var entry = this.lastdrawn.widgetGroup.select("textarea.entry");
+    var entryText = entry.node().value;
+
+    console.log(entryText);
+};
+
+/* **************************************************************************
  * Journal.getId                                                       */ /**
  *
  * @inheritDoc
@@ -298,7 +312,9 @@ pearson.brix.Journal.prototype.getId = function ()
  ****************************************************************************/
 pearson.brix.Journal.prototype.draw = function (container)
 {
-    this.logger_.fine('drawing');
+    this.logger_.fine('Journal: drawing');
+
+    var that = this;
 
     this.lastdrawn.container = container;
 
@@ -312,8 +328,6 @@ pearson.brix.Journal.prototype.draw = function (container)
     var title = jCntr.append('legend')
         .attr("class", "title")
         .html(this.title_);
-
-this.logger_.fine('id ' + this.getId());
 
     var textentry = jCntr.append("textarea")
         .attr("class", "entry")
@@ -329,30 +343,14 @@ this.logger_.fine('id ' + this.getId());
     widgetGroup.append('div')
         .attr('class', 'feedback');
 
-    // listen for keyboard events on the textarea
+    // listen for keyboard events on the textarea and enable submit
     var textArea = goog.dom.getElement(this.getId());
     var keyHandler = new goog.events.KeyHandler(textArea);
     goog.events.listen(keyHandler,
         goog.events.KeyHandler.EventType.KEY,
         function(e)
         {
-            //var keyEvent = (e);
-            //this.logger_.fine(e);
-            console.log(e.target.textLength);
-            console.log(this.element_.textLength);
-
-            //console.log("e:");
-            //console.log(e);
-            var textArea = goog.dom.getElement(e.target).value;
-            console.log(textArea);
-            //console.log(textArea.content);
-            if (goog.events.KeyCodes.isCharacterKey)
-            {
-                console.log('yay');
-            }
-
-            /*var content = goog.dom.getTextContent(elt);
-            console.log(content);*/
+            that.submitButton.setEnabled(true);
         });
 
     this.lastdrawn.widgetGroup = widgetGroup;
