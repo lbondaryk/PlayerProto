@@ -31,15 +31,18 @@
     <script src="../../js/d3.v3.min.js"></script>
 
     <!-- include google library base for use in tests -->
+    <script src="../../js/jquery-latest.js"></script>
+
+    <!-- Local directory copy of built brixlib -->
+    <script src="brixlib-compiled.js"></script>
+
+    <!-- Non-compiled brixlib code.  BEWARE: this can get incomplete quickly and easily -->
+<!--
     <script src="../../../closure/closure-library/closure/goog/base.js"></script>
     <script src="../../../closure/closure-library/closure/goog/deps.js"></script>
     <script src="../../../closure/closure-library/closure/goog/debug/logger.js"></script>
     <script src="../../../closure/closure-library/closure/goog/debug/console.js"></script>
-    <script src="../../js/jquery-latest.js"></script>
-
-    <!--
-    <script src="../../js/brixlib-compiled.js"></script>
-    -->
+    
 
     <script src="../../js/eventmanager.js"></script>
 
@@ -74,19 +77,19 @@
     <script src="../../js/widget-multiselectquestion.js"></script>
     <script src="../../js/widget-numericquestion.js"></script>
     <script src="../../js/widget-slider.js"></script>
+    <script src="../../js/brix-labelcarousel.js"></script>
+    <script src="../../js/brix-labelselector.js"></script>
+    <script src="../../js/brix-pyramicchart.js"></script>
     <script src="../../js/mortar-hilite.js"></script>
     <script src="../../js/briclayer.js"></script>
     <script src="../../js/ipc.js"></script>
-    
+-->   
+    <!-- IPC initialization and pointers to IPS and AMS -->
     <script src="demo-aws-dev-boilerplate.js"></script>
 
-
+    <!-- Turn on client logging -->
     <script>
-		// (mjl->ysap) may want to replace these lines with:
-	// pearson.utils.logToConsole(true, 'FINER', 'pearson');
-    var debugConsole = new goog.debug.Console();
-    debugConsole.setCapturing(true);
-    goog.debug.Logger.getLogger('pearson').setLevel(goog.debug.Logger.Level.FINER);
+	   pearson.utils.logToConsole(true, 'FINER', 'pearson');
     </script>
 
     <!-- LAS-PAF's amc -->
