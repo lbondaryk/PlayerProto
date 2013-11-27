@@ -143,9 +143,9 @@
                 expect(myCImage.imageId_).to.equal(configCImg.id);
             });
 
-            it('should set a default display width of 477', function () {
+            it('should set a default display width of 457', function () {
                 // we're testing a private member here
-                expect(myCImage.displayWidth_).to.equal(477);
+                expect(myCImage.displayWidth_).to.equal(457);
             });
 
 			it('should have an uninitialized lastdrawn property', function () {

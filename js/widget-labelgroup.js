@@ -327,16 +327,17 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
                 // in the way it does for callouts -lb
                 .html(function (d) { return d.content; }); //make the label
 
-    // bullets type just puts big square markers on key areas of a diagram
-    // a precursor to hotspot answertypes - the 44 pixel square is a UX spec
+    var radius = 17;
+    var padding = 2;
+    // bullets type just puts big circle markers on key areas of a diagram
+    // a precursor to hotspot answertypes - the 34 pixel size is from UX in Dec. 2013
     if (this.type != "none")
     {
-        labelCollection.append("rect")
+        labelCollection.append("circle")
             //.attr("class", "numSteps")
-            .attr("height", 44)
-            .attr("width", 44)
-            .attr("x", 4)
-            .attr("y", 4);
+            .attr("r", radius)
+            .attr("cx", radius + padding)
+            .attr("cy", radius + padding);
     }
 
     // numbered bullets are what PM is referring to as stepped diagrams,
@@ -351,10 +352,10 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
         labelCollection.append("text")
         // the 25 and 27 serve to attractively center the text on the square on Chrome,
         // might need to be adjusted for other browsers
-            .attr("x", 25)
-            .attr("y", 27)
+            .attr("x", radius + padding)
+            .attr("y", radius + padding)
             .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "middle")
+            .attr("alignment-baseline", "central")
             .text(function (d, i) {return choiceIndex(i);});
     }
 
@@ -533,7 +534,7 @@ pearson.brix.LabelGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 {
     var formatIndexUsing =
     {
-        "none": function (i)
+        "bullets": function (i)
                 {
                     return "";
                 },

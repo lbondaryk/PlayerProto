@@ -113,12 +113,12 @@
 		
 var svgImg = new SVGContainer({
 		node: d3.select("#soloImage"),
-		maxSize: {width: 477, height: 300}
+		maxSize: {width: 457, height: 300}
 	});
 var image200 = new Image({
 			URI: 'img/squaresTest.png',
-			caption: "Squares 200x200 px in a 300 x 477w box",
-			actualSize: {height: 200, width: 200},
+			caption: "Squares 200x200 px in a 300 x 457w box",
+			actualSize: {height: 100, width: 100},
 	});
 	
 	svgImg.append(image200);
@@ -393,8 +393,8 @@ var image200 = new Image({
 	//6. Three images same size with LabelSelector.
 	var neffCont2 = new SVGContainer({
 			node: d3.select("#neff3Numbers"),
-			maxWid: 477,
-			maxHt: 490
+			maxWid: 457,
+			maxHt: 400
 		});
 	
 	var imgCrsl = new LabelCarousel({
@@ -417,14 +417,15 @@ var image200 = new Image({
 					},
 				],
 			imagesActualSize: {height: 380, width: 570},
+			type: 'bullets'
 			}, eventManager);
 
 	neffCont2.append(imgCrsl);
 	
 	var svgContFoo = new SVGContainer({
 			node: d3.select("#neff3Numbers"),
-			maxWid: 477,
-			maxHt: 440
+			maxWid: 457,
+			maxHt: 400
 		});
 
 	var imgvwr = new LabelCarousel({

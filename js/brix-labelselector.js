@@ -100,7 +100,7 @@ pearson.brix.LabelSelector = function (config, eventManager)
      * @const
      * @type {{top: number, bottom: number, left: number, right: number}}
      */
-    this.selectorMargin_ = {top: 0, bottom: 0, left: 10, right: 10};
+    this.selectorMargin_ = {top: 0, bottom: 0, left: 0, right: 0};
 
     /**
      * Should labels have numbers or bullets?
@@ -213,7 +213,7 @@ pearson.brix.LabelSelector.prototype.draw = function (container, size)
         var labelCnt = this.labels.length;
         var selectorWidth = size.width - this.selectorMargin_.left - this.selectorMargin_.right;
         var labelWidth = selectorWidth / (labelCnt ? labelCnt : 1) - (labelMargin.left + labelMargin.right);
-        itemSize = {height: 44, width: labelWidth};
+        itemSize = {height: 34, width: labelWidth};
 
         this.labels.forEach(
                 function (o, i) { labelItemsLabels[i] =
@@ -227,9 +227,9 @@ pearson.brix.LabelSelector.prototype.draw = function (container, size)
     else
     {
         // if labels is just a count of numerical labels, then spread them out one after the other
-        // packed on the left after a 15 pixel margin
+        // packed on the left 
 
-        itemSize = {height: 44, width: 44};
+        itemSize = {height: 34, width: 34};
 
         for (var i = this.labels - 1; i >= 0; i--)
         {
