@@ -11,7 +11,9 @@ function brixInitDiv()
         // Note: Configure the IPS server base url accordingly.
         //       In this configuration is runninng on local machine port 8088
         //       The server configuration is in /BrixServer/config/ 
+        //
         var ipcConfig = {ipsBaseUrl:"http://localhost:8088"};
+        //var ipcConfig = {ipsBaseUrl:"http://dev-414158649.us-west-1.elb.amazonaws.com/ips"};
         var ipc = new pearson.brix.Ipc(ipcConfig, eventManager);
 
         // Scan through the div element with class brix
@@ -32,6 +34,7 @@ function brixInitDiv()
         //       <tomcat>/config/server.xml:70 <Connector port="8080" protocol="HTTP/1.1"
         PAF.AMC.initialize ({
             laspafurl : "http://localhost:9080",
+            //laspafurl : "http://dev-414158649.us-west-1.elb.amazonaws.com",
             eventmanager : eventManager,
             requestbinding : itemsNormalized
         });

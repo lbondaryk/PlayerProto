@@ -327,7 +327,7 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
                 // in the way it does for callouts -lb
                 .html(function (d) { return d.content; }); //make the label
 
-    // bullets type just puts big black circle markers on key areas of a diagram
+    // bullets type just puts big square markers on key areas of a diagram
     // a precursor to hotspot answertypes - the 44 pixel square is a UX spec
     if (this.type != "none")
     {
@@ -361,7 +361,7 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
     labelCollection.on('click',
                 function (d, i)
                 {
-                    that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+                    that.eventManager.publish(that.selectedEventId, {index: i, selectKey: d.key});
                     that.lite(d.key);
                 });
 
@@ -422,7 +422,11 @@ pearson.brix.LabelGroup.prototype.lite = function (liteKey)
     // Turn off all current highlights
     var allLabels = this.lastdrawn.labelCollection;
     allLabels
-        .classed("lit", false);
+        .classed("lit", false)
+        // HACKALERT: swapping the display styles is just to force certain webkit and chrome
+        // broswers to redraw the page when they don't want to. -lb
+        .style('display','block');
+
 
     // create a filter function that will match all instances of the liteKey
     // then find the set that matches
@@ -432,7 +436,10 @@ pearson.brix.LabelGroup.prototype.lite = function (liteKey)
 
     // Highlight the labels w/ the matching key
     labelsToLite
-        .classed("lit", true);
+        .classed("lit", true)
+        // HACKALERT: swapping the display styles is just to force certain webkit and chrome
+        // broswers to redraw the page when they don't want to.
+        .style('display','inline');
 
     if (labelsToLite.empty())
     {

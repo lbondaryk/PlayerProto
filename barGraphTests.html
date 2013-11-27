@@ -35,9 +35,9 @@
 						<div id="groupBar"><p>2n. Grouped bars (separate series with same label shown in group)</p></div>
 					</div>
 					<div class="lc_ec_trailing">
-						<div id="widgetTarget50"><p>3. Double-sided pyramid bar graph (negatives)</p>
+						<div id="widgetTarget50"><p>3. Double-sided bar graph (negatives)</p>
 						</div>
-						<div id="widgetTarget55"><p>4. Double-sided bar graph (reverse positive axis)</p>
+						<div id="widgetTarget55"><p>4. Pyramid graph (reverse positive axis, and composed of two bargraph objects)</p>
 						</div>
 						<div id="widgetTarget70"><p>5. Small multiples (several line graphs in container)</p></div>
 						<div id="widgetTarget80"><p>6. bar with Legend</p></div>
@@ -53,13 +53,44 @@
 	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
 
-	<script src="js/brixlib-compiled.js"></script>
-	<!--
-	<script src="js/widget-base.js"></script>
-	<script src="js/widget-barchart.js"></script>
-	<script src="js/widget-legend.js"></script>
+    <!--
+    <script src="js/brixlib-compiled.js"></script>
+    -->
+    <script src="../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../closure/closure-library/closure/goog/deps.js"></script>
+
     <script src="js/eventmanager.js"></script>
-    !-->
+    
+    <script src="js/answerman.js"></script>
+    <script src="js/submitmanager.js"></script>
+    <script src="js/mortar-base.js"></script>
+    <script src="js/widget-base.js"></script>
+    <script src="js/bricworks.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
+    <script src="js/widget-linegraph.js"></script>
+    <script src="js/widget-barchart.js"></script>
+	<script src="js/brix-pyramidchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+    <script src="js/widget-labelgroup.js"></script>
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-hilite.js"></script>
+    <script src="js/briclayer.js"></script>
+
 
 <script>
 
@@ -76,7 +107,7 @@
 	var LabelGroup = pearson.brix.LabelGroup;
 	var MarkerGroup = pearson.brix.MarkerGroup;
 	var BarChart = pearson.brix.BarChart;
-	var LineGraph = pearson.brix.LineGraph;
+	var PyramidChart = pearson.brix.PyramidChart;
 	var Legend = pearson.brix.Legend;
 
 
@@ -303,37 +334,21 @@ var ordinalData2 = [
 	//	<div id="widgetTarget50"><p>4. Doublesided bar reverse axis</p></div>
 	var svg55 = new SVGContainer(
 		{node: d3.select("#widgetTarget55"),
-		maxSize: { height: 300, width: 477}
+		maxSize: { height: 350, width: 477}
 		}
 	);
-	
-	var dblPos = new BarChart ({
-		Data: [growthWomen],
-		xAxisFormat: { 
-						type: "linear", 
-					   	mode: "reverse",
-					   	ticks: 4,
-					   	orientation: "bottom",
-					   	label: "reverse axis - Women"},
-		yAxisFormat: { type: "ordinal",
-					   orientation: "right",
-					   yLabel: "Age ranges"},
+
+	var dblPos = new PyramidChart ({
+		Data: [growthWomen, growthMen],
+		dataLabels: ['women','men'],
+		xAxisFormat: {  ticks: 3,
+					   	label: "Population (Millions)"},
+		yAxisFormat: {	ticks: 0,
+					   	label: "Age group"},
 	});
 
-	var dblPos2 = new BarChart ({
-		Data: [growthMen],
-		xAxisFormat: { 
-						type: "linear", 
-					   	ticks: 4,
-					   	orientation: "bottom",
-					   	label: "Men"},
-		yAxisFormat: { type: "ordinal",
-					   orientation: "left",
-					   ticks: 0
-					   },
-	});
-	svg55.append(dblPos, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.5});
-	svg55.append(dblPos2, {topPercentOffset: 0, leftPercentOffset: 0.55, heightPercent: 1, widthPercent: 0.5});
+
+	svg55.append(dblPos);
 
 
 	//	<div id="widgetTarget70"><p>5. Small multiples (several line graphs in container)</p></div>
@@ -355,7 +370,8 @@ var ordinalData2 = [
 		yAxisFormat: {
 			type: "ordinal",
 			orientation: "left",
-			label: "age groups"
+			label: "age groups (2 ticks)",
+			ticks: 4
 		}
 	});
 	
@@ -373,7 +389,8 @@ var ordinalData2 = [
 		yAxisFormat: {
 			type: "ordinal",
 			orientation: "left",
-			//label: "age groups"
+			ticks: ['11-20', '71-80'],
+			label: "only 11 and 71 ticks"
 		}
 	});
 	

@@ -321,7 +321,11 @@ pearson.brix.PieChart.prototype.getLegendLabels_ = function ()
 	var legLabels = [];
 
 	this.data.forEach(
-			function (o, i) { legLabels[i] = {content: o.y + " " + o.x + "%"}; });
+			function (o, i) {
+				if (o.y !== "white") {
+				legLabels.push({content: o.y + " " + o.x + "%"});
+				}
+			});
 
 	return legLabels;
 };

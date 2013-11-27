@@ -144,19 +144,17 @@ textChunks.draw(d3.select("#optionsOff"));
 
 	var cimgConfig0 =
 		{
-			id: "cimg0n",
 			URI: 'img/reactor.jpg',
 			caption: "Nuclear Reactor Schematic Diagram",
+			displayWidth: 477,
 			actualSize: {height: 310, width: 680},
-			captionPosition: "below"
+			captionPosition: "above"
 		};
 	
 	var cntrConfig0 = 
 		{
 			node: d3.select("#imgReactor"),
-			//maxSize: cntrSize,
-			maxWid: 680, //550,
-			maxHt: 350
+			maxSize: {width: 477, height: 300}
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
@@ -174,9 +172,9 @@ var newLabels = new LabelGroup(
 		  [	
 			{content: "1", xyPos: [0, 0.31], width: 0},
 			{content: "2", xyPos: [0.05, 0.5], width: 0},
-			{content: "3", xyPos: [0.3, 0.74], width: 0},
-			{content: "4", xyPos: [0.62, 0.68], width: 0},
-			{content: "5", xyPos: [0.66, 0.25], width: 0}
+			{content: "3", xyPos: [0.3, 0.65], width: 0},
+			{content: "4", xyPos: [0.6, 0.62], width: 0},
+			{content: "5", xyPos: [0.62, 0.25], width: 0}
 	  ]
 		}, eventManager);
 		
@@ -208,8 +206,7 @@ callEm.draw(d3.select("#numbered"));
 	
 	var svg5 = new SVGContainer({
 			node: d3.select("#Endocrine"),
-			maxWid: 553, //550,
-			maxHt: 620
+			maxSize: {width: 477, height: 650}
 		});
 		
 	var glands = new CaptionedImage(imgContBodyCfg);
@@ -225,11 +222,11 @@ callEm.draw(d3.select("#numbered"));
 		{key: "Pituitary", content: "Pituitary gland" , xyPos: [0,.8], width: 110	},
 		{key: "Pineal", content: "Pineal gland (epiphysis)", xyPos: [.15,.75], width: 110	},
 		{key: "Thyroid", content: "Thyroid gland", xyPos: [.5,.98], width: 110},
-		{key: "Parathyroid", content: "Parathyroid gland", xyPos: [.8,.9], width: 110},
-		{key: "Adrenal", content: "Adrenal (surparenal)", xyPos: [.78,.8], width: 110},
-		{key: "Pancreas", content: "Pancreas", xyPos: [.8,.51], width: 110},
-		{key: "Ovaries", content: "Ovaries", xyPos: [.65,.37], width: 110},
-		{key: "Testes", content: "Testicles", xyPos: [.7,.05], width: 110}
+		{key: "Parathyroid", content: "Parathyroid gland", xyPos: [.75,.95], width: 110},
+		{key: "Adrenal", content: "Adrenal (surparenal)", xyPos: [.75,.8], width: 110},
+		{key: "Pancreas", content: "Pancreas", xyPos: [.75,.6], width: 110},
+		{key: "Ovaries", content: "Ovaries", xyPos: [.5,.48], width: 110},
+		{key: "Testes", content: "Testicles", xyPos: [.7,.2], width: 110}
 		]
 	}, eventManager);
 	
