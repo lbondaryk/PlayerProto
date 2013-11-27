@@ -1,0 +1,81 @@
+<!doctype html>
+<!-- 
+    This is a staging test html so I can isolate and try out (temporarily) 
+    before putting in index.html 
+    -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Mocha Spec Runner</title>
+    <link rel="stylesheet" href="lib/mocha/mocha.css">
+    <!-- The widget css is required for thumb size -->
+    <link href="../css/widgets.css" rel="stylesheet">
+</head>
+<body>
+    <p>Integration will require to have the Brix (test) Server up</p>
+    <pre>[BrixServer]$ make testsvr</pre>
+
+
+    <div id="mocha"></div>
+    <script src="lib/mocha/mocha.js"></script>
+    <script>mocha.setup('bdd')</script>
+    <!-- assertion framework -->
+    <script src="lib/chai.js"></script>
+    <script>var expect = chai.expect</script>
+	<!-- function created by David Bau to allow seeding Math.random -->
+	<!-- downloaded from github https://github.com/davidbau/seedrandom -->
+	<script src="lib/seedrandom.js"></script>
+    <!-- mocking framework -->
+    <script src="lib/sinon-1.7.3.js"></script>
+	<!-- local helper functions -->
+
+    <!-- include source files here... -->
+    <script src="../js/d3.v3.min.js"></script>
+    <script src="../../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../../closure/closure-library/closure/goog/deps.js"></script>
+
+    <script src="../js/eventmanager.js"></script>
+    <script src="../js/widget-base.js"></script>
+    <script src="../js/bricworks.js"></script>
+
+    <script src="../js/fakeactivitydb.js"></script>
+    <script src="../js/answerman.js"></script>
+    <script src="../js/submitmanager.js"></script>
+    <script src="../js/widget-numeric.js"></script>
+    <script src="../js/widget-legend.js"></script>
+    <script src="../js/widget-callouts.js"></script>
+    <script src="../js/widget-button.js"></script>
+    <script src="../js/widget-sketch.js"></script>
+    <script src="../js/widget-prototype-axes.js"></script>
+    <script src="../js/widget-linegraph.js"></script>
+    <script src="../js/widget-barchart.js"></script>
+    <script src="../js/widget-piechart.js"></script>
+    <script src="../js/widget-image.js"></script>
+    <script src="../js/widget-carousel.js"></script>
+    <script src="../js/widget-imageviewer.js"></script>
+    <script src="../js/widget-labelgroup.js"></script>
+    <script src="../js/widget-markergroup.js"></script>
+    <script src="../js/widget-radiogroup.js"></script>
+    <script src="../js/widget-checkgroup.js"></script>
+    <script src="../js/widget-selectgroup.js"></script>
+    <script src="../js/widget-multiplechoicequestion.js"></script>
+    <script src="../js/widget-multiselectquestion.js"></script>
+    <script src="../js/widget-numericquestion.js"></script>
+    <script src="../js/widget-slider.js"></script>
+
+    <script src="../js/briclayer.js"></script>
+    <script src="../js/domhelper.js"></script>
+    <script src="../js/ipsproxy.js"></script>
+    <script src="../js/ipc.js"></script>
+
+    <script src="helper.js"></script>
+    <!-- include spec files here... -->
+    <script src="spec/bric-slider-spec.js"></script>
+
+    
+
+    <script>
+    mocha.run()
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Template for Captioned Image Brix" name="description">
+     <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+
+    <!-- widgets.css contains styling for the interactive brix -->
+    <link href="css/widgets.css" rel="stylesheet">
+</head>
+<body>
+    <div id="target1"></div>
+    <script src="js/d3.v3.min.js"></script>
+    <script src="js/brixlib-compiled.js"></script>
+
+    <script>
+
+    // Create an object that will contain the objects needed for the activities
+    // on this page.
+    pearson.brix.activity = {};
+    var a = pearson.brix.activity;
+
+    // The activity config that defines the brix and mortar for this page
+    // 
+    // Set imgBaseUrl to imgBaseUrl": "http://localhost:8088/images/", or whatever server the IPS is running
+    // on to serve the images that route, or just leave it empty ("imgBaseUrl": "",) to point to images
+    // local to this html file
+
+    a.config =
+{
+    "description": "test image",
+    "sequenceNodeKey": "39b0706e-8587-447e-a598-ecc5e9a1b883",
+    //"imgBaseUrl": "http://localhost:8088/images/",
+    "imgBaseUrl": "",
+    "containerConfig":
+        [
+            {
+                "description": "This 'imgReactor' container contains the image",
+                "containerId": "imgContainer",
+                "brixConfig":
+                    [
+                        {
+                            "bricId": "cimage1",
+                            "bricType": "CaptionedImage",
+                            "config":
+                                {
+                                    "id": "cimg0n",
+                                    //"URI": "img/reactor.jpg",
+                                    "caption": "Nuclear Reactor Schematic Diagram",
+                                    "actualSize": {"height": 310, "width": 680},
+                                    "captionPosition": "below"
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "URI",
+                                        "value":
+                                            {
+                                                "type": "join",
+                                                "parts":
+                                                [
+                                                    {
+                                                        "type": "ref",
+                                                        "domain": "info",
+                                                        "refId": "imgBaseUrl"
+                                                    },
+                                                    {
+                                                        "type": "constant",
+                                                        "value": "img/reactor.jpg"
+                                                    }
+                                                ]
+                                            }
+                                    }
+                                ]
+                        },
+                        {
+                            "bricId": "cntr1",
+                            "bricType": "SvgContainer",
+                            "config":
+                                {
+                                    //"node": d3.select("#target1"),
+                                    //"maxSize": pearson.utils.Size.matchRatioWithHeight(310 + 40, {"height": 310, "width": 680}/*"cimage1"."config"."actualSize"*/),
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "node",
+                                        "value":
+                                            {
+                                                "type": "d3select",
+                                                "selector": "#target1"
+                                            }
+                                    },
+                                    {
+                                        "type": "set-property",
+                                        "name": "maxSize",
+                                        "value":
+                                            {
+                                                "type": "property-of-ref",
+                                                "domain": "brix",
+                                                "refId": "cimage1",
+                                                "accessor": "getSizeAt100Pct"
+                                            }
+                                    }
+                                ]
+                        }
+                    ],
+                "hookupActions":
+                    [
+                        {
+                            "description": "Append the captioned image to the svg container",
+                            "type": "method-call",
+                            "instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+                            "methodName": "append",
+                            "args":
+                                [
+                                    { "type": "ref", "domain": "brix", "refId": "cimage1" },
+                                    { "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
+                                ]
+                        }
+                    ]
+            }
+        ]
+    };
+
+    // create the eventmanager to be used by the created brix, and the
+    // bricLayer which will create them, and then tell the bricLayer to build.
+    a.eventManager = new pearson.utils.EventManager();
+    a.answerMan = new pearson.brix.utils.LocalAnswerMan();
+    a.submitManager = new pearson.brix.utils.SubmitManager(a.eventManager, a.answerMan);
+
+    a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager, a.submitManager);
+
+    a.building = a.bricLayer.build(a.config);
+
+    </script>
+</body>
+</html>

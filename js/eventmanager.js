@@ -293,11 +293,15 @@ pearson.utils.EventManager.prototype.publishLocal_ = function (eventId, eventDet
 	if (eventId in this.events_)
 	{
 		var event = this.events_[eventId];
+
+        // clone the handlers array in case it gets modified while we're publishing
+        // this event
+        var handlers = event.handlers.slice(0);
 		
 		// Call all the subscribed notification functions for this event
-		for (var i = 0; i < event.handlers.length; ++i)
+		for (var i = 0, n = handlers.length; i < n; ++i)
 		{
-			var handler = event.handlers[i];
+			var handler = handlers[i];
 			handler(eventDetails);
 		}
 	}

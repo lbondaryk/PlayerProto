@@ -77,6 +77,18 @@ goog.require('goog.object');
                 expect(building.info).to.be.an('object');
             });
 
+            it('should have a sequenceNodeKey property in the info object', function () {
+                expect(building.info).to.have.a.property('sequenceNodeKey');
+            });
+
+            it('should not have a maxAttempts property in the info object', function () {
+                expect(building.info).to.not.have.a.property('maxAttempts');
+            });
+
+            it('should not have an imgBaseUrl property in the info object', function () {
+                expect(building.info).to.not.have.a.property('imgBaseUrl');
+            });
+
             it('should return an object w/ a data property which is an object w/ no properties', function () {
                 expect(building).to.have.a.property('data');
                 expect(building.brix).to.be.an('object');
@@ -96,6 +108,29 @@ goog.require('goog.object');
             });
         });
 
+        describe('BricLayer.build with activity config w/ maxAttempts property', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var activityConfig = createActivityConfigSkeleton();
+            activityConfig.maxAttempts = 12;
+            var building = bricLayer.build(activityConfig);
+
+            it('should have a maxAttempts property in the info object', function () {
+                expect(building.info).to.have.a.property('maxAttempts');
+                expect(building.info.maxAttempts).to.equal(12);
+            });
+        });
+
+        describe('BricLayer.build with activity config w/ imgBaseUrl property', function () {
+            var bricLayer = new BricLayer({}, dummyEventMgr);
+            var activityConfig = createActivityConfigSkeleton();
+            activityConfig.imgBaseUrl = 'http://localhost:8088/images/';
+            var building = bricLayer.build(activityConfig);
+
+            it('should have a imgBaseUrl property in the info object', function () {
+                expect(building.info).to.have.a.property('imgBaseUrl');
+                expect(building.info.imgBaseUrl).to.equal('http://localhost:8088/images/');
+            });
+        });
         describe('BricLayer.build with static bric config', function () {
             var bricLayer = new BricLayer({}, dummyEventMgr);
             var bricWorks = bricLayer.getBricWorks();
@@ -756,6 +791,51 @@ goog.require('goog.object');
 
                     expect(testDVBric.dynamicVal).to.be.an('object');
                     expect(testDVBric.dynamicVal).to.equal(objInNestedArray);
+                });
+            });
+
+            describe('join', function() {
+                it('should concatenate an array of mixed dynamic values', function () {
+                    var dataId = "foo";
+                    activityConfig.data = {};
+                    activityConfig.data[dataId] = [1, 2, 3, 36];
+
+                    var arrayDv = { "type": "join",
+                                    "parts":
+                                        [
+                                            { "type": "constant", "value": "Yo, homey. " },
+                                            { "type": "constant", "value": "How many pigs can I eat? " },
+                                            { "type": "array-element",
+                                              "array": { "type": "ref", "domain": "data", "refId": dataId },
+                                              "index": 3
+                                            }
+                                        ]
+                                  };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(arrayDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.a('string');
+                    expect(testDVBric.dynamicVal).to.equal('Yo, homey. How many pigs can I eat? 36');
+                });
+
+                it('should concatenate an array of dynamic values pulling from info domain', function () {
+                    var arrayDv = { "type": "join",
+                                    "parts":
+                                        [
+                                            { "type": "ref", "domain": "info", "refId": "imgBaseUrl" },
+                                            { "type": "constant", "value": "img/monkey.jpg" }
+                                        ]
+                                  };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(arrayDv);
+
+                    activityConfig.imgBaseUrl = 'http://localhost:8088/images/';
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.a('string');
+                    expect(testDVBric.dynamicVal).to.equal('http://localhost:8088/images/img/monkey.jpg');
                 });
             });
 

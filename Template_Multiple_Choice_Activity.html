@@ -27,6 +27,7 @@
 		{
 			"description": "A Sample Activity containing a single multiple choice bric",
 			"sequenceNodeKey": "b3d5b510-34dd-480f-b8e1-b474522c9b03",
+			"maxAttempts": 2,
 			"containerConfig":
 				[
 					{
@@ -71,6 +72,11 @@
                                                 "type": "set-property",
                                                 "name": "questionId",
                                                 "value": { "type": "ref", "domain": "info", "refId": "sequenceNodeKey" }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "maxAttempts",
+                                                "value": { "type": "ref", "domain": "info", "refId": "maxAttempts" }
                                             }
                                         ],
 									"answerKey":
@@ -139,6 +145,7 @@
 
 	a.building = a.bricLayer.build(a.config);
 
+    a.answerMan.setMaxAttempts(a.config.maxAttempts);
 	a.answerMan.registerAnswerKey(a.config.sequenceNodeKey,
 								  a.config.containerConfig[0].brixConfig[0].answerKey);
 

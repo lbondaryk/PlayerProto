@@ -2,8 +2,8 @@
   "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
   "@type" : "Envelope",
   "metadata" : {
-    "title" : "MCP Demo mcq1b",
-    "guid" : "test.sanvan.activity.mcq1b",
+    "title" : "MCP Demo mcq1c",
+    "guid" : "test.sanvan.activity.mcq1c",
     "description" : "",
     "contentTypeTier1" : "Demonstration",
     "contentTypeTier2" : [ "DemonstrationImage" ],
@@ -13,7 +13,7 @@
       "application/vnd.pearson.sanvan.v1.activity"
     ],
     "timeRequired" : "PT20S",
-    "created" : "2013-07-08T11:30:00-00:00",
+    "created" : "2013-11-26T12:50:00-00:00",
     "educationalAlignment" : [ "http://purl.org/pearson/objectives/183725473384362" ]
   },
   "body" : {
@@ -62,6 +62,11 @@
                                     "domain": "info",
                                     "refId": "sequenceNodeKey"
                                 }
+                            },
+                            {
+                                "type": "set-property",
+                                "name": "maxAttempts",
+                                "value": { "type": "ref", "domain": "info", "refId": "maxAttempts" }
                             }
                         ],
                         "answerKey": {
