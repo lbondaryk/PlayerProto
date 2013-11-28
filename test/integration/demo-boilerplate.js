@@ -4,19 +4,25 @@
  *  
  * @return {none} 
  */
-function brixInitDiv()
+function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl)
 {
-    /**
-     * IPS Server base URL
-     * @type {String}
-     */
-    var IPS_BASE_URL = "http://localhost:8088";
 
     /** 
      * AMS Server (SanVan Core) base URL
      * @type {String}
      */
     var AMS_BASE_URL = "http://localhost:9080";
+    //var AMS_BASE_URL =  "http://dev-414158649.us-west-1.elb.amazonaws.com";
+
+    var amsBaseUrl = (opt_amsBaseUrl) ? opt_amsBaseUrl : AMS_BASE_URL;
+
+    /**
+     * IPS Server base URL
+     * @type {String}
+     */
+    var IPS_BASE_URL = "http://localhost:8088";
+
+    var ipsBaseUrl = (opt_ipsBaseUrl) ? opt_ipsBaseUrl : IPS_BASE_URL;
 
 
     var eventManager = new pearson.utils.EventManager();
@@ -30,7 +36,8 @@ function brixInitDiv()
     // Note: Configure the IPS server base url accordingly.
     //       In this configuration is runninng on local machine port 8088
     //       The server configuration is in /BrixServer/config/ 
-    var ipcConfig = {ipsBaseUrl: IPS_BASE_URL};
+    var ipcConfig = {ipsBaseUrl: ipsBaseUrl};
+        //var ipcConfig = {ipsBaseUrl:"http://dev-414158649.us-west-1.elb.amazonaws.com/ips"};
     var ipc = new pearson.brix.Ipc(ipcConfig, eventManager);
 
     // Scan through the div element with class brix
@@ -50,8 +57,7 @@ function brixInitDiv()
     //       If you need to change the tomcat port, you may do so by modifing the file
     //       <tomcat>/config/server.xml:70 <Connector port="8080" protocol="HTTP/1.1"
     PAF.AMC.initialize ({
-        laspafurl : AMS_BASE_URL,
-        //laspafurl : "http://dev-414158649.us-west-1.elb.amazonaws.com",
+        laspafurl : amsBaseUrl,
         eventmanager : eventManager,
         requestbinding : itemsNormalized
     });

@@ -1,0 +1,154 @@
+<!doctype html>
+<!-- 
+    This is a staging test html so I can isolate and try out (temporarily) 
+    before putting in index.html 
+    -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Muliple Choice Demo</title>
+
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="../../css/bootstrap_plus.css" rel="stylesheet" media="screen">
+    
+    <!-- widgets.css contains styling for the interactive brix -->
+    <link href="../../css/widgets.css" rel="stylesheet">
+
+    <!-- eCourse-master.css contains styling for all the navigation -->
+    <link href="../../css/eCourse-master.css" rel="stylesheet" media="screen">
+
+    <!-- content_styles.css contains styling for the narrative layout and responsive design -->
+    <link href="../../css/content_styles.css" rel="stylesheet" media="screen">
+
+    <!-- function created by David Bau to allow seeding Math.random -->
+    <!-- downloaded from github https://github.com/davidbau/seedrandom -->
+    <script src="../lib/seedrandom.js"></script>
+    <!-- mocking framework -->
+    <script src="../lib/sinon-1.7.3.js"></script>
+
+    <!-- include source files here... -->
+    <script src="../../js/d3.v3.min.js"></script>
+
+    <!-- include google library base for use in tests -->
+    <script src="../../js/jquery-latest.js"></script>
+
+    <!-- Local directory copy of built brixlib -->
+    <script src="brixlib-compiled.js"></script>
+
+    <!-- Non-compiled brixlib code.  BEWARE: this can get incomplete quickly and easily -->
+<!--
+    <script src="../../../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/deps.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/debug/logger.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/debug/console.js"></script>
+    
+
+    <script src="../../js/eventmanager.js"></script>
+
+    <script src="../../js/domhelper.js"></script>
+    <script src="../../js/ipsproxy.js"></script>
+
+    <script src="../../js/fakeactivitydb.js"></script>
+    <script src="../../js/answerman.js"></script>
+    <script src="../../js/localanswerman.js"></script>
+    <script src="../../js/submitmanager.js"></script>
+    <script src="../../js/widget-base.js"></script>
+    <script src="../../js/mortar-base.js"></script>
+    <script src="../../js/bricworks.js"></script>
+    <script src="../../js/widget-numeric.js"></script>
+    <script src="../../js/widget-legend.js"></script>
+    <script src="../../js/widget-callouts.js"></script>
+    <script src="../../js/widget-button.js"></script>
+    <script src="../../js/widget-sketch.js"></script>
+    <script src="../../js/widget-prototype-axes.js"></script>
+    <script src="../../js/widget-linegraph.js"></script>
+    <script src="../../js/widget-barchart.js"></script>
+    <script src="../../js/widget-piechart.js"></script>
+    <script src="../../js/widget-image.js"></script>
+    <script src="../../js/widget-carousel.js"></script>
+    <script src="../../js/widget-imageviewer.js"></script>
+    <script src="../../js/widget-labelgroup.js"></script>
+    <script src="../../js/widget-markergroup.js"></script>
+    <script src="../../js/widget-radiogroup.js"></script>
+    <script src="../../js/widget-checkgroup.js"></script>
+    <script src="../../js/widget-selectgroup.js"></script>
+    <script src="../../js/widget-multiplechoicequestion.js"></script>
+    <script src="../../js/widget-multiselectquestion.js"></script>
+    <script src="../../js/widget-numericquestion.js"></script>
+    <script src="../../js/widget-slider.js"></script>
+    <script src="../../js/brix-labelcarousel.js"></script>
+    <script src="../../js/brix-labelselector.js"></script>
+    <script src="../../js/brix-pyramicchart.js"></script>
+    <script src="../../js/mortar-hilite.js"></script>
+    <script src="../../js/briclayer.js"></script>
+    <script src="../../js/ipc.js"></script>
+-->   
+    <!-- IPC initialization and pointers to IPS and AMS -->
+    <script src="demo-boilerplate.js"></script>
+
+    <!-- Turn on client logging -->
+    <script>
+	   pearson.utils.logToConsole(true, 'FINER', 'pearson');
+    </script>
+
+    <!-- LAS-PAF's amc -->
+    <script src="amc.js"></script>
+
+</head>
+
+<body>
+    <h1>Submission (MultipleChoiceQuestion) Integration demo (with PAF)</h1>
+    <div style="border: orange 1px solid; padding: 10px">
+    <p>This test calls the DEV AWS environment.  It uses a copy of the SanVanCore LAS-PAF amc.js so if the Core team 
+        modifies that file it will need to be copied into the Brix PlayerProto repo.</p>
+    </div>
+
+    <!-- TEST CONTENT {{ -->
+
+<div class="container">
+        <div class="span12 lc_ec_page">
+            <section class="lc_ec_majorMinor lc_ec_pageInner">
+                <div class="lc_ec_content">
+                    <h2 class="lc_ec_bHead"><span class='number setId'></span> 
+                                            <span class="setTitle"></span>
+                    </h2>
+                    <div class="lc_ec_leading">
+                        <!-- When using PAF, make sure the ID matches with what
+                        was added to the server (DEV | CERT)
+                         -->
+                       <div id="target1" habitat-id="some_habitat_id1" class="brix" 
+                            data-assignmenturl="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1c"
+                            data-activityurl  ="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1c"
+                            data-containerid="target1"
+                            data-type="brix" >
+                            
+                        <p>Q1-test. Multiple Choice question, randomized</p></div>
+                    </div>
+                    <div class="lc_ec_leading">
+                        <div id="target2" habitat-id="some_habitat_id1" class="brix" 
+                            data-assignmenturl="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/ccc91433-1e03-4191-a65a-cb3d7b26f674"
+                            data-activityurl  ="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/bc2354ec-04db-48b7-9345-fe5adbce9fbe"
+                            data-containerid="target2"
+                            data-type="brix" >
+                        <p>Image, served from IPS.</p>
+                        </div>
+                    </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+    <!-- }} TEST CONTENT -->
+
+    <script>
+
+    (function() {
+        brixInitDiv(
+            "http://dev-414158649.us-west-1.elb.amazonaws.com", 
+            "http://dev-414158649.us-west-1.elb.amazonaws.com/ips");
+    })();
+
+    </script>
+</body>
+</html>

@@ -114,8 +114,8 @@ var eventManager = new EventManager();
 
 var svg0 = new SVGContainer({
 		node: d3.select("#picture0"),
-		maxWid: 500,
-		maxHt: 250
+		maxWid: 477,
+		maxHt: 270
 	});
 
 var sketch0_1 = new Sketch ({
@@ -214,8 +214,9 @@ var ballStick_imgs = new ImageViewer({
 				URI: 'img/Cis-but-2-ene-3D-balls.png',
 				caption: "Cis but-2-ene",
 				actualSize: {height: 740, width: 1100},
-				}),
+				})
 			],
+		displayWidth: 476/2
 	}, eventManager);
 	
 svg0.append(ballStick_imgs,{topPercentOffset: 0, leftPercentOffset: .5, heightPercent: 1, widthPercent: 0.5});
@@ -407,8 +408,8 @@ function handleClick1 ()
 
 var svg3D = new SVGContainer({
 		node: d3.select("#threedButeneTrans"),
-		maxWid: 320,
-		maxHt: 800
+		maxWid: 477,
+		maxHt: 1100
 	});
 	
 var fullrot = new ImageViewer({
@@ -496,7 +497,7 @@ var buteneSlide1 = new Slider ({
 		maxVal: buteneExtent[1],
 		stepVal: 1,
 		label: "Image set 1",
-		format: '5.0f',
+		format: d3.format('5.0f'),
 	}, eventManager);
 	
 buteneSlide1.draw(d3.select("#buteneslider"));

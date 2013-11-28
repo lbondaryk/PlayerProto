@@ -30,16 +30,18 @@
 											<span class="setTitle"></span>
 					</h2>
 		 			<div class="lc_ec_leading">
-						<div id="widgetTarget0"><p>0. Single image</p></div>
-						<div id="widgetTarget1n"><p>1. Multiple images in 2 Carousels the top one gets lite events, the bottom isn't subscribed, but does get clicks. In top, 3rd and 5th have same key.</p></div>
-						<div id="widgetTarget2n"><p>2. Image with graph overlay on local coordinate system (set by data in graph)</p></div>
+						<div id="soloImage"><p>0. Single image will draw exactly it's given actualSize dimensions unless the container is smaller in either dimension than it's size, in which case it will scale down proportionally.</p></div>
+						<div id="widgetTarget0"><p>1. Single captioned image</p></div>
+						<div id="widgetTarget1n"><p>2. Multiple images in 2 Carousels the top one gets lite events, the bottom isn't subscribed, but does get clicks. In top, 3rd and 5th have same key.</p></div>
+						<div id="widgetTarget2n"><p>3. Image with graph overlay on local coordinate system (set by data in graph)</p></div>
 				</div>
 				<div class="lc_ec_trailing">
-					<div id="widgetTarget50"><p>3. Three scaled images in grid</p></div>
-					<div id="widgetTarget1bn"><p>4. ImageViewer widget (carousel and image viewer and caption combined) and associated callouts. ImageViewer can also be controlled with a slider.</p>
+					<div id="widgetTarget50"><p>4. Three scaled images in grid</p></div>
+					<div id="widgetTarget1bn"><p>5. ImageViewer widget (carousel and image viewer and caption combined) and associated callouts. ImageViewer can also be controlled with a slider.</p>
 						<span id="slider1"></span>
                 	</div>
                 	<div id="calls"></div>
+                	<div id="neff3Numbers"><p><br>6. Three images same size with LabelSelector.</p></div>
 				</div>
 			</div>
 		</section>
@@ -70,6 +72,8 @@
     <script src="js/widget-numeric.js"></script>
 	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-slider.js"></script>
+	<script src="js/brix-labelselector.js"></script>
+	<script src="js/brix-labelcarousel.js"></script>
 
 	
 	
@@ -87,6 +91,7 @@
 	var Callouts = pearson.brix.Callouts;
 	var LineGraph = pearson.brix.LineGraph;
 	var Slider = pearson.brix.Slider;
+	var LabelCarousel = pearson.brix.LabelCarousel;
 	
 	var lineData = [
 		{	x: 0,	y: -3.1},
@@ -104,23 +109,35 @@
 		{	x: 91.0,	y: 1.75},
 		{	x: 92.9,	y: 1.86}
 		]; // array of line data
+//<div id="widgetTarget0"><p>0. Solo image</p></div>
 		
+var svgImg = new SVGContainer({
+		node: d3.select("#soloImage"),
+		maxSize: {width: 477, height: 300}
+	});
+var image200 = new Image({
+			URI: 'img/squaresTest.png',
+			caption: "Squares 200x200 px in a 300 x 477w box",
+			actualSize: {height: 200, width: 200},
+	});
 	
-//<div id="widgetTarget0"><p>0. Single image</p></div>
+	svgImg.append(image200);
+
+//<div id="widgetTarget0"><p>1. Single image</p></div>
 
 	var cimgConfig0 =
 		{
 			//id: "cimg0n",
-			URI: 'img/ch4_1.jpg',
-			caption: "The Whitewater-Baldy Complex wildfire.",
-			actualSize: {height: 960, width: 1280},
+			URI: 'img/squaresTest.png',
+			caption: "Squares 200x200 px in a 300 x 477w box - the image is stretched because it's a square that is narrower than the displayWidth but it's still in proportion.  If the production editor or the bricLayer doesn't make the svg tall enough, it'll clip.",
+			actualSize: {height: 200, width: 200},
 			captionPosition: "below"
 		};
 		
 	var cntrConfig0 = 
 		{
 			node: d3.select("#widgetTarget0"),
-			maxSize: {width: 477, height: 450}
+			maxSize: {width: 477, height: 620}
 		};
 		
 	var cntr0 = new SVGContainer(cntrConfig0);
@@ -246,7 +263,7 @@
 	var cntrConfig4 = 
 		{
 			node: d3.select("#widgetTarget1bn"),
-			maxSize: {width: 477, height: 477}
+			maxSize: {width: 477, height: 540}
 		};
 
 	var cntr4 = new SVGContainer(cntrConfig4);
@@ -261,8 +278,8 @@
 			minVal: 1,
 			maxVal: 4,
 			stepVal: 1,
-			label: "Image set",
-			format: '5.2f',
+			label: "Image",
+			format: '1f',
 		}, eventManager);
 
 	slide1.draw(d3.select("#slider1"));
@@ -342,37 +359,98 @@
 		var bigCntrCnfg = 
 		{
 			node: d3.select("#widgetTarget50"),
-			maxSize: {height: 200, width: 447},
+			maxSize: {height: 270, width: 477},
 		};
 		
 	var contTrio = new SVGContainer(bigCntrCnfg);
 	var oneOfThree = new CaptionedImage({
-			id: "oneofthree",
+			displayWidth: 477/3,
 			URI:'img/ch4_2.jpg',
 			caption: "Aerial image near downtown West Liberty, Kentucky.",
 			actualSize: {height: 500, width: 500}
 			});
 			
 	var twoOfThree = new CaptionedImage({
-			id: "twoofthree",
+			displayWidth: 477/3,
+			captionPosition: 'above',
 			URI:'img/ch4_3.jpg',
-			caption: "Withering Iowa corn.",
+			caption: "Withering corn",
 			actualSize: {height: 500, width: 500}
 			});
 	
 			
 	var threeOfThree = new CaptionedImage({
-			id: "threeofthree",
+			displayWidth: 477/3,
 			URI:'img/ch4_4.jpg',
 			caption: "Seaside, NJ, after Hurricane Sandy",
 			actualSize: {height: 500, width: 500}
 			});
 			
-	contTrio.append(oneOfThree, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.33});
-	contTrio.append(twoOfThree, {topPercentOffset: 0, leftPercentOffset: 0.34, heightPercent: 1, widthPercent: 0.33});
-	contTrio.append(threeOfThree, {topPercentOffset: 0, leftPercentOffset: 0.68, heightPercent: 1, widthPercent: 0.33});
+	contTrio.append(oneOfThree, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.3});
+	contTrio.append(twoOfThree, {topPercentOffset: 0, leftPercentOffset: 0.33, heightPercent: 1, widthPercent: 0.3});
+	contTrio.append(threeOfThree, {topPercentOffset: 0, leftPercentOffset: 0.66, heightPercent: 1, widthPercent: 0.3});
+
+	//6. Three images same size with LabelSelector.
+	var neffCont2 = new SVGContainer({
+			node: d3.select("#neff3Numbers"),
+			maxWid: 477,
+			maxHt: 490
+		});
 	
+	var imgCrsl = new LabelCarousel({
+			images:
+				[
+					{
+						URI: 'img/Neff/Neff_12.6.3_S1.jpg',
+						caption: "70% more food",
+						
+					},
+					{
+						URI: 'img/Neff/Neff_12.6.3_S2.jpg',
+						caption: "200% more energy",
+						
+					},
+					{
+						URI: 'img/Neff/Neff_12.6.3_S3.jpg',
+						caption: "80% more water for agriculture",
+						
+					},
+				],
+			imagesActualSize: {height: 380, width: 570},
+			}, eventManager);
+
+	neffCont2.append(imgCrsl);
 	
+	var svgContFoo = new SVGContainer({
+			node: d3.select("#neff3Numbers"),
+			maxWid: 477,
+			maxHt: 440
+		});
+
+	var imgvwr = new LabelCarousel({
+			type: 'textLabels',
+			images:
+				[
+					{
+					URI: 'img/Neff/Neff_12.6.3_S1.jpg',
+					selectorLabel: 'Food',
+					caption: "70% more food",
+					},
+					{
+					URI: 'img/Neff/Neff_12.6.3_S2.jpg',
+					caption: "200% more energy",
+					selectorLabel: 'Energy'
+					},
+					{
+					URI: 'img/Neff/Neff_12.6.3_S3.jpg',
+					caption: "80% more water for agriculture",
+					selectorLabel: 'Water'
+					},
+				],
+			imagesActualSize: {height: 379, width: 570},
+			}, eventManager);
+	
+	svgContFoo.append(imgvwr);
 </script>
 </body>
 </html>

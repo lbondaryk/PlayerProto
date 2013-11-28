@@ -199,16 +199,15 @@ pearson.brix.PrototypeAxes = function (container, config)
 		this.yFmt.extent = [0, 1];
 
 	//default margin is set that is meant to be updated by the constituent
-	//objects if they require more space - mostly happens with axes 
-	//margin: an associative array/object with keys for top, bottom, left and right
-	this.margin = { top: 10,
-					bottom: 0,
-					left: 10,
-					right: 20 };
+	//axis parts
+	
+	this.margin = { top: 5,
+					bottom: 5,
+					left: 5,
+					right: 5};
 
-	//axis format type is a string specifying "linear", "log", "ordinal", "time", or "double positive" for axis that always count up from zero,
-	//regardless of the sign of the data - log only hooked up on x
-	//TODO this works for x axis only, if y is needed must be expanded
+	//axis format type is a string specifying "linear", "log", "ordinal", "time" 
+	// log and time only hooked up on x
 
 	//xTicks is either an integer number of ticks or an array of values to use as tickmarks
 	//xOrient is a string for orientation "bottom" or "top". Likewise for the yTicks and yOrient
@@ -219,34 +218,55 @@ pearson.brix.PrototypeAxes = function (container, config)
 	var hasXAxisLabel = 'label' in this.xFmt;
 	var hasYAxisLabel = 'label' in this.yFmt;
 
+
 	if (hasXAxisLabel)
 	{
+		// measure the  height, and set the associated size to match what was rendered
+		// then remove the dummy rendering
+   
+		var xlabelRendered = d3.select('body')
+						.append("div")
+						.style('visibility', 'hidden')
+						// this width ought to be the x axis width, but we don't know it yet
+						.style('width', (config.size.width - 40) + "px")
+						.attr("class", "axisLabel")
+						.html(this.xFmt.label);
+
+		var xlabelHeight = xlabelRendered.node().offsetHeight;
+		xlabelRendered.remove();
+
 		if (xOrient == 'top')
 		{
-			this.margin.top = this.margin.top + 40;
-			window.console.log("top margin increased for top label");
-			//catches the case where the whole graph renders to fit within the available SVG,
-			//but cuts off at the top because it doesn't get pushed down far enough
+			this.margin.top = this.margin.top + xlabelHeight;
 		}
 		else // xOrient === "bottom" (only other valid value)
 		{
-			this.margin.bottom = this.margin.bottom + 50;
+			this.margin.bottom = this.margin.bottom + xlabelHeight;
 		}
 	}
 
 	if (hasYAxisLabel)
 	{
+		var ylabelRendered = d3.select('body')
+						.append("div")
+						.style('visibility', 'hidden')
+						// this width ought to be the y axis height, but we don't know it yet
+						// subtract estimate of axis height 40px, plus the label if there is one
+						.style('width', (config.size.height - this.margin.bottom - this.margin.top - 40) + "px")
+						.attr("class", "axisLabel")
+						.html(this.yFmt.label);
+		var ylabelWidth = ylabelRendered.node().offsetHeight;
+		ylabelRendered.remove();
+
 		if (yOrient === 'left')
 		{
-			this.margin.left = this.margin.left + 50;
-			window.console.log("left margin increased for y label");
+			this.margin.left = this.margin.left + ylabelWidth;
 			//catches the case where the whole graph renders to fit within the available SVG,
 			//but cuts off at the right because it gets pushed over too far
 		}
 		else // yOrient === "right" (only other valid value)
 		{
-			this.margin.right= this.margin.right + 40;
-			window.console.log("right margin increased for y label");
+			this.margin.right= this.margin.right + ylabelWidth;
 		}
 	}
 
@@ -272,31 +292,35 @@ pearson.brix.PrototypeAxes = function (container, config)
 	{
 		if (this.yFmt.type == "ordinal")
 		{
-			//if we're making horizontal ordinal bars (y ordinal axis), x axis must include 0
+			// if we're making horizontal ordinal bars (y ordinal axis), x axis must include 0
 			this.xFmt.extent.push(0);
+			// since this might or might not be the lower limit, recalculate the extent
 			this.xFmt.extent = d3.extent(this.xFmt.extent);
 		}
 	
 		//Check if explicit ticks are specified, and if so, use them as the mapped domain of the graph width
 		//ignore the actual data range
-		var xExtent = (Array.isArray(xTicks) && this.xFmt.type != "ordinal") ? d3.extent(xTicks) : this.xFmt.extent;
+		var xExtent = Array.isArray(xTicks) ? d3.extent(xTicks) : this.xFmt.extent;
 
 		// this block of ifs sets the scale according to the type, with custom
 		// subdivisions suitable to each type -lb
 
 		if (this.xFmt.type == "ordinal")
 		{
-			//the graph set the extent for ordinal scale to be all the string vals
-			this.xScale = d3.scale.ordinal().domain(xExtent) //lists all ordinal x vals
-				.rangePoints([0, dataAreaWidth], .4);
-			//width is broken into even spaces allowing for data point width and
+			// width is broken into even spaces allowing for data point width and
 			//a uniform white space between each, in this case, 40% white space
 			// @todo - fix this so it's not just good for scatter graphs -lb
+			// In ordinal graphs, we always use all the data values as the extent, 
+			// ticks are handled differently
+			this.xScale = d3.scale.ordinal().domain(this.xFmt.extent)  
+				.rangePoints([0, dataAreaWidth], .4);
+			
 	    }
 
 		if (this.xFmt.type == "linear")
 		{
 			// if the mode is reverse, swap the order of the extent so it's drawn in reverse
+			// @todo we probably want to be able to reverse any type of axis
 			if (this.xFmt.mode === "reverse")
 			{
 				xExtent.reverse();
@@ -327,44 +351,6 @@ pearson.brix.PrototypeAxes = function (container, config)
     			.domain(xExtent)
     			.rangeRound([0, dataAreaWidth]);
 	    }
-
-		//if the axis is double positive then create leftPositive and rightPositive
-		//scales that meet at 0. Still use xScale to plot the data.
-		if (this.xFmt.type == "double positive")
-		{
-			this.xScale = d3.scale.linear().domain(xExtent)
-				.rangeRound([0, dataAreaWidth]);
-			//xScale is now a function mapping x-data to the width of the drawing space
-
-			var negTicks = [];
-			var posTicks = [];
-           //store all the negative ticks separately
-			if (Array.isArray(xTicks))
-			{
-				xTicks.forEach(function(o)
-							   {
-								   if (o < 0)
-								   {
-									   negTicks.push(Math.abs(o));
-								   }
-								   else
-								   {
-									   posTicks.push(o);
-								   }
-							   });
-			}
-
-            // create two scales from negative min to 0, then 0 to positive max
-			//map them to the calculated point for xScale(0) - this will need to get recalc'd if the
-			//graph gets resized.
-			var leftPositive = d3.scale.linear()
-				.domain([Math.abs(xExtent[0]), 0])
-				.rangeRound([0, this.xScale(0)]);
-
-			var rightPositive = d3.scale.linear()
-				.domain([0, xExtent[1]])
-				.rangeRound([this.xScale(0), dataAreaWidth]);
-		}
 
 		// Format the ticks w/ the general format using a precision of 1 significant digit.
 		var format = d3.format(".1");
@@ -405,23 +391,10 @@ pearson.brix.PrototypeAxes = function (container, config)
 			//them unreadable
 			Array.isArray(xTicks) ? this.xAxis.tickValues(xTicks) : (this.xAxis.ticks(xTicks));
 		}
-		else if (this.xFmt.type == "double positive")
-		{
-			this.leftXAxis = d3.svg.axis()
-				.scale(leftPositive) //do the faux positive left-hand axis
-				.orient(xOrient).tickSize(tickheight, 0).tickPadding(3).tickFormat(format);
-
-			this.xAxis = d3.svg.axis()
-				.scale(rightPositive) //do the real positive right-hand axis
-				.orient(xOrient).tickSize(tickheight, 0).tickPadding(3).tickFormat(format);
-
-			//next set the ticks to absolute values or just a number of ticks
-			Array.isArray(xTicks) ? (this.xAxis.tickValues(posTicks) && this.leftXAxis.tickValues(negTicks))
-							  : (this.xAxis.ticks(xTicks - 2) && this.leftXAxis.ticks(2));
-		}
+		
 		else
 		{
-			//in the face of anything that isn't log or double positive, supply an explicit array 
+			//in the face of anything that isn't log, or time, supply an explicit array 
 			//of ticks to tickValues, or a number of ticks to ticks.
 			Array.isArray(xTicks) ? this.xAxis.tickValues(xTicks) : (this.xAxis.ticks(xTicks));
 		}
@@ -433,16 +406,6 @@ pearson.brix.PrototypeAxes = function (container, config)
 			//move it down if the axis is at the bottom of the graph
 			.attr("class", "x axis");
 
-		//if we want positive tick values radiating from 0, then make the 
-		//negative half of the axis separately
-		if (this.xFmt.type == "double positive")
-		{
-			this.xaxis.append("g").call(this.leftXAxis)
-				.attr("transform", "translate(0," + ((xOrient == "bottom") ? dataAreaHeight : 0) + ")")
-				//move it down if the axis is at the bottom of the graph
-				.attr("class", "x axis");
-				// make the x-axis label, if it exists
-		}
 
 		if (this.xFmt.label)
 		{
@@ -450,7 +413,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 			this.xLabelObj = this.xaxis.append("foreignObject")
 				.attr("x", 0)
 				.attr("y", ((xOrient == "top") ? (-1.5) : 1) * (xaxisDims.height + 2))
-				.attr("width", dataAreaWidth).attr("height", 40);
+				.attr("width", dataAreaWidth).attr("height", xlabelHeight);
 
 			this.xLabelObj.append("xhtml:body").style("margin", "0px")
 				//this interior body shouldn't inherit margins from page body
@@ -461,21 +424,24 @@ pearson.brix.PrototypeAxes = function (container, config)
 		var xHt = d3.round(this.group.select(".x.axis").node().getBBox().height);
 	}
 
+	// y axis setup
 	if (this.yFmt.type)
 	{
 		if (this.yFmt.type == "ordinal")
 		{
 			// @todo changed the domain from yRange to yTicks. The intention is to have 
 			//the graph set the yTicks when the y axis is ordinal from the data. -mjl
-			this.yScale = d3.scale.ordinal().domain(yTicks) //lists all ordinal y vals
-				.rangeRoundBands([dataAreaHeight, 0], 0.4);
+			// Changed this back, it turns out to be a bad strategy.  You want all the data
+			// creating ordinal bands, but in the case that it's very dense you might need to
+			// trim down the number of ticks just like you do with linear -lb
+			this.yScale = d3.scale.ordinal().domain(this.yFmt.extent) //lists all ordinal y vals
+				.rangeRoundBands([dataAreaHeight, 0], 0.3, 0.1);
 
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 40% white space
-	    }
+		}
 		else
 		{
-			
 			//check that the y range extends down to 0, because data graphs
 			// that don't include 0 for y are misleading
 			if (this.yFmt.extent[0] > 0)
@@ -497,18 +463,27 @@ pearson.brix.PrototypeAxes = function (container, config)
 
 		// yScale is a function mapping y-data to height of drawing space.
 		//Svg counts height down from the top, so we want the minimum drawn at height
+		//
+		// Now make the axis rendering functions
 		this.yAxis = d3.svg.axis() //a function that will create the axis and ticks and text labels
 			.scale(this.yScale) //telling the axis to use the scale defined earlier
 			.orient(yOrient).tickSize(tickheight, 0)
 			//sets the height of ticks to tickheight, except for the ends, which don't get ticks
 			.tickPadding(3);
 
+		if (this.yFmt.type == 'ordinal' && !Array.isArray(yTicks))
+		{
+			this.yAxis.tickValues(this.yFmt.extent.filter(function(d, i) { return !(i % yTicks); }));
+		}
+		else
+		{
 		//if y ticks are specified explicitly, use them
 		Array.isArray(yTicks) ? (this.yAxis.tickValues(yTicks)) : (this.yAxis.ticks(yTicks));
-		 
+		}
+
 		this.yaxis = this.group.append("g")
+			//move it over if the axis is to the right of the graph
 			.attr("transform", "translate(" + ((yOrient == "right") ? dataAreaWidth : 0) + ",0)")
-			//move it over if the axis is at the bottom of the graph
 			.call(this.yAxis).attr("class", "y axis");
 
 		// make the y-axis label, if it exists
@@ -516,11 +491,11 @@ pearson.brix.PrototypeAxes = function (container, config)
 		{
 			var yaxisDims = this.yaxis.node().getBBox();
 			var yLabelObj = this.yaxis.append("foreignObject")
-				.attr("transform", "translate(" + (((yOrient == "left") ? (-1.1) : 1.1) * (yaxisDims.width)
-				   + ((yOrient == "left") ? -20 : 0)) + ","
+				.attr("transform", "translate(" + ((yOrient == "left" ? (-1) : 1) * yaxisDims.width
+				   + (yOrient == "left" ? -ylabelWidth : 0)) + ","
 				   + (dataAreaHeight) + ") rotate(-90)")
 				// move it out of the way of the ticks to left or right depending on axis orientation
-				.attr("width", dataAreaHeight).attr("height", 40);
+				.attr("width", dataAreaHeight).attr("height", ylabelWidth);
 
 			var yLabText = yLabelObj.append("xhtml:body").style("margin", "0px")
 				//this interior body shouldn't inherit margins from page body
@@ -564,7 +539,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		}
 
 		this.xAxis.scale(this.xScale);
-		window.console.log("x margins increased, new inner width is ", dataAreaWidth, " margin ", this.margin.left, this.margin.right);
+		//window.console.log("x margins increased, new inner width is ", dataAreaWidth, " margin ", this.margin.left, this.margin.right);
 		this.xaxis.call(this.xAxis);
 		if (this.yaxis)
 		{
@@ -594,7 +569,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		//using the new dimensions, redo the scale and axes
 		if (this.yFmt.type=="ordinal")
 		{
-			this.yScale.rangeRoundBands([dataAreaHeight, 0], .3);
+			this.yScale.rangeRoundBands([dataAreaHeight, 0], .2, .1);
 			//width is broken into even spaces allowing for bar width and
 			//a uniform white space between each, in this case, 30% white space
 		}
@@ -604,7 +579,7 @@ pearson.brix.PrototypeAxes = function (container, config)
 		}
 
 		this.yAxis.scale(this.yScale);
-		window.console.log("y margins increased, new inner height is ", dataAreaHeight, " margin: ", this.margin.top, this.margin.bottom);
+		//window.console.log("y margins increased, new inner height is ", dataAreaHeight, " margin: ", this.margin.top, this.margin.bottom);
 		this.yaxis.call(this.yAxis);
 		if (this.xaxis)
 		{
@@ -613,9 +588,8 @@ pearson.brix.PrototypeAxes = function (container, config)
 
 		if (yLabelObj)
 		{
-			yLabelObj.attr("transform", "translate(" + d3.round(((yOrient == "left") ? (-1.1) : 1.1) * (yaxisDims.width)
-				   + ((yOrient == "left") ? -19 : 0)) + ","
-				   + (dataAreaHeight) + ") rotate(-90)")
+			yLabelObj.attr("transform", "translate(" + (yOrient == "left" ? -1 : 1)*(ylabelWidth + 1.1 * yaxisDims.width) + ","
+				   + dataAreaHeight + ") rotate(-90)")
 				// move it out of the way of the ticks to left or right depending on axis orientation
 				.attr("width", dataAreaHeight);
 		}

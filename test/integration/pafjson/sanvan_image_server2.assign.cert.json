@@ -1,0 +1,33 @@
+
+{
+   "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
+   "@type" : "Envelope",
+   "metadata" : {
+     "title" : "Sanvan ImageServer Demo 1b",
+     "guid" : "ccc91433-1e03-4191-a65a-cb3d7b26f674",
+     "description" : "Sanvan ImageServer Demo 1d",
+     "contentTypeTier1" : "Assessment",
+     "contentTypeTier2" : [ "AssessmentItem" ],
+     "subject" : [ "EnvironmentalScience" ],
+     "intendedEndUserRole" : [ "Student" ],
+     "timeRequired" : "PT20S",
+     "educationalAlignment" : [ "http://purl.org/pearson/objectives/183725473384362" ]
+   },
+   "body" : {
+     "@context" : "http://purl.org/pearson/paf/v1/ctx/core/StructuredAssignment",
+     "@type" : "StructuredAssignment",
+     "title" : "Sanvan ImageServer Demo 1d",
+     "guid" : "ccc91433-1e03-4191-a65a-cb3d7b26f674",
+     "assignmentContents" : {
+       "@contentType":"application/vnd.pearson.paf.v1.container+json",
+       "binding" : [
+           {
+           "boundActivity"  : "{SERVER}/paf-repo/resources/activities/bc2354ec-04db-48b7-9345-fe5adbce9fbe",
+           "activityFormat" : "application/vnd.pearson.sanvan.v1.activity",
+           "activityTitle" : "Neff Reactor from Image Server - to go in to target2",
+           "credit" : "ForCredit",
+           "guid" : "bc2354ec-04db-48b7-9345-fe5adbce9fbe"
+         }]
+    }
+  }
+}
