@@ -98,9 +98,9 @@ pearson.brix.UnitOpt =
  *
  * It publishes the following named events (use Slider.getEventTopic to get the
  * topic for a particular Slider instance):
- *   'valueChanged' - When the value was changed
- *   'dragStart'    - When the user starts dragging the thumb
- *   'dragEnd'      - When the user stopped dragging the thumb
+ *   'value-changed' - When the value was changed
+ *   'drag-start'    - When the user starts dragging the thumb
+ *   'drag-end'      - When the user stopped dragging the thumb
  *
  **************************************************************************/
 pearson.brix.Slider = function (config, eventManager)
@@ -172,21 +172,21 @@ pearson.brix.Slider = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.changedValueEventId = pearson.brix.Slider.getEventTopic('valueChanged', this.sldrId_);
+    this.changedValueEventId = pearson.brix.Slider.getEventTopic('value-changed', this.sldrId_);
     
     /**
      * The event id (topic) published when the handle starts dragging.
      * @const
      * @type {string}
      */
-    this.dragStartEventId = pearson.brix.Slider.getEventTopic('dragStart', this.sldrId_);
+    this.dragStartEventId = pearson.brix.Slider.getEventTopic('drag-start', this.sldrId_);
 
     /**
      * The event id (topic) published when the handle stops dragging.
      * @const
      * @type {string}
      */
-    this.dragEndEventId = pearson.brix.Slider.getEventTopic('dragEnd', this.sldrId_);
+    this.dragEndEventId = pearson.brix.Slider.getEventTopic('drag-end', this.sldrId_);
 
     /**
      * The event details for this.changedValueEventId events
@@ -246,15 +246,15 @@ pearson.brix.Slider.getEventTopic = function (eventName, instanceId)
      */
     var publishedEventTopics =
     {
-        'valueChanged': function (instanceId)
+        'value-changed': function (instanceId)
         {
             return instanceId + '_valueChanged';
         },
-        'dragStart': function (instanceId)
+        'drag-start': function (instanceId)
         {
             return instanceId + '_dragStart';
         },
-        'dragEnd': function (instanceId)
+        'drag-end': function (instanceId)
         {
             return instanceId + '_dragEnd';
         },
