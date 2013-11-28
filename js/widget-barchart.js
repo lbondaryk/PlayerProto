@@ -285,19 +285,19 @@ pearson.brix.BarChart.prototype.setData = function (newData)
 };
 
 /* **************************************************************************
- * BarChart.setTrace                                                   */ /**
+ * BarChart.setSeries                                                  */ /**
  *
- * Set one of the traces that this BarChart should display.
+ * Set one of the series that this BarChart should display.
  *
- * @param {number}  traceIndex      -The (0-based) index of the trace data to
+ * @param {number}  seriesIndex     -The (0-based) index of the series data to
  *                                   replace.
  * @param {Array.<{x: number, y: string, key: (string|undefined)}>}
- *                  newTrace        -The new trace data
+ *                  newSeries       -The new series data
  *
  ****************************************************************************/
-pearson.brix.BarChart.prototype.setTrace = function (traceIndex, newTrace)
+pearson.brix.BarChart.prototype.setSeries = function (seriesIndex, newSeries)
 {
-    this.data_[traceIndex] = newTrace;
+    this.data_[seriesIndex] = newSeries;
 
     // If we're currently drawn someplace, redraw w/ the new data
     if (this.lastdrawn.container != null)

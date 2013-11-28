@@ -131,6 +131,11 @@ pearson.brix.mortar.Dataswap = function (config, eventManager)
      */
     this.dataSetterName_ = config['dataPropertySetter'];
 
+    if (!(this.dataSetterName_ in this.targetBric_) || typeof this.targetBric_[this.dataSetterName_] !== 'function')
+    {
+        this.logger_.severe('data setter is not a method on the target bric');
+    }
+
     /**
      * The initial arguments (before the new data) to be passed
      * to the data property setter of the target bric.
@@ -144,6 +149,11 @@ pearson.brix.mortar.Dataswap = function (config, eventManager)
      * @type {!Array.<*>}
      */
     this.dataSource_ = config['sourceDataArray'];
+
+    if (!this.dataSource_)
+    {
+        this.logger_.severe('sourceDataArray is not an array');
+    }
 
     /**
      * The base value of the range that is used when converting a numeric
