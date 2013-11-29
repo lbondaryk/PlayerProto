@@ -69,9 +69,10 @@ pearson.brix.LabelSelector = function (config, eventManager)
 
     /**
      * A unique id for this instance of the LabelSelector bric
+     * @private
      * @type {string}
      */
-    this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelSelector);
+    this.lsId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelSelector);
 
     /**
      * The list of label strings presented by the LabelSelector.
@@ -117,7 +118,7 @@ pearson.brix.LabelSelector = function (config, eventManager)
     // configuration for the labelItems LabelGroup.
     var labelConfig =
         {
-            id: this.id + '_labels',
+            id: this.lsId_ + '_labels',
             type: this.type,
             labels: []  // will be populated by draw()
         };
@@ -133,7 +134,7 @@ pearson.brix.LabelSelector = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.selectedEventId = this.labelItems.selectedEventId;
+	this.selectedEventId = pearson.brix.LabelSelector.getEventTopic('selected', this.lsId_);
 
     /**
      * Information about the last drawn instance of this image (from the draw method)
@@ -154,6 +155,62 @@ goog.inherits(pearson.brix.LabelSelector, pearson.brix.SvgBric);
  * @type {string}
  */
 pearson.brix.LabelSelector.autoIdPrefix = "labSel_auto_";
+
+/* **************************************************************************
+ * LabelSelector.getEventTopic (static)                                */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * LabelSelector bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of LabelSelector with the given instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.LabelSelector.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            // use the selected event of the embedded LabelGroup bric
+            return pearson.brix.LabelGroup.getEventTopic('selected', instanceId + '_labels');
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by LabelSelector brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
+
+/* **************************************************************************
+ * LabelSelector.getId                                                 */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.LabelSelector.prototype.getId = function ()
+{
+    return this.lsId_;
+};
 
 /* **************************************************************************
  * LabelSelector.draw                                                  */ /**
@@ -244,7 +301,7 @@ pearson.brix.LabelSelector.prototype.draw = function (container, size)
 
     this.labelItems.draw(container, size);
 
-    this.lastdrawn.widgetGroup = d3.select(this.id);
+    this.lastdrawn.widgetGroup = d3.select(this.lsId_);
 
 }; // end of LabelSelector.draw()
 
@@ -273,7 +330,6 @@ pearson.brix.LabelSelector.prototype.redraw = function ()
  ****************************************************************************/
 pearson.brix.LabelSelector.prototype.selectItemAtIndex = function (index)
 {
-
     this.labelItems.lite(index.toString());
 
     this.eventManager.publish(this.selectedEventId, {index: index, selectKey: index.toString()});

@@ -124,9 +124,10 @@ pearson.brix.CheckGroup = function (config, eventManager)
 
 	/**
 	 * A unique id for this instance of the Check group widget
+     * @private
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CheckGroup);
+	this.cgId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.CheckGroup);
 
 	/**
 	 * The maximum number of allowed selects.
@@ -145,7 +146,7 @@ pearson.brix.CheckGroup = function (config, eventManager)
 	 * "none", "latin-upper", "latin-lower", "number", "roman-lower-number"
 	 * @type {string}
 	 */
-	this.numberFormat = config.numberFormat || "none";
+	this.numberFormat = config.numberFormat || 'none';
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this widget
@@ -158,7 +159,7 @@ pearson.brix.CheckGroup = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.selectedEventId = this.id + '_itemSelected';
+	this.selectedEventId = pearson.brix.CheckGroup.getEventTopic('selected', this.cgId_);
 
 	/**
 	 * This event id is published when the user tries to select more boxes than
@@ -166,7 +167,7 @@ pearson.brix.CheckGroup = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.exceedSelectionEventId = this.id + '_exceedSelection';
+	this.exceedSelectionEventId = pearson.brix.CheckGroup.getEventTopic('too-many-selections', this.cgId_);
 	
 	/**
 	 * The event details for this.selectedEventId events
@@ -200,6 +201,65 @@ goog.inherits(pearson.brix.CheckGroup, pearson.brix.HtmlBric);
 pearson.brix.CheckGroup.autoIdPrefix = "cg_auto_";
 
 /* **************************************************************************
+ * CheckGroup.getEventTopic (static)                                   */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * CheckGroup bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of CheckGroup with the given instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.CheckGroup.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            return instanceId + '_itemSelected';
+        },
+        'too-many-selections': function (instanceId)
+        {
+            return instanceId + '_exceedSelection';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by CheckGroup brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
+
+/* **************************************************************************
+ * CheckGroup.getId                                                    */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.CheckGroup.prototype.getId = function ()
+{
+    return this.cgId_;
+};
+
+/* **************************************************************************
  * CheckGroup.draw                                                     */ /**
  *
  * Draw this CheckGroup in the given container.
@@ -218,7 +278,7 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
 	// make a div to hold the Check group
 	var widgetGroup = container.append("div")
 		.attr("class", "brixCheckGroup")
-		.attr("id", this.id);
+		.attr("id", this.cgId_);
 
 	// We will use a table to provide structure for the Check group
 	// and put each answer in its own row of the table.
@@ -244,7 +304,7 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
 		.append("input")
 			.attr("id", getButtonId)
 			.attr("type", "checkbox")
-			.attr("name", this.id)
+			.attr("name", this.cgId_)
 			.attr("value", function (d) {return d.answerKey;});
 
 	var labelCell = ansRows.append("td");
@@ -259,7 +319,7 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
                       return  choiceLabel + d.content;
                   });
 	
-	var choiceInputs = widgetGroup.selectAll("input[name='" + this.id + "']");
+	var choiceInputs = widgetGroup.selectAll("input[name='" + this.cgId_ + "']");
 
 	// The reason I am using 'click' instead of 'chance' event is because preventDefault() work 
 	// on 'change' event and not on 'change'
@@ -319,7 +379,7 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.CheckGroup.prototype.selectedInputs_ = function ()
 {
-	var selectedInputsSelector = "input[name='" + this.id + "']:checked";
+	var selectedInputsSelector = "input[name='" + this.cgId_ + "']:checked";
 	return this.lastdrawn.widgetGroup.selectAll(selectedInputsSelector);
 };
 

@@ -270,7 +270,8 @@ pearson.brix.BarChart.prototype.getData = function ()
  *
  * Set the data that this BarChart should display.
  *
- * @param {Object} newData       -The new data for this BarChart to display
+ * @param {Array.<Array.<{x: number, y: string, key: (string|undefined)}>>}
+ *                  newData         -The new data for this BarChart to display
  *
  ****************************************************************************/
 pearson.brix.BarChart.prototype.setData = function (newData)

@@ -93,19 +93,21 @@ pearson.brix.LineGraph = function (config, eventManager)
 
 	/**
 	 * A unique id for this instance of the line graph bric
+     * @private
 	 * @type {string}
 	 */
-	this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LineGraph);
+	this.lgId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LineGraph);
 
 	/**
 	 * Array of traces to be graphed, where each trace is an array of points and each point is an
 	 * object w/ a {number} x and {number} y property.
+     * @private
 	 * @type {Array.<Array.<{x: number, y: number}>>}
 	 * @example
 	 *   // here are 2 traces, 1st w/ 2 points, 2nd with 3 points:
 	 *   [ [{x: -1.2, y: 2.0} {x: 2, y: 3.1}], [{x: -2, y: -2}, {x: 0, y: 0}, {x: 2, y: 2}] ]
 	 */
-	this.data = config.Data;
+	this.data_ = config.Data;
 
 	/**
 	 * The render type is one of:
@@ -141,7 +143,7 @@ pearson.brix.LineGraph = function (config, eventManager)
 	 * @const
 	 * @type {string}
 	 */
-	this.selectedEventId = this.id + '_lineSelected';
+	this.selectedEventId = pearson.brix.LineGraph.getEventTopic('selected', this.lgId_);
 
 	/**
 	 * Information about the last drawn instance of this line graph (from the draw method)
@@ -152,7 +154,7 @@ pearson.brix.LineGraph = function (config, eventManager)
 			container: null,
 			size: {height: 0, width: 0},
 			dataRect: new pearson.utils.Rect(0, 0, 0, 0),
-			linesId: this.id + '_lines',
+			linesId: this.lgId_ + '_lines',
 			axes: null,
 			xScale: null,
 			yScale: null,
@@ -171,6 +173,116 @@ goog.inherits(pearson.brix.LineGraph, pearson.brix.SvgBric);
  */
 pearson.brix.LineGraph.autoIdPrefix = "lgrf_auto_";
 
+/* **************************************************************************
+ * LineGraph.getEventTopic (static)                                    */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * LineGraph bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of LineGraph with the given instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.LineGraph.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            return instanceId + '_lineSelected';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by LineGraph brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
+
+/* **************************************************************************
+ * LineGraph.getId                                                     */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.LineGraph.prototype.getId = function ()
+{
+    return this.lgId_;
+};
+
+/* **************************************************************************
+ * LineGraph.getData                                                   */ /**
+ *
+ * Get the data being used by this LineGraph.
+ *
+ * @returns {Array.<Array.<{x: number, y: number}>>}
+ * the data being used by this LineGraph.
+ *
+ ****************************************************************************/
+pearson.brix.LineGraph.prototype.getData = function ()
+{
+    return this.data_;
+};
+
+/* **************************************************************************
+ * LineGraph.setData                                                   */ /**
+ *
+ * Set the data that this LineGraph should display.
+ *
+ * @param {Array.<Array.<{x: number, y: number}>>}
+ *                  newData     -The new data for this LineGraph to display
+ *
+ ****************************************************************************/
+pearson.brix.LineGraph.prototype.setData = function (newData)
+{
+    this.data_ = newData;
+
+    // If we're currently drawn someplace, redraw w/ the new data
+    if (this.lastdrawn.container != null)
+    {
+        this.redraw();
+    }
+};
+
+/* **************************************************************************
+ * LineGraph.setTrace                                                  */ /**
+ *
+ * Set one of the series that this LineGraph should display.
+ *
+ * @param {number}  traceIndex      -The (0-based) index of the trace data to
+ *                                   replace.
+ * @param {Array.<{x: number, y: number}>}
+ *                  newTrace        -The new trace data
+ *
+ ****************************************************************************/
+pearson.brix.LineGraph.prototype.Trace = function (traceIndex, newTrace)
+{
+    this.data_[traceIndex] = newTrace;
+
+    // If we're currently drawn someplace, redraw w/ the new data
+    if (this.lastdrawn.container != null)
+    {
+        this.redraw();
+    }
+};
 
 /* **************************************************************************
  * LineGraph.clearLastdrawn_                                           */ /**
@@ -185,7 +297,7 @@ pearson.brix.LineGraph.prototype.clearLastdrawn_ = function ()
 	this.lastdrawn.container = null;
 	this.lastdrawn.size = {height: 0, width: 0};
 	this.lastdrawn.dataRect = new pearson.utils.Rect(0, 0, 0, 0);
-	this.lastdrawn.linesId = this.id + '_lines';
+	this.lastdrawn.linesId = this.lgId_ + '_lines';
 	this.lastdrawn.axes = null;
 	this.lastdrawn.xScale = null;
 	this.lastdrawn.yScale = null;
@@ -215,13 +327,13 @@ pearson.brix.LineGraph.prototype.draw = function (container, size)
 	
 	// Create the axes (svg canvas) in the container
 	var axesConfig = {
-			id: this.id + '_axes',
+			id: this.lgId_ + '_axes',
 			size: this.lastdrawn.size,
 			xAxisFormat: this.xAxisFormat,
 			yAxisFormat: this.yAxisFormat,
 		};
 		
-	var dataPts = d3.merge(this.data);
+	var dataPts = d3.merge(this.data_);
 	axesConfig.xAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.x;});
 	axesConfig.yAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.y;});
 	 
@@ -427,7 +539,7 @@ pearson.brix.LineGraph.prototype.drawData_ = function ()
 
 		// rebind the trace data to the trace groups
 		var traces = graph.selectAll("g.traces")
-			.data(this.data);
+			.data(this.data_);
 			
 		// get rid of any trace groups without data
 		traces.exit().remove();
@@ -466,7 +578,7 @@ pearson.brix.LineGraph.prototype.drawData_ = function ()
 	{
 		// rebind the series data to the series groups
 		var series = graph.selectAll("g.series")
-			.data(this.data);
+			.data(this.data_);
 			
 		// get rid of any series groups without data
 		series.exit().remove();
@@ -641,7 +753,7 @@ pearson.brix.LineGraph.prototype.lite = function (liteKey)
 
 	if (linesToLite.empty())
 	{
-		window.console.log("No key '" + liteKey + "' in line graph " + this.id );
+		window.console.log("No key '" + liteKey + "' in line graph " + this.lgId_ );
 	}
 };
 

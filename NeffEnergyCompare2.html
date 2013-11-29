@@ -61,9 +61,11 @@
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+	<script src="js/ipsproxy.js"></script>
 	<script src="js/eventmanager.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
 	<script src="js/answerman.js"></script>
+	<script src="js/localanswerman.js"></script>
 	<script src="js/submitmanager.js"></script>
     <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
@@ -83,6 +85,7 @@
 	<script src="js/widget-labelgroup.js"></script>
     <script src="js/widget-markergroup.js"></script>
     <script src="js/brix-labelselector.js"></script>
+    <script src="js/brix-labelcarousel.js"></script>
     <script src="js/widget-radiogroup.js"></script>
     <script src="js/widget-checkgroup.js"></script>
     <script src="js/widget-selectgroup.js"></script>
@@ -91,171 +94,346 @@
     <script src="js/widget-numericquestion.js"></script>
     <script src="js/widget-slider.js"></script>
     <script src="js/mortar-hilite.js"></script>
+    <script src="js/mortar-dataswap.js"></script>
 	<script src="js/briclayer.js"></script>
 
     <script src="js/mortar-agestructure.js"></script>
 
 	<script>
-// local aliases for convenience
-	var EventManager = pearson.utils.EventManager;
-	var Rect = pearson.utils.Rect;
-	var Size = pearson.utils.Size;
-	var SubmitManager = pearson.brix.SubmitManager;
-	var SVGContainer = pearson.brix.SVGContainer;
-	var Image = pearson.brix.Image;
-	var CaptionedImage = pearson.brix.CaptionedImage;
-	var LabelSelector = pearson.brix.LabelSelector;
-	var Carousel = pearson.brix.Carousel;
-	var ImageViewer = pearson.brix.ImageViewer;
-	var Callouts = pearson.brix.Callouts;
-	var RadioGroup = pearson.brix.RadioGroup;
-	var CheckGroup = pearson.brix.CheckGroup;
-	var SelectGroup = pearson.brix.SelectGroup;
-	var LabelGroup = pearson.brix.LabelGroup;
-	var MarkerGroup = pearson.brix.MarkerGroup;
-	var BarChart = pearson.brix.BarChart;
-	var LineGraph = pearson.brix.LineGraph;
-	var PieChart = pearson.brix.PieChart;
-	var Legend = pearson.brix.Legend;
-	var Sketch = pearson.brix.Sketch;
-	var Readout = pearson.brix.Readout;
-	var NumericInput = pearson.brix.NumericInput;
-	var Slider = pearson.brix.Slider;
-	var MultipleChoiceQuestion = pearson.brix.MultipleChoiceQuestion;
-	var NumericQuestion = pearson.brix.NumericQuestion;
+	// Create an object that will contain the objects needed for the activities
+	// on this page.
+	pearson.brix.activity = {};
+	var a = pearson.brix.activity;
 
-	//the eventManager and submitManager are created for every page for Brix on that page
-	var eventManager = new EventManager();
-	var submitManager = new SubmitManager(eventManager);
-
-	//country selector
-	var countries = new CheckGroup ({
-		choices: [
+	// The activity config that defines the brix and mortar for this page
+	a.config =
 		{
-			content: "US", answerKey: '0'
-		},
-		{
-			content: "Germany", answerKey: '1'
-		},
-		{
-			content: "China", answerKey: '2'
-		},
-		{
-			content: "Japan",answerKey: '3'
-		},
-		{
-			content: "Malaysia", answerKey: '4'
-		},
-		{
-			content: "India",answerKey: '5'
-		},
-		
-		],
-		type: 'ordered',
+			"description": "The Neff energy comparison page w/ a checkbox and several line graphs",
+			"sequenceNodeKey": "2c611bbc-672e-4fff-a43b-d7595eb08c1c",
+			"containerConfig":
+				[
+					{
+						"description": "container for checkbox that selects the countries to display in the graphs",
+						"containerId": "country-selection",
+						"brixConfig":
+							[
+								{
+									"bricId": "countrySelector",
+									"bricType": "CheckGroup",
+									"config":
+										{
+											"id": "cntrySelCB",
+											"choices":
+												[
+													{ "content": "US",       "answerKey": "0" },
+													{ "content": "Germany",  "answerKey": "1" },
+													{ "content": "China",    "answerKey": "2" },
+													{ "content": "Japan",    "answerKey": "3" },
+													{ "content": "Malaysia", "answerKey": "4" },
+													{ "content": "India",    "answerKey": "5" },
+												],
+											"maxSelects": 6
+										}
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"description": "draw the country selector",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "countrySelector"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#checkBoxes0" }
+										]
+								}
+							]
+					},
+					{
+						"description": "container for energy use graphs",
+						"containerId": "EnergyUseGraphs",
+						"brixConfig":
+							[
+								{
+									"bricId": "energyUnitSelector",
+									"bricType": "LabelSelector",
+									"config":
+										{
+											"id": "energyUnitLS",
+											"labels": [ "Primary Data", "Per Capita Data" ],
+											"layout": "horizontal",
+											"itemMargin": { "top": 5, "bottom": 5, "left": 0, "right": 0 }
+										}
+								},
+								{
+									"bricId": "electricityGraph",
+									"bricType": "LineGraph",
+									"config":
+										{
+											"id": "electricLG",
+											//"Data": electricData,
+											"type": "lines",
+											"xAxisFormat":
+												{ 
+													"type": "ordinal", 
+													"ticks": 6,
+													"orientation": "bottom",
+													"label": "Year"
+												},
+											"yAxisFormat":
+												{
+													"type": "linear",
+													"ticks": 3,
+													"orientation": "left",
+													"label": "Electricity Generation (terrawatt hours)"
+												},
+										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "Data",
+												"value": { "type": "constant", "value": [ [], [], [], [], [], [] ] }
+											}
+                                        ]
+								},
+								{
+									"bricId": "co2Graph",
+									"bricType": "LineGraph",
+									"config":
+										{
+											"id": "co2LG",
+											//"Data": co2Data,
+											"type": "lines",
+											"xAxisFormat":
+												{ 
+													"type": "ordinal", 
+													"ticks": 4,
+													"orientation": "bottom",
+													"label": "Year"
+												},
+											"yAxisFormat":
+												{
+													"type": "linear",
+													"ticks": 3,
+													"orientation": "left",
+													"label": "Carbon dioxide emissions (Million tonnes CO<sub>2</sub>)"
+												},
+										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "Data",
+												"value": { "type": "constant", "value": [ [], [], [], [], [], [] ] }
+											}
+                                        ]
+								},
+								{
+									"bricId": "primaryGraph",
+									"bricType": "LineGraph",
+									"config":
+										{
+											"id": "primeLG",
+											//"Data": primaryEnergyData,
+											"type": "lines",
+											"xAxisFormat":
+												{ 
+													"type": "ordinal", 
+													"ticks": 4,
+													"orientation": "bottom",
+													"label": "Year"
+												},
+											"yAxisFormat":
+												{
+													"type": "linear",
+													"ticks": 3,
+													"orientation": "left",
+													"label": "Primary Energy Consumption (Million tonnes oil equivalent)"
+												},
+										},
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "Data",
+												"value": { "type": "constant", "value": [ [], [], [], [], [], [] ] }
+											}
+                                        ]
+								},
+								{
+									"bricId": "cntr1",
+									"bricType": "SvgContainer",
+									"config":
+										{
+											//"node": d3.select("#graph0"),
+											"maxSize": {"height": 650, "width": 577},
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "node",
+                                                "value":
+                                                    {
+                                                        "type": "d3select",
+                                                        "selector": "#graph0"
+                                                    }
+                                            }
+                                        ]
+								}
+							],
+						"hookupActions":
+							[
+							]
+					},
+				],
+            "data":
+                {
+					"fuelSources":
+						{
+							"labels":
+								{
+									"xLabel": "Million tonnes oil equivalent",
+									"yLabel": "Fuel Sources"
+								},
+							"source":   [ "Oil",             "Natural Gas",     "Coal",             "Nuclear Energy",   "Hydroelectric",    "Renewables" ],
+							"US": 	    [ 819.87189587887,   654.030201580966,   437.755692740848,	183.242604735581,    63.2050497736556,  50.7217530882212 ],
+							"Germany":  [ 111.526,            67.7128116938951,   79.2012993216776,  22.5143684663075,    4.79703127121327, 25.9934380232609 ],
+							"China":    [ 483.662640213053,	 129.459654,	    1873.31312,	         22.0369280897858,  194.788885369053,	31.9011750476266 ],
+							"Japan":    [ 218.194590348259,	 105.063134135855,   124.377646411,       4.07091460379235,  18.3133457030365,   8.16332232429738 ],
+							"Malaysia": [  29.8206660057211,  29.9974998107764,   14.3363, 0,         1.842729,	          0.31759756923807 ],
+							"India":    [ 171.596151999999,	  49.102434,         298.253834859999,    7.49868986740278,	 26.1698239580032,  10.8693908760238 ],
+						},
+					"electric":
+						{
+							"labels":
+								{
+									"xLabel": "Year",
+									"yLabel": "Electricity Generation (terrawatt hours)"
+								},
+							"Year":     [ 1985,              1990,              1995,              2000,               2005,              2010 ],
+							"US":       [ 2703.222,          3185.427,          3516.76699999999,  3990.496,           4257.36941,       4331.10173124933 ],
+							"Germany":  [  522.533999999999,  549.899999999999,  536.799999999999,  576.6,              620.6,            628.6 ],
+							"China":    [  410.69, 621.2,    1006.554,          1355.59999999999,  2500.26,            4207.15999999999 ],
+							"Japan":    [  671.952999999999,  841.057,           968.61,           1057.93699999999,   1153.06199999999, 1156.02299999999 ],
+							"Malaysia": [   14.994, 25.262,    46.632,            66.678,            96.2249999999999,  116.80763506  ],
+							"India":    [  179.843799999999,  284.245999999999,  409.921499999999,  554.7445,           689.5625,         922.24883 ],
+						},
+					"electricPC":
+						{
+							"labels":
+								{
+									"xLabel": "Year",
+									"yLabel": "Per Capita Electricity Generation (terrawatt hours/person)"
+								},
+							"Year":     [ 1985,              1990,              1995,              2000,               2005,              2010 ],
+						    "US":       [ 11.1763426634142,  12.5160683203212,  13.1203066706461,  14.0217151450839,   14.2785207233554,  13.8707553034916 ],
+						    "Germany":  [  6.62307341310078,  6.8321592306832,   6.45595805070476,  6.90439697289012,   7.40254783148051,  7.57194309599239 ],
+						    "China":    [  0.386604901256614, 0.533022603693575, 0.813356594703486, 1.0587076675083,    1.89675589848708,  3.09390721278756 ],
+						    "Japan":    [  5.60012167782046,  6.87986813798068,  7.78106247439409,  8.41536013999912,   9.08072988446901,  9.0773126663682 ],
+						    "Malaysia": [  0.951154529307282, 1.38718357036956,  2.25003618817853,  2.84693224029717,   3.72344542042332,  4.13098157660206 ],
+						    "India":    [  0.230056655882988, 0.327136545320413, 0.428876108490861, 0.532250528178136,  0.611778530516065, 0.764954965266978 ],
+						},
 
-		}, eventManager);
+					"CO2":
+						{
+							"labels":
+								{
+									"xLabel": "Year",
+									"yLabel": "Carbon dioxide emissions (Million tonnes CO<sub>2</sub>)"
+								},
+							"Year":     [ 1965,              1970,              1975,              1980,              1985,              1990,              1995,              2000,              2005,              2010 ],
+						    "US":       [ 3783.56319892251,  4682.76930767474,  4852.23876974642,  5158.85593661485,  4974.23139138669,  5444.6071558793,   5791.89946504643,  6377.04931894541,  6493.73405284988,  6130.36154115063 ],
+						    "Germany":  [  918.574022404799, 1058.26210778159,  1038.3756200208,   1126.1539000584,   1088.0401784976,   1030.5031590468,    930.8827538568,    902.5099532532,    883.2846087112,    833.682541894 ],
+						    "China":    [  489.145476851999,  749.7444525048,   1133.44256201399,  1500.3351912672,   1919.01394778759,  2395.79278974359,  3157.0370755668,   3429.90512299925,  5573.91304647688,  7945.19483758791 ],
+						    "Japan":    [  446.2361852328,    857.094905444399,  982.355377381199, 1008.9489068424,   1010.05190265239,  1163.86601165994,  1295.29979343336,  1339.72985460108,  1409.8157878348,   1316.02275817585 ],
+						    "Malaysia": [    6.1880527188,      8.8323853572,     14.9716325484,     27.2496663828,     43.656768432,      66.1367192112,     92.4829644424699, 127.573055143268,  170.447858694955,  218.633875511925 ],
+						    "India":    [  180.066503903662,  210.008907118774,  264.666653678649,  324.189342857055,  429.805441612188,  581.363307130037,  765.487873593856,  952.766529780117, 1179.99680502761,  1648.00247247239 ],
+						},
+					"CO2PC":
+						{
+							"labels":
+								{
+									"xLabel": "Year",
+									"yLabel": "Per Capita Carbon dioxide emissions (Million tonnes CO<sub>2</sub>/person)"
+								},
+							"Year":     [ 1965,              1970,              1975,              1980,              1985,              1990,              1995,              2000,              2005,              2010 ],
+						    "US":       [ 18.9475636695738,  22.3104816675071,  22.1120164134289,  22.4126578644813,  20.5657228733894,  21.3927599471893,  21.6083400427042,  22.4075325514431,  21.7789219859068,  19.6330518504602 ],
+						    "Germany":  [ 11.983223826297,   13.3472335664307,  13.0254471333158,  14.2246826416704,  13.7908154849118,  12.8033491004361,  11.1954918200895,  10.8069493396542,  10.5358629790448,  10.0423111157233 ],
+						    "China":    [  0.687439447924029, 0.920634462749239, 1.24067401733199,  1.52470609346515,  1.8064725164832,   2.05571749951614,  2.55107716539368,  2.67871558907151,  4.22850121529725,  5.84282404639133 ],
+						    "Japan":    [  4.58421015833659,  8.26450134458671,  8.8656231883146,   8.70443877115743,  8.41787082692905,  9.52045425042283, 10.4054352275681,  10.6568814747729,  11.1027476026335,  10.3336612264795 ],
+						    "Malaysia": [  0.646609479498433, 0.809642071427262, 1.2160195377193,   1.9697604729507,   2.76939662725197,  3.63169069305365,  4.46238670409988,  5.44695167342419,  6.59551362825349,  7.73213592841721 ],
+						    "India":    [  0.361614179486501, 0.378258118009319, 0.425350437905233, 0.463812750344158, 0.549808236801108, 0.669086579478942, 0.800883730967705, 0.914133423054968, 1.04689090748619,  1.36692791910618 ],
+						    "United Kingdom": [],
+						},
+					"primaryEnergy":
+						{
+							"labels":
+								{
+									"xLabel": "Year",
+									"yLabel": "Primary Energy Consumption (Million tonnes oil equivalent)"
+								},
+							"Year":     [ 1965,              1970,              1975,              1980,              1985,              1990,              1995,              2000,               2005,               2010 ],
+						    "US":       [ 1287.27820475463,  1627.67154360524,  1717.5017401888,   1812.64002002025,  1756.41662576132,  1968.39375347818,  2121.8998572491,   2313.70914077054,   2351.17872420366,   2281.20360828836 ],
+						    "Germany":  [  256.11241860886,   309.57361170324,   319.869548033896,  355.864785667737,  358.85633595918,   349.561855998551,  333.282934606507,  333.007972258677,   333.104953684009,   322.421432798821 ],
+						    "China":    [  131.37,            202.132999999999,  314.648, 416.424,  530.376999999999,  664.565914242666,  886.522870332726,  980.280309011805, 1601.15318658091,   2337.98270174734 ],
+						    "Japan":    [  148.959535593066,  279.923318459519,  329.293450875684,  355.588129881884,  371.703980902384,  434.131638132832,  495.758515089642,  518.219735804977,   531.371564674219,   506.722032980818 ],
+						    "Malaysia": [    2.147,             3.17,              5.285,             9.473,            16.35,             24.158,            33.8811781140257,  47.6229586985678,   61.3493361825254,   76.1122076796068 ],
+						    "India":    [   52.7296338028,     64.83855550089,    81.945317606,     102.503905282,     132.66304144,      180.726830970507,  236.23101109731,   295.836064157623,   366.784411451272,   511.601758848395 ],
+						},
 
-	countries.draw(d3.select('#checkBoxes0'));
+					"primaryEnergyPC":
+						{
+							"labels":
+								{
+									"xLabel": "Year",
+									"yLabel": "Primary Energy Consumption (Million tonnes oil equivalent/person)"
+								},
+							"Year":     [ 1965,              1970,              1975,              1980,              1985,              1990,              1995,              2000,              2005,              2010 ],
+						    "US":       [ 6.44651204768802,  7.75484200659028,  7.82678439196679,  7.8750174649844,   7.26182091934229,  7.7341438682558,   7.91635523522273,  8.12985917050444,  7.88546891397296,  7.30576629491512 ],
+						    "Germany":  [ 3.34110519351458,  3.90446872379129,  4.01246312715784,  4.49500165049119,  4.54847312866533,  4.34308467204084,  4.00830969604208,  3.98754636769179,  3.9732925435852,   3.88380009876075 ],
+						    "China":    [ 0.184625892597397, 0.248205378828995, 0.344415863042788, 0.423188240841612, 0.499272803608023, 0.570232862098563, 0.716364172156274, 0.765587400013437, 1.21467237448454,  1.71933122208536 ],
+						    "Japan":    [ 1.53026993068836,  2.6991487489829,   2.97182844524781,  3.0677421654521,   3.09781714075777,  3.5512080927683,   3.98253990576739,  4.12217902243151,  4.18472002988068,  3.97887786688039 ],
+						    "Malaysia": [ 0.224346917450366, 0.290585754881291, 0.429256010396361, 0.684762180135897, 1.03717330626744,  1.32656086980396,  1.6347974964548,   2.03334437891498,  2.37392470620769,  2.6917600678882 ],
+						    "India":    [ 0.105893005355536, 0.116784141752323, 0.131695762361949, 0.146650774546974, 0.169702907039068, 0.207997126187873, 0.247154239883187, 0.283840401125267, 0.325410427994357, 0.424345678671556 ], 
+						}
+                }
+		};
+
+	// turn on logging to make it easier to debug what's happening when making changes
+	pearson.utils.logToConsole(true, 'FINER', 'pearson');
+	// create the eventmanager to be used by the created brix, and the
+	// bricLayer which will create them, and then tell the bricLayer to build.
+	a.eventManager = new pearson.utils.EventManager();
+	a.submitManager = new pearson.brix.utils.SubmitManager();
+	a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager, a.submitManager);
+
+	a.building = a.bricLayer.build(a.config);
 
 
-//data for each country and energy type
-//
-//
-var fuelSources = {
-	"source": ['Oil', 'Natural Gas', 'Coal', 'Nuclear Energy', 'Hydroelectric', 'Renewables'],
-	"US": [819.87189587887,	654.030201580966, 437.755692740848,	183.242604735581, 63.2050497736556, 50.7217530882212],
-	"Germany": [111.526, 67.7128116938951, 79.2012993216776, 22.5143684663075, 4.79703127121327, 25.9934380232609],
-	"China": [483.662640213053,	129.459654,	1873.31312,	22.0369280897858, 194.788885369053,	31.9011750476266],
-	"Japan": [218.194590348259,	105.063134135855, 124.377646411, 4.07091460379235, 18.3133457030365, 8.16332232429738],
-	"Malaysia": [29.8206660057211, 29.9974998107764, 14.3363, 0, 1.842729,	0.31759756923807],
-	"India": [171.596151999999,	49.102434, 298.253834859999, 7.49868986740278,	26.1698239580032, 10.8693908760238],
-	"labels": {xLabel: 'Million tonnes oil equivalent', yLabel: 'Fuel Sources'}
-};
 
-var electric = 
-{ "Year": [ 1985, 1990, 1995, 2000, 2005, 2010],
-  "US": [2703.222, 3185.427, 3516.76699999999, 3990.496, 4257.36941, 4331.10173124933],
-  "Germany": [522.533999999999, 549.899999999999, 536.799999999999, 576.6, 620.6, 628.6],
-  "China": [410.69, 621.2, 1006.554, 1355.59999999999, 2500.26, 4207.15999999999],
-  "Japan": [671.952999999999, 841.057, 968.61, 1057.93699999999, 1153.06199999999, 1156.02299999999],
-  "Malaysia": [14.994, 25.262, 46.632, 66.678, 96.2249999999999, 116.80763506],
-  "India": [179.843799999999, 284.245999999999, 409.921499999999, 554.7445, 689.5625, 922.24883],
-  'labels': {xLabel: 'Year', yLabel: 'Electricity Generation (terrawatt hours)'}
-};
 
-var electricPC = 
-{ "Year": [ 1985, 1990, 1995, 2000, 2005, 2010],
-  "US": [11.1763426634142, 12.5160683203212, 13.1203066706461, 14.0217151450839, 14.2785207233554, 13.8707553034916],
-  "Germany": [6.62307341310078, 6.8321592306832, 6.45595805070476, 6.90439697289012, 7.40254783148051, 7.57194309599239],
-  "China": [0.386604901256614, 0.533022603693575, 0.813356594703486, 1.0587076675083, 1.89675589848708, 3.09390721278756],
-  "Japan": [5.60012167782046, 6.87986813798068, 7.78106247439409, 8.41536013999912, 9.08072988446901, 9.0773126663682],
-  "Malaysia": [0.951154529307282, 1.38718357036956, 2.25003618817853, 2.84693224029717, 3.72344542042332, 4.13098157660206],
-  "India": [0.230056655882988, 0.327136545320413, 0.428876108490861, 0.532250528178136, 0.611778530516065, 0.764954965266978],
-  'labels': {xLabel: 'Year', yLabel: 'Per Capita Electricity Generation (terrawatt hours/person)'}
-};
 
-var CO2 = 
-{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
-  "US": [3783.56319892251, 4682.76930767474, 4852.23876974642, 5158.85593661485, 4974.23139138669, 5444.6071558793, 5791.89946504643, 6377.04931894541, 6493.73405284988, 6130.36154115063],
-  "Germany": [918.574022404799, 1058.26210778159, 1038.3756200208, 1126.1539000584, 1088.0401784976, 1030.5031590468, 930.8827538568, 902.5099532532, 883.2846087112, 833.682541894],
-  "China": [489.145476851999, 749.7444525048, 1133.44256201399, 1500.3351912672, 1919.01394778759, 2395.79278974359, 3157.0370755668, 3429.90512299925, 5573.91304647688, 7945.19483758791],
-  "Japan": [446.2361852328, 857.094905444399, 982.355377381199, 1008.9489068424, 1010.05190265239, 1163.86601165994, 1295.29979343336, 1339.72985460108, 1409.8157878348, 1316.02275817585],
-  "Malaysia": [6.1880527188, 8.8323853572, 14.9716325484, 27.2496663828, 43.656768432, 66.1367192112, 92.4829644424699, 127.573055143268, 170.447858694955, 218.633875511925],
-  "India": [180.066503903662, 210.008907118774, 264.666653678649, 324.189342857055, 429.805441612188, 581.363307130037, 765.487873593856, 952.766529780117, 1179.99680502761, 1648.00247247239],
-  'labels': {xLabel: 'Year', yLabel: 'Carbon dioxide emissions (Million tonnes CO<sub>2</sub>)'}
-};
 
-var CO2PC = 
-{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
-  "US": [18.9475636695738, 22.3104816675071, 22.1120164134289, 22.4126578644813, 20.5657228733894, 21.3927599471893, 21.6083400427042, 22.4075325514431, 21.7789219859068, 19.6330518504602],
-  "Germany": [11.983223826297, 13.3472335664307, 13.0254471333158, 14.2246826416704, 13.7908154849118, 12.8033491004361, 11.1954918200895, 10.8069493396542, 10.5358629790448, 10.0423111157233],
-  "China": [0.687439447924029, 0.920634462749239, 1.24067401733199, 1.52470609346515, 1.8064725164832, 2.05571749951614, 2.55107716539368, 2.67871558907151, 4.22850121529725, 5.84282404639133],
-  "Japan": [4.58421015833659, 8.26450134458671, 8.8656231883146, 8.70443877115743, 8.41787082692905, 9.52045425042283, 10.4054352275681, 10.6568814747729, 11.1027476026335, 10.3336612264795],
-  "Malaysia": [0.646609479498433, 0.809642071427262, 1.2160195377193, 1.9697604729507, 2.76939662725197, 3.63169069305365, 4.46238670409988, 5.44695167342419, 6.59551362825349, 7.73213592841721],
-  "India": [0.361614179486501, 0.378258118009319, 0.425350437905233, 0.463812750344158, 0.549808236801108, 0.669086579478942, 0.800883730967705, 0.914133423054968, 1.04689090748619, 1.36692791910618],
-  "United Kingdom": [],
-  'labels': {xLabel: 'Year', yLabel: 'Per Capita Carbon dioxide emissions (Million tonnes CO<sub>2</sub>/person)'}
-};
-
-var primaryEnergy = 
-{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
-  "US": [1287.27820475463, 1627.67154360524, 1717.5017401888, 1812.64002002025, 1756.41662576132, 1968.39375347818, 2121.8998572491, 2313.70914077054, 2351.17872420366, 2281.20360828836],
-  "Germany": [256.11241860886, 309.57361170324, 319.869548033896, 355.864785667737, 358.85633595918, 349.561855998551, 333.282934606507, 333.007972258677, 333.104953684009, 322.421432798821],
-  "China": [131.37, 202.132999999999, 314.648, 416.424, 530.376999999999, 664.565914242666, 886.522870332726, 980.280309011805, 1601.15318658091, 2337.98270174734],
-  "Japan": [148.959535593066, 279.923318459519, 329.293450875684, 355.588129881884, 371.703980902384, 434.131638132832, 495.758515089642, 518.219735804977, 531.371564674219, 506.722032980818],
-  "Malaysia": [2.147, 3.17, 5.285, 9.473, 16.35, 24.158, 33.8811781140257, 47.6229586985678, 61.3493361825254, 76.1122076796068],
-  "India": [52.7296338028, 64.83855550089, 81.945317606, 102.503905282, 132.66304144, 180.726830970507, 236.23101109731, 295.836064157623, 366.784411451272, 511.601758848395],
-  
-  'labels': {xLabel: 'Year', yLabel: 'Primary Energy Consumption (Million tonnes oil equivalent)'}
-};
-
-var primaryEnergyPC = 
-{ "Year": [1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010],
-  "US": [6.44651204768802, 7.75484200659028, 7.82678439196679, 7.8750174649844, 7.26182091934229, 7.7341438682558, 7.91635523522273, 8.12985917050444, 7.88546891397296, 7.30576629491512],
-  "Germany": [3.34110519351458, 3.90446872379129, 4.01246312715784, 4.49500165049119, 4.54847312866533, 4.34308467204084, 4.00830969604208, 3.98754636769179, 3.9732925435852, 3.88380009876075],
-  "China": [0.184625892597397, 0.248205378828995, 0.344415863042788, 0.423188240841612, 0.499272803608023, 0.570232862098563, 0.716364172156274, 0.765587400013437, 1.21467237448454, 1.71933122208536],
-  "Japan": [1.53026993068836, 2.6991487489829, 2.97182844524781, 3.0677421654521, 3.09781714075777, 3.5512080927683, 3.98253990576739, 4.12217902243151, 4.18472002988068, 3.97887786688039],
-  "Malaysia": [0.224346917450366, 0.290585754881291, 0.429256010396361, 0.684762180135897, 1.03717330626744, 1.32656086980396, 1.6347974964548, 2.03334437891498, 2.37392470620769, 2.6917600678882],
-  "India": [0.105893005355536, 0.116784141752323, 0.131695762361949, 0.146650774546974, 0.169702907039068, 0.207997126187873, 0.247154239883187, 0.283840401125267, 0.325410427994357, 0.424345678671556], 
-  'labels': {xLabel: 'Year', yLabel: 'Primary Energy Consumption (Million tonnes oil equivalent/person)'}
-};
 
 
 /************************************************************************
-* makeGraphPoints			                                            *//**
+* makeGraphPoints			                                        *//**
 *
 * makeGraphPoint takes vectors of x and y data and constructs the array of
 * of x: and y: keyed objects that is expected by Brix graphing routines.
 *
 * @param	{Array} x,y		These are the arrays of x and y data.
 *************************************************************************/
-	function makeGraphPoints(x,y)
+	function makeGraphPoints(xArray,yArray)
 	{
 		//Handler needs to get written into each page, 
 		//each widget will have it's own way of responding  
 		var dataArray = [];
-		x.forEach( function(o, i) {
-				dataArray.push({x: o, y: y[i]});
+		xArray.forEach( function(x, i) {
+				dataArray.push({x: x, y: yArray[i]});
 			});
 		return dataArray;
 	}
@@ -317,90 +495,33 @@ var primaryEnergyPC =
 		return [seriesArray, chartLegendConfig];
 	}
 
-var electricData = makeGraphData (electric, "Year");
-var co2Data = makeGraphData (CO2, "Year");
-var primEnergyData = makeGraphData (primaryEnergy, "Year");
-var pcElectricData = makeGraphData (electricPC, "Year");
-var pcCo2Data = makeGraphData (CO2PC, "Year");
-var pcPrimEnergyData = makeGraphData (primaryEnergyPC, "Year");
+var electricData = makeGraphData(a.building.data.electric, "Year");
+var co2Data = makeGraphData(a.building.data.CO2, "Year");
+var primEnergyData = makeGraphData(a.building.data.primaryEnergy, "Year");
+var pcElectricData = makeGraphData(a.building.data.electricPC, "Year");
+var pcCo2Data = makeGraphData(a.building.data.CO2PC, "Year");
+var pcPrimEnergyData = makeGraphData(a.building.data.primaryEnergyPC, "Year");
 
 	var eData = [electricData, pcElectricData];
 	var cData = [co2Data, pcCo2Data];
 	var pData = [primEnergyData, pcPrimEnergyData];
 
-var svg0 = new SVGContainer({
-			node: d3.select("#graph0"),
-			maxWid: 577,
-			maxHt: 650
-		});
+//country selector
+var countries = a.building.brix.countrySelector;
+var labelButtons0 = a.building.brix.energyUnitSelector;
+var graph0 = a.building.brix.electricityGraph;
+var graph1 = a.building.brix.co2Graph;
+var graph2 = a.building.brix.primaryGraph;
+var svg0 = a.building.brix.cntr1;
 
-var svg1 = new SVGContainer({
-			node: d3.select("#graph1"),
-			maxWid: 350,
-			maxHt: 600
-		});
-		
-var graph0 = new LineGraph({
-			Data: electricData, 
-			type: "lines",
-			xAxisFormat: { type: "ordinal",
-						   ticks: 6,
-						   orientation: "bottom",
-						   label: electric.labels.xLabel,
-						 },
-			yAxisFormat: { type: "linear",
-						   orientation: "left",
-						   label: electric.labels.yLabel,
-						   ticks: 3,
-						    },
-		}, eventManager);	
+graph0.setData(electricData);
+graph1.setData(co2Data);
+graph2.setData(primEnergyData);
 
-var labelConfig = 
-	{
-	labels: ["Primary Data", "Per Capita Data"],
-	layout: "horizontal",
-	itemMargin: {top: 5, bottom: 5, left: 0, right: 0}
-	};
-
-var labelButtons0 = new LabelSelector(labelConfig, eventManager);
-
-var graph1 = new LineGraph({
-			Data: co2Data, 
-			type: "lines",
-			xAxisFormat: { type: "ordinal",
-						   ticks: 4,
-						   orientation: "bottom",
-						   label: CO2.labels.xLabel },
-			yAxisFormat: { type: "linear",
-						   orientation: "left",
-						   label: CO2.labels.yLabel,
-						   ticks: 3,
-						    },
-		}, eventManager);	
-
-var labelBUttons1 = new LabelSelector(labelConfig, eventManager);
-
-var graph2 = new LineGraph({
-			Data: primEnergyData, 
-			type: "lines",
-			xAxisFormat: { type: "ordinal",
-						   ticks: 4,
-						   orientation: "bottom",
-						   label: primaryEnergy.labels.xLabel },
-			yAxisFormat: { type: "linear",
-						   orientation: "left",
-						   label: primaryEnergy.labels.yLabel,
-						   ticks: 3,
-						    },
-		}, eventManager);	
-
-var labelButtons2 = new LabelSelector(labelConfig, eventManager);
-
-svg0.append(graph0, {topPercentOffset: .1, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-svg0.append(labelButtons0, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 0.1, widthPercent: 1});
-
-svg0.append(graph1, {topPercentOffset: 0.4, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-svg0.append(graph2, {topPercentOffset: 0.7, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+svg0.append(labelButtons0, {topPercentOffset: 0.0, leftPercentOffset: 0, heightPercent: 0.1, widthPercent: 1});
+svg0.append(graph0,        {topPercentOffset: 0.1, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+svg0.append(graph1,        {topPercentOffset: 0.4, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+svg0.append(graph2,        {topPercentOffset: 0.7, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
 	
 // configure and append the legend to the bargraph
 
@@ -408,14 +529,16 @@ var eDataCurrent = eData[0];
 var pDataCurrent = pData[0];
 var cDataCurrent = cData[0];
 
-eventManager.subscribe(countries.selectedEventId,
-						   displayData);
-eventManager.subscribe(labelButtons0.selectedEventId, swapData);
+a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'), displayData);
 
-countries.selectItemAtIndex(0);
+a.building.brix.countrySelector.selectItemAtIndex(0);
+a.building.brix.energyUnitSelector.selectItemAtIndex(0);
+
+// subscribe to the energy unit selector after it is initialized so we don't redraw needlessly
+a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('LabelSelector', 'selected', 'energyUnitLS'), swapData);
 
 /************************************************************************
-* displayData	                                           *//**
+* displayData	                                                    *//**
 *
 * displays the data associated with the selected items in the Checkgroup
 *
@@ -431,33 +554,26 @@ countries.selectItemAtIndex(0);
 		var primEnergyDataSubset = [];
 		
 		// make empty data sets
-		for (var i = 0; i <= electricData.length - 1; i++) 
-			{
-
-				electricDataSubset[i] = [];
-				co2DataSubset[i] = [];
-				primEnergyDataSubset[i] = [];
-			}
+		for (var i = 0, len = electricData.length; i < len; ++i) 
+		{
+			electricDataSubset[i] = [];
+			co2DataSubset[i] = [];
+			primEnergyDataSubset[i] = [];
+		}
 		
-
 		countries.selectedItems().forEach( 
-				function (o,i) 
+				function (o, i) 
 				{
-				var index = Number(o.answerKey);
-				electricDataSubset[index] = eDataCurrent[index];
-				co2DataSubset[index] = cDataCurrent[index];
-				primEnergyDataSubset[index] = pDataCurrent[index];
+					var index = Number(o.answerKey).valueOf();
+					electricDataSubset[index] = eDataCurrent[index];
+					co2DataSubset[index] = cDataCurrent[index];
+					primEnergyDataSubset[index] = pDataCurrent[index];
 				}
 			);
 		 
-		graph0.data = electricDataSubset;
-		graph0.redraw();
-		graph1.data = co2DataSubset;
-		graph1.redraw();
-		graph2.data = primEnergyDataSubset;
-		graph2.redraw();
-		
-		
+		graph0.setData(electricDataSubset);
+		graph1.setData(co2DataSubset);
+		graph2.setData(primEnergyDataSubset);
 	}
 
 /************************************************************************
@@ -483,8 +599,6 @@ countries.selectItemAtIndex(0);
 		svg0.append(graph0, {topPercentOffset: .1, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
 		svg0.append(graph1, {topPercentOffset: .4, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
 		svg0.append(graph2, {topPercentOffset: .7, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-
-	
 	}
 
 
