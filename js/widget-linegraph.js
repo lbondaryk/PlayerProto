@@ -121,8 +121,19 @@ pearson.brix.LineGraph = function (config, eventManager)
      */
     this.type = config.type;
 
-    this.xAxisFormat = config.xAxisFormat;
-    this.yAxisFormat = config.yAxisFormat;
+    /**
+     * The formatting to apply to the X axis.
+     * @private
+     * @type {pearson.brix.AxisFormat}
+     */
+    this.xAxisFormat_ = config.xAxisFormat;
+
+    /**
+     * The formatting to apply to the Y axis.
+     * @private
+     * @type {pearson.brix.AxisFormat}
+     */
+    this.yAxisFormat_ = config.yAxisFormat;
 
     /**
      * List of child brix which are to be drawn before and after this
@@ -248,15 +259,17 @@ pearson.brix.LineGraph.prototype.getData = function ()
  * Set the data that this LineGraph should display.
  *
  * @param {Array.<Array.<{x: number, y: number}>>}
- *                  newData     -The new data for this LineGraph to display
+ *                   newData        -The new data for this LineGraph to display
+ * @param {boolean=} delayRedraw    -true to not redraw after setting data,
+ *                                   default is false.
  *
  ****************************************************************************/
-pearson.brix.LineGraph.prototype.setData = function (newData)
+pearson.brix.LineGraph.prototype.setData = function (newData, delayRedraw)
 {
     this.data_ = newData;
 
     // If we're currently drawn someplace, redraw w/ the new data
-    if (this.lastdrawn.container != null)
+    if (!delayRedraw && this.lastdrawn.container != null)
     {
         this.redraw();
     }
@@ -267,20 +280,45 @@ pearson.brix.LineGraph.prototype.setData = function (newData)
  *
  * Set one of the series that this LineGraph should display.
  *
- * @param {number}  traceIndex      -The (0-based) index of the trace data to
+ * @param {number}   traceIndex     -The (0-based) index of the trace data to
  *                                   replace.
  * @param {Array.<{x: number, y: number}>}
- *                  newTrace        -The new trace data
+ *                   newTrace       -The new trace data
+ * @param {boolean=} delayRedraw    -true to not redraw after setting data,
+ *                                   default is false.
  *
  ****************************************************************************/
-pearson.brix.LineGraph.prototype.Trace = function (traceIndex, newTrace)
+pearson.brix.LineGraph.prototype.setTrace = function (traceIndex, newTrace, delayRedraw)
 {
     this.data_[traceIndex] = newTrace;
 
     // If we're currently drawn someplace, redraw w/ the new data
-    if (this.lastdrawn.container != null)
+    if (!delayRedraw && this.lastdrawn.container != null)
     {
         this.redraw();
+    }
+};
+
+/* **************************************************************************
+ * LineGraph.setYAxisFormat                                            */ /**
+ *
+ * Set the format for the Y axis. Unless specifically delayed, the LineGraph
+ * will be refreshed so that the new formatting is rendered.
+ *
+ * @param {pearson.brix.AxisFormat}
+ *                   newFormat      -The new format for the Y axis
+ * @param {boolean=} delayRedraw    -true to not redraw after setting the format,
+ *                                   default is false.
+ *
+ ****************************************************************************/
+pearson.brix.LineGraph.prototype.setYAxisFormat = function (newFormat, delayRedraw)
+{
+    this.yAxisFormat_ = newFormat;
+
+    // If we're currently drawn someplace, refresh so the axis will be recreated
+    if (!delayRedraw && this.lastdrawn.container != null)
+    {
+        this.refresh();
     }
 };
 
@@ -329,8 +367,8 @@ pearson.brix.LineGraph.prototype.draw = function (container, size)
     var axesConfig = {
             id: this.lgId_ + '_axes',
             size: this.lastdrawn.size,
-            xAxisFormat: this.xAxisFormat,
-            yAxisFormat: this.yAxisFormat,
+            xAxisFormat: this.xAxisFormat_,
+            yAxisFormat: this.yAxisFormat_,
         };
 
     var dataPts = d3.merge(this.data_);
@@ -469,6 +507,26 @@ pearson.brix.LineGraph.prototype.redraw = function ()
 };
 
 /* **************************************************************************
+ * LineGraph.refresh                                                   */ /**
+ *
+ * Refresh the graph by clearing all elements and then recreating them.
+ * This will even recompute axes if their formatting has changed or
+ * the data extents have changed.
+ * @export
+ *
+ ****************************************************************************/
+pearson.brix.LineGraph.prototype.refresh = function ()
+{
+    // we need to remove the existing drawn elements and execute draw again
+    var container = this.lastdrawn.container;
+    var size = this.lastdrawn.size;
+    var axes = this.lastdrawn.axes;
+    this.clearLastdrawn_();
+    axes.group.remove();
+    this.draw(container, size);
+};
+
+/* **************************************************************************
  * LineGraph.drawBric_                                                 */ /**
  *
  * Draw the given child bric in this line graph's data area.
@@ -534,7 +592,7 @@ pearson.brix.LineGraph.prototype.drawData_ = function ()
             // TODO: someday might want to add options for other interpolations -lb
             .interpolate("basis")
             // if the data is in date format, convert the values to date objects
-            .x(function (d) {return xScale((that.xAxisFormat.type == "time" ? new Date(d.x) : d.x));})
+            .x(function (d) {return xScale((that.xAxisFormat_.type == "time" ? new Date(d.x) : d.x));})
             .y(function (d) {return yScale(d.y);});
 
         // rebind the trace data to the trace groups
@@ -615,7 +673,7 @@ pearson.brix.LineGraph.prototype.drawData_ = function ()
             .attr("transform", function (d){
                         // move each symbol to the x,y coordinates in scale.  Special handling is required
                         // if the data is time strings, which must be turned into date objects
-                        return "translate(" + xScale((that.xAxisFormat.type == "time" ?
+                        return "translate(" + xScale((that.xAxisFormat_.type == "time" ?
                             new Date(d.x) : d.x)) + "," + yScale(d.y) + ")";
                                })
             .append("path")
@@ -672,12 +730,7 @@ pearson.brix.LineGraph.prototype.append = function (svgBrix, zOrder)
     if (zOrder === "before" && this.lastdrawn.container != null)
     {
         // we need to remove the existing drawn elements and execute draw again
-        var container = this.lastdrawn.container;
-        var size = this.lastdrawn.size;
-        var axes = this.lastdrawn.axes;
-        this.clearLastdrawn_();
-        axes.group.remove();
-        this.draw(container, size);
+        this.refresh();
     }
 
 }; // end of LineGraph.append()
