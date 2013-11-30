@@ -300,6 +300,29 @@ pearson.brix.LineGraph.prototype.setTrace = function (traceIndex, newTrace, dela
 };
 
 /* **************************************************************************
+ * LineGraph.setXAxisFormat                                            */ /**
+ *
+ * Set the format for the X axis. Unless specifically delayed, the LineGraph
+ * will be refreshed so that the new formatting is rendered.
+ *
+ * @param {pearson.brix.AxisFormat}
+ *                   newFormat      -The new format for the X axis
+ * @param {boolean=} delayRedraw    -true to not redraw after setting the format,
+ *                                   default is false.
+ *
+ ****************************************************************************/
+pearson.brix.LineGraph.prototype.setXAxisFormat = function (newFormat, delayRedraw)
+{
+    this.xAxisFormat_ = newFormat;
+
+    // If we're currently drawn someplace, refresh so the axis will be recreated
+    if (!delayRedraw && this.lastdrawn.container != null)
+    {
+        this.refresh();
+    }
+};
+
+/* **************************************************************************
  * LineGraph.setYAxisFormat                                            */ /**
  *
  * Set the format for the Y axis. Unless specifically delayed, the LineGraph
