@@ -148,7 +148,17 @@
 										[
 											{ "type": "d3select", "selector": "#checkBoxes0" }
 										]
-								}
+								},
+								{
+									"description": "Select the 1st country (US) before any graphs are drawn",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "countrySelector"},
+									"methodName": "selectItemAtIndex",
+									"args":
+										[
+											{ "type": "constant", "value": 0 }
+										]
+								},
 							]
 					},
 					{
@@ -287,6 +297,50 @@
 							],
 						"hookupActions":
 							[
+								{
+									"description": "Append the unit (national vs per capita) label selector to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "energyUnitSelector" },
+											{ "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 0.1, "widthPercent": 1} }
+										]
+								},
+								{
+									"description": "Append the electricity generation graph to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "electricityGraph" },
+											{ "type": "constant", "value": {"topPercentOffset": 0.1, "leftPercentOffset": 0, "heightPercent": 0.3, "widthPercent": 1} }
+										]
+								},
+								{
+									"description": "Append the CO2 emissions graph to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "co2Graph" },
+											{ "type": "constant", "value": {"topPercentOffset": 0.4, "leftPercentOffset": 0, "heightPercent": 0.3, "widthPercent": 1} }
+										]
+								},
+								{
+									"description": "Append the primary energy consumption graph to the svg container",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"methodName": "append",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "primaryGraph" },
+											{ "type": "constant", "value": {"topPercentOffset": 0.7, "leftPercentOffset": 0, "heightPercent": 0.3, "widthPercent": 1} }
+										]
+								},
 							]
 					},
 				],
@@ -550,7 +604,7 @@ function makeGraphData(dataSet, plot)
 	}
 
 
-a.building.brix.cntr1.append(a.building.brix.energyUnitSelector, {topPercentOffset: 0.0, leftPercentOffset: 0, heightPercent: 0.1, widthPercent: 1});
+//a.building.brix.cntr1.append(a.building.brix.energyUnitSelector, {topPercentOffset: 0.0, leftPercentOffset: 0, heightPercent: 0.1, widthPercent: 1});
 
 // Electricity graph
 var electricData = makeGraphData(a.building.data.electric, a.building.data.plot);
@@ -561,6 +615,16 @@ var eFormat = [a.building.data.electric.yAxisFormat, a.building.data.electricPC.
 a.building.brix.electricityGraph.setData(eData[0].slice(0));
 a.building.brix.electricityGraph.setYAxisFormat(eFormat[0]);
 
+var spec1MortarElectricConfig =
+{
+    "id": "spec1Electric",
+    "topic": a.bricLayer.getBricWorks().getBricTopic('LabelSelector', 'selected', 'energyUnitLS'),
+    "data": [a.building.data.electric, a.building.data.electricPC],
+    "plot": a.building.data.plot,
+    "targetBric": a.building.brix.electricityGraph,
+    "traceSelector": a.building.mortar.traceSelElectric
+};
+
 var tsElectricConfig =
 {
     "id": "tsElectric",
@@ -570,7 +634,7 @@ var tsElectricConfig =
 };
 a.building.mortar.traceSelElectric = new pearson.brix.mortar.TraceSelection(tsElectricConfig, a.eventManager);
 
-a.building.brix.cntr1.append(a.building.brix.electricityGraph,   {topPercentOffset: 0.1, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+//a.building.brix.cntr1.append(a.building.brix.electricityGraph,   {topPercentOffset: 0.1, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
 
 
 // CO2 graph
@@ -591,7 +655,7 @@ var tsCO2Config =
 };
 a.building.mortar.traceSelCO2 = new pearson.brix.mortar.TraceSelection(tsCO2Config, a.eventManager);
 
-a.building.brix.cntr1.append(a.building.brix.co2Graph,           {topPercentOffset: 0.4, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+//a.building.brix.cntr1.append(a.building.brix.co2Graph,           {topPercentOffset: 0.4, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
 
 
 // Primary Energy graph
@@ -612,13 +676,10 @@ var tsPrimaryConfig =
 };
 a.building.mortar.traceSelPrimary = new pearson.brix.mortar.TraceSelection(tsPrimaryConfig, a.eventManager);
 
-a.building.brix.cntr1.append(a.building.brix.primaryGraph,       {topPercentOffset: 0.7, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+//a.building.brix.cntr1.append(a.building.brix.primaryGraph,       {topPercentOffset: 0.7, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
 
 
-var svg0 = a.building.brix.cntr1;
-	
-
-a.building.brix.countrySelector.selectItemAtIndex(0);
+//a.building.brix.countrySelector.selectItemAtIndex(0);
 
 
 a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('LabelSelector', 'selected', 'energyUnitLS'), swapData);
@@ -628,9 +689,7 @@ a.building.brix.energyUnitSelector.selectItemAtIndex(0);
 // subscribe to the country selector after it is initialized so we don't redraw needlessly
 //a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'), handleCountrySelection);
 
-	var eDataCurrent = eData[0];
-	var cDataCurrent = cData[0];
-	var pDataCurrent = pData[0];
+var energyUnitIndex = 0;
 
 /************************************************************************
  * handleCountrySelection                                          */ /**
@@ -657,31 +716,17 @@ function handleCountrySelection(eventDetails)
 *************************************************************************/
 	function displayData(eventDetails)
 	{
-		//Handler needs to get written into each page,
-		//each widget will have it's own way of responding
-		var fuelDataSubset = [];
-		var fuelLegendSubset = [];
 		var electricDataSubset = [];
 		var co2DataSubset = [];
 		var primEnergyDataSubset = [];
 		
-		// make empty data sets
-		for (var i = 0, len = electricData.length; i < len; ++i)
-		{
-			electricDataSubset[i] = [];
-			co2DataSubset[i] = [];
-			primEnergyDataSubset[i] = [];
-		}
-		
-		a.building.brix.countrySelector.selectedItems().forEach(
-				function (o, i)
-				{
-					var index = Number(o.answerKey).valueOf();
-					electricDataSubset[index] = eDataCurrent[index];
-					co2DataSubset[index] = cDataCurrent[index];
-					primEnergyDataSubset[index] = pDataCurrent[index];
-				}
-			);
+        var countrySelection = a.building.brix.countrySelector.getSelectionState();
+        for (var i = 0, len = countrySelection.length; i < len; ++i)
+        {
+			electricDataSubset[i] = countrySelection[i] ? eData[energyUnitIndex][i] : [];
+			co2DataSubset[i] = countrySelection[i] ? cData[energyUnitIndex][i] : [];
+			primEnergyDataSubset[i] = countrySelection[i] ? pData[energyUnitIndex][i] : [];
+        }
 		
 		a.building.brix.electricityGraph.setData(electricDataSubset);
 		a.building.brix.co2Graph.setData(co2DataSubset);
@@ -698,24 +743,39 @@ function handleCountrySelection(eventDetails)
 	function swapData(eventDetails)
 	{	
 		// swap between national values and per capita values
-		var index = eventDetails.selectKey;
-		eDataCurrent = eData[index];
-		pDataCurrent = pData[index];
-		cDataCurrent = cData[index];
+		var energyUnitIndex = eventDetails.index;
 
-        a.building.mortar.traceSelElectric.setDataSource(eDataCurrent);
-		a.building.brix.electricityGraph.setData(eDataCurrent.slice(0), false);
-		a.building.brix.electricityGraph.setYAxisFormat(eFormat[index]);
+        // update the data used by the trace select mortar, and use a full
+        // data set w/ all traces to refresh the graph w/ the full extents
+        // and the new y axis format
+        a.building.mortar.traceSelElectric.setDataSource(eData[energyUnitIndex]);
+		a.building.brix.electricityGraph.setData(eData[energyUnitIndex].slice(0), false);
+		a.building.brix.electricityGraph.setYAxisFormat(eFormat[energyUnitIndex]);
 
-        a.building.mortar.traceSelCO2.setDataSource(cDataCurrent);
-		a.building.brix.co2Graph.setData(cDataCurrent.slice(0), false);
-		a.building.brix.co2Graph.setYAxisFormat(cFormat[index]);
+        a.building.mortar.traceSelCO2.setDataSource(cData[energyUnitIndex]);
+		a.building.brix.co2Graph.setData(cData[energyUnitIndex].slice(0), false);
+		a.building.brix.co2Graph.setYAxisFormat(cFormat[energyUnitIndex]);
 
-        a.building.mortar.traceSelPrimary.setDataSource(pDataCurrent);
-		a.building.brix.primaryGraph.setData(pDataCurrent.slice(0), false);
-		a.building.brix.primaryGraph.setYAxisFormat(pFormat[index]);
+        a.building.mortar.traceSelPrimary.setDataSource(pData[energyUnitIndex]);
+		a.building.brix.primaryGraph.setData(pData[energyUnitIndex].slice(0), false);
+		a.building.brix.primaryGraph.setYAxisFormat(pFormat[energyUnitIndex]);
 
-		displayData();
+        // Now replace the graph data w/ data containing empty arrays for unselected traces
+		var electricDataSubset = [];
+		var co2DataSubset = [];
+		var primEnergyDataSubset = [];
+		
+        var countrySelection = a.building.brix.countrySelector.getSelectionState();
+        for (var i = 0, len = countrySelection.length; i < len; ++i)
+        {
+			electricDataSubset[i] = countrySelection[i] ? eData[energyUnitIndex][i] : [];
+			co2DataSubset[i] = countrySelection[i] ? cData[energyUnitIndex][i] : [];
+			primEnergyDataSubset[i] = countrySelection[i] ? pData[energyUnitIndex][i] : [];
+        }
+		
+		a.building.brix.electricityGraph.setData(electricDataSubset);
+		a.building.brix.co2Graph.setData(co2DataSubset);
+		a.building.brix.primaryGraph.setData(primEnergyDataSubset);
 	}
 
 
