@@ -172,11 +172,15 @@ pearson.brix.CheckGroup = function (config, eventManager)
     /**
      * The event details for this.selectedEventId events
      * @typedef {Object} SelectedEventDetails
+     * @property {boolean}  isSelected  -true if the selectKey/index was selected or false
+     *                                   if it was unselected.
+     * @property {string}   key         -The answerKey associated with the changed selection.
+     * @property {number}   index       -The index of the changed selection in the list of choices.
+     * @property {number}   numSelected -The current total number of selected choices.
      * @property {string|undefined}
-     *                          selectKey   -The answerKey associated with the selected answer.
+     *                      selectKey   -(deprecated) The answerKey associated with the selected answer.
      * @property {string|undefined}
-     *                          unselectKey -The answerKey associated with the unselected answer.
-     * @property {number}       numSelected -The answerKey associated with the selected answer.
+     *                      unselectKey -(deprecated) The answerKey associated with the unselected answer.
      */
     var SelectedEventDetails;
 
@@ -325,32 +329,7 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
     // on 'change' event and not on 'change'
     // * interestingly 'change' is triggered prior to 'click'
     choiceInputs
-        .on("click", function (d)
-                {
-                    var selInputs = that.selectedInputs_()[0];
-                    var numSelected = (selInputs) ? selInputs.length : 0;
-                    // Guard against exceeding max number of selects
-                    if (selInputs && selInputs.length > that.maxSelects)
-                    {
-                        that.eventManager.publish(that.exceedSelectionEventId, {max: that.maxSelects});
-                        // Unselect if select exceeded
-                        d3.event.preventDefault();
-                    }
-                    else
-                    {
-                        // Notice that depending on checked value, the attribute name is selectedKey or unselected
-                        if (d3.event.target.checked)
-                        {
-                            that.eventManager.publish(that.selectedEventId,
-                                                      {selectKey: d.answerKey, numSelected: numSelected});
-                        }
-                        else
-                        {
-                            that.eventManager.publish(that.selectedEventId,
-                                                      {unselectKey: d.answerKey, numSelected: numSelected});
-                        }
-                    }
-                });
+        .on('click', goog.bind(this.handleInternalCheckboxClick_, this));
 
     /*
     choiceInputs
@@ -369,6 +348,56 @@ pearson.brix.CheckGroup.prototype.draw = function (container)
 }; // end of CheckGroup.draw()
 
 /* **************************************************************************
+ * CheckGroup.handleInternalCheckboxClick_                             */ /**
+ *
+ * The d3 click event handler on the checkbox elements representing the
+ * choices.
+ *
+ * @param {!pearson.brix.Answer} d  -The choice associated with the clicked
+ *                                   checkbox.
+ * @param {number}               i  -The index of the choice associated with
+ *                                   the clicked checkbox.
+ *
+ ****************************************************************************/
+pearson.brix.CheckGroup.prototype.handleInternalCheckboxClick_ = function (d, i)
+{
+    var selection = this.getSelectionState();
+    var numSelected = selection.reduce(function (n, sel) { if (sel) {++n;} return n; }, 0);
+
+    var selectedEventDetails =
+        {
+            isSelected: selection[i],
+            key: d.answerKey,
+            index: i,
+            numSelected: selection.reduce(function (numSelected, isSelected) {if (isSelected) {++numSelected;} return numSelected;}, 0)
+        };
+
+    // Check if with this new selection, the max number of selection allowed has been exceeded
+    if (selectedEventDetails.numSelected > this.maxSelecte)
+    {
+        // This selection exceeded the max number of selections allowed
+        this.eventManager.publish(this.exceedSelectionEventId, {max: this.maxSelects});
+
+        // Don't allow the selection
+        d3.event.preventDefault();
+
+        return;
+    }
+
+    // Add the appropriate deprecated property for now
+    if (selectedEventDetails.isSelected)
+    {
+        selectedEventDetails.selectKey = selectedEventDetails.key;
+    }
+    else
+    {
+        selectedEventDetails.unselectKey = selectedEventDetails.key;
+    }
+
+    this.eventManager.publish(this.selectedEventId, selectedEventDetails);
+};
+
+/* **************************************************************************
  * CheckGroup.selectedInputs_                                          */ /**
  *
  * Return the selected choice input nodes in the Check group.
@@ -381,6 +410,31 @@ pearson.brix.CheckGroup.prototype.selectedInputs_ = function ()
 {
     var selectedInputsSelector = "input[name='" + this.cgId_ + "']:checked";
     return this.lastdrawn.widgetGroup.selectAll(selectedInputsSelector);
+};
+
+/* **************************************************************************
+ * CheckGroup.getSelectionState                                        */ /**
+ *
+ * Get an array of booleans representing each choice in this CheckGroup,
+ * true if that choice is selected, false if that choice isn't selected.
+ *
+ * @returns {Array.<boolean>} Array of boolean's represented the selected
+ * state of the choices in this CheckGroup.
+ *
+ ****************************************************************************/
+pearson.brix.CheckGroup.prototype.getSelectionState = function ()
+{
+    var inputsSelector = "input[name='" + this.cgId_ + "']";
+    var inputs = this.lastdrawn.widgetGroup.selectAll(inputsSelector);
+    
+    // I'm going to assume that the selection is in the correct order
+    var selection = [];
+    inputs.each(function ()
+            {
+                selection.push(this.checked);
+            });
+
+    return selection;
 };
 
 /* **************************************************************************
