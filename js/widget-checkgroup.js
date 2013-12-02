@@ -373,7 +373,7 @@ pearson.brix.CheckGroup.prototype.handleInternalCheckboxClick_ = function (d, i)
         };
 
     // Check if with this new selection, the max number of selection allowed has been exceeded
-    if (selectedEventDetails.numSelected > this.maxSelecte)
+    if (selectedEventDetails.numSelected > this.maxSelects)
     {
         // This selection exceeded the max number of selections allowed
         this.eventManager.publish(this.exceedSelectionEventId, {max: this.maxSelects});

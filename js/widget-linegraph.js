@@ -391,8 +391,8 @@ pearson.brix.LineGraph.prototype.draw = function (container, size)
     var axesConfig = {
             id: this.lgId_ + '_axes',
             size: this.lastdrawn.size,
-            xAxisFormat: {},
-            yAxisFormat: {},
+            xAxisFormat: /**@type {pearson.brix.AxisFormat}*/ ({}),
+            yAxisFormat: /**@type {pearson.brix.AxisFormat}*/ ({}),
         };
     // use copies of the axis formats because the prototype axis may change them
     goog.object.extend(axesConfig.xAxisFormat, this.xAxisFormat_);
