@@ -30,13 +30,13 @@ goog.require('pearson.utils.IEventManager');
  * @param {string|undefined}
  *                      config.id         -String to uniquely identify this Dataswap.
  *                                         if undefined a unique id will be assigned.
- * @param {string}      config.topic      -The topic of the selection event published
- *                                         by a bric that should be responded to by
- *                                         calling the lite method of the target bric.
+ * @param {string}      config.topic      -The topic of the event that should be responded
+ *                                         to by swapping data on the target bric.
  * @param {string}      config.eventDetailsProperty
  *                                        -The name of the property of the eventDetails
- *                                         event argument to pass to the target bric's
- *                                         lite method.
+ *                                         event argument that determines which element
+ *                                         from the data source array is sent to the
+ *                                         target bric.
  * @param {number|undefined}
  *                      config.valueBase  -A numeric event property should have a range,
  *                                         this is the starting value of that range.
@@ -227,7 +227,7 @@ pearson.brix.mortar.Dataswap.autoIdPrefix = 'dataswap_auto_';
 /* **************************************************************************
  * Dataswap.handleEvent_                                               */ /**
  *
- * Handler for the event which triggers the the data swap, ie setting the
+ * Handler for the event which triggers the data swap, ie setting the
  * new data on the target bric.
  * @private
  *
