@@ -144,9 +144,28 @@
     <script>
 
     (function() {
-        brixInitDiv(
-            "http://dev-414158649.us-west-1.elb.amazonaws.com", 
-            "http://dev-414158649.us-west-1.elb.amazonaws.com/ips");
+        /* 
+         * Set up your AMS and IPS URLs, Course, and User. 
+        */
+        var AMC_BASE_URL = "http://dev-414158649.us-west-1.elb.amazonaws.com"; // uncomment for the DEV AWS environment
+        //var AMC_BASE_URL = "http://localhost:9080"; // uncomment for a local environment
+
+        var IPS_BASE_URL = "http://dev-414158649.us-west-1.elb.amazonaws.com/ips"; // uncomment for the DEV AWS environment
+        //var IPS_BASE_URL = "http://localhost:8088"; // uncomment for a local environment
+        
+        var COURSE = "course_c2";
+        var USER = "test1_t2";
+        
+        
+        /*
+         * Display features and setup.
+         */
+        var assignmentUrl = $("#target1").data("assignmenturl");
+        var activityUrl = $("#target1").data("activityurl");
+        $("#ams_base_url").text(AMC_BASE_URL);
+        $("#activity_url").text(assignmentUrl);
+        $("#assignment_url").text(activityUrl);
+        brixInitDiv(AMC_BASE_URL, IPS_BASE_URL, COURSE, USER);
     })();
 
     </script>
