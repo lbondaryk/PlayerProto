@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Multiple Choice Demo</title>
 
-<!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
     <link href="../../css/bootstrap_plus.css" rel="stylesheet" media="screen">
     
     <!-- widgets.css contains styling for the interactive brix -->
@@ -95,23 +95,42 @@
 
     <!-- SanVan core (LAS-PAF)'s amc -->
     <script src="amc.js"></script>
+    <style type="text/css">
+
+.demo_message_box {
+    border: orange 1px solid; padding: 10px;
+}
+.demo_params .dataval{
+    font-weight: bold;
+}
+    </style>
 
 </head>
 
 <body>
     <h1>Submission (MultipleChoiceQuestion) Integration demo (with PAF)</h1>
-    <div style="border: orange 1px solid; padding: 10px">
-    <p>This test will require to have Brix test servers (IPS & CorrectnessEngine) up, along with 
-        the required components: Redis (for IPS). If you are connecting AMS locally, you will
-        also require to run Tomcat and Cassandra (Remember to configure laspaf.properties to NOT use the PAF Stub.) ** The actuall tomcat script may differ from platform</p>
-    <pre>
-[~]$ redis-server
-[BrixServer]$ make testsvr
-[CorrectnessEngine]$ node ceapp.js
-If Running AMS locally:
+    <div class="demo_message_box">
+        <div class="demo_params" >
+            Params:
+            <ul>
+            <li>AMS Base URL: <span class="dataval" id="ams_base_url"></span></li>
+            <li>Activity URL: <span class="dataval" id="activity_url"></span></li>
+            <li>Assignment URL: <span class="dataval" id="assignment_url"></span></li>
+            </ul>
+        </div>
+        <div >
+            <p>This test will require to have Brix test servers (IPS & CorrectnessEngine) up, along with 
+                the required components: Redis (for IPS). If you are connecting AMS locally, you will
+                also require to run Tomcat and Cassandra (Remember to configure laspaf.properties to NOT use the PAF Stub.) ** The actuall tomcat script may differ from platform</p>
+            <pre style="float:right; width: 50%">
+If Running AMS locally you will also need to run:
 [cassandra]$ ./cassandra -f
-[Tomcat/bin]$ ./catalina.sh run
-</pre>
+[Tomcat/bin]$ ./catalina.sh run</pre>
+<pre>
+[Redis]$ redis-server
+[BrixServer]$ make testsvr
+[CorrectnessEngine]$ node ceapp.js</pre>
+        </div>
     </div>
 
     <!-- TEST CONTENT {{ -->
@@ -144,7 +163,14 @@ If Running AMS locally:
     <script>
 
     (function() {
-        brixInitDiv();
+        //var AMC_BASE_URL = "http://dev-414158649.us-west-1.elb.amazonaws.com";
+        var AMC_BASE_URL = "http://localhost:9080";
+        var assignmentUrl = $("#target1").data("assignmenturl");
+        var activityUrl = $("#target1").data("activityurl");
+        $("#ams_base_url").text(AMC_BASE_URL);
+        $("#activity_url").text(assignmentUrl);
+        $("#assignment_url").text(activityUrl);
+        brixInitDiv(AMC_BASE_URL);
     })();
 
     </script>
