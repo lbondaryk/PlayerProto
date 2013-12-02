@@ -17,6 +17,7 @@
 
 goog.provide('pearson.brix.LineGraph');
 
+goog.require('goog.object');
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.SvgBric');
 goog.require('pearson.brix.AxisFormat');
@@ -390,9 +391,12 @@ pearson.brix.LineGraph.prototype.draw = function (container, size)
     var axesConfig = {
             id: this.lgId_ + '_axes',
             size: this.lastdrawn.size,
-            xAxisFormat: this.xAxisFormat_,
-            yAxisFormat: this.yAxisFormat_,
+            xAxisFormat: {},
+            yAxisFormat: {},
         };
+    // use copies of the axis formats because the prototype axis may change them
+    goog.object.extend(axesConfig.xAxisFormat, this.xAxisFormat_);
+    goog.object.extend(axesConfig.yAxisFormat, this.yAxisFormat_);
 
     var dataPts = d3.merge(this.data_);
     axesConfig.xAxisFormat.extent = d3.extent(dataPts, function(pt) {return pt.x;});
