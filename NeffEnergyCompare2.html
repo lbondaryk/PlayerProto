@@ -95,6 +95,7 @@
     <script src="js/widget-slider.js"></script>
     <script src="js/mortar-hilite.js"></script>
     <script src="js/mortar-dataswap.js"></script>
+    <script src="js/mortar-traceselection.js"></script>
     <script src="js/mortar-agestructure.js"></script>
 	<script src="js/briclayer.js"></script>
 
@@ -435,7 +436,6 @@
 
 
 
-
 /************************************************************************
  * makeGraphPoints													*//**
  *
@@ -549,45 +549,88 @@ function makeGraphData(dataSet, plot)
 		return [seriesArray, chartLegendConfig];
 	}
 
+
+a.building.brix.cntr1.append(a.building.brix.energyUnitSelector, {topPercentOffset: 0.0, leftPercentOffset: 0, heightPercent: 0.1, widthPercent: 1});
+
+// Electricity graph
 var electricData = makeGraphData(a.building.data.electric, a.building.data.plot);
-var co2Data = makeGraphData(a.building.data.CO2, a.building.data.plot);
-var primEnergyData = makeGraphData(a.building.data.primaryEnergy, a.building.data.plot);
 var pcElectricData = makeGraphData(a.building.data.electricPC, a.building.data.plot);
+var eData = [electricData, pcElectricData];
+var eFormat = [a.building.data.electric.yAxisFormat, a.building.data.electricPC.yAxisFormat];
+
+a.building.brix.electricityGraph.setData(eData[0].slice(0));
+a.building.brix.electricityGraph.setYAxisFormat(eFormat[0]);
+
+var tsElectricConfig =
+{
+    "id": "tsElectric",
+    "topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
+    "targetBric": a.building.brix.electricityGraph,
+    "sourceDataArray": eData[0]
+};
+a.building.mortar.traceSelElectric = new pearson.brix.mortar.TraceSelection(tsElectricConfig, a.eventManager);
+
+a.building.brix.cntr1.append(a.building.brix.electricityGraph,   {topPercentOffset: 0.1, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+
+
+// CO2 graph
+var co2Data = makeGraphData(a.building.data.CO2, a.building.data.plot);
 var pcCo2Data = makeGraphData(a.building.data.CO2PC, a.building.data.plot);
+var cData = [co2Data, pcCo2Data];
+var cFormat = [a.building.data.CO2.yAxisFormat, a.building.data.CO2PC.yAxisFormat];
+
+a.building.brix.co2Graph.setData(cData[0].slice(0));
+a.building.brix.co2Graph.setYAxisFormat(cFormat[0]);
+
+var tsCO2Config =
+{
+    "id": "tsCO2",
+    "topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
+    "targetBric": a.building.brix.co2Graph,
+    "sourceDataArray": cData[0]
+};
+a.building.mortar.traceSelCO2 = new pearson.brix.mortar.TraceSelection(tsCO2Config, a.eventManager);
+
+a.building.brix.cntr1.append(a.building.brix.co2Graph,           {topPercentOffset: 0.4, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
+
+
+// Primary Energy graph
+var primEnergyData = makeGraphData(a.building.data.primaryEnergy, a.building.data.plot);
 var pcPrimEnergyData = makeGraphData(a.building.data.primaryEnergyPC, a.building.data.plot);
+var pData = [primEnergyData, pcPrimEnergyData];
+var pFormat = [a.building.data.primaryEnergy.yAxisFormat, a.building.data.primaryEnergyPC.yAxisFormat];
 
-	var eData = [electricData, pcElectricData];
-	var cData = [co2Data, pcCo2Data];
-	var pData = [primEnergyData, pcPrimEnergyData];
+a.building.brix.primaryGraph.setData(pData[0].slice(0));
+a.building.brix.primaryGraph.setYAxisFormat(pFormat[0]);
 
-	var eFormat = [a.building.data.electric.yAxisFormat, a.building.data.electricPC.yAxisFormat];
-	var cFormat = [a.building.data.CO2.yAxisFormat, a.building.data.CO2PC.yAxisFormat];
-	var pFormat = [a.building.data.primaryEnergy.yAxisFormat, a.building.data.primaryEnergyPC.yAxisFormat];
+var tsPrimaryConfig =
+{
+    "id": "tsPrimary",
+    "topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
+    "targetBric": a.building.brix.primaryGraph,
+    "sourceDataArray": pData[0]
+};
+a.building.mortar.traceSelPrimary = new pearson.brix.mortar.TraceSelection(tsPrimaryConfig, a.eventManager);
 
-	var eDataCurrent = eData[0];
-	var cDataCurrent = cData[0];
-	var pDataCurrent = pData[0];
+a.building.brix.cntr1.append(a.building.brix.primaryGraph,       {topPercentOffset: 0.7, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
 
-a.building.brix.electricityGraph.setData(eDataCurrent);
-a.building.brix.co2Graph.setData(cDataCurrent);
-a.building.brix.primaryGraph.setData(pDataCurrent);
 
 var svg0 = a.building.brix.cntr1;
-svg0.append(a.building.brix.energyUnitSelector, {topPercentOffset: 0.0, leftPercentOffset: 0, heightPercent: 0.1, widthPercent: 1});
-svg0.append(a.building.brix.electricityGraph,   {topPercentOffset: 0.1, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-svg0.append(a.building.brix.co2Graph,           {topPercentOffset: 0.4, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-svg0.append(a.building.brix.primaryGraph,       {topPercentOffset: 0.7, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
 	
-// configure and append the legend to the bargraph
+
+a.building.brix.countrySelector.selectItemAtIndex(0);
 
 
 a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('LabelSelector', 'selected', 'energyUnitLS'), swapData);
 
-a.building.brix.countrySelector.selectItemAtIndex(0);
 a.building.brix.energyUnitSelector.selectItemAtIndex(0);
 
 // subscribe to the country selector after it is initialized so we don't redraw needlessly
-a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'), handleCountrySelection);
+//a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'), handleCountrySelection);
+
+	var eDataCurrent = eData[0];
+	var cDataCurrent = cData[0];
+	var pDataCurrent = pData[0];
 
 /************************************************************************
  * handleCountrySelection                                          */ /**
@@ -598,8 +641,8 @@ a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('CheckGroup', '
  ************************************************************************/
 function handleCountrySelection(eventDetails)
 {
-	var isAddTrace = eventDetails.selectKey !== undefined;
-	var traceIndex = Number(isAddTrace ? eventDetails.selectKey : eventDetails.unselectKey).valueOf();
+	var isAddTrace = eventDetails.isSelected;
+	var traceIndex = eventDetails.index;
 
 	a.building.brix.electricityGraph.setTrace(traceIndex, isAddTrace ? eDataCurrent[traceIndex] : []);
 	a.building.brix.co2Graph.setTrace(traceIndex, isAddTrace ? cDataCurrent[traceIndex] : []);
@@ -660,13 +703,16 @@ function handleCountrySelection(eventDetails)
 		pDataCurrent = pData[index];
 		cDataCurrent = cData[index];
 
-		a.building.brix.electricityGraph.setData(eDataCurrent, false);
+        a.building.mortar.traceSelElectric.setDataSource(eDataCurrent);
+		a.building.brix.electricityGraph.setData(eDataCurrent.slice(0), false);
 		a.building.brix.electricityGraph.setYAxisFormat(eFormat[index]);
 
-		a.building.brix.co2Graph.setData(cDataCurrent, false);
+        a.building.mortar.traceSelCO2.setDataSource(cDataCurrent);
+		a.building.brix.co2Graph.setData(cDataCurrent.slice(0), false);
 		a.building.brix.co2Graph.setYAxisFormat(cFormat[index]);
 
-		a.building.brix.primaryGraph.setData(pDataCurrent, false);
+        a.building.mortar.traceSelPrimary.setDataSource(pDataCurrent);
+		a.building.brix.primaryGraph.setData(pDataCurrent.slice(0), false);
 		a.building.brix.primaryGraph.setYAxisFormat(pFormat[index]);
 
 		displayData();
