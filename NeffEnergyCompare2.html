@@ -295,6 +295,99 @@
                                         ]
 								}
 							],
+                        "mortarConfig":
+                            [
+                                {
+                                    "mortarId": "traceSelElectric",
+                                    "mortarType": "TraceSelection",
+                                    "config":
+                                        {
+                                            "id": "tsElectric",
+                                            //"topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
+                                            //"targetBric": a.building.brix.electricityGraph,
+                                            "sourceDataArray": []
+                                        },
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "CheckGroup",
+                                                        "instanceId": "cntrySelCB",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "electricityGraph" }
+                                            }
+                                        ]
+                                },
+                                {
+                                    "mortarId": "traceSelCO2",
+                                    "mortarType": "TraceSelection",
+                                    "config":
+                                        {
+                                            "id": "tsCO2",
+                                            //"topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
+                                            //"targetBric": a.building.brix.co2Graph,
+                                            "sourceDataArray": []
+                                        },
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "CheckGroup",
+                                                        "instanceId": "cntrySelCB",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "co2Graph" }
+                                            }
+                                        ]
+                                },
+                                {
+                                    "mortarId": "traceSelPrimary",
+                                    "mortarType": "TraceSelection",
+                                    "config":
+                                        {
+                                            "id": "tsPrimary",
+                                            //"topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
+                                            //"targetBric": a.building.brix.primaryGraph,
+                                            "sourceDataArray": []
+                                        },
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "CheckGroup",
+                                                        "instanceId": "cntrySelCB",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "primaryGraph" }
+                                            }
+                                        ]
+                                }
+                            ],
 						"hookupActions":
 							[
 								{
@@ -490,6 +583,91 @@
 
 
 
+
+
+// Electricity graph
+var electricData = makeGraphData(a.building.data.electric, a.building.data.plot);
+var pcElectricData = makeGraphData(a.building.data.electricPC, a.building.data.plot);
+var eData = [electricData, pcElectricData];
+var eFormat = [a.building.data.electric.yAxisFormat, a.building.data.electricPC.yAxisFormat];
+
+// This is what I think the config for the special1 mortar for this NeffEnergyCompare2 may look like -mjl
+var spec1MortarElectricConfig =
+{
+    "id": "spec1Electric",
+    "topic": a.bricLayer.getBricWorks().getBricTopic('LabelSelector', 'selected', 'energyUnitLS'),
+    "data": [a.building.data.electric, a.building.data.electricPC],
+    "plot": a.building.data.plot,
+    "targetBric": a.building.brix.electricityGraph,
+    "traceSelector": a.building.mortar.traceSelElectric
+};
+
+
+// CO2 graph
+var co2Data = makeGraphData(a.building.data.CO2, a.building.data.plot);
+var pcCo2Data = makeGraphData(a.building.data.CO2PC, a.building.data.plot);
+var cData = [co2Data, pcCo2Data];
+var cFormat = [a.building.data.CO2.yAxisFormat, a.building.data.CO2PC.yAxisFormat];
+
+
+// Primary Energy graph
+var primEnergyData = makeGraphData(a.building.data.primaryEnergy, a.building.data.plot);
+var pcPrimEnergyData = makeGraphData(a.building.data.primaryEnergyPC, a.building.data.plot);
+var pData = [primEnergyData, pcPrimEnergyData];
+var pFormat = [a.building.data.primaryEnergy.yAxisFormat, a.building.data.primaryEnergyPC.yAxisFormat];
+
+
+a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('LabelSelector', 'selected', 'energyUnitLS'), swapData);
+
+a.building.brix.energyUnitSelector.selectItemAtIndex(0);
+
+
+/************************************************************************
+* swapData                                                          *//**
+*
+* Lites up the data associated with the selection in the legend, and
+* draws the detailed graph of just that data
+*
+*************************************************************************/
+	function swapData(eventDetails)
+	{	
+		// swap between national values and per capita values
+		var energyUnitIndex = eventDetails.index;
+
+        // update the data used by the trace select mortar, and use a full
+        // data set w/ all traces to refresh the graph w/ the full extents
+        // and the new y axis format
+        a.building.mortar.traceSelElectric.setDataSource(eData[energyUnitIndex]);
+		a.building.brix.electricityGraph.setData(eData[energyUnitIndex].slice(0), false);
+		a.building.brix.electricityGraph.setYAxisFormat(eFormat[energyUnitIndex]);
+
+        a.building.mortar.traceSelCO2.setDataSource(cData[energyUnitIndex]);
+		a.building.brix.co2Graph.setData(cData[energyUnitIndex].slice(0), false);
+		a.building.brix.co2Graph.setYAxisFormat(cFormat[energyUnitIndex]);
+
+        a.building.mortar.traceSelPrimary.setDataSource(pData[energyUnitIndex]);
+		a.building.brix.primaryGraph.setData(pData[energyUnitIndex].slice(0), false);
+		a.building.brix.primaryGraph.setYAxisFormat(pFormat[energyUnitIndex]);
+
+        // Now replace the graph data w/ data containing empty arrays for unselected traces
+		var electricDataSubset = [];
+		var co2DataSubset = [];
+		var primEnergyDataSubset = [];
+		
+        var countrySelection = a.building.brix.countrySelector.getSelectionState();
+        for (var i = 0, len = countrySelection.length; i < len; ++i)
+        {
+			electricDataSubset[i] = countrySelection[i] ? eData[energyUnitIndex][i] : [];
+			co2DataSubset[i] = countrySelection[i] ? cData[energyUnitIndex][i] : [];
+			primEnergyDataSubset[i] = countrySelection[i] ? pData[energyUnitIndex][i] : [];
+        }
+		
+		a.building.brix.electricityGraph.setData(electricDataSubset);
+		a.building.brix.co2Graph.setData(co2DataSubset);
+		a.building.brix.primaryGraph.setData(primEnergyDataSubset);
+	}
+
+
 /************************************************************************
  * makeGraphPoints													*//**
  *
@@ -570,214 +748,6 @@ function makeGraphData(dataSet, plot)
 
     return data;
 }
-
-/************************************************************************
-* makeChartData														*//**
-*
-* makeGraphPoint takes vectors of x and y data and constructs the array of
-* of x: and y: keyed objects that is expected by Brix graphing routines.
-*
-* @param	{Array} dataSet	 These are the arrays of objects containing multiple
-*							 data series.
-* @param	{Array} groupKey The series to omit because it's the common axis
-*************************************************************************/
-	function makeChartData(dataSet, groupKey)
-	{
-		//Handler needs to get written into each page,
-		//each widget will have it's own way of responding
-		var seriesArray = [];
-		var legendArray = [];
-		var keyArray = d3.keys(dataSet).filter(function (o) {return (o != groupKey && o != "yAxisFormat");});
-
-		keyArray.forEach( function(o, i) {
-				//console.log(makeGraphPoints(dataSet[groupKey], dataSet[o]));
-				seriesArray.push(makeGraphPoints(dataSet[o], dataSet[groupKey]));
-				legendArray.push({content: o})
-			});
-
-		var chartLegendConfig = {
-			xPos: "right", yPos: "top",
-			type: 'box',
-			labels: legendArray
-		}
-		return [seriesArray, chartLegendConfig];
-	}
-
-
-//a.building.brix.cntr1.append(a.building.brix.energyUnitSelector, {topPercentOffset: 0.0, leftPercentOffset: 0, heightPercent: 0.1, widthPercent: 1});
-
-// Electricity graph
-var electricData = makeGraphData(a.building.data.electric, a.building.data.plot);
-var pcElectricData = makeGraphData(a.building.data.electricPC, a.building.data.plot);
-var eData = [electricData, pcElectricData];
-var eFormat = [a.building.data.electric.yAxisFormat, a.building.data.electricPC.yAxisFormat];
-
-a.building.brix.electricityGraph.setData(eData[0].slice(0));
-a.building.brix.electricityGraph.setYAxisFormat(eFormat[0]);
-
-var spec1MortarElectricConfig =
-{
-    "id": "spec1Electric",
-    "topic": a.bricLayer.getBricWorks().getBricTopic('LabelSelector', 'selected', 'energyUnitLS'),
-    "data": [a.building.data.electric, a.building.data.electricPC],
-    "plot": a.building.data.plot,
-    "targetBric": a.building.brix.electricityGraph,
-    "traceSelector": a.building.mortar.traceSelElectric
-};
-
-var tsElectricConfig =
-{
-    "id": "tsElectric",
-    "topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
-    "targetBric": a.building.brix.electricityGraph,
-    "sourceDataArray": eData[0]
-};
-a.building.mortar.traceSelElectric = new pearson.brix.mortar.TraceSelection(tsElectricConfig, a.eventManager);
-
-//a.building.brix.cntr1.append(a.building.brix.electricityGraph,   {topPercentOffset: 0.1, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-
-
-// CO2 graph
-var co2Data = makeGraphData(a.building.data.CO2, a.building.data.plot);
-var pcCo2Data = makeGraphData(a.building.data.CO2PC, a.building.data.plot);
-var cData = [co2Data, pcCo2Data];
-var cFormat = [a.building.data.CO2.yAxisFormat, a.building.data.CO2PC.yAxisFormat];
-
-a.building.brix.co2Graph.setData(cData[0].slice(0));
-a.building.brix.co2Graph.setYAxisFormat(cFormat[0]);
-
-var tsCO2Config =
-{
-    "id": "tsCO2",
-    "topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
-    "targetBric": a.building.brix.co2Graph,
-    "sourceDataArray": cData[0]
-};
-a.building.mortar.traceSelCO2 = new pearson.brix.mortar.TraceSelection(tsCO2Config, a.eventManager);
-
-//a.building.brix.cntr1.append(a.building.brix.co2Graph,           {topPercentOffset: 0.4, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-
-
-// Primary Energy graph
-var primEnergyData = makeGraphData(a.building.data.primaryEnergy, a.building.data.plot);
-var pcPrimEnergyData = makeGraphData(a.building.data.primaryEnergyPC, a.building.data.plot);
-var pData = [primEnergyData, pcPrimEnergyData];
-var pFormat = [a.building.data.primaryEnergy.yAxisFormat, a.building.data.primaryEnergyPC.yAxisFormat];
-
-a.building.brix.primaryGraph.setData(pData[0].slice(0));
-a.building.brix.primaryGraph.setYAxisFormat(pFormat[0]);
-
-var tsPrimaryConfig =
-{
-    "id": "tsPrimary",
-    "topic": a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'),
-    "targetBric": a.building.brix.primaryGraph,
-    "sourceDataArray": pData[0]
-};
-a.building.mortar.traceSelPrimary = new pearson.brix.mortar.TraceSelection(tsPrimaryConfig, a.eventManager);
-
-//a.building.brix.cntr1.append(a.building.brix.primaryGraph,       {topPercentOffset: 0.7, leftPercentOffset: 0, heightPercent: 0.3, widthPercent: 1});
-
-
-//a.building.brix.countrySelector.selectItemAtIndex(0);
-
-
-a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('LabelSelector', 'selected', 'energyUnitLS'), swapData);
-
-a.building.brix.energyUnitSelector.selectItemAtIndex(0);
-
-// subscribe to the country selector after it is initialized so we don't redraw needlessly
-//a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('CheckGroup', 'selected', 'cntrySelCB'), handleCountrySelection);
-
-var energyUnitIndex = 0;
-
-/************************************************************************
- * handleCountrySelection                                          */ /**
- *
- * Handler for the country selection/unselection event. Adds or removes
- * the traces in all graphs for the country selection change.
- *
- ************************************************************************/
-function handleCountrySelection(eventDetails)
-{
-	var isAddTrace = eventDetails.isSelected;
-	var traceIndex = eventDetails.index;
-
-	a.building.brix.electricityGraph.setTrace(traceIndex, isAddTrace ? eDataCurrent[traceIndex] : []);
-	a.building.brix.co2Graph.setTrace(traceIndex, isAddTrace ? cDataCurrent[traceIndex] : []);
-	a.building.brix.primaryGraph.setTrace(traceIndex, isAddTrace ? pDataCurrent[traceIndex] : []);
-}
-
-/************************************************************************
-* displayData														*//**
-*
-* displays the data associated with the selected items in the Checkgroup
-*
-*************************************************************************/
-	function displayData(eventDetails)
-	{
-		var electricDataSubset = [];
-		var co2DataSubset = [];
-		var primEnergyDataSubset = [];
-		
-        var countrySelection = a.building.brix.countrySelector.getSelectionState();
-        for (var i = 0, len = countrySelection.length; i < len; ++i)
-        {
-			electricDataSubset[i] = countrySelection[i] ? eData[energyUnitIndex][i] : [];
-			co2DataSubset[i] = countrySelection[i] ? cData[energyUnitIndex][i] : [];
-			primEnergyDataSubset[i] = countrySelection[i] ? pData[energyUnitIndex][i] : [];
-        }
-		
-		a.building.brix.electricityGraph.setData(electricDataSubset);
-		a.building.brix.co2Graph.setData(co2DataSubset);
-		a.building.brix.primaryGraph.setData(primEnergyDataSubset);
-	}
-
-/************************************************************************
-* swapData                                                          *//**
-*
-* Lites up the data associated with the selection in the legend, and
-* draws the detailed graph of just that data
-*
-*************************************************************************/
-	function swapData(eventDetails)
-	{	
-		// swap between national values and per capita values
-		var energyUnitIndex = eventDetails.index;
-
-        // update the data used by the trace select mortar, and use a full
-        // data set w/ all traces to refresh the graph w/ the full extents
-        // and the new y axis format
-        a.building.mortar.traceSelElectric.setDataSource(eData[energyUnitIndex]);
-		a.building.brix.electricityGraph.setData(eData[energyUnitIndex].slice(0), false);
-		a.building.brix.electricityGraph.setYAxisFormat(eFormat[energyUnitIndex]);
-
-        a.building.mortar.traceSelCO2.setDataSource(cData[energyUnitIndex]);
-		a.building.brix.co2Graph.setData(cData[energyUnitIndex].slice(0), false);
-		a.building.brix.co2Graph.setYAxisFormat(cFormat[energyUnitIndex]);
-
-        a.building.mortar.traceSelPrimary.setDataSource(pData[energyUnitIndex]);
-		a.building.brix.primaryGraph.setData(pData[energyUnitIndex].slice(0), false);
-		a.building.brix.primaryGraph.setYAxisFormat(pFormat[energyUnitIndex]);
-
-        // Now replace the graph data w/ data containing empty arrays for unselected traces
-		var electricDataSubset = [];
-		var co2DataSubset = [];
-		var primEnergyDataSubset = [];
-		
-        var countrySelection = a.building.brix.countrySelector.getSelectionState();
-        for (var i = 0, len = countrySelection.length; i < len; ++i)
-        {
-			electricDataSubset[i] = countrySelection[i] ? eData[energyUnitIndex][i] : [];
-			co2DataSubset[i] = countrySelection[i] ? cData[energyUnitIndex][i] : [];
-			primEnergyDataSubset[i] = countrySelection[i] ? pData[energyUnitIndex][i] : [];
-        }
-		
-		a.building.brix.electricityGraph.setData(electricDataSubset);
-		a.building.brix.co2Graph.setData(co2DataSubset);
-		a.building.brix.primaryGraph.setData(primEnergyDataSubset);
-	}
-
 
 	</script>
 </body>
