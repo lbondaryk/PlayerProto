@@ -22,8 +22,7 @@
        "@contentType":"application/vnd.pearson.paf.v1.container+json",
        "binding" : [
            {
-           "bindingIndex" : 1,
-           "boundActivity"  : "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1c",
+           "boundActivity"  : "{SERVER}/paf-repo/resources/activities/test.sanvan.activity.mcq1c",
            "activityFormat" : "application/vnd.pearson.sanvan.v1.activity",
            "activityTitle" : "MultipleChoiceQuestion Sample mcq1c",
            "credit" : "ForCredit",

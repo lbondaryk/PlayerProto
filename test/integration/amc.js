@@ -17,7 +17,7 @@
 	
 	
 	var log = function (e) {
-		//console.log (e ? ("[AMC] " + e) : e);
+		console.log (e ? ("[AMC] " + e) : e);
 	};
 	
 	if (PAF.AMC) {
@@ -41,7 +41,7 @@
 	 */
 	PAF.AMC.detectEventManager = function () {
 		return global["eventManager"] ;
-	};	
+	};
 	
 	PAF.AMC.getCallerContext = function () {
 		if(PAF.AMC._callerCtx) {
@@ -53,7 +53,14 @@
 			courseId : "course_c1",
 			identityId : "test1_t1"
 		};
-	}
+	};
+
+	PAF.AMC.setCallerContext = function (courseId, identityId) {
+		PAF.AMC._callerCtx = {
+			courseId: courseId,
+			identityId: identityId
+		};
+	};
 	
 	/**
 	 * AMC Initializer
@@ -72,6 +79,11 @@
 			log (msg);
 			throw msg;
 		}
+
+		if (io.courseId && io.identityId) {
+			PAF.AMC.setCallerContext(io.courseId, io.identityId);
+		}
+
 		var inst = 
 			PAF.AMC._instance = new PAF.AMC.AMCClass (io.laspafurl, io.eventmanager);
 		
@@ -154,8 +166,8 @@
 				assStat = context._asgnUrlToSession[message.data.assignmenturl] = {
 					sessionservice : sr,
 					activitysequence : null
-				};			
-				
+				};
+
 				var reqObj = {
 					header : {
 						callContext : PAF.AMC.getCallerContext()

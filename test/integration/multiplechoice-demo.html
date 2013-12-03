@@ -117,6 +117,7 @@
             <li>IPS Base URL: <span class="dataval" id="ips_base_url"></span></li>
             <li>Activity URL: <span class="dataval" id="activity_url"></span></li>
             <li>Assignment URL: <span class="dataval" id="assignment_url"></span></li>
+            <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
             </ul>
         </div>
         <div >
@@ -166,6 +167,8 @@ If Running AMS locally you will also need to run:
     (function() {
         var amcBaseUrl = "http://localhost:9080";
         var ipsBaseUrl = "http://localhost:8088";
+        var course = "course_c2";
+        var user = "test1_t2";
 
         // Override to local based on query string parameter
         // E.g. file://../multiplechoice-demo.html?ams={dev|qa}
@@ -178,15 +181,27 @@ If Running AMS locally you will also need to run:
         {
             ipsBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com/ips";
         }
-        
+        if (queryString.course)
+        {
+            course = queryString.course;
+        }
+        if (queryString.user)
+        {
+            user = queryString.user;
+        }      
+        /*
+         * Display features and setup.
+         */
         var assignmentUrl = $("#target1").data("assignmenturl");
         var activityUrl = $("#target1").data("activityurl");
         $("#ams_base_url").text(amcBaseUrl);
         $("#ips_base_url").text(ipsBaseUrl);
         $("#activity_url").text(assignmentUrl);
         $("#assignment_url").text(activityUrl);
+        $("#course").text(course);
+        $("#user").text(user);
 
-        brixInitDiv(amcBaseUrl, ipsBaseUrl);
+        brixInitDiv(amcBaseUrl, ipsBaseUrl, course, user);
     })();
 
     /**

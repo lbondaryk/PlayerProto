@@ -4,7 +4,7 @@
  *  
  * @return {none} 
  */
-function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl)
+function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl, opt_course, opt_user)
 {
 
     /** 
@@ -24,6 +24,19 @@ function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl)
 
     var ipsBaseUrl = (opt_ipsBaseUrl) ? opt_ipsBaseUrl : IPS_BASE_URL;
 
+    /**
+     * AMC Course
+     * type {String}
+     */
+    var COURSE = "course_c1";
+    var course = (opt_course) ? opt_course : COURSE;
+
+    /**
+     * AMC User
+     * type {String}
+     */
+    var USER = "test1_t1";
+    var user = (opt_user) ? opt_user : USER;
 
     var eventManager = new pearson.utils.EventManager();
 
@@ -59,6 +72,8 @@ function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl)
     PAF.AMC.initialize ({
         laspafurl : amsBaseUrl,
         eventmanager : eventManager,
-        requestbinding : itemsNormalized
+        requestbinding : itemsNormalized,
+        courseId : course,
+        identityId : user
     });
 }
