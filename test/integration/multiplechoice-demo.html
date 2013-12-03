@@ -108,12 +108,13 @@
 </head>
 
 <body>
-    <h1>Submission (MultipleChoiceQuestion) Integration demo (with PAF)</h1>
+    <h1>Submission (MCQ) Integration demo.</h1>
     <div class="demo_message_box">
         <div class="demo_params" >
             Params:
             <ul>
             <li>AMS Base URL: <span class="dataval" id="ams_base_url"></span></li>
+            <li>IPS Base URL: <span class="dataval" id="ips_base_url"></span></li>
             <li>Activity URL: <span class="dataval" id="activity_url"></span></li>
             <li>Assignment URL: <span class="dataval" id="assignment_url"></span></li>
             </ul>
@@ -125,10 +126,10 @@
             <pre style="float:right; width: 50%">
 If Running AMS locally you will also need to run:
 [cassandra]$ ./cassandra -f
-[Tomcat/bin]$ ./catalina.sh run</pre>
+[Tomcat/bin]$ ./catalina.sh run (or startup.sh)</pre>
 <pre>
 [Redis]$ redis-server
-[BrixServer]$ make testsvr
+[BrixServer]$ node brixapp.js
 [CorrectnessEngine]$ node ceapp.js</pre>
         </div>
     </div>
@@ -163,15 +164,48 @@ If Running AMS locally you will also need to run:
     <script>
 
     (function() {
-        var AMC_BASE_URL = "http://dev-414158649.us-west-1.elb.amazonaws.com";
-        //var AMC_BASE_URL = "http://localhost:9080";
+        var amcBaseUrl = "http://localhost:9080";
+        var ipsBaseUrl = "http://localhost:8088";
+
+        // Override to local based on query string parameter
+        // E.g. file://../multiplechoice-demo.html?ams={dev|qa}
+        var queryString = parseQueryString();
+        if (queryString.ams && queryString.ams == "dev")
+        {
+            amcBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com";
+        }
+        if (queryString.ips && queryString.ips == "dev")
+        {
+            ipsBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com/ips";
+        }
+        
         var assignmentUrl = $("#target1").data("assignmenturl");
         var activityUrl = $("#target1").data("activityurl");
-        $("#ams_base_url").text(AMC_BASE_URL);
+        $("#ams_base_url").text(amcBaseUrl);
+        $("#ips_base_url").text(ipsBaseUrl);
         $("#activity_url").text(assignmentUrl);
         $("#assignment_url").text(activityUrl);
-        brixInitDiv(AMC_BASE_URL);
+
+        brixInitDiv(amcBaseUrl, ipsBaseUrl);
     })();
+
+    /**
+     * Parses the URL's query string and returns an object representing the parameters.
+     * From https://developer.mozilla.org/en-US/docs/Web/API/window.location, 
+     * Example #7
+     * 
+     * @return {object} Object where properties are the parameters.
+     */
+    function parseQueryString() {
+        var oGetVars = {};
+        if (window.location.search.length > 1) {
+            for (var aItKey, nKeyId = 0, aCouples = window.location.search.substr(1).split("&"); nKeyId < aCouples.length; nKeyId++) {
+                aItKey = aCouples[nKeyId].split("=");
+                oGetVars[unescape(aItKey[0])] = aItKey.length > 1 ? unescape(aItKey[1]) : "";
+            }
+        }
+        return oGetVars;
+    }
 
     </script>
 </body>
