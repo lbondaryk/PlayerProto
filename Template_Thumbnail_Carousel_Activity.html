@@ -11,8 +11,51 @@
 <body>
     <div id="target1"></div>
     <script src="js/d3.v3.min.js"></script>
+    <!--
     <script src="js/brixlib-compiled.js"></script>
+-->
+    <script src="../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+
+    <script src="js/eventmanager.js"></script>
+    <script src="js/fakeactivitydb.js"></script>
+    <script src="js/ipsproxy.js"></script>
+    <script src="js/answerman.js"></script>
+    <script src="js/localanswerman.js"></script>
+    <script src="js/submitmanager.js"></script>
+    <script src="js/widget-base.js"></script>
+    <script src="js/mortar-base.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+    <script src="js/widget-labelgroup.js"></script>
+    <script src="js/brix-labelselector.js"></script>
+    <script src="js/brix-labelcarousel.js"></script>
+    <script src="js/bricworks.js"></script>
+    <script src="js/widget-numeric.js"></script>
+    <script src="js/widget-legend.js"></script>
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
+    <script src="js/widget-linegraph.js"></script>
+    <script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+   
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-hilite.js"></script>
+    <script src="js/briclayer.js"></script>
+
+    <script src="js/domhelper.js"></script>
+    <script src="js/ipc.js"></script>
     <script>
 
     // Create an object that will contain the objects needed for the activities
@@ -40,13 +83,13 @@
                 "brixConfig":
                     [
                         {
-                            "bricId": "cimage1",
+                            "bricId": "image1",
                             "bricType": "Image",
                             "config":
                                 {
                                     "id": "cimg0n",
                                     //"URI": "img/<someimagedefined in configFixup",
-                                    "caption":  "Polish immigrant women arriving in America in 1910. At this time, Polish-Americans were not considered ethnically similar to more established European groups.",
+                                    "caption":  "Professional golfer Tiger Woods is of Asian, African, European, and American Indian descent.",
                                     "actualSize": {"height": 400, "width": 600},
                                     "captionPosition": "below"
                                 },
@@ -67,7 +110,7 @@
                                                     },
                                                     {
                                                         "type": "constant",
-                                                        "value": "img/Brix0.9/11.12a_NEW_BE041372.jpg",
+                                                        "value": "img/Brix0.9/P10-16.jpg",
                                                     }
                                                 ]
                                             }
@@ -80,10 +123,10 @@
                             "bricType": "Image",
                             "config":
                                 {
-                                    "id": "cimg0n",
+                                    "id": "cimg1n",
                                     //"URI": "img/<someimagedefined in configFixup",
-                                    "caption":  "A Polish-American family today. Later generations of Polish-Americans now appear indistinct from other European groups, as the category \"white\" has come to include Poles.",
-                                    "actualSize": {"height": 600, "width": 600},
+                                    "caption":  "Actress Jessica Alba is partly of Mexican descent.",
+                                    "actualSize": {"height": 400, "width": 600},
                                     "captionPosition": "below"
                                 },
                             "configFixup":
@@ -103,7 +146,151 @@
                                                     },
                                                     {
                                                         "type": "constant",
-                                                        "value": "img/Brix0.9/11.12b_NEW_B3NN1P.jpg",
+                                                        "value": "img/Brix0.9/11.24b _C34XAX.jpg",
+                                                    }
+                                                ]
+                                            }
+                                    }
+                                ]
+                                               
+                        },
+                        {
+                            "bricId": "image3",
+                            "bricType": "Image",
+                            "config":
+                                {
+                                    "id": "cimg2n",
+                                    //"URI": "img/<someimagedefined in configFixup",
+                                    "caption":  "Keanu Reeves is of Hawaiian and Chinese descent.",
+                                    "actualSize": {"height": 400, "width": 600},
+                                    "captionPosition": "below"
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "URI",
+                                        "value":
+                                            {
+                                                "type": "join",
+                                                "parts":
+                                                [
+                                                    {
+                                                        "type": "ref",
+                                                        "domain": "info",
+                                                        "refId": "imgBaseUrl"
+                                                    },
+                                                    {
+                                                        "type": "constant",
+                                                        "value": "img/Brix0.9/11.24c _D85A82.jpg",
+                                                    }
+                                                ]
+                                            }
+                                    }
+                                ]
+                                               
+                        },
+                        {
+                            "bricId": "image4",
+                            "bricType": "Image",
+                            "config":
+                                {
+                                    "id": "cimg3n",
+                                    //"URI": "img/<someimagedefined in configFixup",
+                                    "caption": "Actress and singer Vanessa Hudgens is of Chinese, Filipino, Spanish, Irish, and Native American descent.",
+                                    "actualSize": {"height": 400, "width": 600},
+                                    "captionPosition": "below"
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "URI",
+                                        "value":
+                                            {
+                                                "type": "join",
+                                                "parts":
+                                                [
+                                                    {
+                                                        "type": "ref",
+                                                        "domain": "info",
+                                                        "refId": "imgBaseUrl"
+                                                    },
+                                                    {
+                                                        "type": "constant",
+                                                        "value": "img/Brix0.9/11.24d_D9719Y.jpg",
+                                                    }
+                                                ]
+                                            }
+                                    }
+                                ]
+                                               
+                        },
+                        {
+                            "bricId": "image5",
+                            "bricType": "Image",
+                            "config":
+                                {
+                                    "id": "cimg4n",
+                                    //"URI": "img/<someimagedefined in configFixup",
+                                    "caption": "Swimmer Ryan Lochte is of Cuban and German-Irish descent.",
+                                    "actualSize": {"height": 400, "width": 600},
+                                    "captionPosition": "below"
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "URI",
+                                        "value":
+                                            {
+                                                "type": "join",
+                                                "parts":
+                                                [
+                                                    {
+                                                        "type": "ref",
+                                                        "domain": "info",
+                                                        "refId": "imgBaseUrl"
+                                                    },
+                                                    {
+                                                        "type": "constant",
+                                                        "value": "img/Brix0.9/11.24e _D6W2PH.jpg",
+                                                    }
+                                                ]
+                                            }
+                                    }
+                                ]
+                                               
+                        },
+                        {
+                            "bricId": "image6",
+                            "bricType": "Image",
+                            "config":
+                                {
+                                    "id": "cimg5n",
+                                    //"URI": "img/<someimagedefined in configFixup",
+                                    "caption": "R&B artist Ne-Yo is of African and Chinese descent.",
+                                    "actualSize": {"height": 400, "width": 600},
+                                    "captionPosition": "below"
+                                },
+                            "configFixup":
+                                [
+                                    {
+                                        "type": "set-property",
+                                        "name": "URI",
+                                        "value":
+                                            {
+                                                "type": "join",
+                                                "parts":
+                                                [
+                                                    {
+                                                        "type": "ref",
+                                                        "domain": "info",
+                                                        "refId": "imgBaseUrl"
+                                                    },
+                                                    {
+                                                        "type": "constant",
+                                                        "value": "img/Brix0.9/11.24f _D4KWGH.jpg",
                                                     }
                                                 ]
                                             }
@@ -117,7 +304,7 @@
                             "config":
                                 {
                                     "id": "csel1",
-                                    "displayWidth": 600,
+                                    "displayWidth": 579
                                     //"items": [],
                                 },
                             "configFixup":
@@ -130,8 +317,12 @@
                                                 "type": "array",
                                                 "elements":
                                                         [
-                                                           { "type": "ref", "domain": "brix", "refId": "cimage1" },
-                                                           { "type": "ref", "domain": "brix", "refId": "image2" }
+                                                           { "type": "ref", "domain": "brix", "refId": "image1" },
+                                                           { "type": "ref", "domain": "brix", "refId": "image2" },
+                                                           { "type": "ref", "domain": "brix", "refId": "image3" },
+                                                           { "type": "ref", "domain": "brix", "refId": "image4" },
+                                                           { "type": "ref", "domain": "brix", "refId": "image5" },
+                                                           { "type": "ref", "domain": "brix", "refId": "image6" }
                                                         ]
                                             }
                                     }
@@ -143,7 +334,7 @@
                             "config":
                                 {
                                     //"node": d3.select("#target1"),
-                                    "maxSize": {"height": "620", "width": "600"},
+                                    "maxSize": {"height": "620", "width": "579"},
                                 },
                             "configFixup":
                                 [
