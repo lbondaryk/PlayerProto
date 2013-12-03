@@ -210,11 +210,11 @@ pearson.brix.LabelCarousel.prototype.draw = function (container, size)
     // currently hard set height.  We might want to measure labels in future.
     var selectorHeight = 55;
 
-    // Carousel goes at the top
+    // Label selector goes at the top
     var selectorGroup = widgetGroup.append("g");
     this.labelSelector.draw(selectorGroup, {height: selectorHeight, width: size.width});
 
-    // Image goes below carousel with 15 px margin
+    // Swappable Image goes below
     var imageGroup = widgetGroup.append("g")
         .attr("transform", attrFnVal("translate", 0, selectorHeight));
 
