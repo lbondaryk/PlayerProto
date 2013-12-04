@@ -14,47 +14,14 @@
      <!--
     <script src="js/brixlib-compiled.js"></script>
     -->
-    <script src="../closure/closure-library/closure/goog/base.js"></script>
-    <script src="../closure/closure-library/closure/goog/deps.js"></script>
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
 
-    <script src="js/ipsproxy.js"></script>
-    <script src="js/eventmanager.js"></script>
-    <script src="js/answerman.js"></script>
-    <script src="js/localanswerman.js"></script>
-    <script src="js/submitmanager.js"></script>
-    <script src="js/mortar-base.js"></script>
-    <script src="js/widget-base.js"></script>
-    <script src="js/bricworks.js"></script>
-    <script src="js/widget-numeric.js"></script>
-    <script src="js/widget-legend.js"></script>
-    <script src="js/widget-callouts.js"></script>
-    <script src="js/widget-button.js"></script>
-    <script src="js/widget-sketch.js"></script>
-    <script src="js/widget-prototype-axes.js"></script>
-    <script src="js/widget-linegraph.js"></script>
-    <script src="js/widget-barchart.js"></script>
-    <script src="js/widget-piechart.js"></script>
-    <script src="js/widget-image.js"></script>
-    <script src="js/widget-carousel.js"></script>
-    <script src="js/widget-imageviewer.js"></script>
-    <script src="js/brix-labelselector.js"></script>
-    <script src="js/brix-labelcarousel.js"></script>
-    <script src="js/widget-labelgroup.js"></script>
-    <script src="js/widget-markergroup.js"></script>
-    <script src="js/widget-radiogroup.js"></script>
-    <script src="js/widget-checkgroup.js"></script>
-    <script src="js/widget-selectgroup.js"></script>
-    <script src="js/widget-multiplechoicequestion.js"></script>
-    <script src="js/widget-multiselectquestion.js"></script>
-    <script src="js/widget-numericquestion.js"></script>
-    <script src="js/widget-slider.js"></script>
-    <script src="js/mortar-hilite.js"></script>
-    <script src="js/briclayer.js"></script>
+	<script src="js/brixlib-deps.js"></script>
+	<script>
+		goog.require('pearson.brix.BricLayer');
+	</script>
 
-    <script>
-
-    
-
+<script>
     // Create an object that will contain the objects needed for the activities
     // on this page.
     pearson.brix.activity = {};
@@ -67,112 +34,123 @@
     // local to this html file
 
     a.config =
-{
-    "description": "test image",
-    "sequenceNodeKey": "6B824262-1702-41F9-8D9E-31620F5B8787",
-    //"imgBaseUrl": "http://localhost:8088/images/",
-    "imgBaseUrl": "",
-    "containerConfig":
-        [
-            {
-                "description": "Image Carousel with Thumbnail Selectors",
-                "containerId": "imgContainer",
-                "brixConfig":
-                    [
-                        {
-                            "bricId": "imageCarousel1",
-                            "bricType": "LabelCarousel",
-                            "config":
+        {
+			"description": "A Sample Activity containing a LabelCarousel",
+            "sequenceNodeKey": "6B824262-1702-41F9-8D9E-31620F5B8787",
+            //"imgBaseUrl": "http://localhost:8088/images/",
+            "imgBaseUrl": "",
+            "containerConfig":
+                [
+                    {
+                        "description": "Container for the LabelCarousel",
+                        "containerId": "imgContainer",
+                        "brixConfig":
+                            [
                                 {
-                                    "id": "theimages",
-                                    //"URI": "img/reactor.jpg",
-                                    "imagesActualSize": {"height": 400, "width": 600},
-                                    "images":
+                                    "bricId": "lblCarousel1",
+                                    "bricType": "LabelCarousel",
+                                    "config":
+                                        {
+                                            "id": "lblCrsl1",
+                                            "imagesActualSize": { "height": 400, "width": 600 }
+                                        },
+                                    "configFixup":
                                         [
                                             {
-                                                "URI": "img/Brix0.9/11.12a_NEW_BE041372.jpg",
-                                                "caption": "Polish immigrant women arriving in America in 1910. At this time, Polish-Americans were not considered ethnically similar to more established European groups.",
-                                            },
-                                            {
-                                                "URI": "img/Brix0.9/11.12b_NEW_B3NN1P.jpg",
-                                                "caption": "A Polish-American family today. Later generations of Polish-Americans now appear indistinct from other European groups, as the category \"white\" has come to include Poles.",
-                                            }
-                                        ],
-                                },
-                         /* "configFixup":
-                                [
-                                    {
-                                        "type": "set-property",
-                                        "name": "images[0].URI",
-                                        "value":
-                                            {
-                                                "type": "join",
-                                                "parts":
-                                                [
+                                                "type": "set-property",
+                                                "name": "images",
+                                                "value":
                                                     {
-                                                        "type": "ref",
-                                                        "domain": "info",
-                                                        "refId": "imgBaseUrl"
-                                                    },
-                                                    {
-                                                        "type": "constant",
-                                                        "value": "img/Brix0.9/11.12a_NEW_BE041372.jpg",
+                                                        "type": "array",
+                                                        "elements":
+                                                            [
+                                                                {
+                                                                    "type": "object",
+                                                                    "properties":
+                                                                        [
+                                                                            {
+                                                                                "name": "URI",
+                                                                                "value":
+                                                                                    {
+                                                                                        "type": "join",
+                                                                                        "parts":
+                                                                                        [
+                                                                                            { "type": "ref", "domain": "info", "refId": "imgBaseUrl" },
+                                                                                            { "type": "constant", "value": "img/Brix0.9/11.12a_NEW_BE041372.jpg" }
+                                                                                        ]
+                                                                                    }
+                                                                            },
+                                                                            {
+                                                                                "name": "caption",
+                                                                                "value": { "type": "constant", "value": "Polish immigrant women arriving in America in 1910. At this time, Polish-Americans were not considered ethnically similar to more established European groups." }
+                                                                            }
+                                                                        ]
+                                                                },
+                                                                {
+                                                                    "type": "object",
+                                                                    "properties":
+                                                                        [
+                                                                            {
+                                                                                "name": "URI",
+                                                                                "value":
+                                                                                    {
+                                                                                        "type": "join",
+                                                                                        "parts":
+                                                                                        [
+                                                                                            { "type": "ref", "domain": "info", "refId": "imgBaseUrl" },
+                                                                                            { "type": "constant", "value": "img/Brix0.9/11.12b_NEW_B3NN1P.jpg" }
+                                                                                        ]
+                                                                                    }
+                                                                            },
+                                                                            {
+                                                                                "name": "caption",
+                                                                                "value": { "type": "constant", "value": "A Polish-American family today. Later generations of Polish-Americans now appear indistinct from other European groups, as the category \"white\" has come to include Poles." }
+                                                                            }
+                                                                        ]
+                                                                }
+                                                            ]
                                                     }
-                                                ]
                                             }
-                                    }
-                                ] */
-                        },
-                        {
-                            "bricId": "cntr1",
-                            "bricType": "SvgContainer",
-                            "config":
-                                {
-                                    //"node": d3.select("#target1"),
-                                    "maxSize": {"height": 450, "width": 600},
+                                        ]
                                 },
-                            "configFixup":
-                                [
-                                    {
-                                        "type": "set-property",
-                                        "name": "node",
-                                        "value":
+                                {
+                                    "bricId": "cntr1",
+                                    "bricType": "SvgContainer",
+                                    "config":
+                                        {
+                                            //"node": d3.select("#target1"),
+                                            "maxSize": { "height": 450, "width": 600 },
+                                        },
+                                    "configFixup":
+                                        [
                                             {
-                                                "type": "d3select",
-                                                "selector": "#target1"
+                                                "type": "set-property",
+                                                "name": "node",
+                                                "value":
+                                                    {
+                                                        "type": "d3select",
+                                                        "selector": "#target1"
+                                                    }
                                             }
-                                    }
-                                    /*{
-                                        "type": "set-property",
-                                        "name": "maxSize",
-                                        "value":
-                                            {
-                                                "type": "property-of-ref",
-                                                "domain": "brix",
-                                                "refId": "cimage1",
-                                                "accessor": "getSizeAt100Pct"
-                                            }
-                                    }*/
-                                ]
-                        }
-                    ],
-                "hookupActions":
-                    [
-                        {
-                            "description": "Append the label image carousel to the svg container",
-                            "type": "method-call",
-                            "instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
-                            "methodName": "append",
-                            "args":
-                                [
-                                    { "type": "ref", "domain": "brix", "refId": "imageCarousel1" },
-                                    { "type": "constant", "value": {"topPercentOffset": 0, "leftPercentOffset": 0, "heightPercent": 1, "widthPercent": 1} }
-                                ]
-                        }
-                    ]
-            }
-        ]
-    };
+                                        ]
+                                }
+                            ],
+                        "hookupActions":
+                            [
+                                {
+                                    "description": "Append the label image carousel to the svg container",
+                                    "type": "method-call",
+                                    "instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+                                    "methodName": "append",
+                                    "args":
+                                        [
+                                            { "type": "ref", "domain": "brix", "refId": "lblCarousel1" }
+                                        ]
+                                }
+                            ]
+                    }
+            ]
+        };
 
     // create the eventmanager to be used by the created brix, and the
     // bricLayer which will create them, and then tell the bricLayer to build.
