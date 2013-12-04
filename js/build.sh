@@ -28,6 +28,11 @@
 # command to run the dependency writer from the js folder:
 #../../closure/closure-library/closure/bin/build/depswriter.py --root_with_prefix=". ../../../../playerproto/js" > brixlib-deps.js
 
+function getfullpath() {
+  DIR=$(echo "${1%/*}")
+  (cd "$DIR" && echo "$(pwd -P)")
+}
+
 REPODIR=".."
 DEPSWRITER="${REPODIR}/../closure/closure-library/closure/bin/build/depswriter.py"
 BUILDER="${REPODIR}/../closure/closure-library/closure/bin/build/closurebuilder.py"
@@ -35,7 +40,7 @@ COMPILER="${REPODIR}/../closure/closure-compiler/compiler.jar"
 LIBRARYDIR="${REPODIR}/../closure/closure-library/" 
 OUTFILE="brixlib-compiled.js"
 DEPSOUTFILE="brixlib-deps.js"
-REPODIRNAME="`basename \`readlink -f $REPODIR\``"
+REPODIRNAME="`basename \`getfullpath $REPODIR\``"
 
 declare -a COMPILER_ARGS=(\
 	'--compilation_level=SIMPLE_OPTIMIZATIONS'\
@@ -114,6 +119,6 @@ BRIX_ARGS=$(cat <<EOF
 EOF
 )
 
-$BUILDER $BRIX_ARGS
+#$BUILDER $BRIX_ARGS
 $DEPSWRITER --root_with_prefix=". ../../../../$REPODIRNAME/js" --output_file=$DEPSOUTFILE
 
