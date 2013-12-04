@@ -119,6 +119,6 @@ BRIX_ARGS=$(cat <<EOF
 EOF
 )
 
-#$BUILDER $BRIX_ARGS
+$BUILDER $BRIX_ARGS
 $DEPSWRITER --root_with_prefix=". ../../../../$REPODIRNAME/js" --output_file=$DEPSOUTFILE
 
