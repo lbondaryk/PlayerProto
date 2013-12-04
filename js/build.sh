@@ -25,11 +25,17 @@
 #
 # NOTE: Remember to remove the  fakeactivitydb.js in the real release.
 
+# command to run the dependency writer from the js folder:
+#../../closure/closure-library/closure/bin/build/depswriter.py --root_with_prefix=". ../../../../playerproto/js" > brixlib-deps.js
+
 REPODIR=".."
+DEPSWRITER="${REPODIR}/../closure/closure-library/closure/bin/build/depswriter.py"
 BUILDER="${REPODIR}/../closure/closure-library/closure/bin/build/closurebuilder.py"
 COMPILER="${REPODIR}/../closure/closure-compiler/compiler.jar" 
 LIBRARYDIR="${REPODIR}/../closure/closure-library/" 
 OUTFILE="brixlib-compiled.js"
+DEPSOUTFILE="brixlib-deps.js"
+REPODIRNAME="`basename \`readlink -f $REPODIR\``"
 
 declare -a COMPILER_ARGS=(\
 	'--compilation_level=SIMPLE_OPTIMIZATIONS'\
@@ -109,3 +115,5 @@ EOF
 )
 
 $BUILDER $BRIX_ARGS
+$DEPSWRITER --root_with_prefix=". ../../../../$REPODIRNAME/js" --output_file=$DEPSOUTFILE
+
