@@ -40,6 +40,13 @@ goog.require('pearson.brix.mortar.Mortar');
  ****************************************************************************/
 pearson.brix.BricWorks = function (config, eventManager)
 {
+    /**
+     * Logger for this BricWorks
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.BricWorks');
+
 	/**
 	 * The event manager to use to publish (and subscribe to) events for the
 	 * created brix.
@@ -166,7 +173,9 @@ pearson.brix.BricWorks.prototype.getBricTopic = function (bricName, eventName, i
     
     if (!('getEventTopic' in bricMold))
     {
-        throw new Error("'" + bricName + "' brix do not support the static method 'getEventTopic'");
+        var msg = "'" + bricName + "' brix do not support the static method 'getEventTopic'";
+        this.logger_.warning(msg);
+        throw new Error(msg);
     }
 
     return bricMold['getEventTopic'](eventName, instanceId);

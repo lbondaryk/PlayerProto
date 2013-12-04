@@ -153,8 +153,9 @@ pearson.brix.LabelGroup = function (config, eventManager)
     /**
      * The event details for this.selectedEventId events
      * @typedef {Object} SelectedEventDetails
-     * @property {string|number} selectKey  -The key associated with the selected label if it has one,
-     *                                       otherwise the label's index within the group.
+     * @property {string} selectKey -The key associated with the selected label if it has one,
+     *                               otherwise the label's index within the group as a string.
+     * @property {number} index     -The index of the selected label in the group of labels
      */
 
     /**

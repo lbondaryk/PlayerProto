@@ -61,9 +61,11 @@
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+	<script src="js/ipsproxy.js"></script>
 	<script src="js/eventmanager.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
 	<script src="js/answerman.js"></script>
+	<script src="js/localanswerman.js"></script>
 	<script src="js/submitmanager.js"></script>
     <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
@@ -80,6 +82,8 @@
     <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
     <script src="js/widget-imageviewer.js"></script>
+    <script src="js/brix-labelselector.js"></script>
+    <script src="js/brix-labelcarousel.js"></script>
 	<script src="js/widget-labelgroup.js"></script>
     <script src="js/widget-markergroup.js"></script>
     <script src="js/widget-radiogroup.js"></script>
@@ -89,17 +93,17 @@
     <script src="js/widget-multiselectquestion.js"></script>
     <script src="js/widget-numericquestion.js"></script>
     <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-dataswap.js"></script>
     <script src="js/mortar-hilite.js"></script>
-	<script src="js/briclayer.js"></script>
-
     <script src="js/mortar-agestructure.js"></script>
+	<script src="js/briclayer.js"></script>
 
 	<script>
 // local aliases for convenience
 	var EventManager = pearson.utils.EventManager;
 	var Rect = pearson.utils.Rect;
 	var Size = pearson.utils.Size;
-	var SubmitManager = pearson.brix.SubmitManager;
+	var SubmitManager = pearson.brix.utils.SubmitManager;
 	var SVGContainer = pearson.brix.SVGContainer;
 	var Image = pearson.brix.Image;
 	var CaptionedImage = pearson.brix.CaptionedImage;
@@ -330,7 +334,7 @@ countries.selectItemAtIndex(0);
 		
 		liteData(eventDetails);
 
-		graph3.data = fuelDataSubset;
+		graph3.setData(fuelDataSubset);
 		graph3.redraw();
 
 		
@@ -365,7 +369,7 @@ countries.selectItemAtIndex(0);
 
 		//get rid of the tiny graph, update it's data, then put it back with new axes
 		svg1.remove(graph0);
-		graph0.data = fuelDataSmall;
+		graph0.setData(fuelDataSmall);
 		graph0.yAxisFormat.label = yLabelSmall;
 		svg1.append(graph0, {topPercentOffset: .6, leftPercentOffset: .65, heightPercent: 0.3, widthPercent: 0.3});
 		graph3.lite(index);

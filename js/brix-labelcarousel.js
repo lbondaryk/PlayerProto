@@ -63,7 +63,7 @@ goog.require('pearson.utils.IEventManager');
   * @param {integer}
  *                          config.displayWidth
  *                                          -The column width at which carousel displays full size.
- * @param {!pearson.utils.IEventManager}
+ * @param {!pearson.utils.IEventManager=}
  *                          eventManager    -allows the bric to publish and subscribe to events
  *                                           required for correct internal operation.
  *
@@ -132,7 +132,7 @@ pearson.brix.LabelCarousel = function (config, eventManager)
      * The event manager to use to publish (and subscribe to) events for this widget
      * @type {!pearson.utils.IEventManager}
      */
-    this.eventManager = eventManager;
+    this.eventManager = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
     /**
      * The event id published when an item in this carousel is selected.

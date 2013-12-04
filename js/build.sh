@@ -25,11 +25,22 @@
 #
 # NOTE: Remember to remove the  fakeactivitydb.js in the real release.
 
+# command to run the dependency writer from the js folder:
+#../../closure/closure-library/closure/bin/build/depswriter.py --root_with_prefix=". ../../../../playerproto/js" > brixlib-deps.js
+
+function getfullpath() {
+  DIR=$(echo "${1%/*}")
+  (cd "$DIR" && echo "$(pwd -P)")
+}
+
 REPODIR=".."
+DEPSWRITER="${REPODIR}/../closure/closure-library/closure/bin/build/depswriter.py"
 BUILDER="${REPODIR}/../closure/closure-library/closure/bin/build/closurebuilder.py"
 COMPILER="${REPODIR}/../closure/closure-compiler/compiler.jar" 
 LIBRARYDIR="${REPODIR}/../closure/closure-library/" 
 OUTFILE="brixlib-compiled.js"
+DEPSOUTFILE="brixlib-deps.js"
+REPODIRNAME="`basename \`getfullpath $REPODIR\``"
 
 declare -a COMPILER_ARGS=(\
 	'--compilation_level=SIMPLE_OPTIMIZATIONS'\
@@ -67,13 +78,15 @@ BRIX_ARGS=$(cat <<EOF
 	--input=brix-pyramidchart.js
 	--input=domhelper.js
 	--input=eventmanager.js
-	--input=localanswerman.js
-	--input=mortar-base.js
-	--input=mortar-hilite.js
-	--input=mortar-agestructure.js
 	--input=ipc.js
 	--input=ipsproxy.js
+	--input=localanswerman.js
 	--input=messagebroker.js
+	--input=mortar-agestructure.js
+	--input=mortar-base.js
+	--input=mortar-dataswap.js
+	--input=mortar-hilite.js
+	--input=mortar-traceselection.js
 	--input=submitmanager.js
 	--input=widget-barchart.js
 	--input=widget-base.js
@@ -107,3 +120,5 @@ EOF
 )
 
 $BUILDER $BRIX_ARGS
+$DEPSWRITER --root_with_prefix=". ../../../../$REPODIRNAME/js" --output_file=$DEPSOUTFILE
+

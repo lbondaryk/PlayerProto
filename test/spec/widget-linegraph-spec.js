@@ -40,11 +40,11 @@
 			});
 			
             it('should create lines id from base id + _lines', function () {
-                expect(myGraph.lastdrawn.linesId).to.equal(myGraph.id + '_lines');
+                expect(myGraph.lastdrawn.linesId).to.equal(myGraph.getId() + '_lines');
             });
 
 			it('should know it has a point at 0,1', function () {
-                expect(myGraph.data[0][0]).to.deep.equal({x:0,y:1});
+                expect(myGraph.getData()[0][0]).to.deep.equal({x:0,y:1});
             });
 
 			it('should create an empty array of child Widgets', function () {
