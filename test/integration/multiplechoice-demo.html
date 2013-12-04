@@ -111,12 +111,12 @@
     <h1>Submission (MCQ) Integration demo.</h1>
     <div class="demo_message_box">
         <div class="demo_params" >
-            Params:
+            Params: (In parenthesis are the query string parameter names)
             <ul>
-            <li>AMS Base URL: <span class="dataval" id="ams_base_url"></span></li>
-            <li>IPS Base URL: <span class="dataval" id="ips_base_url"></span></li>
-            <li>Activity URL: <span class="dataval" id="activity_url"></span></li>
-            <li>Assignment URL: <span class="dataval" id="assignment_url"></span></li>
+            <li>AMS Base URL (ams): <span class="dataval" id="ams_base_url"></span></li>
+            <li>IPS Base URL (ips): <span class="dataval" id="ips_base_url"></span></li>
+            <li>Activity URL (activity): <span class="dataval" id="activity_url"></span></li>
+            <li>Assignment URL (assignment): <span class="dataval" id="assignment_url"></span></li>
             <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
             </ul>
         </div>
@@ -159,7 +159,6 @@ If Running AMS locally you will also need to run:
         </section>
     </div>
 </div>
-
     <!-- }} TEST CONTENT -->
 
     <script>
@@ -169,6 +168,10 @@ If Running AMS locally you will also need to run:
         var ipsBaseUrl = "http://localhost:8088";
         var course = "course_c2";
         var user = "test1_t2";
+
+        var repoContentBaseUrl = "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/"
+        var assignment = "test.sanvan.assign.mcq1c";
+        var activity   = "test.sanvan.activity.mcq1c"
 
         // Override to local based on query string parameter
         // E.g. file://../multiplechoice-demo.html?ams={dev|qa}
@@ -188,7 +191,19 @@ If Running AMS locally you will also need to run:
         if (queryString.user)
         {
             user = queryString.user;
-        }      
+        }
+        if (queryString.assignment)
+        {
+            assignment = queryString.assignment;
+        }
+        if (queryString.activity)
+        {
+            activity = queryString.activity;
+        }
+
+        $("#target1").attr("data-assignmenturl", repoContentBaseUrl + assignment);
+        $("#target1").attr("data-activityurl", repoContentBaseUrl + activity);
+
         /*
          * Display features and setup.
          */
@@ -196,8 +211,8 @@ If Running AMS locally you will also need to run:
         var activityUrl = $("#target1").data("activityurl");
         $("#ams_base_url").text(amcBaseUrl);
         $("#ips_base_url").text(ipsBaseUrl);
-        $("#activity_url").text(assignmentUrl);
-        $("#assignment_url").text(activityUrl);
+        $("#activity_url").text(activityUrl);
+        $("#assignment_url").text(assignmentUrl);
         $("#course").text(course);
         $("#user").text(user);
 
