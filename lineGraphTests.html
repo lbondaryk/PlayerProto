@@ -42,8 +42,8 @@
 						<div id="widgetTarget50n"><p>5. Several traces log scale</p></div>
 						<div id="widgetTarget60n"><p>6. Several traces Ordinal <span style="color: red">BUG: this graph doesn't use the full available width, it should.</span></p>
 						</div>
-						<div id="widgetTarget70n"><p>7. Small multiples (several line graphs in container) <span style="color: red">BUG: the first axis shoves over too far leaving not enough remaining space to draw the graph.  Need to rethink sizing when it doesn't fit.</span></p></div>
-						<div id="widgetTarget80n"><p>8. Lines with Legend</p></div>
+						<div id="widgetTarget70n"><p>7. Small multiples (several line graphs in container)</p></div>
+						<div id="widgetTarget80n"><p>8. Lines with Legend, and custom formatting on x axis (no commas)</p></div>
 					</div>
 				</div>
 			</section>
@@ -57,25 +57,51 @@
 	<script src="js/toc-structure.js"></script>
 	<script src="js/eCourse-master.js"></script>
 	<script src="js/d3.v3.min.js"></script>
-
+<!--
 	<script src="js/brixlib-compiled.js"></script>
-	<!--
+-->
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+
 	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+    <script src="js/ipsproxy.js"></script>
+	<script src="js/answerman.js"></script>
+	<script src="js/localanswerman.js"></script>
+	<script src="js/submitmanager.js"></script>
 	<script src="js/widget-base.js"></script>
-	<script src="js/widget-prototype-axes.js"></script>
-    <script src="js/widget-image.js"></script>
+    <script src="js/mortar-base.js"></script>
     <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-image.js"></script>
     <script src="js/widget-imageviewer.js"></script>
 	<script src="js/widget-labelgroup.js"></script>
-    <script src="js/widget-callouts.js"></script>
-    <script src="js/widget-markergroup.js"></script>
-	<script src="js/widget-barchart.js"></script>
-	<script src="js/widget-linegraph.js"></script>
+    <script src="js/brix-labelselector.js"></script>
+    <script src="js/brix-labelcarousel.js"></script>
+	<script src="js/bricworks.js"></script>
+    <script src="js/widget-numeric.js"></script>
     <script src="js/widget-legend.js"></script>
-	-->
+    <script src="js/widget-callouts.js"></script>
+    <script src="js/widget-button.js"></script>
+    <script src="js/widget-sketch.js"></script>
+    <script src="js/widget-prototype-axes.js"></script>
+	<script src="js/widget-linegraph.js"></script>
+	<script src="js/widget-barchart.js"></script>
+    <script src="js/widget-piechart.js"></script>
+   
+    <script src="js/widget-markergroup.js"></script>
+    <script src="js/widget-radiogroup.js"></script>
+    <script src="js/widget-checkgroup.js"></script>
+    <script src="js/widget-selectgroup.js"></script>
+    <script src="js/widget-multiplechoicequestion.js"></script>
+    <script src="js/widget-multiselectquestion.js"></script>
+    <script src="js/widget-numericquestion.js"></script>
+    <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-hilite.js"></script>
+	<script src="js/briclayer.js"></script>
+
+    <script src="js/domhelper.js"></script>
+    <script src="js/ipc.js"></script>
 
 <script>
 	// local aliases for convenience
@@ -334,6 +360,7 @@
 						   label: "Year (explicit ticks)" },
 			yAxisFormat: { type: "linear",
 						   ticks: 5,
+						    format: '0.3g',
 						   orientation: "left",
 						   label: "Population (Billions)" },
 		};
@@ -518,6 +545,7 @@
 			type: "lines",
 			xAxisFormat: { type: "linear",
 						   ticks: [1900, 1950, 1990, 2010, 2030, 2050],
+						   format: '.1',
 						   orientation: "bottom",
 						   label: "Year" },
 			yAxisFormat: { type: "linear",
@@ -531,9 +559,9 @@
 			type: "numbered",
 			labels: 
 			[
-				{ content: "historical data",	xyPos: [1960, 3], width: 100},
-				{ content: "predicted",	xyPos: [2011, 7],	width: 100	},
-				{ content: "threshold" ,	xyPos: [1980, 9],	width: 100	},
+				{ content: "historical data",	xyPos: [1960, 3], width: 110},
+				{ content: "predicted",	xyPos: [2011, 7],	width: 110	},
+				{ content: "threshold" ,	xyPos: [1980, 9],	width: 110	},
 			]
 		};
 	// create a label group that emits events

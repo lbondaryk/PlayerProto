@@ -22,7 +22,6 @@
        "@contentType":"application/vnd.pearson.paf.v1.container+json",
        "binding" : [
            {
-           "bindingIndex" : 1,
            "boundActivity"  : "{SERVER}/paf-repo/resources/activities/e579114a-2b65-4d9e-8ed5-26a7c15d8ad8",
            "activityFormat" : "application/vnd.pearson.sanvan.v1.activity",
            "activityTitle" : "Neff Reactor from Image Server",

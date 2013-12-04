@@ -36,7 +36,9 @@ goog.require('pearson.brix.CheckGroup');
 goog.require('pearson.brix.Image');
 goog.require('pearson.brix.ImageViewer');
 goog.require('pearson.brix.Journal');
+goog.require('pearson.brix.LabelCarousel');
 goog.require('pearson.brix.LabelGroup');
+goog.require('pearson.brix.LabelSelector');
 goog.require('pearson.brix.Legend');
 goog.require('pearson.brix.LineGraph');
 goog.require('pearson.brix.MarkerGroup');
@@ -77,7 +79,9 @@ pearson.brix.BricTypes =
     IMAGE:                  "Image",
     IMAGEVIEWER:            "ImageViewer",
     JOURNAL:                "Journal",
+    LABELCAROUSEL:          "LabelCarousel",
     LABELGROUP:             "LabelGroup",
+    LABELSELECTOR:          "LabelSelector",
     LEGEND:                 "Legend",
     LINEGRAPH:              "LineGraph",
     MARKERGROUP:            "MarkerGroup",
@@ -188,7 +192,9 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
     bricWorks.registerBricMold(BricTypes.IMAGE, pearson.brix.Image);
     bricWorks.registerBricMold(BricTypes.IMAGEVIEWER, pearson.brix.ImageViewer);
     bricWorks.registerBricMold(BricTypes.JOURNAL, pearson.brix.Journal);
+    bricWorks.registerBricMold(BricTypes.LABELCAROUSEL, pearson.brix.LabelCarousel);
     bricWorks.registerBricMold(BricTypes.LABELGROUP, pearson.brix.LabelGroup);
+    bricWorks.registerBricMold(BricTypes.LABELSELECTOR, pearson.brix.LabelSelector);
     bricWorks.registerBricMold(BricTypes.LEGEND, pearson.brix.Legend);
     bricWorks.registerBricMold(BricTypes.LINEGRAPH, pearson.brix.LineGraph);
     bricWorks.registerBricMold(BricTypes.MARKERGROUP, pearson.brix.MarkerGroup);

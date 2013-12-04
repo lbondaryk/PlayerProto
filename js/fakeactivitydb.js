@@ -55,7 +55,34 @@ pearson.brix.test.activities =
 				response: "It's one louder."
 				},
 		},
-
+	"energyUse": { 
+		question: "Which country uses the most energy per capita?",
+		a01: {
+				content:  "US",
+				score: 0,
+				response: "The US leads overall energy use, but that's partly because of it's large population."
+				},
+		a02: {
+				content:  "Canada",
+				score: 0,
+				response:  "The Canadians do consume power in a modern cultural fashion, but not excessively.",
+				},
+		a03: {
+				content: "Brazil",
+				score: 0,
+				response:  "",
+				},
+		a04: {
+				content: "Germany",
+				score: 1,
+				response:  "",
+				},
+		a05: {
+				content: "Egypt",
+				score: 0,
+				response:  "",
+				}
+		},
 	"co2Decrease": { 
 		question: "What is the average seasonal decrease in CO2 concentration for these three years (high &minus; low)?",
 		"001": {
@@ -378,7 +405,7 @@ pearson.brix.test.activities =
 				response:  "More area allows more room for electrons to move and pass charge.",
 				}
 		},
-	"Resist2": { 
+	"Resist2": {
 		"question": "What is the change in resistance for a wire of shorter length?",
 		"smaller": {
 				content: "smaller resistance",
@@ -396,21 +423,31 @@ pearson.brix.test.activities =
 				response:  "More length impedes electrons, making it harder to pass charge.",
 				}
 		},
-	"homicide": { 
-		"question": "Does the difference in insurance rates explain the high mortality rate from homicide for African Americans?",
+	"mortality": {
+		"question": "Disparities in health exist among racial groups because of ",
 		"answer000": {
-				content: "Yes",
+				content: "differing socioeconomic and environmental conditions",
 				score: 1,
-				response:  "Wow, that's a surprise."
+				response:  "A variety of conditions, including cultural perspectives, financial resources, and structural or societal barriers contribute to the imbalance.",
 				},
 		"answer001": {
-				content: "No",
-				score: 1,
-				response:   "This does seem more likely, doesn't it?",
+				content: "availability/affordability of insurance",
+				score: 2,
+				response:  "This is certainly a contributing factor, but is it the only reason?",
+				},
+		"answer002": {
+				content: "barriers to health literacy",
+				score: 2,
+				response:  "This is certainly a contributing factor, but is it the only reason?",
+				},
+		"answer003": {
+				content: "linguistic barriers",
+				score: 2,
+				response:  "This is certainly a contributing factor, but is it the only reason?",
 				},
 		},
 	// Chad's questions
-	"pop200": { 
+	"pop200": {
 		"question": "Based on the graph, what average population growth rate looks like the best predictor of population increases over the past 200 years",
 		"answer000": {
 				content: "0.5%",

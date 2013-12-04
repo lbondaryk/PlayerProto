@@ -16,6 +16,8 @@
 
 goog.provide('pearson.brix.RadioGroup');
 
+goog.require('goog.debug.Logger');
+
 goog.require('pearson.utils.IEventManager');
 goog.require('pearson.brix.HtmlBric');
 
@@ -92,6 +94,13 @@ pearson.brix.RadioGroup = function (config, eventManager)
 {
     // call the base class constructor
     goog.base(this);
+
+    /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.MultipleChoiceQuestion');
 
     /**
      * A unique id for this instance of the radio group widget
@@ -203,6 +212,8 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
             .attr("value", function (d) {return d.answerKey;});
 
     var labelCell = ansRows.append("td");
+
+    var that_ = this;
     labelCell
         .append("label")
             .attr("for", getButtonId)
@@ -217,6 +228,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
     choiceInputs
         .on("change", function (d, i)
                 {
+                    that_.logger_.finer('Radio selected');
                     that.eventManager.publish(that.selectedEventId, {selectKey: d.answerKey, index: i});
                 });
 

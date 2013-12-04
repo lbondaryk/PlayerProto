@@ -83,15 +83,21 @@
 	<!--
 	<script src="js/brixlib-compiled.js"></script>
 	-->
+	
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+
 	<script src="js/eventmanager.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
+    <script src="js/ipsproxy.js"></script>
 	<script src="js/answerman.js"></script>
+	<script src="js/localanswerman.js"></script>
 	<script src="js/submitmanager.js"></script>
-    <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
+    <script src="js/mortar-base.js"></script>
+    <script src="js/brix-labelselector.js"></script>
+    <script src="js/brix-labelcarousel.js"></script>
 	<script src="js/bricworks.js"></script>
     <script src="js/widget-numeric.js"></script>
     <script src="js/widget-legend.js"></script>
@@ -102,8 +108,8 @@
 	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-barchart.js"></script>
     <script src="js/widget-piechart.js"></script>
-    <script src="js/widget-image.js"></script>
     <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-image.js"></script>
     <script src="js/widget-imageviewer.js"></script>
 	<script src="js/widget-labelgroup.js"></script>
     <script src="js/widget-markergroup.js"></script>
@@ -117,6 +123,9 @@
     <script src="js/mortar-hilite.js"></script>
 	<script src="js/briclayer.js"></script>
 
+    <script src="js/domhelper.js"></script>
+    <script src="js/ipc.js"></script>
+
 	<script src="js/widget-multiplechoicequestion-old.js"></script>
 
 	<script>
@@ -124,7 +133,9 @@
 	var EventManager = pearson.utils.EventManager;
 	var Rect = pearson.utils.Rect;
 	var Size = pearson.utils.Size;
-	var SubmitManager = pearson.brix.SubmitManager;
+	//var SubmitManager = pearson.brix.SubmitManager;
+	var AnswerMan = pearson.brix.utils.LocalAnswerMan;
+	var SubmitManager = pearson.brix.utils.SubmitManager;
 	var SVGContainer = pearson.brix.SVGContainer;
 	var Image = pearson.brix.Image;
 	var CaptionedImage = pearson.brix.CaptionedImage;
@@ -149,7 +160,11 @@
 
 	//the eventManager and submitManager are created for every page for Brix on that page
 	var eventManager = new EventManager();
-	var submitManager = new SubmitManager(eventManager);
+	
+	var answerMan = new AnswerMan();
+	var submitManager = new SubmitManager(eventManager, answerMan);
+
+
 
 	//temperature carousel
 	var profiles = new SelectGroup(
@@ -212,7 +227,7 @@ var layers = new ImageViewer({
 			],
 	}, eventManager);
 
-svgmaps.append(layers, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.6});
+svgmaps.append(layers, {topPercentOffset: 0, leftPercentOffset: 0, heightPercent: 1, widthPercent: 0.47});
 							
 var labels1 = new LabelGroup(
 		{type: "latin-upper",
@@ -232,21 +247,23 @@ var labels1 = new LabelGroup(
 
 var salImage = new CaptionedImage ({
 				URI: 'img/oceans/oceanSalinity.png',
-				caption: "Ocean Salinity at 0 m (surface)",
+				displayWidth: 300,
+				caption: "Ocean Salinity at surface",
 				actualSize: {height: 530, width: 930},
 				captionPosition: "below"
 			});
 
 var oxyImage = new CaptionedImage ({
 				URI: 'img/oceans/oceanOxygen.png',
-				caption: "Ocean Oxygen Concentration at 0 m (surface)",
+				displayWidth: 300,
+				caption: "Oxygen Concentration at surface",
 				actualSize: {height: 530, width: 930},
 				captionPosition: "below"
 		});
 
-svgmaps.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+svgmaps.append(salImage, {topPercentOffset: 0, leftPercentOffset: 0.65, heightPercent: 0.45, widthPercent: 0.35});
 
-svgmaps.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.5, widthPercent: 0.35});
+svgmaps.append(oxyImage, {topPercentOffset: 0.5, leftPercentOffset: 0.65, heightPercent: 0.45, widthPercent: 0.35});
 
 
 eventManager.subscribe(profiles.selectedEventId, carouselUpdate);

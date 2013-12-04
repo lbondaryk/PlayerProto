@@ -327,16 +327,17 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
                 // in the way it does for callouts -lb
                 .html(function (d) { return d.content; }); //make the label
 
-    // bullets type just puts big black circle markers on key areas of a diagram
-    // a precursor to hotspot answertypes - the 44 pixel square is a UX spec
+    var radius = 17;
+    var padding = 2;
+    // bullets type just puts big circle markers on key areas of a diagram
+    // a precursor to hotspot answertypes - the 34 pixel size is from UX in Dec. 2013
     if (this.type != "none")
     {
-        labelCollection.append("rect")
+        labelCollection.append("circle")
             //.attr("class", "numSteps")
-            .attr("height", 44)
-            .attr("width", 44)
-            .attr("x", 4)
-            .attr("y", 4);
+            .attr("r", radius)
+            .attr("cx", radius + padding)
+            .attr("cy", radius + padding);
     }
 
     // numbered bullets are what PM is referring to as stepped diagrams,
@@ -351,17 +352,17 @@ pearson.brix.LabelGroup.prototype.draw = function (container, size)
         labelCollection.append("text")
         // the 25 and 27 serve to attractively center the text on the square on Chrome,
         // might need to be adjusted for other browsers
-            .attr("x", 25)
-            .attr("y", 27)
+            .attr("x", radius + padding)
+            .attr("y", radius + padding)
             .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "middle")
+            .attr("alignment-baseline", "central")
             .text(function (d, i) {return choiceIndex(i);});
     }
 
     labelCollection.on('click',
                 function (d, i)
                 {
-                    that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+                    that.eventManager.publish(that.selectedEventId, {index: i, selectKey: d.key});
                     that.lite(d.key);
                 });
 
@@ -422,7 +423,11 @@ pearson.brix.LabelGroup.prototype.lite = function (liteKey)
     // Turn off all current highlights
     var allLabels = this.lastdrawn.labelCollection;
     allLabels
-        .classed("lit", false);
+        .classed("lit", false)
+        // HACKALERT: swapping the display styles is just to force certain webkit and chrome
+        // broswers to redraw the page when they don't want to. -lb
+        .style('display','block');
+
 
     // create a filter function that will match all instances of the liteKey
     // then find the set that matches
@@ -432,7 +437,10 @@ pearson.brix.LabelGroup.prototype.lite = function (liteKey)
 
     // Highlight the labels w/ the matching key
     labelsToLite
-        .classed("lit", true);
+        .classed("lit", true)
+        // HACKALERT: swapping the display styles is just to force certain webkit and chrome
+        // broswers to redraw the page when they don't want to.
+        .style('display','inline');
 
     if (labelsToLite.empty())
     {
@@ -526,7 +534,7 @@ pearson.brix.LabelGroup.prototype.getChoiceNumberToDisplayFn_ = function ()
 {
     var formatIndexUsing =
     {
-        "none": function (i)
+        "bullets": function (i)
                 {
                     return "";
                 },
