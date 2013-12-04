@@ -319,19 +319,25 @@ pearson.brix.Journal.prototype.draw = function (container)
     this.lastdrawn.container = container;
 
     // make a div to hold the journal question
-    var widgetGroup = container.append("div")
-        .attr("class", "brixJournal");
+    var widgetGroup = container.append('div')
+        .attr('class', 'brixJournal');
 
-    // use a fieldset (although w/o a form) to group the title and editbox
+    // use a fieldset (although w/o a form) to group the title
     var jCntr = widgetGroup.append('fieldset');
 
     var title = jCntr.append('legend')
-        .attr("class", "title")
+        .attr('class', 'title')
         .html(this.title_);
 
-    var textentry = jCntr.append("textarea")
-        .attr("class", "entry")
-        .attr("id", this.getId());
+    // make a div to hold the textarea so we can size it appropriately
+    var areaCntr = widgetGroup.append('div')
+        .attr('class', 'journalTextarea');
+
+    var textentry = areaCntr.append('textarea')
+        .attr('class', 'entry')
+        .attr('id', this.getId())
+        .attr('placeholder', 'Please enter text')
+        .attr('rows', '7');
 
     // We need a block container for the submit button and the attempts
     var submitAndAttemptsCntr  = widgetGroup.append('div');
