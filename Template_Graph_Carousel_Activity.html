@@ -10,7 +10,8 @@
 </head>
 <body>
     <div id="target1"></div>
-    <p>Credit Line</p>
+    <div id="target2"></div>
+    <p id="dataSource"><span style="font-weight: bold">Source: &nbsp;</span>Howard Shuman et al., Racial Attitudes in America (1997)</p> 
     <div id="target2"></div>
     <script src="js/d3.v3.min.js"></script>
     <!--
@@ -111,8 +112,8 @@
                                                         "type": "array",
                                                         "elements":
                                                         [
-                                                            { "type": "ref", "domain": "data", "refId": "schools1" },
-                                                            { "type": "ref", "domain": "data", "refId": "schools2" }
+                                                            { "type": "ref", "domain": "data", "refId": "intermarriage1" },
+                                                            { "type": "ref", "domain": "data", "refId": "Intermarriage2" }
                                                         ]
                                                     }
                                             }
@@ -129,10 +130,26 @@
 											"yPos": "top",
 											"labels":
 											[
-												{"content": "Same"}, 
 												{"content": "Separate"}, 
+												{"content": "Same"}
 											],
 										}
+									 "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "labels",
+                                                "value":
+                                                    {
+                                                        "type": "array",
+                                                        "elements":
+                                                        [
+                                                            { "type": "ref", "domain": "data", "refId": "Disapprove" },
+                                                            { "type": "ref", "domain": "data", "refId": "Approve" }
+                                                        ]
+                                                    }
+                                            }
+                                        ]
 								},
 								{
 									"bricId": "cntr1",
@@ -140,7 +157,7 @@
 									"config":
 										{
 											//"node": d3.select("#target1"),
-											"maxSize": {"height": 600, "width": 477},
+											"maxSize": {"height": 400, "width": 477},
 										},
 									"configFixup":
                                         [
@@ -179,7 +196,88 @@
 										]
 								}
 							]
-					}
+					},
+					{
+                        "description": "The 'target2' container contains the swappable callouts",
+                        "containerId": "target2",
+                        "brixConfig":
+                            [
+                                {
+                                    "bricId": "lbltbl1",
+                                    "bricType": "Callouts",
+                                    "config":
+                                        {
+                                            "id": "callme",
+                                            //"show": "all",
+                                            //"type": "numbered",
+                                            //"headers": ["Nuclear Reactor function"],
+                                            "textBits":
+                                                [
+                                                    {"cols": ["<b>Survey Question Asked:</b><br>Do you approve or disapprove of racial intermarriage?"]},
+                                                    {"cols": ["<b>Survey Question Asked:</b><br>Do you think white people and black/negroes should go to the same schools or separate schools?"]},
+                                                    {"cols": [ "<b>Survey Question Asked:</b><br>Do you agree or disagree with the statement: White people have a right to keep (Negroes/blacks/African Americans) out of their neighborhoods if they want to, and (Negroes/blacks/African Americans) should respect that right."]}
+                                                ]
+                                        }
+                                }
+                            ],
+                        "mortarConfig":
+                            [
+                                {
+                                    "mortarId": "hilite2",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                // This value type will have to change to lookup a bric type's particular event id
+                                                // for now I've hardcoded that event id (topic).
+                                                // this is the labels1's selectedEventId
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "LabelGroup",
+                                                        "instanceId": "reactorNum",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "lbltbl1" }
+                                            }
+                                        ]
+                                }
+                            ],
+                        "hookupActions":
+                            [
+                                {
+                                    "description": "draw the label table",
+                                    "type": "method-call",
+                                    "instance": {"type": "ref", "domain": "brix", "refId": "lbltbl1"},
+                                    "methodName": "draw",
+                                    "args":
+                                        [
+                                            { "type": "d3select", "selector": "#target2" }
+                                        ]
+                                },
+                                {
+                                    "description": "Initial condition: select 1st table row (note that we may want to use the state field to do this later)",
+                                    "type": "method-call",
+                                    "instance": {"type": "ref", "domain": "brix", "refId": "lbltbl1"},
+                                    "methodName": "lite",
+                                    "args":
+                                        [
+                                            { "type": "constant", "value": "0" }
+                                        ]
+                                }
+
+                            ]
+                    }
 				],
 			"data":
                 {
@@ -210,6 +308,20 @@
                 			{"x": 1964, "y": 63 },
                 			{"x": 1984, "y": 92 },
                 			{"x": 1995, "y": 96 }
+						],
+					"neighborhoods1":
+						[
+                			{"x": 1963, "y": 60},
+                			{"x": 1976, "y": 40 },
+                			{"x": 1990, "y": 24 },
+                			{"x": 1996, "y": 13 }
+						],
+					"neighborhoods2":
+						[
+							{"x": 1963, "y": 39},
+                			{"x": 1976, "y": 60 },
+                			{"x": 1990, "y": 76 },
+                			{"x": 1996, "y": 86 }
 						]
                 }
 		};
