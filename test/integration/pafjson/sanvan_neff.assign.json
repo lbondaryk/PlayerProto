@@ -23,7 +23,7 @@
        "binding" : [
            {
            "bindingIndex" : 1,
-           "boundActivity"  : "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.neff.1",
+           "boundActivity"  : "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.neff.1",
            "activityFormat" : "application/vnd.pearson.sanvan.v1.activity",
            "activityTitle" : "Neff Reactor Stepped Image",
            "credit" : "ForCredit",

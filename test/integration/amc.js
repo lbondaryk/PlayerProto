@@ -3,54 +3,64 @@
  */
 ;(function() {
 	
+	var version = 1.0;
+	
 	/*
 	 * Configture the PAF/Ecourses Namespaces.
 	 */
-	window.Ecourses = window.Ecourses || {};
-	window.Ecourses.Paf = window.Ecourses.Paf || {};
 	
-	var PAF = window.Ecourses.Paf;
+	var global = (window ? window : (function (){return this;})()) ;
+	global.Ecourses = global.Ecourses || {};
+	global.Ecourses.Paf = global.Ecourses.Paf || {};
 	
-	/*
-	 * Initialize console.
-	 */
-	window.con = function (msg) {
-		if (window.con.active) {
-			var con = $('#console');
-			if (con.length > 0) {
-				con.append ("<div>" + msg + "</div>");
-				con.append ('<div class="consep">&nbsp;</div>');
-				con[0].scrollTop = con[0].scrollHeight;
-			}
-		}
-	};	
+	var PAF = global.Ecourses.Paf;
 	
-	/*
-	 * Called by Launcher if needed.
-	 */
-	window.con.init = function (bool) {
-		if (bool === true) {
-			$('#console').show();
-			window.con.active = true;
-		} else {
-			$('#console').hide();
-			window.con.active = false;
-		}
-		
-	};	
 	
 	var log = function (e) {
-		//console.log (e ? ("[AMC] " + e) : e);
+		console.log (e ? ("[AMC] " + e) : e);
 	};
 	
-	PAF.AMC = PAF.AMC || {};
+	if (PAF.AMC) {
+		// Someone has already added us! Hope its the same version :p
+		if (PAF.AMC.version !== version) {
+			console.log ("Added amc.js of different versions. " +
+					"Possible conflicts could happen");
+		}
+		
+		return;
+	}
+	
+	
+	PAF.AMC = {};
+	PAF.AMC.version = version;
+	
+	
 	
 	/**
 	 * AMC Level Helper function
 	 */
 	PAF.AMC.detectEventManager = function () {
-		return window["eventManager"] ;
-	};	
+		return global["eventManager"] ;
+	};
+	
+	PAF.AMC.getCallerContext = function () {
+		if(PAF.AMC._callerCtx) {
+			return PAF.AMC._callerCtx;
+		}
+		
+		// Only for short term
+		return {
+			courseId : "course_c1",
+			identityId : "test1_t1"
+		};
+	};
+
+	PAF.AMC.setCallerContext = function (courseId, identityId) {
+		PAF.AMC._callerCtx = {
+			courseId: courseId,
+			identityId: identityId
+		};
+	};
 	
 	/**
 	 * AMC Initializer
@@ -63,12 +73,17 @@
 
 		io.laspafurl = io.laspafurl ? io.laspafurl : "";
 		log ("Using paf url = [" + io.laspafurl + "]. " +
-				"Empty url implies current context will be used.")
+				"Empty url implies current context will be used.");
 		if (!io.eventmanager) {
 			var msg = "Init failed. AMC needs an event manager.";
 			log (msg);
 			throw msg;
 		}
+
+		if (io.courseId && io.identityId) {
+			PAF.AMC.setCallerContext(io.courseId, io.identityId);
+		}
+
 		var inst = 
 			PAF.AMC._instance = new PAF.AMC.AMCClass (io.laspafurl, io.eventmanager);
 		
@@ -136,7 +151,7 @@
 		_msgQ : null,
 		
 		requestbinding : function (message) {
-			log ("AMC Recieved binding request = " + message.data.activityurl)
+			log ("AMC Recieved binding request = " + message.data.activityurl);
 			var context = this;
 			// Create handler
 			if (!message.data.assignmenturl || !message.data.activityurl
@@ -151,10 +166,12 @@
 				assStat = context._asgnUrlToSession[message.data.assignmenturl] = {
 					sessionservice : sr,
 					activitysequence : null
-				};			
-				
+				};
+
 				var reqObj = {
-					header : {},
+					header : {
+						callContext : PAF.AMC.getCallerContext()
+					},
 					content : (message.data.startseqdata) ? message.data.startseqdata : {
 						toolSettings :  {
 							assignmentUrl : message.data.assignmenturl
@@ -178,7 +195,7 @@
 						" and param = " + JSON.stringify (param) );
 				// Default URL is for PAF hub directly.
 				param = $.extend ({
-					asRequestForAms : false,
+					asRequestForAms : false
 				}, param);
 				
 				log (JSON.stringify (param));
@@ -204,7 +221,7 @@
 				var asreq =  {
 					header : {
 						"Hub-Session" : hubsession,
-						"Content-Type" : "application/vnd.pearson.paf.v1.node+json",
+						"Content-Type" : "application/vnd.pearson.paf.v1.node+json"
 					},
 					content : {
 						"@context": "http://purl.org/pearson/paf/v1/ctx/core/SequenceNode",
@@ -219,6 +236,7 @@
 				
 				if (param.asRequestForAms === true) {
 					asreq.content.nodeCollection = activitySeq.getNodeCollection();
+					asreq.content.callContext = PAF.AMC.getCallerContext();
 				}
 				context._em.publish (message.replytopic, {
 					status : "success",
@@ -277,7 +295,90 @@
 					sourcemessage : message
 				});
 			});
-		}
+		},
+
+		
+		endassignment : function (message) {
+			var context = this;
+			// Create handler
+			if (!message.data.assignmenturl 
+					|| !message.replytopic) {
+				log ("Insufficient argument in 'endassignment' request");
+				if (message.replytopic) {
+					context._em.publish (message.replytopic, {
+						status : "fail",
+						sourcemessage : message
+					});				
+				}
+				return;
+			}	
+			
+			var assStat = context._asgnUrlToSession[message.data.assignmenturl];
+			
+			if (!assStat) {
+				var sr = new PAF.SessionService(context._lasPafURL);
+				assStat = context._asgnUrlToSession[message.data.assignmenturl] = {
+					sessionservice : sr,
+					activitysequence : null
+				};			
+				
+				var reqObj = {
+					header : {
+						callContext : PAF.AMC.getCallerContext()
+					},
+					content :  {
+						toolSettings :  {
+							assignmentUrl : message.data.assignmenturl
+						}
+					}
+				};		
+				sr.startSequence (reqObj);
+
+			}
+			
+			var session = assStat.sessionservice;			
+			session.startSequenceDone (function (hubsession, activitySeq, param) {
+				log ("End Assignment. To use hubsession = " + hubsession
+						+ " activity sequence = " + JSON.stringify (activitySeq) + 
+						" and param = " + JSON.stringify (param) );
+				// Default URL is for PAF hub directly.
+				
+				var reqO = {
+					header : {
+						"Hub-Session" : hubsession,
+						callContext : PAF.AMC.getCallerContext()
+					},
+					content :  {
+						assignmentUrl : message.data.assignmenturl,
+						assignmentId :  activitySeq["@id"]
+					}
+				};	
+				
+				session.endAssignment (reqO)
+					.done(function (data) {
+						log ("Successfully posted end assignment");
+						context._em.publish (message.replytopic, {
+							status : "success",
+							data : data,
+							sourcemessage : message
+						});
+					}).fail (function () {
+						log ("End assignment operation failed");
+						context._em.publish (message.replytopic, {
+							status : "fail",
+							sourcemessage : message
+					});	
+				});
+				
+			}).startSequenceFail (function () {
+				context._em.publish (message.replytopic, {
+					status : "fail",
+					sourcemessage : message
+				});
+			});
+
+
+		}		
 	};
 	
 	/**
@@ -402,6 +503,18 @@
 		 		type : 'POST',
 		 		contentType : 'application/json',
 		 		async : true 
+		 	});
+		},
+		
+		endAssignment : function (data) {
+			var url = this._lasPafURL +  "/las-paf/sd/paf-service/assessmentend";
+		 	return  $.ajax ({
+		 		url : url,
+		 		data : JSON.stringify (data),
+		 		processData : false,
+		 		type : 'POST',
+		 		contentType : 'application/json',
+		 		async : true ,
 		 	});
 		}
 	};

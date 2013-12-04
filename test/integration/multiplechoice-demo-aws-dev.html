@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Muliple Choice Demo</title>
+    <title>Multiple Choice Demo</title>
 
 
     <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
@@ -85,7 +85,7 @@
     <script src="../../js/ipc.js"></script>
 -->   
     <!-- IPC initialization and pointers to IPS and AMS -->
-    <script src="demo-aws-dev-boilerplate.js"></script>
+    <script src="demo-boilerplate.js"></script>
 
     <!-- Turn on client logging -->
     <script>
@@ -144,7 +144,28 @@
     <script>
 
     (function() {
-        brixInitDiv();
+        /* 
+         * Set up your AMS and IPS URLs, Course, and User. 
+        */
+        var AMC_BASE_URL = "http://dev-414158649.us-west-1.elb.amazonaws.com"; // uncomment for the DEV AWS environment
+        //var AMC_BASE_URL = "http://localhost:9080"; // uncomment for a local environment
+
+        var IPS_BASE_URL = "http://dev-414158649.us-west-1.elb.amazonaws.com/ips"; // uncomment for the DEV AWS environment
+        //var IPS_BASE_URL = "http://localhost:8088"; // uncomment for a local environment
+        
+        var COURSE = "course_c2";
+        var USER = "test1_t2";
+        
+        
+        /*
+         * Display features and setup.
+         */
+        var assignmentUrl = $("#target1").data("assignmenturl");
+        var activityUrl = $("#target1").data("activityurl");
+        $("#ams_base_url").text(AMC_BASE_URL);
+        $("#activity_url").text(assignmentUrl);
+        $("#assignment_url").text(activityUrl);
+        brixInitDiv(AMC_BASE_URL, IPS_BASE_URL, COURSE, USER);
     })();
 
     </script>

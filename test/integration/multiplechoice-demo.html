@@ -6,20 +6,19 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Muliple Choice Demo</title>
-
+    <title>Multiple Choice Demo</title>
 
     <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
-    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+    <link href="../../css/bootstrap_plus.css" rel="stylesheet" media="screen">
     
     <!-- widgets.css contains styling for the interactive brix -->
-    <link href="css/widgets.css" rel="stylesheet">
+    <link href="../../css/widgets.css" rel="stylesheet">
 
     <!-- eCourse-master.css contains styling for all the navigation -->
-    <link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+    <link href="../../css/eCourse-master.css" rel="stylesheet" media="screen">
 
     <!-- content_styles.css contains styling for the narrative layout and responsive design -->
-    <link href="css/content_styles.css" rel="stylesheet" media="screen">
+    <link href="../../css/content_styles.css" rel="stylesheet" media="screen">
 
     <!-- function created by David Bau to allow seeding Math.random -->
     <!-- downloaded from github https://github.com/davidbau/seedrandom -->
@@ -31,15 +30,18 @@
     <script src="../../js/d3.v3.min.js"></script>
 
     <!-- include google library base for use in tests -->
+    <script src="../../js/jquery-latest.js"></script>
+
+    <!-- Local directory copy of built brixlib -->
+    <script src="brixlib-compiled.js"></script>
+
+    <!-- Non-compiled brixlib code.  BEWARE: this can get incomplete quickly and easily -->
+<!--
     <script src="../../../closure/closure-library/closure/goog/base.js"></script>
     <script src="../../../closure/closure-library/closure/goog/deps.js"></script>
     <script src="../../../closure/closure-library/closure/goog/debug/logger.js"></script>
     <script src="../../../closure/closure-library/closure/goog/debug/console.js"></script>
-    <script src="../../js/jquery-latest.js"></script>
-
-    <!--
-    <script src="../../js/brixlib-compiled.js"></script>
-    -->
+    
 
     <script src="../../js/eventmanager.js"></script>
 
@@ -74,36 +76,63 @@
     <script src="../../js/widget-multiselectquestion.js"></script>
     <script src="../../js/widget-numericquestion.js"></script>
     <script src="../../js/widget-slider.js"></script>
+    <script src="../../js/brix-labelcarousel.js"></script>
+    <script src="../../js/brix-labelselector.js"></script>
+    <script src="../../js/brix-pyramicchart.js"></script>
     <script src="../../js/mortar-hilite.js"></script>
     <script src="../../js/briclayer.js"></script>
     <script src="../../js/ipc.js"></script>
+-->   
+    <!-- IPC initialization and pointers to IPS and AMS -->
     
     <script src="demo-boilerplate.js"></script>
 
 
     <script>
-		// (mjl->ysap) may want to replace these lines with:
-	// pearson.utils.logToConsole(true, 'FINER', 'pearson');
-    var debugConsole = new goog.debug.Console();
-    debugConsole.setCapturing(true);
-    goog.debug.Logger.getLogger('pearson').setLevel(goog.debug.Logger.Level.FINER);
+    // The logToConsole abstracts the google closure logging configuration:
+	pearson.utils.logToConsole(true, 'FINER', 'pearson');
     </script>
 
-    <!-- LAS-PAF's amc -->
+    <!-- SanVan core (LAS-PAF)'s amc -->
     <script src="amc.js"></script>
+    <style type="text/css">
+
+.demo_message_box {
+    border: orange 1px solid; padding: 10px;
+}
+.demo_params .dataval{
+    font-weight: bold;
+}
+    </style>
 
 </head>
 
 <body>
-    <h1>Submission (MultipleChoiceQuestion) Integration demo (with PAF)</h1>
-    <div style="border: orange 1px solid; padding: 10px">
-    <p>This test will require to have the AMS server (Java webapp in Tomcat) and Brix test Servers (IPS &amp; CorrectnessEngine) up</p>
-    <p>Remember to configure laspaf.properties to NOT use the PAF Stub.</p>
-    <pre>
-[Tomcat/bin]$ ./catalina.sh run
-[BrixServer]$ make testsvr
-[CorrectnessEngine]$ node ceapp.js
-[~]$ redis-server</pre>
+    <h1>Submission (MCQ) Integration demo.</h1>
+    <div class="demo_message_box">
+        <div class="demo_params" >
+            Params:
+            <ul>
+            <li>AMS Base URL: <span class="dataval" id="ams_base_url"></span></li>
+            <li>IPS Base URL: <span class="dataval" id="ips_base_url"></span></li>
+            <li>Activity URL: <span class="dataval" id="activity_url"></span></li>
+            <li>Assignment URL: <span class="dataval" id="assignment_url"></span></li>
+            <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
+            </ul>
+        </div>
+        <div >
+            <p>This test will require to have Brix test servers (IPS & CorrectnessEngine) up, along with 
+                the required components: Redis (for IPS). If you are connecting AMS locally, you will
+                also require to run Tomcat and Cassandra (Remember to configure laspaf.properties to NOT use the PAF Stub.) ** The actuall tomcat script may differ from platform</p>
+            <pre style="float:right; width: 50%">
+If Running AMS locally you will also need to run:
+[cassandra]$ ./cassandra -f
+[Tomcat/bin]$ ./catalina.sh run (or startup.sh)</pre>
+<pre>
+[Redis]$ redis-server
+[BrixServer]$ node brixapp.js
+[CorrectnessEngine]$ node ceapp.js</pre>
+        </div>
     </div>
 
     <!-- TEST CONTENT {{ -->
@@ -136,8 +165,62 @@
     <script>
 
     (function() {
-        brixInitDiv();
+        var amcBaseUrl = "http://localhost:9080";
+        var ipsBaseUrl = "http://localhost:8088";
+        var course = "course_c2";
+        var user = "test1_t2";
+
+        // Override to local based on query string parameter
+        // E.g. file://../multiplechoice-demo.html?ams={dev|qa}
+        var queryString = parseQueryString();
+        if (queryString.ams && queryString.ams == "dev")
+        {
+            amcBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com";
+        }
+        if (queryString.ips && queryString.ips == "dev")
+        {
+            ipsBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com/ips";
+        }
+        if (queryString.course)
+        {
+            course = queryString.course;
+        }
+        if (queryString.user)
+        {
+            user = queryString.user;
+        }      
+        /*
+         * Display features and setup.
+         */
+        var assignmentUrl = $("#target1").data("assignmenturl");
+        var activityUrl = $("#target1").data("activityurl");
+        $("#ams_base_url").text(amcBaseUrl);
+        $("#ips_base_url").text(ipsBaseUrl);
+        $("#activity_url").text(assignmentUrl);
+        $("#assignment_url").text(activityUrl);
+        $("#course").text(course);
+        $("#user").text(user);
+
+        brixInitDiv(amcBaseUrl, ipsBaseUrl, course, user);
     })();
+
+    /**
+     * Parses the URL's query string and returns an object representing the parameters.
+     * From https://developer.mozilla.org/en-US/docs/Web/API/window.location, 
+     * Example #7
+     * 
+     * @return {object} Object where properties are the parameters.
+     */
+    function parseQueryString() {
+        var oGetVars = {};
+        if (window.location.search.length > 1) {
+            for (var aItKey, nKeyId = 0, aCouples = window.location.search.substr(1).split("&"); nKeyId < aCouples.length; nKeyId++) {
+                aItKey = aCouples[nKeyId].split("=");
+                oGetVars[unescape(aItKey[0])] = aItKey.length > 1 ? unescape(aItKey[1]) : "";
+            }
+        }
+        return oGetVars;
+    }
 
     </script>
 </body>
