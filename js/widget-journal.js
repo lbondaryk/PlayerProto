@@ -266,7 +266,9 @@ pearson.brix.Journal.prototype.handleSubmitResponse_ = function (responseDetails
     // I'm adding this here just so this skeleton has some indication that
     // the response was called.
     var feedback = this.lastdrawn.widgetGroup.select("div.feedback");
-    feedback.append('span').text('submission was successful');
+    feedback.append('div')
+        .attr('class', 'feedback-correct')
+        .text('submission was successful');
 };
 
 /* **************************************************************************
@@ -280,7 +282,6 @@ pearson.brix.Journal.prototype.toggleEnabler = function ()
     var entry = this.lastdrawn.widgetGroup.select("textarea.entry");
     var entryText = entry.node().value;
 
-    console.log(entryText);
 };
 
 /* **************************************************************************
@@ -340,10 +341,10 @@ pearson.brix.Journal.prototype.draw = function (container)
         .attr('rows', '7');
 
     // We need a block container for the submit button and the attempts
-    var submitAndAttemptsCntr  = widgetGroup.append('div');
+    var submitAndAttemptsCntr = widgetGroup.append('div');
 
     // draw the submit button below
-    var submitButtonCntr = widgetGroup.append('div')
+    var submitButtonCntr = submitAndAttemptsCntr.append('div')
         .attr('class', 'submit')
         .style('display', 'inline-block');
 
@@ -352,7 +353,7 @@ pearson.brix.Journal.prototype.draw = function (container)
     var attemptsCntr = submitAndAttemptsCntr.append('span')
         .attr('class', 'attempts');
 
-    // make a target for feedback when the submission is successful (or not)
+    // make a target for feedback when the question is answered
     widgetGroup.append('div')
         .attr('class', 'feedback');
 

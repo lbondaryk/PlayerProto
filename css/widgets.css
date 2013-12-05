@@ -361,6 +361,7 @@ div.brixMultipleChoiceQuestion .submit
   float: left;
 }
 
+div.brixJournal span.attempts,
 div.brixMultipleChoiceQuestion span.attempts
 {
   margin-top: 5px;
@@ -436,8 +437,6 @@ div.brixMultipleChoiceQuestion .submit button:disabled
     background: linear-gradient(#0D65A6 0%, #0E6CB3 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
     border-color: #c0c0c0;
     text-shadow: #e0e0e0;
-
-
 }
 
 .brixJournal .feedback,
@@ -470,6 +469,7 @@ div.brixMultipleChoiceQuestion .submit button:disabled
   padding: 20px;
 }
 
+.brixJournal .feedback .feedback-correct,
 .brixMultipleChoiceQuestion .feedback .feedback-correct,
 .brixMultipleChoiceQuestion .feedback .feedback-incorrect,
 .brixMultipleChoiceQuestion .feedback .feedback-partial
