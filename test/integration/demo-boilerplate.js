@@ -63,6 +63,11 @@ function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl, opt_course, opt_user)
     // Notice that ipc.init() comes before AMC.initialize()
     ipc.init(itemsNormalized);
 
+
+    // Since 2013/12/05 - Sets the course id and user(identity) id explicitly
+    //                    Different course or user will retrieve different sequence node
+    PAF.AMC.setCallerContext (course, user);
+
     // In iframe-mode, the requestbinding should not be provided
     // Note: Configure the LASPAF (AMS) server url appropriately.
     //       In this configuration, the AMS is running on local Tomcat port 9080 
@@ -72,8 +77,6 @@ function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl, opt_course, opt_user)
     PAF.AMC.initialize ({
         laspafurl : amsBaseUrl,
         eventmanager : eventManager,
-        requestbinding : itemsNormalized,
-        courseId : course,
-        identityId : user
+        requestbinding : itemsNormalized
     });
 }
