@@ -179,6 +179,111 @@
                                                 "value": { "type": "ref", "domain": "brix", "refId": "swapGraph" }
                                             }
                                         ]
+                                },
+                                // We will need mortar to update the legend data on button clicks
+                                {
+                                    "mortarId": "dataswap2",
+                                    "mortarType": "Dataswap",
+                                    "config":
+                                        {
+                                            //"topic": pearson.brix.LabelSelector.getEventTopic('selected', 'dataLabels'),
+                                            "eventDetailsProperty": "index",
+                                            //"sourceDataArray": array built of data below,
+                                            //"targetBric": swapGraph,
+                                            "dataPropertySetter": "setLabels",
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "LabelSelector",
+                                                        "instanceId": "dataLabels",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "sourceDataArray",
+                                                "value": 
+                                                    {
+                                                        "type": "array", 
+                                                        "elements": 
+                                                            [
+                                                                { "type": "ref", "domain": "data", "refId": "intermarriageLegend" },
+                                                                { "type": "ref", "domain": "data", "refId": "schoolsLegend" },
+                                                                { "type": "ref", "domain": "data", "refId": "neighborhoodsLegend" }
+                                                            ]
+                                                    } 
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "legend1" }
+                                            }
+                                        ]
+                                },
+                                // And mortar to highlight the graph lines with the legend
+                                {
+                                    "mortarId": "hilite3",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                // This value type will have to change to lookup a bric type's particular event id
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Legend",
+                                                        "instanceId": "legendSchools",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "swapGraph" }
+                                            }
+                                        ]
+                                },
+                                // and mortar to highlight the legend with clicks on the graph lines
+                                {
+                                    "mortarId": "hilite2",
+                                    "mortarType": "Hilite",
+                                    "config":
+                                        {
+                                            "eventDetailsProperty": "selectKey"
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                // This value type will have to change to lookup a bric type's particular event id
+                                                // this is the labels1's selectedEventId
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "LineGraph",
+                                                        "instanceId": "graph1",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "legend1" }
+                                            }
+                                        ]
                                 }
                             ],
 						"hookupActions":
@@ -218,6 +323,16 @@
                                               "value": {"topPercentOffset": 0.0, "leftPercentOffset": 0, "heightPercent": 0.2, "widthPercent": 1}
                                             }
                                         ]
+                                },
+                                {
+                                    "description": "Initial condition: select 1st label",
+                                    "type": "method-call",
+                                    "instance": {"type": "ref", "domain": "brix", "refId": "labelSelector1"},
+                                    "methodName": "lite",
+                                    "args":
+                                        [
+                                            { "type": "constant", "value": "0" }
+                                        ]
                                 }
 							]
 					},
@@ -246,8 +361,9 @@
                             ],
                         "mortarConfig":
                             [
+                              // and mortar to update the callouts on button clicks
                                 {
-                                    "mortarId": "hilite2",
+                                    "mortarId": "hilite1",
                                     "mortarType": "Hilite",
                                     "config":
                                         {
@@ -259,13 +375,12 @@
                                                 "type": "set-property",
                                                 "name": "topic",
                                                 // This value type will have to change to lookup a bric type's particular event id
-                                                // for now I've hardcoded that event id (topic).
                                                 // this is the labels1's selectedEventId
                                                 "value":
                                                     {
                                                         "type": "brix-topic",
-                                                        "bricType": "LabelGroup",
-                                                        "instanceId": "reactorNum",
+                                                        "bricType": "LabelSelector",
+                                                        "instanceId": "dataLabels",
                                                         "eventName": "selected"
                                                     }
                                             },
@@ -307,62 +422,64 @@
                 {
                     "intermarriageLegend":
                         [
-                            {"content": "Disapprove"}, 
-                            {"content": "Approve"}
+                            {"content": "Approve"},
+                            {"content": "Disapprove"}
                         ],
 					"intermarriage": 
                         [
-    					  [
+    					    [
+                                {"x": 1958, "y": 4},
+                                {"x": 1972, "y": 27 },
+                                {"x": 1991, "y": 51 },
+                                {"x": 2011, "y": 84 }
+                            ],
+                            [
                     			{"x": 1958, "y": 96},
                     			{"x": 1972, "y": 73 },
                     			{"x": 1991, "y": 49 },
                     			{"x": 2011, "y": 16 }
-        					],
-               				[
-                    			{"x": 1958, "y": 4},
-                    			{"x": 1972, "y": 27 },
-                   				{"x": 1991, "y": 51 },
-                    			{"x": 2011, "y": 84 }
-                   			]
+        					]
+               				
                         ],
                     "schoolsLegend":
                         [
-                            {"content": "Separate"}, 
-                            {"content": "Same"}
+                            {"content": "Same"},
+                            {"content": "Separate"}
                         ],
 					"schools":
                         [
-    						[
-    							{"x": 1942, "y": 68},
-                    			{"x": 1964, "y": 37 },
-                    			{"x": 1984, "y": 8 },
-                    			{"x": 1995, "y": 4 }
-    						],
     						[
     							{"x": 1942, "y": 32},
                     			{"x": 1964, "y": 63 },
                     			{"x": 1984, "y": 92 },
                     			{"x": 1995, "y": 96 }
-    						]
+    						],
+                            [
+                                {"x": 1942, "y": 68},
+                                {"x": 1964, "y": 37 },
+                                {"x": 1984, "y": 8 },
+                                {"x": 1995, "y": 4 }
+                            ]
                         ],
                      "neighborhoodsLegend":
                         [
-                            {"content": "Disagree"}, 
-                            {"content": "Agree"}
+                                {"content": "Agree"},
+                                {"content": "Disagree"}, 
+
                         ],
 					"neighborhoods":
                         [
     						[
+                                {"x": 1963, "y": 39},
+                                {"x": 1976, "y": 60 },
+                                {"x": 1990, "y": 76 },
+                                {"x": 1996, "y": 86 }
+                            ],
+                            [
                     			{"x": 1963, "y": 60},
                     			{"x": 1976, "y": 40 },
                     			{"x": 1990, "y": 24 },
                     			{"x": 1996, "y": 13 }
-    						],
-    						[
-    							{"x": 1963, "y": 39},
-                    			{"x": 1976, "y": 60 },
-                    			{"x": 1990, "y": 76 },
-                    			{"x": 1996, "y": 86 }
     						]
                         ]
                 }
