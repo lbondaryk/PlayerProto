@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="Author" content="Leslie Bondaryk" />
+	<meta name="Owner" content="Pearson" />
+	<meta name="Copyright" content="Copyright (c) 2013 Pearson. All rights reserved." />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="Carmen Santiago, Demo Book" name="description" />
+	<title class="setTitle"></title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="css/bootstrap_plus.css" rel="stylesheet" media="screen">
+  	
+  	<!-- widgets.css contains styling for the interactive brix -->
+	<link href="css/widgets.css" rel="stylesheet">
+
+	<!-- eCourse-master.css contains styling for all the navigation -->
+	<link href="css/eCourse-master.css" rel="stylesheet" media="screen">
+
+	<!-- content_styles.css contains styling for the narrative layout and responsive design -->
+	<link href="css/content_styles.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="container">
+		<div class="span12 lc_ec_page">
+			<section class="lc_ec_fiftyFifty lc_ec_pageInner">
+       	 		<div class="lc_ec_content">
+       	 			<h2 class="lc_ec_bHead"><span class='number setId'></span> 
+											<span class="setTitle"></span>
+					</h2>
+		 			<div class="lc_ec_leading">
+						<div id="target0"><p>0. Journal question</p>
+						</div>
+	              
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+    <script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.js"></script>
+	<script src="js/toc-structure.js"></script>
+	<script src="js/eCourse-master.js"></script>
+	
+
+	<script src="js/d3.v3.min.js"></script>
+
+	<!-- include google library base for use in tests -->
+	<script src="../closure/closure-library/closure/goog/base.js"></script>
+
+	<!--
+    <script src="../js/brixlib-compiled.js"></script>
+	-->
+
+	<script src="js/brixlib-deps.js"></script>
+	<script>
+		goog.require('pearson.brix.Ipc');
+		goog.require('pearson.utils.DomHelper');
+	</script>
+
+    <script>
+    var debugConsole = new goog.debug.Console();
+    debugConsole.setCapturing(true);
+    goog.debug.Logger.getLogger('pearson').setLevel(goog.debug.Logger.Level.FINER);
+    </script>
+	
+	<script>
+
+	// Create an object that will contain the objects needed for the activities
+	// on this page.
+	pearson.brix.activity = {};
+	var a = pearson.brix.activity;
+
+	// The activity config that defines the brix and mortar for this page
+	a.config =
+		{
+			"description": "A Sample Activity containing a single journal bric",
+			"sequenceNodeKey": "7151d314-cd49-40ff-b56a-6270c34f4494",
+			"maxAttempts": 3,
+			"containerConfig":
+				[
+					{
+						"description": "container for the sample journal",
+						"containerId": "target0",
+						"brixConfig":
+							[
+								{
+									"bricId": "J1",
+									"bricType": "Journal",
+									"config":
+										{
+											"id": "sampleJ1",
+											//"journalId": "7151d314-cd49-40ff-b56a-6270c34f4494",
+                                            "title": "What are your <i>opinions</i> on this chapter?",
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "journalId",
+                                                "value": { "type": "ref", "domain": "info", "refId": "sequenceNodeKey" }
+                                            }
+                                        ],
+									"answerKey":
+										{
+											"assessmentType": "alwayscorrect"
+										}
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"description": "Hookup the submit manager to evaluate answers",
+									"type": "method-call",
+									"instance": { "type": "submit-manager" },
+									"methodName": "handleRequestsFrom",
+									"args":
+										[
+											{ "type": "ref", "domain": "brix", "refId": "J1" },
+										]
+								},
+								{
+									"description": "Draw the journal",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "J1"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#target0" },
+										]
+								}
+							]
+					}
+				]
+		};
+
+	// create the eventmanager to be used by the created brix, and the
+	// bricLayer which will create them, and then tell the bricLayer to build.
+	a.eventManager = new pearson.utils.EventManager();
+	a.answerMan = new pearson.brix.utils.LocalAnswerMan();
+	a.submitManager = new pearson.brix.utils.SubmitManager(a.eventManager, a.answerMan);
+
+	a.bricLayer = new pearson.brix.BricLayer(null, a.eventManager, a.submitManager);
+
+	a.building = a.bricLayer.build(a.config);
+
+	a.answerMan.registerAnswerKey(a.config.sequenceNodeKey,
+								  a.config.containerConfig[0].brixConfig[0].answerKey);
+
+    </script>
+</body>
+</html>

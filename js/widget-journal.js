@@ -268,7 +268,7 @@ pearson.brix.Journal.prototype.handleSubmitResponse_ = function (responseDetails
     var feedback = this.lastdrawn.widgetGroup.select("div.feedback");
     feedback.append('div')
         .attr('class', 'feedback-correct')
-        .text('submission was successful');
+        .text('Your entry is saved.');
 };
 
 /* **************************************************************************
@@ -337,7 +337,7 @@ pearson.brix.Journal.prototype.draw = function (container)
     var textentry = areaCntr.append('textarea')
         .attr('class', 'entry')
         .attr('id', this.getId())
-        .attr('placeholder', 'Please enter text')
+        .attr('placeholder', 'The response entered here will be saved to your notes and may be collected by your instructor if he/she requires it.')
         .attr('rows', '7');
 
     // We need a block container for the submit button and the attempts
