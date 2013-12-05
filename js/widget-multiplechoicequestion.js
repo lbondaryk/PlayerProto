@@ -422,6 +422,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
 
     // For now just use the helper function to write the response
     var selectedChoice = this.presenterBric.selectedChoice();
+    
     responseDetails.submission = selectedChoice.content;
     pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 
@@ -440,7 +441,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
         var correctChoice = this.presenterBric.getChoiceByKey(correctAnswerKey);
         correctAnswer['correctness'] = 1;
         correctAnswer['submission'] = correctChoice.content;
-        pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer);
+        pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer, true);
+        this.presenterBric.flagChoice(correctAnswerKey);
     }
 
     // Re-enable the submit button if the answer was incorrect and there are attempts remaining
@@ -451,8 +453,9 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     }
 
     // If we know the correct answer, tell the presenter bric to flag it
-    if (correctAnswerKey !== null)
+    if (this.correctlyAnswered())
     {
+        correctAnswerKey = selectedChoice.answerKey;
         this.presenterBric.flagChoice(correctAnswerKey);
     }
 };

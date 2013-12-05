@@ -202,9 +202,15 @@ pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (su
  *                                   correctness, submission, feedback.
  *
  ****************************************************************************/
-pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails)
+pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails, outOfTries)
 {
     var responseFormat = {
+            correctAfterWrong: {
+                icon: 'icon-check',
+                answerPrefix: '"',
+                answerSuffix:  '" is the correct answer. ',
+                responseClass: 'feedback-correctAfterWrong'
+            },
             correct: {
                 icon: 'icon-ok-sign',
                 answerPrefix: 'Correct. "',
@@ -212,7 +218,7 @@ pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function 
                 responseClass: 'feedback-correct'
             },
             incorrect: {
-                icon: 'icon-remove',
+                icon: 'icon-wrong',
                 answerPrefix: 'Incorrect. "',
                 answerSuffix:  '" is not the right answer.',
                 responseClass: 'feedback-incorrect'
@@ -238,9 +244,13 @@ pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function 
         {
             ansType = 'incorrect';
         }
-        else if (correctness === 1)
+        else if (correctness === 1 && !outOfTries)
         {
             ansType = 'correct';
+        }
+        else if (correctness === 1 && outOfTries)
+        {
+            ansType = 'correctAfterWrong';
         }
         else if (correctness > 0 && correctness < 1)
         {
