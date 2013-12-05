@@ -1,0 +1,33 @@
+
+{
+   "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
+   "@type" : "Envelope",
+   "metadata" : {
+     "title" : "Sanvan Journal Demo jq1",
+     "guid" : "4872CF3F-276B-443B-A1B9-3FB95D187E62",
+     "description" : "Sanvan MultipleChoiceQuestion demo",
+     "contentTypeTier1" : "Assessment",
+     "contentTypeTier2" : [ "AssessmentItem" ],
+     "subject" : [ "EnvironmentalScience" ],
+     "intendedEndUserRole" : [ "Student" ],
+     "timeRequired" : "PT20S",
+     "educationalAlignment" : [ "http://purl.org/pearson/objectives/183725473384362" ]
+   },
+   "body" : {
+     "@context" : "http://purl.org/pearson/paf/v1/ctx/core/StructuredAssignment",
+     "@type" : "StructuredAssignment",
+     "title" : "Sanvan Journal Demo jq1",
+     "guid" : "4872CF3F-276B-443B-A1B9-3FB95D187E62",
+     "assignmentContents" : {
+       "@contentType":"application/vnd.pearson.paf.v1.container+json",
+       "binding" : [
+           {
+           "boundActivity"  : "{SERVER}/paf-repo/resources/activities/7CCE2F41-D1A5-40CD-B2B6-DFF7E8731801",
+           "activityFormat" : "application/vnd.pearson.sanvan.v1.activity",
+           "activityTitle" : "Journal Demo jq1",
+           "credit" : "ForCredit",
+           "guid" : "7CCE2F41-D1A5-40CD-B2B6-DFF7E8731801"
+         }]
+    }
+  }
+}
