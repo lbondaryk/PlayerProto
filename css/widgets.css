@@ -367,44 +367,56 @@ div.brixMultipleChoiceQuestion span.attempts span.descr
 
 div.brixMultipleChoiceQuestion .submit button:disabled
 {
-  color: #686868;
   border-color: #e0e0e0;
-  background-color: #e0e0e0;
-  background-image: -moz-linear-gradient(top, #e0e0e0, #e0e0e0);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e0e0e0), to(#e0e0e0));
-  background-image: -webkit-linear-gradient(top, #e0e0e0);
-  background-image: -o-linear-gradient(top, #e0e0e0, #e0e0e0);
-  background-image: linear-gradient(to bottom, #e0e0e0, #e0e0e0);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffe0e0e0', endColorstr='#ffe0e0e0', GradientType=0);
-  
+  background: #e0e0e0;
+  text-shadow: none;
+  cursor: default;
+  color: #686868;  
 }
 
 .brixButton button
 {
-  color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #107aca;
-  background-image: -moz-linear-gradient(top, #368fd2, #107aca);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#368fd2), to(#107aca));
-  background-image: -webkit-linear-gradient(top, #368fd2, #107aca);
-  background-image: -o-linear-gradient(top, #368fd2, #107aca);
-  background-image: linear-gradient(to bottom, #368fd2, #107aca);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff368fd2', endColorstr='#ff107aca', GradientType=0);
-  margin-bottom: 0;
-  margin-left: 15px;
-  font: 16px Helvetica;
-  line-height: 20px;
-  text-align: center;
-  vertical-align: middle;
-  cursor: pointer;
-  color: #fff;
-  border-color: #0d65a6;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
-  padding: 4px 25px;
+    background: -webkit-gradient(linear, 0 100%, 0 0, from(#368fd2), to(#107aca));
+    background: -webkit-linear-gradient(#368fd2 0%, #107aca 100%);
+    background: -moz-linear-gradient(#368fd2 0%, #107aca 100%);
+    background: -o-linear-gradient(#368fd2 0%, #107aca 100%);
+    background: linear-gradient(#368fd2 0%, #107aca 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+    color: #fff;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #0D65A6;
+    border-radius: 3px;
+    box-shadow: none;
+    font-size: 13px;
+    line-height: 28px;
+    padding: 0 24px;
+    text-shadow: 0 1px 0 #0C64A5;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 0;
+    vertical-align: middle;
+    
+}
+
+.brixButton button:hover,
+.brixButton button:focus {
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#107aca), to(#368fd2));
+    background: -webkit-linear-gradient(#107aca 0%, #368fd2 100%);
+    background: -moz-linear-gradient(#107aca 0%, #368fd2 100%);
+    background: -o-linear-gradient(#107aca 0%, #368fd2 100%);
+    background: linear-gradient(#107aca 0%, #368fd2 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+.brixButton button:active,
+.brixButton button.active {
+    background: -webkit-gradient(linear, 0 100%, 0 0, from(#c0c0c0), to(#d6d6d6));
+    background: -webkit-linear-gradient(#c0c0c0 0%, #d6d6d6 100%);
+    background: -moz-linear-gradient(#c0c0c0 0%, #d6d6d6 100%);
+    background: -o-linear-gradient(#c0c0c0 0%, #d6d6d6 100%);
+    background: linear-gradient(#0D65A6 0%, #0E6CB3 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border-color: #c0c0c0;
+    text-shadow: #e0e0e0;
+
+
 }
 
 .brixMultipleChoiceQuestion .feedback
