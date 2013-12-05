@@ -13,7 +13,7 @@ js/out/*
 *.exe
 *.o
 *.so
-js/brixlib-compiled.*
+js/brixlib-*.*
 
 # Packages #
 ############

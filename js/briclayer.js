@@ -56,6 +56,11 @@ goog.require('pearson.brix.Slider');
 // mortar
 goog.require('pearson.brix.mortar.Mortar');
 goog.require('pearson.brix.mortar.Hilite');
+goog.require('pearson.brix.mortar.Dataswap');
+
+// these are prototype and specialized mortar that should become more generic eventually
+goog.require('pearson.brix.mortar.TraceSelection');
+goog.require('pearson.brix.mortar.AgeStructure');
 
 
 /* **************************************************************************
@@ -100,7 +105,7 @@ pearson.brix.BricTypes =
 /* **************************************************************************
  * MortarTypes                                                         */ /**
  *
- * This is the enumeration of all known mortart types that will be registered
+ * This is the enumeration of all known mortar types that will be registered
  * with the BricWorks instance of a BricLayer.
  *
  * @enum {string}
@@ -108,7 +113,11 @@ pearson.brix.BricTypes =
  ****************************************************************************/
 pearson.brix.MortarTypes =
 {
-    HILITE:                 "Hilite"
+    DATASWAP:               "Dataswap",
+    HILITE:                 "Hilite",
+
+    AGESTRUCTURE:           "AgeStructure",
+    TRACESELECTION:         "TraceSelection",
 };
 
 
@@ -136,6 +145,13 @@ pearson.brix.MortarTypes =
  ****************************************************************************/
 pearson.brix.BricLayer = function (config, eventManager, submitManager)
 {
+    /**
+     * Logger for this BricLayer
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.BricLayer');
+
     /**
      * The event manager to use to publish (and subscribe to) events for the
      * created brix and mortar.
@@ -211,7 +227,10 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
 
     // register all mortar
     var MortarTypes = pearson.brix.MortarTypes;
+    bricWorks.registerMortarMix(MortarTypes.DATASWAP, pearson.brix.mortar.Dataswap);
     bricWorks.registerMortarMix(MortarTypes.HILITE, pearson.brix.mortar.Hilite);
+    bricWorks.registerMortarMix(MortarTypes.AGESTRUCTURE, pearson.brix.mortar.AgeStructure);
+    bricWorks.registerMortarMix(MortarTypes.TRACESELECTION, pearson.brix.mortar.TraceSelection);
 
     this.bricWorks_ = bricWorks;
 
@@ -316,6 +335,11 @@ pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
     this.doConfigFixup_(bricConfig['configFixup'], config, building);
 
     building['brix'][id] = bricWorks.createBric(type, config);
+
+    if (building['brix'][id] === null)
+    {
+        this.logger_.warning('got null when creating a bric of type "' + type + '"');
+    }
 };
 
 /* **************************************************************************
@@ -341,6 +365,11 @@ pearson.brix.BricLayer.prototype.buildMortar_ = function (building, mortarConfig
     this.doConfigFixup_(mortarConfig['configFixup'], config, building);
 
     building['mortar'][id] = bricWorks.createMortar(type, config);
+
+    if (building['mortar'][id] === null)
+    {
+        this.logger_.warning('got null when creating a mortar of type "' + type + '"');
+    }
 };
 
 /* **************************************************************************

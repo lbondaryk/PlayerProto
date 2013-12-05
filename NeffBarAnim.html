@@ -64,11 +64,18 @@
 	<script src="js/brixlib-compiled.js"></script>
 	-->
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
-	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
+	<script src="js/brixlib-deps.js"></script>
+	<script>
+		goog.require('pearson.brix.BricLayer');
+	</script>
+
+	<!--
+	<script src="js/ipsproxy.js"></script>
 	<script src="js/eventmanager.js"></script>
 	<script src="js/fakeactivitydb.js"></script>
 	<script src="js/answerman.js"></script>
+	<script src="js/localanswerman.js"></script>
 	<script src="js/submitmanager.js"></script>
     <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
@@ -87,6 +94,8 @@
     <script src="js/widget-imageviewer.js"></script>
 	<script src="js/widget-labelgroup.js"></script>
     <script src="js/widget-markergroup.js"></script>
+    <script src="js/brix-labelselector.js"></script>
+    <script src="js/brix-labelcarousel.js"></script>
     <script src="js/widget-radiogroup.js"></script>
     <script src="js/widget-checkgroup.js"></script>
     <script src="js/widget-selectgroup.js"></script>
@@ -94,8 +103,12 @@
     <script src="js/widget-multiselectquestion.js"></script>
     <script src="js/widget-numericquestion.js"></script>
     <script src="js/widget-slider.js"></script>
+    <script src="js/mortar-dataswap.js"></script>
     <script src="js/mortar-hilite.js"></script>
+    <script src="js/mortar-traceselection.js"></script>
+    <script src="js/mortar-agestructure.js"></script>
 	<script src="js/briclayer.js"></script>
+	-->
 
 <script>
 	// Create an object that will contain the objects needed for the activities
@@ -419,7 +432,45 @@
 							[
 								// We will need mortar to update the readout as the slider changes
 								// We will use a simple data swap mortar to be created later.
-							]
+								{
+									"mortarId": "dataswap1",
+									"mortarType": "Dataswap",
+									"config":
+										{
+											//"topic": pearson.brix.Slider.getEventTopic('value-changed', 'sldr-yr'),
+                                            "eventDetailsProperty": "newValue",
+											"valueBase": 1950,
+											"valueStep": 5,
+											//"sourceDataArray": a.building.data['mensDepRatios'],
+											//"targetBric": a.building.brix["ratioReadout"],
+											"dataPropertySetter": "setValue",
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Slider",
+                                                        "instanceId": "sldr-yr",
+                                                        "eventName": "value-changed"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "sourceDataArray",
+                                                "value": { "type": "ref", "domain": "data", "refId": "mensDepRatios" }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "ratioReadout" }
+                                            }
+                                        ]
+								}
+							],
 					},
 					{
 						"description": "container for interactive pyramid chart based on year slider value",
@@ -547,6 +598,84 @@
 							[
 								// We will need mortar to update the 2 barcharts as the slider changes
 								// We will use a simple data swap mortar to be created later.
+								{
+									"mortarId": "dataswap2",
+									"mortarType": "Dataswap",
+									"config":
+										{
+											//"topic": pearson.brix.Slider.getEventTopic('value-changed', 'sldr-yr'),
+                                            "eventDetailsProperty": "newValue",
+											"valueBase": 1950,
+											"valueStep": 5,
+											//"sourceDataArray": a.building.data['histMen'],
+											//"targetBric": a.building.brix["bar5"],
+											"dataPropertySetter": "setSeries",
+											"initialSetterArgs": [1]
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Slider",
+                                                        "instanceId": "sldr-yr",
+                                                        "eventName": "value-changed"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "sourceDataArray",
+                                                "value": { "type": "ref", "domain": "data", "refId": "histMen" }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "bar5" }
+                                            }
+                                        ]
+								},
+								{
+									"mortarId": "dataswap3",
+									"mortarType": "Dataswap",
+									"config":
+										{
+											//"topic": pearson.brix.Slider.getEventTopic('value-changed', 'sldr-yr'),
+                                            "eventDetailsProperty": "newValue",
+											"valueBase": 1950,
+											"valueStep": 5,
+											//"sourceDataArray": a.building.data['histWomen'],
+											//"targetBric": a.building.brix["bar6"],
+											"dataPropertySetter": "setSeries",
+											"initialSetterArgs": [0]
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Slider",
+                                                        "instanceId": "sldr-yr",
+                                                        "eventName": "value-changed"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "sourceDataArray",
+                                                "value": { "type": "ref", "domain": "data", "refId": "histWomen" }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "bar6" }
+                                            }
+                                        ]
+								}
 							],
 						"hookupActions":
 							[
@@ -1621,6 +1750,7 @@
                 }
 		};
 
+	pearson.utils.logToConsole(true, 'FINER');
 	// create the eventmanager to be used by the created brix, and the
 	// bricLayer which will create them, and then tell the bricLayer to build.
 	a.eventManager = new pearson.utils.EventManager();
@@ -1631,7 +1761,7 @@
  
 
 
-
+/*
 	a.eventManager.subscribe(a.bricLayer.getBricWorks().getBricTopic('Slider', 'value-changed', 'sldr-yr'), moveInTime);
 
 	function moveInTime(eventDetails)
@@ -1641,10 +1771,10 @@
 		var sliderStep = 5;
 		var newDataIndex = (selYr - baseYr) / sliderStep;
 
-		a.building.brix["bar5"].data = [[], a.building.data['histMen'][newDataIndex]];
+		a.building.brix["bar5"].setSeries(1, a.building.data['histMen'][newDataIndex]);
 		a.building.brix["bar5"].redraw();
 
-		a.building.brix["bar6"].data = [a.building.data['histWomen'][newDataIndex]];
+		a.building.brix["bar6"].setSeries(0,a.building.data['histWomen'][newDataIndex]);
 		a.building.brix["bar6"].redraw();
 
 		//a.building.brix["ratioReadout"].setValue(d3.format(",.2f")(depRat(a.building.data['histMen'][newDataIndex])));
@@ -1688,6 +1818,7 @@
 
 		return nonWorkPop / workPop;
 	}
+*/
 
 	/*
 // local aliases for convenience
