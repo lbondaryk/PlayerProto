@@ -49,6 +49,9 @@ goog.provide('pearson.brix.PrototypeAxes');
  *							will be coerced to a valid value in an undefined way if not.
  *							Or if the type of axis is "ordinal" then ticks may be an array
  *							to be displayed evenly distributed along the axis.
+ *							
+ * @property {string|null}  format
+ *							The string format to use to customize numeric display on axes.
  *
  * @property {Array.<number>|undefined} extent
  *							The minimum and maximum data values expected for the axis in an
@@ -106,7 +109,7 @@ pearson.brix.AxisFormatOldDef = function ()
 	 * </ul>
 	 * @type {string}
 	 */
-	this.type = "linear";
+	this.type = 'linear';
 
 	/**
 	 * The number of "ticks" to display along the axis including those
@@ -119,14 +122,20 @@ pearson.brix.AxisFormatOldDef = function ()
 	this.ticks = 5;
 
 	/**
+	 * The optional formatting applied to ticks. The default is usually
+	 * good but this can be used to remove unwanted commas, add % or customize
+	 * decimal display. 
+	 * @type {string|null}
+	 */
+	this.format = '.1g';
+
+	/**
 	 * The minimum and maximum data values expected for the axis in an
 	 * array with the minimum as element 0 and the maximum as element 1.
 	 * If undefined, will default to [0, 1], or the [min, max] of the ticks
 	 * array if it is an array.
 	 * @type {Array.<number>|undefined}
 	 *
-	 * @todo find out why current behavior defaults a vertical axis to [0,1] and
-	 *       a horizontal axis to [1e-10,1] -mjl
 	 */
 	this.extent = [0, 1];
 
@@ -211,6 +220,9 @@ pearson.brix.PrototypeAxes = function (container, config)
 
 	//xTicks is either an integer number of ticks or an array of values to use as tickmarks
 	//xOrient is a string for orientation "bottom" or "top". Likewise for the yTicks and yOrient
+	//xFormat is optional formatting removing commas or decimals 
+	var xFormat = this.xFmt.format||null;
+	var yFormat = this.yFmt.format||null;
 	var xTicks = this.xFmt.ticks;
 	var yTicks = this.yFmt.ticks;
 	var xOrient = this.xFmt.orientation;
@@ -352,17 +364,14 @@ pearson.brix.PrototypeAxes = function (container, config)
     			.rangeRound([0, dataAreaWidth]);
 	    }
 
-		// Format the ticks w/ the general format using a precision of 1 significant digit.
-		var format = d3.format(".1");
 
 		//set up the functions that will generate the x axis
 		this.xAxis = d3.svg.axis() //a function that will create the axis and ticks and text labels
 			.scale(this.xScale) //telling the axis to use the scale defined by the function x
 			.orient(xOrient).tickSize(tickheight, 0).tickPadding(3);
 
-		// The formatting defaults seem to be ok.  I removed this because it otherwise
-		// needs to be special cased for ordinal. -lb
-		//this.xAxis.tickFormat(format);
+		// The formatting defaults seem to be ok, but sometimes you need to remove commas or add decimals
+		this.xAxis.tickFormat(xFormat ? d3.format(xFormat) : null);
 
 		// this if block sets up the number of ticks or hard-set tick display
 		// according to type, starting with formats, then moving on to specific tick
@@ -470,6 +479,11 @@ pearson.brix.PrototypeAxes = function (container, config)
 			.orient(yOrient).tickSize(tickheight, 0)
 			//sets the height of ticks to tickheight, except for the ends, which don't get ticks
 			.tickPadding(3);
+
+		// The formatting defaults seem to be ok, but sometimes you need to remove commas or add decimals
+		
+		this.yAxis.tickFormat(yFormat ? d3.format(yFormat) : null);
+
 
 		if (this.yFmt.type == 'ordinal' && !Array.isArray(yTicks))
 		{

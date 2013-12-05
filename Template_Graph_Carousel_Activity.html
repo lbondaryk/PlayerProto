@@ -19,13 +19,20 @@
 	<script src="../closure/closure-library/closure/goog/base.js"></script>
 	<script src="../closure/closure-library/closure/goog/deps.js"></script>
 
-	<script src="js/ipsproxy.js"></script>
 	<script src="js/eventmanager.js"></script>
+	<script src="js/fakeactivitydb.js"></script>
+    <script src="js/ipsproxy.js"></script>
 	<script src="js/answerman.js"></script>
 	<script src="js/localanswerman.js"></script>
 	<script src="js/submitmanager.js"></script>
-    <script src="js/mortar-base.js"></script>
 	<script src="js/widget-base.js"></script>
+    <script src="js/mortar-base.js"></script>
+    <script src="js/widget-carousel.js"></script>
+    <script src="js/widget-image.js"></script>
+    <script src="js/widget-imageviewer.js"></script>
+	<script src="js/widget-labelgroup.js"></script>
+    <script src="js/brix-labelselector.js"></script>
+    <script src="js/brix-labelcarousel.js"></script>
 	<script src="js/bricworks.js"></script>
     <script src="js/widget-numeric.js"></script>
     <script src="js/widget-legend.js"></script>
@@ -36,10 +43,7 @@
 	<script src="js/widget-linegraph.js"></script>
 	<script src="js/widget-barchart.js"></script>
     <script src="js/widget-piechart.js"></script>
-    <script src="js/widget-image.js"></script>
-    <script src="js/widget-carousel.js"></script>
-    <script src="js/widget-imageviewer.js"></script>
-	<script src="js/widget-labelgroup.js"></script>
+   
     <script src="js/widget-markergroup.js"></script>
     <script src="js/widget-radiogroup.js"></script>
     <script src="js/widget-checkgroup.js"></script>
@@ -51,6 +55,8 @@
     <script src="js/mortar-hilite.js"></script>
 	<script src="js/briclayer.js"></script>
 
+    <script src="js/domhelper.js"></script>
+    <script src="js/ipc.js"></script>
     <script>
 
 	// Create an object that will contain the objects needed for the activities
@@ -83,6 +89,7 @@
 												{ 
 													"type": "linear", 
 													"ticks": [1940, 1955, 1970, 1985, 2000, 2015],
+													"format": "0f",
 													"orientation": "bottom",
 													"label": "Year"
 												},
@@ -91,7 +98,7 @@
 													"type": "linear",
 													"orientation": "left",
 													"ticks": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-													"label": "Percentage"
+													"label": "Percentage (%)"
 												},
 										},
                                     "configFixup":

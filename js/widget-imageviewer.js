@@ -88,7 +88,7 @@ pearson.brix.ImageViewer = function (config, eventManager)
             id: this.id + '_crsl',
             items: this.items,
             layout: "horizontal",
-            itemMargin: {top: 4, bottom: 4, left: 2, right: 2},
+            itemMargin: {top: 4, bottom: 4, left: 0, right: 0},
             presentation: "scaleToFit",
             scrollMode: "nowrap"
         };
@@ -266,10 +266,13 @@ pearson.brix.ImageViewer.prototype.draw = function (container, size)
             .attr("height", size.height);
     */
 
-    // calculate the optimum carousel height for the given width, but don't let
-    // it be greater than 20% of the total height of this ImageViewer.
-    var carouselHeight = Math.min(this.carousel.calcOptimumHeightForWidth(size.width),
-                                  0.2 * size.height);
+    // calculate the optimum carousel height for the given width
+    // Used to restrict it to no more than 20% of the total height of this ImageViewer
+    // but this creates undesirable blank space between thumbnails
+    /* var carouselHeight = Math.min(this.carousel.calcOptimumHeightForWidth(size.width),
+                                 0.2 * size.height);*/
+     var carouselHeight = this.carousel.calcOptimumHeightForWidth(size.width);
+
 
     // Carousel goes at the top
     var carouselGroup = widgetGroup.append("g");

@@ -12,18 +12,20 @@ svg g.brixImage
   margin: 0;
 }
 
-svg g.brixImage>rect.background,
+g.brixImage > rect.background
 {
 	fill: #fff;
-	stroke-width: 1;
-  stroke: #cbcbcb;
+	stroke-width: 0;
+  stroke: #fff;
 }
 
 svg g.brixCaptionedImage>rect.background
 {
-	fill:	#f8f8f8;
-	stroke-width:	0;
+  fill: #fff;
+  stroke-width: 0;
+  stroke: #fff;
 }
+
 svg g.brixImage>rect.highlight
 {
 	fill: none;
@@ -70,10 +72,10 @@ svg g.brixLabelCarousel>rect
 .brixImageCaption 
 {
   font: 16px Helvetica;
-  background: #f0f0f0;
+  background: #fff;
   color: #4d4d4d;
-  padding: 15px;
-  border: 1px solid #cbcbcb;
+  padding: 15px 0px;
+  border: 0px solid #cbcbcb;
 
 }
 
@@ -133,13 +135,13 @@ svg g.bricMarkers .markerLabel
 
 /* Labels
 ================================================== */
-svg g.brixLabel>rect
+svg g.brixLabel>circle
 {
 	fill:			#f0f0f0;
 	stroke:		#c0c0c0;
 	stroke-width:	1;
 }
-svg g.brixLabel.lit>rect
+svg g.brixLabel.lit>circle
 {
 	fill:			#107aca;
 	stroke:		#0d65a6;
@@ -147,8 +149,8 @@ svg g.brixLabel.lit>rect
 svg g.brixLabel>text
 {
 	fill:			#4d4d4d;
-  font: bold 20px Helvetica;
-  margin: 50px;
+  font: bold 16px Helvetica;
+  margin: 20px;
 }
 svg g.brixLabel.lit>text
 {
@@ -158,16 +160,16 @@ svg g.brixLabel.lit>text
 svg g.brixLabel .descLabel
 {
   color: 4d4d4d;
-  font: 16px Helvetica;
+  font: 14px Helvetica;
   border: 1px solid #c0c0c0;
   background-color: #f0f0f0;
-  padding: 8px 10px 7px;
+  padding: 6px 8px 8px;
 
 }
 
 svg g.brixLabel .bullets
 {
-  padding: 8px 7px 6px 52px;
+  padding: 6px 6px 8px 38px;
   min-height: 35px;
 }
 

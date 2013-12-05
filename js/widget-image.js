@@ -522,7 +522,7 @@ pearson.brix.CaptionedImage = function (config, eventManager)
      * @private
      * @type {number}
      */
-    this.displayWidth_ = config.displayWidth || 477;
+    this.displayWidth_ = config.displayWidth || 457;
 
     /**
     * The margin size (in pixels) for the captioned image
@@ -530,7 +530,7 @@ pearson.brix.CaptionedImage = function (config, eventManager)
     * @type {number}
     */
 
-    this.marginSize_ = 10;
+    this.marginSize_ = 0;
 
     /**
      * The full size (in pixels) of the caption.
@@ -629,7 +629,7 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
 
     // aliases of utility functions for readability
     var attrFnVal = pearson.brix.utils.attrFnVal;
-    var marginSize = 10;
+    
 
     // make a group to hold the image
     var widgetGroup = container.append("g")
@@ -686,7 +686,7 @@ pearson.brix.CaptionedImage.prototype.draw = function (container, size)
     else // assume below
     {
         captionGroup.attr("transform", attrFnVal("translate", 0,
-            this.imageDisplaySize_.height + 2 * marginSize));
+            this.imageDisplaySize_.height + 2 * this.marginSize_));
     }
 
     this.captioned_lastdrawn.widgetGroup = widgetGroup;

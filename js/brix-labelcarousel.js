@@ -98,8 +98,8 @@ pearson.brix.LabelCarousel = function (config, eventManager)
                 config.images.map(function (e, i) {return e.selectorLabel || '&nbsp;';}) :
                 config.images.length,
             layout: "horizontal",
-            type: (config.type == 'textLabels') ? 'none' : 'numbered',
-            itemMargin: {top: 15, bottom: 0, left: 0, right: 0}
+            type: (config.type == 'textLabels') ? 'none' : (config.type || 'numbered'),
+            itemMargin: {top: 0, bottom: 15, left: 0, right: (config.type == 'textLabels') ? 0 : 10}
         };
 
 
@@ -116,7 +116,7 @@ pearson.brix.LabelCarousel = function (config, eventManager)
             id: this.id + "_cimg",
             URI: this.imagesInfo[0].URI,
             caption: this.imagesInfo[0].caption,
-            displayWidth: config.displayWidth || 477,
+            displayWidth: config.displayWidth || 457,
             actualSize: config.imagesActualSize,
             captionPosition: "below"
         };
@@ -208,17 +208,17 @@ pearson.brix.LabelCarousel.prototype.draw = function (container, size)
         .attr("id", this.id);
 
     // currently hard set height.  We might want to measure labels in future.
-    var selectorHeight = 44;
+    var selectorHeight = 55;
 
-    // Carousel goes at the top
+    // Label selector goes at the top
     var selectorGroup = widgetGroup.append("g");
     this.labelSelector.draw(selectorGroup, {height: selectorHeight, width: size.width});
 
-    // Image goes below carousel with 15 px margin
+    // Swappable Image goes below
     var imageGroup = widgetGroup.append("g")
-        .attr("transform", attrFnVal("translate", 0, selectorHeight + 15));
+        .attr("transform", attrFnVal("translate", 0, selectorHeight));
 
-    this.image.draw(imageGroup, {height: size.height - selectorHeight - 15, width: size.width});
+    this.image.draw(imageGroup, {height: size.height - selectorHeight, width: size.width});
 
     this.lastdrawn.widgetGroup = widgetGroup;
     this.lastdrawn.size.height = this.image.captioned_lastdrawn.size.height + selectorHeight;
