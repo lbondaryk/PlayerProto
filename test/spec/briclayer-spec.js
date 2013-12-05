@@ -794,6 +794,35 @@ goog.require('goog.object');
                 });
             });
 
+            describe('object', function() {
+                it('should get an object which has properties with the defined names and associated dynamic values', function () {
+                    var objectDv = { "type": "object",
+                                     "properties": [ { "name": "foo",
+                                                       "value": { "type": "ref", "domain": "brix", "refId": testDV_BricId },
+                                                     },
+                                                     { "name": "bar",
+                                                       "value": { "type": "constant", "value": "snafu?" },
+                                                     },
+                                                     { "name": "happyhappy",
+                                                       "value": { "type": "constant", "value": 101 }
+                                                     }
+                                                   ]
+                                   };
+                    activityConfig.containerConfig[0].hookupActions[0].args.push(objectDv);
+
+                    var building = bricLayer.build(activityConfig);
+                    var testDVBric = building.brix[testDV_BricId];
+
+                    expect(testDVBric.dynamicVal).to.be.an('object');
+                    expect(testDVBric.dynamicVal).to.have.property('foo');
+                    expect(testDVBric.dynamicVal.foo).to.equal(building.brix[testDV_BricId]);
+                    expect(testDVBric.dynamicVal).to.have.property('bar');
+                    expect(testDVBric.dynamicVal.bar).to.equal("snafu?");
+                    expect(testDVBric.dynamicVal).to.have.property('happyhappy');
+                    expect(testDVBric.dynamicVal.happyhappy).to.equal(101);
+                });
+            });
+
             describe('join', function() {
                 it('should concatenate an array of mixed dynamic values', function () {
                     var dataId = "foo";
