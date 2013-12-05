@@ -270,7 +270,7 @@ pearson.brix.LineGraph.prototype.setData = function (newData, delayRedraw)
     this.data_ = newData;
 
     // If we're currently drawn someplace, redraw w/ the new data
-    if (!delayRedraw && this.lastdrawn.container != null)
+    if (!delayRedraw && this.lastdrawn.container !== null)
     {
         this.redraw();
     }
@@ -294,7 +294,7 @@ pearson.brix.LineGraph.prototype.setTrace = function (traceIndex, newTrace, dela
     this.data_[traceIndex] = newTrace;
 
     // If we're currently drawn someplace, redraw w/ the new data
-    if (!delayRedraw && this.lastdrawn.container != null)
+    if (!delayRedraw && this.lastdrawn.container !== null)
     {
         this.redraw();
     }

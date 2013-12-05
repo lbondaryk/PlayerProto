@@ -83,9 +83,10 @@ pearson.brix.Legend = function (config, eventManager)
 
 	/**
 	 * Array of strings for the labels, one per row 
-	* @type {Array}
-	*/
-	this.labels = config.labels;
+	 * @private
+	 * @type {Array}
+	 */
+	this.labels_ = config.labels;
 
 	/**
 	 * The render type is one of:
@@ -188,6 +189,57 @@ pearson.brix.Legend.getEventTopic = function (eventName, instanceId)
     return publishedEventTopics[eventName](instanceId);
 };
 
+/* **************************************************************************
+ * Legend.getId                                                     */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.Legend.prototype.getId = function ()
+{
+    return this.legendId_;
+};
+
+/* **************************************************************************
+ * Legend.getLabels                                                    */ /**
+ *
+ * Get the labels being used by this Legend.
+ *
+ * @returns {Array.<{content: string}>}
+ * the labels being used by this Legend.
+ *
+ ****************************************************************************/
+pearson.brix.Legend.prototype.getLabels = function ()
+{
+    return this.labels_;
+};
+
+/* **************************************************************************
+ * Legend.setLabels                                                    */ /**
+ *
+ * Set the data that this LineGraph should display.
+ *
+ * @param {Array.<{content: string}>}
+ *                   newLabels      -The new data for this LineGraph to display
+ * @param {boolean=} delayRedraw    -true to not redraw after setting data,
+ *                                   default is false.
+ *
+ ****************************************************************************/
+pearson.brix.Legend.prototype.setLabels = function (newLabels, delayRedraw)
+{
+    this.labels_ = newLabels;
+
+    // If we're currently drawn someplace, redraw w/ the new data
+    if (!delayRedraw && this.lastdrawn.container !== null)
+    {
+        this.redraw();
+    }
+};
 
 /* **************************************************************************
  * Legend.draw                                                         */ /**
@@ -212,7 +264,7 @@ pearson.brix.Legend.prototype.draw = function (container, size)
 		inset = 10;//attractive spacing from edge of axes boxes (innerWid/Ht)
 		//also used to space the enclosing legend box from the text
 	//take the number of rows from the number of labels
-	var rowCt = this.labels.length;
+	var rowCt = this.labels_.length;
 	//calculate the height of the box that frames the whole legend
 	//which should be as tall as the number of rows plus some padding
 	var boxHeight = (boxLength + 6) * rowCt;
@@ -222,7 +274,7 @@ pearson.brix.Legend.prototype.draw = function (container, size)
 	//note: this is the simple algorithm and may fail because of proportional fonts, 
 	//in which case we'll have to measure all labels.
 	
-	var longest = this.labels.reduce(function (prev, cur) { 
+	var longest = this.labels_.reduce(function (prev, cur) { 
 		return prev.content.length > cur.content.length ? prev : cur; }).content;
 	var longBox = container.append("g");
 	longBox.append("text").text(longest);
@@ -288,14 +340,14 @@ pearson.brix.Legend.prototype.drawData_ = function ()
 	var that = this;
 
 	//take the number of rows from the number of labels
-	var rowCt = this.labels.length;
+	var rowCt = this.labels_.length;
 
 	// determine the element name needed based on the type of legend
 	var typeMarkerElementName = this.type == "box" ? "rect" : "line";
 
 	//this selects all <g> elements with class legend  
 	var legendRows = this.legendBox.selectAll("g.legend")
-		.data(this.labels); //associate the data to create stacked slices
+		.data(this.labels_); //associate the data to create stacked slices
 	
 	// get rid of any rows without data
 	legendRows.exit().remove();

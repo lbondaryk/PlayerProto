@@ -17,47 +17,11 @@
     <!--
 	<script src="js/brixlib-compiled.js"></script>
 	-->
-	<script src="../closure/closure-library/closure/goog/base.js"></script>
-	<script src="../closure/closure-library/closure/goog/deps.js"></script>
-
-	<script src="js/eventmanager.js"></script>
-	<script src="js/fakeactivitydb.js"></script>
-    <script src="js/ipsproxy.js"></script>
-	<script src="js/answerman.js"></script>
-	<script src="js/localanswerman.js"></script>
-	<script src="js/submitmanager.js"></script>
-	<script src="js/widget-base.js"></script>
-    <script src="js/mortar-base.js"></script>
-    <script src="js/widget-carousel.js"></script>
-    <script src="js/widget-image.js"></script>
-    <script src="js/widget-imageviewer.js"></script>
-	<script src="js/widget-labelgroup.js"></script>
-    <script src="js/brix-labelselector.js"></script>
-    <script src="js/brix-labelcarousel.js"></script>
-	<script src="js/bricworks.js"></script>
-    <script src="js/widget-numeric.js"></script>
-    <script src="js/widget-legend.js"></script>
-    <script src="js/widget-callouts.js"></script>
-    <script src="js/widget-button.js"></script>
-    <script src="js/widget-sketch.js"></script>
-    <script src="js/widget-prototype-axes.js"></script>
-	<script src="js/widget-linegraph.js"></script>
-	<script src="js/widget-barchart.js"></script>
-    <script src="js/widget-piechart.js"></script>
-   
-    <script src="js/widget-markergroup.js"></script>
-    <script src="js/widget-radiogroup.js"></script>
-    <script src="js/widget-checkgroup.js"></script>
-    <script src="js/widget-selectgroup.js"></script>
-    <script src="js/widget-multiplechoicequestion.js"></script>
-    <script src="js/widget-multiselectquestion.js"></script>
-    <script src="js/widget-numericquestion.js"></script>
-    <script src="js/widget-slider.js"></script>
-    <script src="js/mortar-hilite.js"></script>
-	<script src="js/briclayer.js"></script>
-
-    <script src="js/domhelper.js"></script>
-    <script src="js/ipc.js"></script>
+    <script src="../closure/closure-library/closure/goog/base.js"></script>
+    <script src="js/brixlib-deps.js"></script>
+    <script>
+        goog.require('pearson.brix.BricLayer');
+    </script>
     <script>
 
 	// Create an object that will contain the objects needed for the activities
@@ -107,15 +71,7 @@
                                             {
                                                 "type": "set-property",
                                                 "name": "Data",
-                                                "value":
-                                                    {
-                                                        "type": "array",
-                                                        "elements":
-                                                        [
-                                                            { "type": "ref", "domain": "data", "refId": "intermarriage1" },
-                                                            { "type": "ref", "domain": "data", "refId": "Intermarriage2" }
-                                                        ]
-                                                    }
+                                                "value": { "type": "ref", "domain": "data", "refId": "intermarriage" }
                                             }
                                         ]
 								},
@@ -128,36 +84,39 @@
 											"type": "line",
 											"xPos": "right",
 											"yPos": "top",
-											"labels":
-											[
-												{"content": "Separate"}, 
-												{"content": "Same"}
-											],
-										}
+											//"labels":
+											//[
+												//{"content": "Separate"}, 
+											//	{"content": "Same"}
+											//],
+										},
 									 "configFixup":
                                         [
                                             {
                                                 "type": "set-property",
                                                 "name": "labels",
-                                                "value":
-                                                    {
-                                                        "type": "array",
-                                                        "elements":
-                                                        [
-                                                            { "type": "ref", "domain": "data", "refId": "Disapprove" },
-                                                            { "type": "ref", "domain": "data", "refId": "Approve" }
-                                                        ]
-                                                    }
+                                                "value": { "type": "ref", "domain": "data", "refId": "intermarriageLegend" }
                                             }
                                         ]
 								},
+                                {
+                                    "bricId": "labelSelector1",
+                                    "bricType": "LabelSelector",
+                                    "config":
+                                        {
+                                            "id": "dataLabels",
+                                            "labels": ["Intermarriage","Schools","Neighborhoods"],
+                                            "layout": "vertical",
+                                            "itemMargin": {"top": 5, "bottom": 5, "left": 0, "right": 0}
+                                        }
+                                },
 								{
 									"bricId": "cntr1",
 									"bricType": "SvgContainer",
 									"config":
 										{
 											//"node": d3.select("#target1"),
-											"maxSize": {"height": 400, "width": 477},
+											"maxSize": {"height": 400, "width": 600},
 										},
 									"configFixup":
                                         [
@@ -173,6 +132,55 @@
                                         ]
 								}
 							],
+                            "mortarConfig":
+                            [
+                                // We will need mortar to update the linegraph data on button clicks
+                                {
+                                    "mortarId": "dataswap1",
+                                    "mortarType": "Dataswap",
+                                    "config":
+                                        {
+                                            //"topic": pearson.brix.LabelSelector.getEventTopic('selected', 'dataLabels'),
+                                            "eventDetailsProperty": "index",
+                                            //"sourceDataArray": array built of data below,
+                                            //"targetBric": swapGraph,
+                                            "dataPropertySetter": "setData",
+                                        },
+                                    "configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "LabelSelector",
+                                                        "instanceId": "dataLabels",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "sourceDataArray",
+                                                "value": 
+                                                    {
+                                                        "type": "array", 
+                                                        "elements": 
+                                                            [
+                                                                { "type": "ref", "domain": "data", "refId": "intermarriage" },
+                                                                { "type": "ref", "domain": "data", "refId": "schools" },
+                                                                { "type": "ref", "domain": "data", "refId": "neighborhoods" }
+                                                            ]
+                                                    } 
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "brix", "refId": "swapGraph" }
+                                            }
+                                        ]
+                                }
+                            ],
 						"hookupActions":
 							[
 								{
@@ -183,18 +191,34 @@
 									"args":
 										[
 											{ "type": "ref", "domain": "brix", "refId": "swapGraph" },
+                                            { "type": "constant", 
+                                              "value": {"topPercentOffset": 0.15, "leftPercentOffset": 0, "heightPercent": 0.85, "widthPercent": 1}
+                                            }
 										]
 								},
 								{
 									"description": "Append the legend to the svg container",
 									"type": "method-call",
-									"instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+									"instance": {"type": "ref", "domain": "brix", "refId": "swapGraph"},
 									"methodName": "append",
 									"args":
 										[
-											{ "type": "ref", "domain": "brix", "refId": "legend1" },
+											{ "type": "ref", "domain": "brix", "refId": "legend1" }
 										]
-								}
+								},
+                                {
+                                    "description": "Append the labels to the svg container",
+                                    "type": "method-call",
+                                    "instance": {"type": "ref", "domain": "brix", "refId": "cntr1"},
+                                    "methodName": "append",
+                                    "args":
+                                        [
+                                            { "type": "ref", "domain": "brix", "refId": "labelSelector1" },
+                                            { "type": "constant", 
+                                              "value": {"topPercentOffset": 0.0, "leftPercentOffset": 0, "heightPercent": 0.2, "widthPercent": 1}
+                                            }
+                                        ]
+                                }
 							]
 					},
 					{
@@ -281,48 +305,66 @@
 				],
 			"data":
                 {
-					"intermarriage1":
-						[
-                			{"x": 1958, "y": 96},
-                			{"x": 1972, "y": 73 },
-                			{"x": 1991, "y": 49 },
-                			{"x": 2011, "y": 16 }
-    					],
-           			"Intermarriage2": 
-           				[
-                			{"x": 1958, "y": 4},
-                			{"x": 1972, "y": 27 },
-               				{"x": 1991, "y": 51 },
-                			{"x": 2011, "y": 84 }
-               			],
-					"schools1":
-						[
-							{"x": 1942, "y": 68},
-                			{"x": 1964, "y": 37 },
-                			{"x": 1984, "y": 8 },
-                			{"x": 1995, "y": 4 }
-						],
-					"schools2":
-						[
-							{"x": 1942, "y": 32},
-                			{"x": 1964, "y": 63 },
-                			{"x": 1984, "y": 92 },
-                			{"x": 1995, "y": 96 }
-						],
-					"neighborhoods1":
-						[
-                			{"x": 1963, "y": 60},
-                			{"x": 1976, "y": 40 },
-                			{"x": 1990, "y": 24 },
-                			{"x": 1996, "y": 13 }
-						],
-					"neighborhoods2":
-						[
-							{"x": 1963, "y": 39},
-                			{"x": 1976, "y": 60 },
-                			{"x": 1990, "y": 76 },
-                			{"x": 1996, "y": 86 }
-						]
+                    "intermarriageLegend":
+                        [
+                            {"content": "Disapprove"}, 
+                            {"content": "Approve"}
+                        ],
+					"intermarriage": 
+                        [
+    					  [
+                    			{"x": 1958, "y": 96},
+                    			{"x": 1972, "y": 73 },
+                    			{"x": 1991, "y": 49 },
+                    			{"x": 2011, "y": 16 }
+        					],
+               				[
+                    			{"x": 1958, "y": 4},
+                    			{"x": 1972, "y": 27 },
+                   				{"x": 1991, "y": 51 },
+                    			{"x": 2011, "y": 84 }
+                   			]
+                        ],
+                    "schoolsLegend":
+                        [
+                            {"content": "Separate"}, 
+                            {"content": "Same"}
+                        ],
+					"schools":
+                        [
+    						[
+    							{"x": 1942, "y": 68},
+                    			{"x": 1964, "y": 37 },
+                    			{"x": 1984, "y": 8 },
+                    			{"x": 1995, "y": 4 }
+    						],
+    						[
+    							{"x": 1942, "y": 32},
+                    			{"x": 1964, "y": 63 },
+                    			{"x": 1984, "y": 92 },
+                    			{"x": 1995, "y": 96 }
+    						]
+                        ],
+                     "neighborhoodsLegend":
+                        [
+                            {"content": "Disagree"}, 
+                            {"content": "Agree"}
+                        ],
+					"neighborhoods":
+                        [
+    						[
+                    			{"x": 1963, "y": 60},
+                    			{"x": 1976, "y": 40 },
+                    			{"x": 1990, "y": 24 },
+                    			{"x": 1996, "y": 13 }
+    						],
+    						[
+    							{"x": 1963, "y": 39},
+                    			{"x": 1976, "y": 60 },
+                    			{"x": 1990, "y": 76 },
+                    			{"x": 1996, "y": 86 }
+    						]
+                        ]
                 }
 		};
 
