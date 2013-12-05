@@ -767,10 +767,11 @@ svg g.widgetLegend .legendBox {
 }
 
 svg g .stroke0 {
-  stroke: #87c26a; }
+  stroke: #107aca;
+   }
 
 svg g .stroke1 {
-  stroke: #5688d6; }
+  stroke: #b00216; }
 
 svg g .stroke2 {
   stroke: #fabc4a; }
@@ -820,10 +821,11 @@ svg g.bricPieChart path .lit  {
 
 
 svg g .fill0 {
-  fill: #87c26a; }
+  fill: #107aca;
+  }
 
 svg g .fill1 {
-  fill: #5688d6; }
+   fill: #b00216; }
 
 svg g .fill2 {
   fill: #fabc4a; }
