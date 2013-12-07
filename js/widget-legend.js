@@ -81,6 +81,13 @@ pearson.brix.Legend = function (config, eventManager)
 	 */
 	this.legendId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Legend);
 
+    /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.Legend');
+
 	/**
 	 * Array of strings for the labels, one per row 
 	 * @private
@@ -190,7 +197,7 @@ pearson.brix.Legend.getEventTopic = function (eventName, instanceId)
 };
 
 /* **************************************************************************
- * Legend.getId                                                     */ /**
+ * Legend.getId                                                        */ /**
  *
  * @inheritDoc
  * @export
@@ -362,7 +369,8 @@ pearson.brix.Legend.prototype.drawData_ = function ()
 	enterRows.on('click',
 				function (d, i)
 				{
-					that.eventManager.publish(that.selectedEventId, {selectKey:d.key});
+                    that.lite(d.key);
+					that.eventManager.publish(that.selectedEventId, {selectKey: d.key, index: i});
 				});
 
 	
@@ -458,13 +466,12 @@ pearson.brix.Legend.prototype.setScale = function (xScale, yScale)
  ****************************************************************************/
 pearson.brix.Legend.prototype.lite = function (liteKey)
 {
-	
-	window.console.log("TODO: log fired Legend highlite " + liteKey);
+    this.logger_.fine('lite("' + liteKey + '") entered...');	
 	
 	// Turn off all current highlights
 	var allRows = this.lastdrawn.legendRows;
 	allRows
-		.classed("lit", false);
+		.classed('lit', false);
 		
 	//var allSeries = this.lastdrawn.series;
 	//allSeries
@@ -478,11 +485,11 @@ pearson.brix.Legend.prototype.lite = function (liteKey)
 
 	// Highlight the labels w/ the matching key
 	rowsToLite
-		.classed("lit", true);
+		.classed('lit', true);
 
 	if (rowsToLite.empty())
 	{
-		window.console.log("No key '" + liteKey + "' in legend " + this.legendId_ );
+        this.logger_.warning('lite: No key "' + liteKey + '" in legend ' + this.legendId_);	
 	}
 };
 
