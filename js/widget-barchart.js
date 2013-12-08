@@ -593,6 +593,7 @@ pearson.brix.BarChart.prototype.drawData_ = function ()
 				function (d, i)
 				{
 					that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+					that.lite(d.key); //this will highlight the series
 				});
 				
 	//do a clean selection of the drawn data to store for the object properties
