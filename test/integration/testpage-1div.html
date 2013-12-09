@@ -118,12 +118,12 @@
                 <li>IPS Base URL (ips): <span class="dataval" id="ips_base_url"></span></li>
                 <li>Activity URL (activity*): <span class="dataval" id="activity_url"></span></li>
                 <li>Assignment URL (assignment*): <span class="dataval" id="assignment_url"></span></li>
-                <li>* You may also change the activity & assignment server with paf query param, e.g. &paf=dev, default is cert</li>
+                <li>* You may also change the activity &amp; assignment server with paf query param, e.g. &amp;paf=dev, default is cert</li>
                 <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
             </ul>
         </div>
         <div >
-            <p>This test will require to have Brix test servers (IPS & CorrectnessEngine) up, along with 
+            <p>This test will require to have Brix test servers (IPS &amp; CorrectnessEngine) up, along with 
                 the required components: Redis (for IPS). If you are connecting AMS locally, you will
                 also require to run Tomcat and Cassandra (Remember to configure laspaf.properties to NOT use the PAF Stub.) ** The actuall tomcat script may differ from platform</p>
             <pre style="float:right; width: 50%">
@@ -183,7 +183,9 @@ If Running AMS locally you will also need to run:
         {
             divId  = queryString.divid;
         }
-        $("#targetId").attr("id", divId);
+
+        var targetDiv = $("#targetId");
+        targetDiv.attr("id", divId);
 
         if (queryString.ams && queryString.ams == "dev")
         {
@@ -214,15 +216,15 @@ If Running AMS locally you will also need to run:
             activity = queryString.activity;
         }
 
-        $("#target1").attr("data-assignmenturl", repoContentBaseUrl + assignment);
-        $("#target1").attr("data-activityurl", repoContentBaseUrl + activity);
+        targetDiv.attr("data-assignmenturl", repoContentBaseUrl + assignment);
+        targetDiv.attr("data-activityurl", repoContentBaseUrl + activity);
 
         /*
          * Display features and setup.
          */
-        var assignmentUrl = $("#target1").data("assignmenturl");
-        var activityUrl = $("#target1").data("activityurl");
-        $("#div_id").text( divId);
+        var assignmentUrl = targetDiv.data("assignmenturl");
+        var activityUrl = targetDiv.data("activityurl");
+        $("#div_id").text(divId);
         $("#ams_base_url").text(amcBaseUrl);
         $("#ips_base_url").text(ipsBaseUrl);
         $("#activity_url").text(activityUrl);
