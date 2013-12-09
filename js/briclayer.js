@@ -60,7 +60,7 @@ goog.require('pearson.brix.mortar.Dataswap');
 // these are prototype and specialized mortar that should become more generic eventually
 goog.require('pearson.brix.mortar.TraceSelection');
 goog.require('pearson.brix.mortar.AgeStructure');
-
+goog.require('pearson.brix.mortar.WaveForm');
 
 /* **************************************************************************
  * BricTypes                                                           */ /**
