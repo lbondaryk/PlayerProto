@@ -217,7 +217,7 @@ pearson.brix.mortar.WaveForm.prototype.handleDropdownChangedEvent_ = function (e
 pearson.brix.mortar.WaveForm.prototype.updateTargetBric_ = function ()
 {
     
-    this.targetBric_.data = this.graphData_;
+    this.targetBric_.data_ = this.graphData_;
     this.targetBric_.redraw();
     //this.targetReadout_.setValue(this.point_);
 };
@@ -231,7 +231,7 @@ pearson.brix.mortar.WaveForm.prototype.updateTargetBric_ = function ()
  *
  ****************************************************************************/
 pearson.brix.mortar.WaveForm.prototype.calcData_ = function ()
-{   
+{
     // initialize the number of harmonics to calculate
     var harmonics = 0;
     switch(this.saturation_)
@@ -259,7 +259,7 @@ pearson.brix.mortar.WaveForm.prototype.calcData_ = function ()
      
     // now fill up the fundamental and harmonic data arrays.
 
-    for (j = 0; j <= harmonics; j++) 
+    for (var j = 0; j <= harmonics; j++) 
     {
         var harmonic = j + 1;
         var data = [];
