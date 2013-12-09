@@ -259,8 +259,8 @@ yearSlide.draw(d3.select("#slider3"));
 	};
 
 	var popMortar = new pearson.brix.mortar.AgeStructure(popConfig, eventManager);
-	barsWomen.data = [popMortar.populationWomen_[0]];
-	barsMen.data = [[], popMortar.populationMen_[0]];
+	barsWomen.data_ = [popMortar.populationWomen_[0]];
+	barsMen.data_ = [[], popMortar.populationMen_[0]];
 	endPop.setValue(popMortar.totalPopulation);
 
 	cont1.append(barsWomen, {topPercentOffset: 0, leftPercentOffset: .45, heightPercent: 1, widthPercent: 0.55});
