@@ -75,6 +75,13 @@ pearson.brix.LabelSelector = function (config, eventManager)
     this.lsId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelSelector);
 
     /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.LabelSelector');
+
+    /**
      * The list of label strings presented by the LabelSelector.
      * @type {!Array.<string>|number}
      */
@@ -374,7 +381,7 @@ pearson.brix.LabelSelector.prototype.itemKeyToIndex = function (key)
  ****************************************************************************/
 pearson.brix.LabelSelector.prototype.lite = function (liteKey)
 {
-    window.console.log("called Carousel.lite( " + liteKey + " )");
+    this.logger_.fine('lite("' + liteKey + '") entered...');	
 
     // todo: this works well when all the items are Images but not so well for other widget types
     this.labelItems.lite(liteKey);

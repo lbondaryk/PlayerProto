@@ -221,6 +221,7 @@
                             {"$ref": "#/definitions/dynamicValue-property-of-ref"},
                             {"$ref": "#/definitions/dynamicValue-array"},
                             {"$ref": "#/definitions/dynamicValue-array-element"},
+                            {"$ref": "#/definitions/dynamicValue-object"},
                             {"$ref": "#/definitions/dynamicValue-join"},
                             {"$ref": "#/definitions/dynamicValue-constant"},
                         ]
@@ -397,6 +398,49 @@
                                 {
                                     "description": "the index of the element of the array which is the value of this dynamic value",
                                     "type": "integer"
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this dynamic value",
+                                    "type": "string"
+                                }
+                        }
+                },
+            "dynamicValue-object":
+                {
+                    "description": "a runtime value that is an object whose properties are defined by dynamicValues",
+                    "type": "object",
+                    "required": ["type", "properties"],
+                    "properties":
+                        {
+                            "type":
+                                {
+                                    "description": "identifies this value as an object value",
+                                    "type": "string",
+                                    "enum": ["object"]
+                                },
+                            "properties":
+                                {
+                                    "description": "array of objects w/ a name for the property and a value which is a dynamic value",
+                                    "type": "array",
+                                    "items":
+                                        {
+                                            "type": "object",
+                                            "required": ["name", "value"],
+                                            "properties":
+                                                {
+                                                    "name":
+                                                        {
+                                                            "description": "the name of the property of the object with the associated value",
+                                                            "type": "string"
+                                                        },
+                                                    "value":
+                                                        {
+                                                            "description": "the dynamic value to assign to this named property of the object",
+                                                            "$ref": "#/definitions/dynamicValue"
+                                                        }
+                                                }
+                                        }
                                 },
                             "description":
                                 {

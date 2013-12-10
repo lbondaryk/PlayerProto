@@ -109,6 +109,13 @@ pearson.brix.Callouts = function (config, eventManager)
      */
     this.calloutsId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.Callouts);
 
+    /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.Callouts');
+
     this.textBits = config.textBits;
     this.headers = config.headers;
     this.type = config.type;
@@ -199,6 +206,8 @@ pearson.brix.Callouts.getEventTopic = function (eventName, instanceId)
  ****************************************************************************/
 pearson.brix.Callouts.prototype.draw = function (container)
 {
+    this.logger_.fine('draw: entered...');
+
     // @todo this.node property really should be this.lastdrawn.container -mjl 7-22-2013
     this.node = container;
 
@@ -212,14 +221,14 @@ pearson.brix.Callouts.prototype.draw = function (container)
 
     var table = this.rootEl.append("table").attr("class", "widgetCallout");
 
-    if(this.headers){
+    if (this.headers)
+    {
         var headRow = table.append("thead").append("tr");
             headRow.selectAll("td").data(this.headers).enter()
                 .append("td")
-                    .html(function(d) {
-                            return d;
-                            });
-        }
+                    .html(function(d) { return d; });
+    }
+
     //Show the data in a table
     this.calloutCollection = table.append("tbody").selectAll("tr.widgetCallout")
         .data(this.textBits);
@@ -254,14 +263,13 @@ pearson.brix.Callouts.prototype.draw = function (container)
                 return label + d;
                 });
 
-    if (this.show != "all"){
+    if (this.show != "all")
+    {
         this.calloutCollection.style("display","none");
         //show the first one by default
         d3.select("#" + that.id + (that.textBits[0].key ? that.textBits[0].key : 0))
-        .style("display",null);
+        .style("display", null);
     }
-
-    window.console.log("Callouts made");
 
     this.calloutCollection.on('click',
         function (d, i)
@@ -292,7 +300,7 @@ pearson.brix.Callouts.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.Callouts.prototype.lite = function (lite)
 {
-    window.console.log("TODO: log fired callout highlight/swap", lite);
+    this.logger_.fine('lite("' + lite + '") entered...');	
 
     var unset = this.calloutCollection;
     //remove all special formatting
@@ -318,7 +326,7 @@ pearson.brix.Callouts.prototype.lite = function (lite)
 
     if (selectionToLite.empty())
     {
-        window.console.log("No key '" + lite + "' in Labels group " + this.calloutsId_);
+        this.logger_.warning('lite: No key "' + lite + '" in Callouts ' + this.calloutsId_);	
     }
 
 }; //end Callouts.lite method

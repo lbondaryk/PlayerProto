@@ -715,19 +715,8 @@ g.brix .axis circle {
 }
 
 g.brix .axis text {
-  font: bold .7em/1.5em;
+  font: 14px Helvetica;
   color: #008496; 
-}
-
-
-g.brix .axis .descLabel {
-  border: solid 1px #5bafe4;
-  -moz-border-radius: 2px;
-  border-radius: 2px;
-  max-width: 30em;
-  padding: .5em  .3em;
-  font-size: .8em;
-  text-align:center;
 }
 
 .areaMarker {
@@ -735,7 +724,7 @@ g.brix .axis .descLabel {
   opacity: .3; }
 
 .axisLabel {
-  font: .9em/1.1em;
+  font: 14px Helvetica;
   color: #000;
   word-wrap: break-word;
   text-align: center; 

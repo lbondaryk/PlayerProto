@@ -106,6 +106,13 @@ pearson.brix.LabelGroup = function (config, eventManager)
     this.lblgrpId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LabelGroup);
 
     /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.LabelGroup');
+
+    /**
      * Array of traces to be graphed, where each trace is an array of points and each point is an
      * object w/ a {number} x and {number} y property.
      * @type {Array.<Array.<{x: number, y: number}>>}
@@ -419,7 +426,7 @@ pearson.brix.LabelGroup.prototype.setScale = function (xScale, yScale)
  ****************************************************************************/
 pearson.brix.LabelGroup.prototype.lite = function (liteKey)
 {
-    window.console.log("TODO: log fired Label highlite " + liteKey);
+    this.logger_.fine('lite("' + liteKey + '") entered...');	
 
     // Turn off all current highlights
     var allLabels = this.lastdrawn.labelCollection;
@@ -445,7 +452,7 @@ pearson.brix.LabelGroup.prototype.lite = function (liteKey)
 
     if (labelsToLite.empty())
     {
-        window.console.log("No key '" + liteKey + "' in Labels group " + this.lblgrpId_ );
+        this.logger_.warning('lite: No key "' + liteKey + '" in LabelGroup ' + this.lblgrpId_);	
     }
 }; // end of LabelGroup.lite()
 

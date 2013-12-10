@@ -87,6 +87,7 @@ BRIX_ARGS=$(cat <<EOF
 	--input=mortar-dataswap.js
 	--input=mortar-hilite.js
 	--input=mortar-traceselection.js
+	--input=mortar-waveform.js
 	--input=submitmanager.js
 	--input=widget-barchart.js
 	--input=widget-base.js

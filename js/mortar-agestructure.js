@@ -321,9 +321,9 @@ pearson.brix.mortar.AgeStructure.prototype.handleFirstBirthChangedEvent_ = funct
  ****************************************************************************/
 pearson.brix.mortar.AgeStructure.prototype.updateTargetBric_ = function ()
 {
-    this.targetBricLeft_.data = [this.populationWomen_[this.year_]];
+    this.targetBricLeft_.data_ = [this.populationWomen_[this.year_]];
     this.targetBricLeft_.redraw();
-    this.targetBricRight_.data = [[], this.populationMen_[this.year_]];
+    this.targetBricRight_.data_ = [[], this.populationMen_[this.year_]];
     this.targetBricRight_.redraw();
     this.targetReadout_.setValue(this.totalPopulation);
 };

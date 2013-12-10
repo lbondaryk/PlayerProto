@@ -100,6 +100,13 @@ pearson.brix.LineGraph = function (config, eventManager)
     this.lgId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.LineGraph);
 
     /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.LineGraph');
+
+    /**
      * Array of traces to be graphed, where each trace is an array of points and each point is an
      * object w/ a {number} x and {number} y property.
      * @private
@@ -270,7 +277,7 @@ pearson.brix.LineGraph.prototype.setData = function (newData, delayRedraw)
     this.data_ = newData;
 
     // If we're currently drawn someplace, redraw w/ the new data
-    if (!delayRedraw && this.lastdrawn.container != null)
+    if (!delayRedraw && this.lastdrawn.container !== null)
     {
         this.redraw();
     }
@@ -294,7 +301,7 @@ pearson.brix.LineGraph.prototype.setTrace = function (traceIndex, newTrace, dela
     this.data_[traceIndex] = newTrace;
 
     // If we're currently drawn someplace, redraw w/ the new data
-    if (!delayRedraw && this.lastdrawn.container != null)
+    if (!delayRedraw && this.lastdrawn.container !== null)
     {
         this.redraw();
     }
@@ -653,7 +660,8 @@ pearson.brix.LineGraph.prototype.drawData_ = function ()
         traces.on('click',
                 function (d, i)
                 {
-                    that.eventManager.publish(that.selectedEventId, {selectKey: d.key});
+                    that.lite(d.key);
+                    that.eventManager.publish(that.selectedEventId, {selectKey: d.key, index: i});
                 });
 
     } // end if statement to draw lines
@@ -810,7 +818,7 @@ pearson.brix.LineGraph.prototype.append_one_ = function (bric, zOrder)
  ****************************************************************************/
 pearson.brix.LineGraph.prototype.lite = function (liteKey)
 {
-    window.console.log("TODO: log fired LineGraph highlite " + liteKey);
+    this.logger_.fine('lite("' + liteKey + '") entered...');	
 
     // Turn off all current highlights
     var allTraces = this.lastdrawn.traces;
@@ -833,7 +841,7 @@ pearson.brix.LineGraph.prototype.lite = function (liteKey)
 
     if (linesToLite.empty())
     {
-        window.console.log("No key '" + liteKey + "' in line graph " + this.lgId_ );
+        this.logger_.warning('lite: No key "' + liteKey + '" in LineGraph ' + this.lgId_);	
     }
 };
 

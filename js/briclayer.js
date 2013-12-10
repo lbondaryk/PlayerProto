@@ -641,6 +641,30 @@ pearson.brix.BricLayer.dynamicValueHandlers =
     },
 
     /* **************************************************************************
+     * dynamicValueHandlers.object                                          */ /**
+     *
+     * Return an object with properties defined by the list of names and associated
+     * dynamic values from the configuration properties array.
+     *
+     * @this {pearson.brix.BricLayer}
+     * @param {Object}  building    -the under construction (by the build method) building
+     * @param {Object}  dynamicValueConfig
+     *                              -the array dynamicValue config object
+     *
+     * @returns {Object} The defined object w/ properties defined by dynamic
+     * values.
+     ****************************************************************************/
+    'object': function (building, dynamicValueConfig)
+    {
+        var o = {};
+       dynamicValueConfig['properties'].forEach(
+               function (prop) { o[prop['name']] = this.getDynamicValue(building, prop['value']); },
+               this);
+
+        return o;
+    },
+
+    /* **************************************************************************
      * dynamicValueHandlers.join                                           */ /**
      *
      * Return the concatenation of the elements defined by the dynamic values 

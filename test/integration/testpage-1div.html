@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Multiple Choice Demo</title>
+    <title>Brix test page</title>
 
     <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
     <link href="../../css/bootstrap_plus.css" rel="stylesheet" media="screen">
@@ -108,21 +108,22 @@
 </head>
 
 <body>
-    <h1>Submission (MCQ) Integration demo.</h1>
+    <h1>Brix Integration test page (2013-12-09)</h1>
     <div class="demo_message_box">
         <div class="demo_params" >
             Params: (In parenthesis are the query string parameter names)
             <ul>
-            <li>AMS Base URL (ams): <span class="dataval" id="ams_base_url"></span></li>
-            <li>IPS Base URL (ips): <span class="dataval" id="ips_base_url"></span></li>
-            <li>Activity URL (activity*): <span class="dataval" id="activity_url"></span></li>
-            <li>Assignment URL (assignment*): <span class="dataval" id="assignment_url"></span></li>
-            <li>* You may also change the activity & assignment server with paf query param, e.g. &paf=dev, default is cert</li>
-            <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
+                <li>The content div's ID (divid): <span class="dataval" id="div_id"></span></li>
+                <li>AMS Base URL (ams): <span class="dataval" id="ams_base_url"></span></li>
+                <li>IPS Base URL (ips): <span class="dataval" id="ips_base_url"></span></li>
+                <li>Activity URL (activity*): <span class="dataval" id="activity_url"></span></li>
+                <li>Assignment URL (assignment*): <span class="dataval" id="assignment_url"></span></li>
+                <li>* You may also change the activity &amp; assignment server with paf query param, e.g. &amp;paf=dev, default is cert</li>
+                <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
             </ul>
         </div>
         <div >
-            <p>This test will require to have Brix test servers (IPS & CorrectnessEngine) up, along with 
+            <p>This test will require to have Brix test servers (IPS &amp; CorrectnessEngine) up, along with 
                 the required components: Redis (for IPS). If you are connecting AMS locally, you will
                 also require to run Tomcat and Cassandra (Remember to configure laspaf.properties to NOT use the PAF Stub.) ** The actuall tomcat script may differ from platform</p>
             <pre style="float:right; width: 50%">
@@ -149,12 +150,12 @@ If Running AMS locally you will also need to run:
                         <!-- When using PAF, make sure the ID matches with what
                         was added to the server (DEV | CERT)
                          -->
-                       <div id="target1" habitat-id="some_habitat_id1" class="brix" 
+                       <div id="targetId" habitat-id="some_habitat_id1" class="brix" 
                             data-assignmenturl="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1d"
                             data-activityurl  ="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.activity.mcq1d"
                             data-containerid="target1"
                             data-type="brix" >
-                        <p>Q1-test. Multiple Choice question, randomized</p></div>
+                        </div>
                     </div>
             </div>
         </section>
@@ -165,6 +166,7 @@ If Running AMS locally you will also need to run:
     <script>
 
     (function() {
+        var divId = "target1"; // also containerId
         var amcBaseUrl = "http://localhost:9080";
         var ipsBaseUrl = "http://localhost:8088";
         var course = "course_c2";
@@ -177,6 +179,14 @@ If Running AMS locally you will also need to run:
         // Override to local based on query string parameter
         // E.g. file://../multiplechoice-demo.html?ams={dev|qa}
         var queryString = parseQueryString();
+        if (queryString.divid)
+        {
+            divId  = queryString.divid;
+        }
+
+        var targetDiv = $("#targetId");
+        targetDiv.attr("id", divId);
+
         if (queryString.ams && queryString.ams == "dev")
         {
             amcBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com";
@@ -206,14 +216,15 @@ If Running AMS locally you will also need to run:
             activity = queryString.activity;
         }
 
-        $("#target1").attr("data-assignmenturl", repoContentBaseUrl + assignment);
-        $("#target1").attr("data-activityurl", repoContentBaseUrl + activity);
+        targetDiv.attr("data-assignmenturl", repoContentBaseUrl + assignment);
+        targetDiv.attr("data-activityurl", repoContentBaseUrl + activity);
 
         /*
          * Display features and setup.
          */
-        var assignmentUrl = $("#target1").data("assignmenturl");
-        var activityUrl = $("#target1").data("activityurl");
+        var assignmentUrl = targetDiv.data("assignmenturl");
+        var activityUrl = targetDiv.data("activityurl");
+        $("#div_id").text(divId);
         $("#ams_base_url").text(amcBaseUrl);
         $("#ips_base_url").text(ipsBaseUrl);
         $("#activity_url").text(activityUrl);

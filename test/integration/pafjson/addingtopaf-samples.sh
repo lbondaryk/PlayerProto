@@ -94,3 +94,8 @@ java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m GET \
 java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m GET \
     -h "Accept:application/vnd.pearson.paf.v1.assignment+json" \
     -u http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/4872CF3F-276B-443B-A1B9-3FB95D187E62 -c	
+
+##########
+# Adding content located as remote resource
+paf-post-activity.sh https://raw.github.com/lbondaryk/brixContent/master/Marin/Other/E3.1.activity.json
+

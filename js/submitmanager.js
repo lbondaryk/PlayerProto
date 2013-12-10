@@ -193,13 +193,16 @@ pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (su
  * @export
  *
  * @param {!d3.selection}
- *                  container       -The html element to write the formatted
- *                                   response into.
- * @param {Object}  responseDetails -The response details returned by the
- *                                   scoring engine.
- *                                   The details must contain the following
- *                                   properties:
- *                                   correctness, submission, feedback.
+ *                   container       -The html element to write the formatted
+ *                                    response into.
+ * @param {Object}   responseDetails -The response details returned by the
+ *                                    scoring engine.
+ *                                    The details must contain the following
+ *                                    properties:
+ *                                    correctness, submission, feedback.
+ * @param {boolean=} outOfTries      -When true a correct response is formatted
+ *                                    in a way that should be displayed following
+ *                                    an incorrect response.
  *
  ****************************************************************************/
 pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting = function (container, responseDetails, outOfTries)
