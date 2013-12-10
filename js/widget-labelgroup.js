@@ -246,6 +246,22 @@ pearson.brix.LabelGroup.getEventTopic = function (eventName, instanceId)
 };
 
 /* **************************************************************************
+ * LabelGroup.getId                                                    */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.LabelGroup.prototype.getId = function ()
+{
+    return this.lblgrpId_;
+};
+
+/* **************************************************************************
  * LabelGroup.draw                                                     */ /**
  *
  * @inheritDoc

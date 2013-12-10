@@ -61,7 +61,7 @@
             });
 
             it('should have the id that was specified in the config', function () {
-                expect(mySelectGroup.id).to.equal(configSelGrp.id);
+                expect(mySelectGroup.getId()).to.equal(configSelGrp.id);
             });
             //we may choose to add keys to dropdowns so they can participate in highlighting
             //in which case this test will have to invert - lb

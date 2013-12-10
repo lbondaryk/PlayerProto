@@ -77,7 +77,7 @@
             });
 
             it('should have the id that was specified in the config', function () {
-                expect(myRadioGroup.id).to.equal(configRadioGroup.id);
+                expect(myRadioGroup.getId()).to.equal(configRadioGroup.id);
             });
 
             it('should not create keys for choices w/o a key', function () {

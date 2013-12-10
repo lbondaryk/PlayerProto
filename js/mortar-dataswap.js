@@ -237,7 +237,7 @@ pearson.brix.mortar.Dataswap.autoIdPrefix = 'dataswap_auto_';
 pearson.brix.mortar.Dataswap.prototype.handleEvent_ = function (eventDetails)
 {
     var index = this.getIndex_(eventDetails[this.edPropName_]);
-    this.logger_.finer('eventDetails.' + this.edPropName_ + ': ' + eventDetails[this.edPropName_] + ' = index: ' + index);
+    this.logger_.finer('event: ' + this.topic_ + ' w/ eventDetails.' + this.edPropName_ + ': ' + eventDetails[this.edPropName_] + ' = index: ' + index);
 
     var args = this.dataSetterInitialArgs_.slice(0);
     args.push(this.dataSource_[index]);

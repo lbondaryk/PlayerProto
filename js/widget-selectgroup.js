@@ -154,12 +154,13 @@ pearson.brix.SelectGroup = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.selectedEventId = this.sgId_ + '_option';
+    this.selectedEventId = pearson.brix.SelectGroup.getEventTopic('selected', this.sgId_);
 
     /**
      * The event details for this.selectedEventId events
      * @typedef {Object} SelectedEventDetails
      * @property {string} selectKey -The answerKey associated with the selected answer.
+     * @property {number} index     -The index of the selected answer from the list of choices.
      */
     var SelectedEventDetails;
 
@@ -186,6 +187,61 @@ goog.inherits(pearson.brix.SelectGroup, pearson.brix.HtmlBric);
  * @type {string}
  */
 pearson.brix.SelectGroup.autoIdPrefix = "sg_auto_";
+
+/* **************************************************************************
+ * SelectGroup.getEventTopic (static)                                  */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * SelectGroup bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of SelectGroup with the given instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.SelectGroup.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            return instanceId + '_option';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by SelectGroup brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
+
+/* **************************************************************************
+ * SelectGroup.getId                                                   */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.SelectGroup.prototype.getId = function ()
+{
+    return this.sgId_;
+};
 
 /* **************************************************************************
  * SelectGroup.draw                                                    */ /**
@@ -234,13 +290,17 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
     selectTag.on('change',
                 function ()
                 {
-                    that.eventManager.publish(that.selectedEventId, {
-                        // the selected key is in the value, so figure out
-                        // which entry you picked, and return it's value, that
-                        // is the same as the key.  There's probably a more elegant
-                        // way to do this with the datum associated, but it escaped me -lb
-                            selectKey: options[0][this.selectedIndex].value
-                        });
+                    var ed =
+                        {
+                            // the selected key is in the value, so figure out
+                            // which entry you picked, and return it's value, that
+                            // is the same as the key.  There's probably a more elegant
+                            // way to do this with the datum associated, but it escaped me -lb
+                            selectKey: options[0][this.selectedIndex].value,
+                            index: this.selectedIndex
+                        };
+                    that.logger_.finer('publish ' + that.selectedEventId + ' event; selectKey:"' + ed.selectKey + '" index: ' + ed.index);	
+                    that.eventManager.publish(that.selectedEventId, ed);
                 });
 
     //when the page first loads, we want the selectedIndex to be -1 for unanswered questions
@@ -269,7 +329,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.SelectGroup.prototype.lite = function (liteKey)
 {
-    window.console.log("TODO: log fired Select highlite " + liteKey);
+    this.logger_.fine('lite("' + liteKey + '") entered...');	
 
     //highlighting a dropdown means both selecting an element and
     //giving focus to the dropdown to call attention to it's possible
@@ -290,7 +350,7 @@ pearson.brix.SelectGroup.prototype.lite = function (liteKey)
 
     if (pickMe.empty())
     {
-        window.console.log("No key '" + liteKey + "' in select group " + this.sgId_ );
+        this.logger_.warning('lite: No key "' + liteKey + '" in SelectGroup ' + this.sgId_);	
     }
 }; // end of LabelGroup.lite()
 

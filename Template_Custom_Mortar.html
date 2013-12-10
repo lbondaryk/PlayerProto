@@ -42,23 +42,23 @@
 			"containerConfig":
 				[
 					{
-						"description": "container for dropdown",
-						"containerId": "b147b485daada4c18be9d724142ae7b97",
+						"description": "container for saturation selector",
+						"containerId": "saturation",
 						"brixConfig":
 							[
 								{
-									"bricId": "dropdown1",
+									"bricId": "saturationDrop",
 									"bricType": "SelectGroup",
 									"config":
 										{
-											"id": "saturationDrop",
+											"id": "sat-selgrp",
                                             "choices": 
                                                 [
                                                     { "content": "Simple (unsaturated)" },
                                                     { "content": "Moderate (partially saturated)" },
                                                     { "content": "Complex (highly saturated with overtones)" }
                                                 ]
-										},
+										}
 								}
 							],
 						"hookupActions":
@@ -66,7 +66,7 @@
 								{
 									"description": "draw the dropdown",
 									"type": "method-call",
-									"instance": {"type": "ref", "domain": "brix", "refId": "dropdown1"},
+									"instance": {"type": "ref", "domain": "brix", "refId": "saturationDrop"},
 									"methodName": "draw",
 									"args":
 										[
@@ -76,7 +76,7 @@
 							]
 					},
 					{
-						"description": "container for slider",
+						"description": "container for freq slider",
 						"containerId": "b147b485daada4c18be9d724142ae7b97",
 						"brixConfig":
 							[
@@ -93,7 +93,7 @@
 											"width": "60%",
 											"label": "Frequency f =",
 											"format": "0.1f",
-										},
+										}
 								}
 							],
 						"hookupActions":
@@ -111,16 +111,52 @@
 							]
 					},
 					{
+						"description": "container for amplitude slider",
+						"containerId": "amplitude",
+						"brixConfig":
+							[
+								{
+									"bricId": "amplitudeSldr",
+									"bricType": "Slider",
+									"config":
+										{
+											"id": "sldr-ampl",
+                                            "startVal": 60,
+                                            "minVal": 0,
+                                            "maxVal": 120,
+                                            "stepVal": 10,
+                                            "width": '60%',
+                                            "unit": " decibels",
+                                            "label": "Amplitude ",
+                                            "format": ".1f"
+										}
+								}
+							],
+						"hookupActions":
+							[
+								{
+									"description": "draw the slider",
+									"type": "method-call",
+									"instance": {"type": "ref", "domain": "brix", "refId": "amplitudeSldr"},
+									"methodName": "draw",
+									"args":
+										[
+											{ "type": "d3select", "selector": "#b147b485daada4c18be9d724142ae7b97" }
+										]
+								}
+							]
+					},
+					{
 						"description": "container for readout",
 						"containerId": "Ratio",
 						"brixConfig":
 							[
 								{
-									"bricId": "readout1",
+									"bricId": "SatReadout",
 									"bricType": "Readout",
 									"config":
 										{
-											"id": "dropOut",
+											"id": "sat-rdout",
 											"size": 5,
 											"label": "Dropdown sez:"
 										},
@@ -138,7 +174,7 @@
                                             {
                                                 "type": "set-property",
                                                 "name": "startVal",
-												"value": {"type": "constant", "value": 0}
+												"value": {"type": "constant", "value": "foo"}
 											},
 
                                         ]
@@ -150,14 +186,13 @@
 								// We will use a simple data swap mortar to be created later.
 								{
 									"mortarId": "dataswap1",
-									"mortarType": "Value",
+									"mortarType": "Dataswap",
 									"config":
 										{
 											//"topic": pearson.brix.Slider.getEventTopic('value-changed', 'sldr-yr'),
-                                            "eventDetailsProperty": "newValue",
-											"valueBase": 1950,
-											"valueStep": 5,
-											"dataPropertySetter": "setValue",
+                                            "eventDetailsProperty": "index",
+                                            "dataPropertySetter": "setValue",
+                                            "sourceDataArray": ["unsaturated", "moderate saturation", "fully saturated"]
 										},
 									"configFixup":
                                         [
@@ -168,19 +203,14 @@
                                                     {
                                                         "type": "brix-topic",
                                                         "bricType": "SelectGroup",
-                                                        "instanceId": "saturationDrop",
-                                                        "eventName": "value-changed"
+                                                        "instanceId": "sat-selgrp",
+                                                        "eventName": "selected"
                                                     }
                                             },
                                             {
                                                 "type": "set-property",
-                                                "name": "sourceDataArray",
-                                                "value": { "type": "ref", "domain": "data", "refId": "mensDepRatios" }
-                                            },
-                                            {
-                                                "type": "set-property",
                                                 "name": "targetBric",
-                                                "value": { "type": "ref", "domain": "brix", "refId": "readout1" }
+                                                "value": { "type": "ref", "domain": "brix", "refId": "SatReadout" }
                                             }
                                         ]
 								}
@@ -192,11 +222,12 @@
 						"brixConfig":
 							[
 								{
-									"bricId": "graph1",
+									"bricId": "wavegraph",
 									"bricType": "LineGraph",
 									"config":
 										{
 											"id": "lngrph-waveform",
+                                            "type": "lines",
 											"xAxisFormat":
 												{ 
 													"type": "linear", 
@@ -247,20 +278,18 @@
 						"mortarConfig":
 							[
 								{
-									"mortarId": "mortar1",
+									"mortarId": "waveform",
 									"mortarType": "WaveForm",
 									"config":
 										{
-										    //"eventDetailsProperty": "newValue",
-											"amplitudeTopic": 60,
-											"freqTopic": 1000,
-                                            "otherTopic": 1,
-											//"dataPropertySetter": "setSeries",
-											"initialSetterArgs": [1]
+                                            //"freqTopic": freqSlide.changedValueEventId,
+                                            //"otherTopic": dropdown.selectedEventId,
+                                            //"amplitudeTopic": amplitudeSlide.changedValueEventId,
+                                            //"targetBric": wave,
 										},
 									"configFixup":
                                         [
-                                           {
+                                            {
                                                 "type": "set-property",
                                                 "name": "freqTopic",
                                                 "value":
@@ -273,8 +302,30 @@
                                             },
                                             {
                                                 "type": "set-property",
+                                                "name": "otherTopic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "SelectGroup",
+                                                        "instanceId": "sat-selgrp",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "amplitudeTopic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "Slider",
+                                                        "instanceId": "sldr-ampl",
+                                                        "eventName": "value-changed"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
                                                 "name": "targetBric",
-                                                "value": { "type": "ref", "domain": "brix", "refId": "graph1" }
+                                                "value": { "type": "ref", "domain": "brix", "refId": "wavegraph" }
                                             }
                                         ]
 								}
@@ -288,7 +339,7 @@
 									"methodName": "append",
 									"args":
 										[
-											{ "type": "ref", "domain": "brix", "refId": "graph1" }
+											{ "type": "ref", "domain": "brix", "refId": "wavegraph" }
 										]
 								}
 							]

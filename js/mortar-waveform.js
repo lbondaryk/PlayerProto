@@ -54,11 +54,18 @@ pearson.brix.mortar.WaveForm = function (config, eventManager)
     goog.base(this);
 
     /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.mortar.WaveForm');
+
+    /**
      * The id of this WaveForm mortar instance, as specified in the config.
      * @private
      * @type {string|undefined}
      */
-    this.WaveFormId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.mortar.WaveForm);
+    this.waveFormId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.mortar.WaveForm);
     
      
      /**
@@ -86,9 +93,9 @@ pearson.brix.mortar.WaveForm = function (config, eventManager)
     this.amplitudeTopic_ = config['amplitudeTopic'];
 
     /**
-     * The target bric instances to draw the data.
+     * The target bric instance to draw the data.
      * @private
-     * @type {!pearson.brix.ILightable}
+     * @type {!pearson.brix.Bric}
      */
     this.targetBric_ = config['targetBric'];
     
@@ -128,6 +135,7 @@ pearson.brix.mortar.WaveForm = function (config, eventManager)
 
     // Initialize the graph data by running the calculation once
     this.calcData_();
+    this.updateTargetBric_();
 
 
 	/**
@@ -138,9 +146,21 @@ pearson.brix.mortar.WaveForm = function (config, eventManager)
 	this.eventManager_ = eventManager || pearson.utils.IEventManager.dummyEventManager;
 
     // Set up the selection event subscription
-    this.eventManager_.subscribe(this.saturationTopic_, goog.bind(this.handleDropdownChangedEvent_, this));
+    this.eventManager_.subscribe(this.saturationTopic_, goog.bind(this.handleSaturationChangedEvent_, this));
     this.eventManager_.subscribe(this.freqTopic_, goog.bind(this.handleFrequencyChangedEvent_, this));
     this.eventManager_.subscribe(this.amplitudeTopic_, goog.bind(this.handleAmplitudeChangedEvent_, this));
+
+    // log the configuration of this mortar
+    var configMsg =
+        [ '',
+          'initial property values for WaveForm id: ' + this.waveFormId_,
+          '\tsaturation topic: ' + this.saturationTopic_,
+          '\tfrequency topic: ' + this.freqTopic_,
+          '\tamplitude topic: ' + this.amplitudeTopic_,
+          '\ttargetBric.getId(): ' + this.targetBric_.getId()
+        ];
+    this.logger_.config(configMsg.join('\n'));
+
 };
 goog.inherits(pearson.brix.mortar.WaveForm, pearson.brix.mortar.Mortar);
 
@@ -152,11 +172,9 @@ goog.inherits(pearson.brix.mortar.WaveForm, pearson.brix.mortar.Mortar);
 pearson.brix.mortar.WaveForm.autoIdPrefix = 'WaveForm_auto_';
 
 /* **************************************************************************
- * WaveForm.handleInitialPopChangedEvent_                                */ /**
+ * WaveForm.handleFrequencyChangedEvent_                               */ /**
  *
- * Handler for the changed initial population value event which will 
- * recalculate the population data, and redisplay the data for
- * year0 in the target bric.
+ * Handler for the [fill in this description]
  * @private
  *
  * @param {Object}  eventDetails        -The details of the slider change event.
@@ -170,11 +188,9 @@ pearson.brix.mortar.WaveForm.prototype.handleFrequencyChangedEvent_ = function (
 };
 
 /* **************************************************************************
- * WaveForm.handleFertilityChangedEvent_                                */ /**
+ * WaveForm.handleAmplitudeChangedEvent_                               */ /**
  *
- * Handler for the changed fertility rate value event which will 
- * recalculate the population data, and redisplay the data for
- * year0 in the target bric.
+ * Handler for the [fill in this description]
  * @private
  *
  * @param {Object}  eventDetails        -The details of the slider change event.
@@ -188,17 +204,15 @@ pearson.brix.mortar.WaveForm.prototype.handleAmplitudeChangedEvent_ = function (
 };
 
 /* **************************************************************************
- * WaveForm.handleMortChangedEvent_                                */ /**
+ * WaveForm.handleSaturationChangedEvent_                              */ /**
  *
- * Handler for the changed mortality profile value event which will 
- * recalculate the population data, and redisplay the data for
- * year0 in the target bric.
+ * Handler for the [fill in this description]
  * @private
  *
  * @param {Object}  eventDetails        -The details of the slider change event.
  *
  ****************************************************************************/
-pearson.brix.mortar.WaveForm.prototype.handleDropdownChangedEvent_ = function (eventDetails)
+pearson.brix.mortar.WaveForm.prototype.handleSaturationChangedEvent_ = function (eventDetails)
 {
     this.saturation_ = eventDetails.selectKey;
     this.calcData_();
@@ -216,14 +230,12 @@ pearson.brix.mortar.WaveForm.prototype.handleDropdownChangedEvent_ = function (e
  ****************************************************************************/
 pearson.brix.mortar.WaveForm.prototype.updateTargetBric_ = function ()
 {
-    
-    this.targetBric_.data_ = this.graphData_;
-    this.targetBric_.redraw();
+    this.targetBric_.setData(this.graphData_);
     //this.targetReadout_.setValue(this.point_);
 };
 
 /* **************************************************************************
- * WaveForm.calculatePopulation_                                   */ /**
+ * WaveForm.calcData_                                                  */ /**
  *
  * Handler for the changed year value event which will display the data for
  * the new year in the target bric.
@@ -232,6 +244,8 @@ pearson.brix.mortar.WaveForm.prototype.updateTargetBric_ = function ()
  ****************************************************************************/
 pearson.brix.mortar.WaveForm.prototype.calcData_ = function ()
 {
+    this.logger_.fine('calcData_ entered...');
+
     // initialize the number of harmonics to calculate
     var harmonics = 0;
     switch(this.saturation_)
