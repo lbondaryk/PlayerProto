@@ -385,8 +385,9 @@ pearson.brix.SelectGroup.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.SelectGroup.prototype.selectItemAtIndex = function (index)
 {
-    var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetSelectGroup select");
-    var selectedInput = choiceInputs[0][index];
+
+    var choiceInputs = this.lastdrawn.widgetGroup.select("select");
+    var selectedInput = choiceInputs[0][0][index];
 
     if (selectedInput.selected)
     {
