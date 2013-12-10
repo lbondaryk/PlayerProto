@@ -67,3 +67,8 @@ java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m PUT \
 # To retrieve: notice the -m GET
 java -jar brix-tool-pafclient-0.1-jar-with-dependencies.jar -m GET \
 	-u http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/test.sanvan.assign.mcq1b -c
+
+
+##########
+# Adding content located as remote resource
+paf-post-activity.sh https://raw.github.com/lbondaryk/brixContent/master/Marin/Other/E3.1.activity.json
