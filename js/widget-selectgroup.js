@@ -277,7 +277,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
 
     options.enter().append("option")
             //use html to populate the options so any markup is retained
-            .html(function(d) {return d.content});
+            .html(function(d) { return d.content; });
 
     // autokey entries which have no key with the data index
     options.each(function (d, i) {
@@ -285,7 +285,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
                     d.key = 'key' in d ? d.key : i.toString();
                     });
 
-    options.attr("value", function (d) {return d.key;});
+    options.attr("value", function (d) { return d.key; });
 
     selectTag.on('change',
                 function ()
@@ -299,7 +299,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
                             selectKey: options[0][this.selectedIndex].value,
                             index: this.selectedIndex
                         };
-                    that.logger_.finer('publish ' + that.selectedEventId + ' event; selectKey:"' + ed.selectKey + '" index: ' + ed.index);	
+                    that.logger_.finer('publish ' + that.selectedEventId + ' event; selectKey:"' + ed.selectKey + '" index: ' + ed.index);
                     that.eventManager.publish(that.selectedEventId, ed);
                 });
 
@@ -308,7 +308,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
     //even the first one in the list, represents a change.  Prolly want to do
     //this differently once we've implemented state. -lb
 
-    if (this.question == true)
+    if (this.question === true)
     {
         selectTag[0][0].selectedIndex = -1;
     }
@@ -329,7 +329,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.SelectGroup.prototype.lite = function (liteKey)
 {
-    this.logger_.fine('lite("' + liteKey + '") entered...');	
+    this.logger_.fine('lite("' + liteKey + '") entered...');
 
     //highlighting a dropdown means both selecting an element and
     //giving focus to the dropdown to call attention to it's possible
@@ -350,7 +350,7 @@ pearson.brix.SelectGroup.prototype.lite = function (liteKey)
 
     if (pickMe.empty())
     {
-        this.logger_.warning('lite: No key "' + liteKey + '" in SelectGroup ' + this.sgId_);	
+        this.logger_.warning('lite: No key "' + liteKey + '" in SelectGroup ' + this.sgId_);
     }
 }; // end of LabelGroup.lite()
 
