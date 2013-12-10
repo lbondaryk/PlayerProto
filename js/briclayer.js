@@ -116,6 +116,7 @@ pearson.brix.MortarTypes =
 
     AGESTRUCTURE:           "AgeStructure",
     TRACESELECTION:         "TraceSelection",
+    WAVEFORM:               "WaveForm", 
 };
 
 
@@ -228,6 +229,7 @@ pearson.brix.BricLayer.prototype.getBricWorks = function ()
     bricWorks.registerMortarMix(MortarTypes.HILITE, pearson.brix.mortar.Hilite);
     bricWorks.registerMortarMix(MortarTypes.AGESTRUCTURE, pearson.brix.mortar.AgeStructure);
     bricWorks.registerMortarMix(MortarTypes.TRACESELECTION, pearson.brix.mortar.TraceSelection);
+    bricWorks.registerMortarMix(MortarTypes.WAVEFORM, pearson.brix.mortar.WaveForm);
 
     this.bricWorks_ = bricWorks;
 

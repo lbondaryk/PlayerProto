@@ -123,10 +123,17 @@ pearson.brix.SelectGroup = function (config, eventManager)
     goog.base(this);
 
     /**
+     * A logger to help debugging 
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.SelectGroup');
+
+    /**
      * A unique id for this instance of the radio group widget
      * @type {string}
      */
-    this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.SelectGroup);
+    this.sgId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.SelectGroup);
 
     /**
      * The list of choices presented by the RadioGroup.
@@ -147,7 +154,7 @@ pearson.brix.SelectGroup = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.selectedEventId = this.id + '_option';
+    this.selectedEventId = this.sgId_ + '_option';
 
     /**
      * The event details for this.selectedEventId events
@@ -162,11 +169,14 @@ pearson.brix.SelectGroup = function (config, eventManager)
      */
     this.lastdrawn =
         {
-            container: null,
+            /** @type {d3.selection} */ container: null,
             widgetGroup: null,
             options: null,
             choiceSelected: null,
         };
+
+    this.logger_.config('SelectGroup dropdown with id:' + this.sgId_ + ' created.');
+
 }; // end of SelectGroup constructor
 goog.inherits(pearson.brix.SelectGroup, pearson.brix.HtmlBric);
 
@@ -197,12 +207,12 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
     // these are often used inline in sentences, so we don't want a block element.
     var widgetGroup = container.append("span")
         .attr("class", "widgetSelectGroup")
-        .attr("id", this.id);
+        .attr("id", this.sgId_);
 
     this.lastdrawn.widgetGroup = widgetGroup;
 
     var selectTag = widgetGroup.append("select")
-                        .attr("name", this.id)
+                        .attr("name", this.isgId_)
                         //set the width to auto so it sizes to content
                         .style("width","auto");
 
@@ -280,7 +290,7 @@ pearson.brix.SelectGroup.prototype.lite = function (liteKey)
 
     if (pickMe.empty())
     {
-        window.console.log("No key '" + liteKey + "' in select group " + this.id );
+        window.console.log("No key '" + liteKey + "' in select group " + this.sgId_ );
     }
 }; // end of LabelGroup.lite()
 
