@@ -426,7 +426,7 @@ pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 
     var d = /** @type {!pearson.brix.KeyedAnswer} */ (d3.select(selectedInput).datum());
 
-    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
+    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey, index: index});
 };
 
 /* **************************************************************************

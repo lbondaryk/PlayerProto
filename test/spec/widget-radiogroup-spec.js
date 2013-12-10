@@ -173,6 +173,7 @@
                         myRadioGroup.selectItemAtIndex(1);
                         expect(selectEventCount).is.equal(prevSelectEventCount + 1);
                         expect(lastSelectEventDetails.selectKey).is.equal('ans2');
+                        expect(lastSelectEventDetails.index).is.equal(1);
                     });
 
                     it('should change the selection when selecting an unselected item', function() {
@@ -185,6 +186,7 @@
                         // Assert - select event was published
                         expect(selectEventCount, "select event count").is.equal(prevSelectEventCount + 1);
                         expect(lastSelectEventDetails.selectKey).is.equal('ans3');
+                        expect(lastSelectEventDetails.index).is.equal(2);
                     });
 
                     it('should do nothing when selecting an already selected item (no event)', function() {
