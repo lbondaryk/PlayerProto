@@ -747,7 +747,7 @@ g.brix .axis text {
 svg g.widgetLineGraph .traces,
 svg g.widgetLegend .traces 
 {
-  opacity:		0.8;
+  opacity:		0.9;
   fill: none;
   stroke-width: 3; 
 }
@@ -779,11 +779,11 @@ svg g.widgetLegend .legendBox {
 }
 
 svg g .stroke0 {
-  stroke: #107aca;
+  stroke: #5688D6;
    }
 
 svg g .stroke1 {
-  stroke: #b00216; }
+  stroke: #F25757; }
 
 svg g .stroke2 {
   stroke: #fabc4a; }
@@ -820,7 +820,7 @@ svg g .stroke11 {
 svg g.brixBarChart .bar,
 svg g.widgetLegend rect,
 svg g.bricPieChart path {
-  opacity: 0.8; 
+  opacity: 0.9; 
   }
 
 svg g.brixBarChart .lit .bar,
@@ -833,11 +833,11 @@ svg g.bricPieChart path .lit  {
 
 
 svg g .fill0 {
-  fill: #107aca;
+  fill: #5688D6;
   }
 
 svg g .fill1 {
-   fill: #b00216; }
+   fill: #F25757; }
 
 svg g .fill2 {
   fill: #fabc4a; }

@@ -104,9 +104,10 @@ pearson.brix.RadioGroup = function (config, eventManager)
 
     /**
      * A unique id for this instance of the radio group widget
+     * @private
      * @type {string}
      */
-    this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.RadioGroup);
+    this.rgrpId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.RadioGroup);
 
     /**
      * The list of choices presented by the RadioGroup.
@@ -132,7 +133,7 @@ pearson.brix.RadioGroup = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.selectedEventId = this.id + '_itemSelected';
+    this.selectedEventId = pearson.brix.RadioGroup.getEventTopic('selected', this.rgrpId_);
 
     /**
      * The event details for this.selectedEventId events
@@ -163,6 +164,61 @@ goog.inherits(pearson.brix.RadioGroup, pearson.brix.HtmlBric);
 pearson.brix.RadioGroup.autoIdPrefix = "rg_auto_";
 
 /* **************************************************************************
+ * RadioGroup.getEventTopic (static)                                   */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * RadioGroup bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of RadioGroup with the given instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.RadioGroup.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            return instanceId + '_itemSelected';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by RadioGroup brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
+
+/* **************************************************************************
+ * RadioGroup.getId                                                    */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.RadioGroup.prototype.getId = function ()
+{
+    return this.rgrpId_;
+};
+
+/* **************************************************************************
  * RadioGroup.draw                                                     */ /**
  *
  * @inheritDoc
@@ -183,7 +239,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
     // make a div to hold the radio group
     var widgetGroup = container.append("div")
         .attr("class", "brixRadioGroup")
-        .attr("id", this.id);
+        .attr("id", this.rgrpId_);
 
     // We will use a table to provide structure for the radio group
     // and put each answer in its own row of the table.
@@ -208,7 +264,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
         .append("input")
             .attr("id", getButtonId)
             .attr("type", "radio")
-            .attr("name", this.id)
+            .attr("name", this.rgrpId_)
             .attr("value", function (d) {return d.answerKey;});
 
     var labelCell = ansRows.append("td");
@@ -224,7 +280,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
                       return  choiceLabel + d.content;
                   });
 
-    var choiceInputs = widgetGroup.selectAll("input[name='" + this.id + "']");
+    var choiceInputs = widgetGroup.selectAll("input[name='" + this.rgrpId_ + "']");
     choiceInputs
         .on("change", function (d, i)
                 {
@@ -250,7 +306,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.selectedItem = function ()
 {
-    var selectedInputSelector = "input[name='" + this.id + "']:checked";
+    var selectedInputSelector = "input[name='" + this.rgrpId_ + "']:checked";
     var selectedInput = this.lastdrawn.widgetGroup.select(selectedInputSelector);
     return !selectedInput.empty() ? selectedInput.datum() : null;
 };
@@ -338,7 +394,7 @@ pearson.brix.RadioGroup.prototype.flagChoice = function (key)
     // of the specified choice w/ a checked icon.
       
     var index = this.itemKeyToIndex(key);
-    var buttonId = this.id + "_btn" + index;
+    var buttonId = this.rgrpId_ + "_btn" + index;
     var buttonField = d3.select('#' + buttonId);
     buttonField.remove();
     d3.select('td:empty').append('i').attr('class','icon-ok-sign');
@@ -370,7 +426,7 @@ pearson.brix.RadioGroup.prototype.selectItemAtIndex = function (index)
 
     var d = /** @type {!pearson.brix.KeyedAnswer} */ (d3.select(selectedInput).datum());
 
-    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
+    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey, index: index});
 };
 
 /* **************************************************************************

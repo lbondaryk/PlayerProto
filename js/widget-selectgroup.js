@@ -123,10 +123,17 @@ pearson.brix.SelectGroup = function (config, eventManager)
     goog.base(this);
 
     /**
+     * A logger to help debugging 
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.SelectGroup');
+
+    /**
      * A unique id for this instance of the radio group widget
      * @type {string}
      */
-    this.id = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.SelectGroup);
+    this.sgId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.SelectGroup);
 
     /**
      * The list of choices presented by the RadioGroup.
@@ -147,12 +154,13 @@ pearson.brix.SelectGroup = function (config, eventManager)
      * @const
      * @type {string}
      */
-    this.selectedEventId = this.id + '_option';
+    this.selectedEventId = pearson.brix.SelectGroup.getEventTopic('selected', this.sgId_);
 
     /**
      * The event details for this.selectedEventId events
      * @typedef {Object} SelectedEventDetails
      * @property {string} selectKey -The answerKey associated with the selected answer.
+     * @property {number} index     -The index of the selected answer from the list of choices.
      */
     var SelectedEventDetails;
 
@@ -162,11 +170,14 @@ pearson.brix.SelectGroup = function (config, eventManager)
      */
     this.lastdrawn =
         {
-            container: null,
+            /** @type {d3.selection} */ container: null,
             widgetGroup: null,
             options: null,
             choiceSelected: null,
         };
+
+    this.logger_.config('SelectGroup dropdown with id:' + this.sgId_ + ' created.');
+
 }; // end of SelectGroup constructor
 goog.inherits(pearson.brix.SelectGroup, pearson.brix.HtmlBric);
 
@@ -176,6 +187,61 @@ goog.inherits(pearson.brix.SelectGroup, pearson.brix.HtmlBric);
  * @type {string}
  */
 pearson.brix.SelectGroup.autoIdPrefix = "sg_auto_";
+
+/* **************************************************************************
+ * SelectGroup.getEventTopic (static)                                  */ /**
+ *
+ * Get the topic that will be published for the specified event by a
+ * SelectGroup bric with the specified id.
+ * @export
+ *
+ * @param {string}  eventName       -The name of the event published by instances
+ *                                   of this Bric.
+ * @param {string}  instanceId      -The id of the Bric instance.
+ *
+ * @returns {string} The topic string for the given topic name published
+ *                   by an instance of SelectGroup with the given instanceId.
+ *
+ * @throws {Error} If the eventName is not published by this bric or the
+ *                 topic cannot be determined for any other reason.
+ ****************************************************************************/
+pearson.brix.SelectGroup.getEventTopic = function (eventName, instanceId)
+{
+    /**
+     * Functions that return the topic of a published event given an id.
+     * @type {Object.<string, function(string): string>}
+     */
+    var publishedEventTopics =
+    {
+        'selected': function (instanceId)
+        {
+            return instanceId + '_option';
+        },
+    };
+
+    if (!(eventName in publishedEventTopics))
+    {
+        throw new Error("The requested event '" + eventName + "' is not published by SelectGroup brix");
+    }
+
+    return publishedEventTopics[eventName](instanceId);
+};
+
+/* **************************************************************************
+ * SelectGroup.getId                                                   */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.SelectGroup.prototype.getId = function ()
+{
+    return this.sgId_;
+};
 
 /* **************************************************************************
  * SelectGroup.draw                                                    */ /**
@@ -197,12 +263,12 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
     // these are often used inline in sentences, so we don't want a block element.
     var widgetGroup = container.append("span")
         .attr("class", "widgetSelectGroup")
-        .attr("id", this.id);
+        .attr("id", this.sgId_);
 
     this.lastdrawn.widgetGroup = widgetGroup;
 
     var selectTag = widgetGroup.append("select")
-                        .attr("name", this.id)
+                        .attr("name", this.sgId_)
                         //set the width to auto so it sizes to content
                         .style("width","auto");
 
@@ -211,7 +277,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
 
     options.enter().append("option")
             //use html to populate the options so any markup is retained
-            .html(function(d) {return d.content});
+            .html(function(d) { return d.content; });
 
     // autokey entries which have no key with the data index
     options.each(function (d, i) {
@@ -219,18 +285,22 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
                     d.key = 'key' in d ? d.key : i.toString();
                     });
 
-    options.attr("value", function (d) {return d.key;});
+    options.attr("value", function (d) { return d.key; });
 
     selectTag.on('change',
                 function ()
                 {
-                    that.eventManager.publish(that.selectedEventId, {
-                        // the selected key is in the value, so figure out
-                        // which entry you picked, and return it's value, that
-                        // is the same as the key.  There's probably a more elegant
-                        // way to do this with the datum associated, but it escaped me -lb
-                            selectKey: options[0][this.selectedIndex].value
-                        });
+                    var ed =
+                        {
+                            // the selected key is in the value, so figure out
+                            // which entry you picked, and return it's value, that
+                            // is the same as the key.  There's probably a more elegant
+                            // way to do this with the datum associated, but it escaped me -lb
+                            selectKey: options[0][this.selectedIndex].value,
+                            index: this.selectedIndex
+                        };
+                    that.logger_.finer('publish ' + that.selectedEventId + ' event; selectKey:"' + ed.selectKey + '" index: ' + ed.index);
+                    that.eventManager.publish(that.selectedEventId, ed);
                 });
 
     //when the page first loads, we want the selectedIndex to be -1 for unanswered questions
@@ -238,7 +308,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
     //even the first one in the list, represents a change.  Prolly want to do
     //this differently once we've implemented state. -lb
 
-    if (this.question == true)
+    if (this.question === true)
     {
         selectTag[0][0].selectedIndex = -1;
     }
@@ -259,7 +329,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
  ****************************************************************************/
 pearson.brix.SelectGroup.prototype.lite = function (liteKey)
 {
-    window.console.log("TODO: log fired Select highlite " + liteKey);
+    this.logger_.fine('lite("' + liteKey + '") entered...');
 
     //highlighting a dropdown means both selecting an element and
     //giving focus to the dropdown to call attention to it's possible
@@ -280,7 +350,7 @@ pearson.brix.SelectGroup.prototype.lite = function (liteKey)
 
     if (pickMe.empty())
     {
-        window.console.log("No key '" + liteKey + "' in select group " + this.id );
+        this.logger_.warning('lite: No key "' + liteKey + '" in SelectGroup ' + this.sgId_);
     }
 }; // end of LabelGroup.lite()
 
@@ -315,19 +385,21 @@ pearson.brix.SelectGroup.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.SelectGroup.prototype.selectItemAtIndex = function (index)
 {
-    var choiceInputs = this.lastdrawn.widgetGroup.selectAll("div.widgetSelectGroup select");
-    var selectedInput = choiceInputs[0][index];
+    this.logger_.fine('id: ' + this.getId() + ': selectItemAtIndex(' + index + ') entered...');
 
-    if (selectedInput.selected)
+    var options = this.lastdrawn.widgetGroup.selectAll("select>option");
+    var selectedOption = options[0][index];
+
+    if (selectedOption.selected)
     {
         return;
     }
 
     // choice at index is not selected, so select it and publish selected event
-    selectedInput.selected = true;
+    selectedOption.selected = true;
 
-    var d = /** @type {!pearson.brix.Answer} */ (d3.select(selectedInput).datum());
-    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
+    var d = /** @type {!pearson.brix.Answer} */ (d3.select(selectedOption).datum());
+    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey, index: index});
 };
 
 /* **************************************************************************

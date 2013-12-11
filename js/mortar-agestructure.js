@@ -27,19 +27,30 @@ goog.require('pearson.utils.IEventManager');
  *
  * @param {Object}		config			-The settings to configure this AgeStructure
  * @param {string|undefined}
- * 						config.id		-String to uniquely identify this AgeStructure.
- * 										 if undefined a unique id will be assigned.
+ *                      config.id		-String to uniquely identify this AgeStructure.
+ *                                       if undefined a unique id will be assigned.
  * @param {string}      config.yearTopic
  *                                      -The topic of the year changed event.
-  * @param {string}      config.birthTopic
- *                                      -The topic of the birth changed event.
-* @param {!pearson.brix.BarChart}
- *                      config.targetBric
- *                                      -Bric instance whose data is to be replaced
+ * @param {string}      config.mortTopic
+ *                                      -The topic of the mortality profile changed event.
+ * @param {string}      config.fertilityTopic
+ *                                      -The topic of the fertility rate changed event.
+ * @param {string}      config.ageFirstBirthTopic
+ *                                      -The topic of the age of first birth changed event.
+ * @param {!pearson.brix.BarChart}
+ *                      config.targetBricLeft
+ * @param {!pearson.brix.BarChart}
+ *                      config.targetBricRight
+ * @param {!pearson.brix.Readout}
+ *                      config.targetPopReadout
+ * @param {!pearson.brix.Readout}
+ *                      config.targetYearReadout
+ 
+ *                                      -Bric instances whose data is to be replaced
  *                                       and redrawn to reflect new values.
  * @param {!pearson.utils.IEventManager=}
- * 						eventManager	-The event manager to use for publishing events
- * 										 and subscribing to them.
+ *                      eventManager	-The event manager to use for publishing events
+ *                                       and subscribing to them.
  *
  * @classdesc
  * An AgeStructure mortar responds to selection events of one Bric by calling the
@@ -87,7 +98,7 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      * @private
      * @type {string}
      */
-    this.popDistributionTopic_ = config['popDistributionTopic'];
+    //this.popDistributionTopic_ = config['popDistributionTopic'];
      
      /**
      * The initialMort topic to handle by updating the mortality profile, then 
@@ -114,13 +125,32 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
     this.ageFirstBirthTopic_ = config['ageFirstBirthTopic'];
 
     /**
-     * The target bric instances to draw the data.
+     * The target bric left of the pyramid bar chart
      * @private
-     * @type {!pearson.brix.ILightable}
+     * @type {!pearson.brix.BarChart}
      */
     this.targetBricLeft_ = config['targetBricLeft'];
+
+    /**
+     * The target bric right of the pyramid bar chart
+     * @private
+     * @type {!pearson.brix.BarChart}
+     */
     this.targetBricRight_ = config['targetBricRight'];
-    this.targetReadout_ = config['targetReadout'];
+
+    /**
+     * The target bric readout of the total population
+     * @private
+     * @type {!pearson.brix.Readout}
+     */
+    this.targetPopReadout_ = config['targetPopReadout'];
+
+    /**
+     * The target bric readout for the displayed population year
+     * @private
+     * @type {!pearson.brix.Readout}
+     */
+    this.targetYearReadout_ = config['targetYearReadout'];
 
     /**
      * The population year that should be displayed in the target bric. 
@@ -154,23 +184,36 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      */
     this.totalFertilityRate_ = 2;
 
-     /**
-     * The age of first childbirth determining the bottom of the fertile group of women.
+    /**
+     * The index into the set of ages of first childbirth [15..20..}
+     * determining the bottom of the fertile group of women.
      * @type {number}
      */
-    this.ageFirstBirth_ = 16;
+    this.ageFirstBirth_ = 0;
 
     /**
-     * The calculated population data
+     * The calculated female population data
      * @private
      * @type {Array.<Array.<{x: number, y: number}>>}
      */
     this.populationWomen_ = [];
+
+    /**
+     * The calculated male population data
+     * @private
+     * @type {Array.<Array.<{x: number, y: number}>>}
+     */
     this.populationMen_ = [];
 
+    /**
+     * The array of total population for each year
+     * @type {Array}
+     */
+    this.totalPopulation = [[this.initialPop_]];
 
     // Init population data
     this.calcPopulation_();
+    this.updateTargetBric_();
 
 	/**
 	 * The event manager to use to publish (and subscribe to) events for this mortar
@@ -182,7 +225,7 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
     // Set up the selection event subscription
     this.eventManager_.subscribe(this.yearTopic_, goog.bind(this.handleYearChangedEvent_, this));
     //this.eventManager_.subscribe(this.initialPopTopic_, goog.bind(this.handleInitialPopChangedEvent_, this));
-    this.eventManager_.subscribe(this.popDistributionTopic_, goog.bind(this.handlePopDistributionChangedEvent_, this));
+    //this.eventManager_.subscribe(this.popDistributionTopic_, goog.bind(this.handlePopDistributionChangedEvent_, this));
     this.eventManager_.subscribe(this.mortTopic_, goog.bind(this.handleMortChangedEvent_, this));
     this.eventManager_.subscribe(this.fertilityTopic_, goog.bind(this.handleFertilityChangedEvent_, this));
     this.eventManager_.subscribe(this.ageFirstBirthTopic_, goog.bind(this.handleFirstBirthChangedEvent_, this));
@@ -245,7 +288,7 @@ pearson.brix.mortar.AgeStructure.prototype.handleInitialPopChangedEvent_ = funct
  ****************************************************************************/
 pearson.brix.mortar.AgeStructure.prototype.handleFertilityChangedEvent_ = function (eventDetails)
 {
-    this.totalFertilityRate_ = eventDetails.newValue;
+    this.totalFertilityRate_ = eventDetails.selectKey;
     this.calcPopulation_();
     this.year_ = 0;
     this.yearSlider_.setValue(this.year_);
@@ -304,7 +347,7 @@ pearson.brix.mortar.AgeStructure.prototype.handlePopDistributionChangedEvent_ = 
  ****************************************************************************/
 pearson.brix.mortar.AgeStructure.prototype.handleFirstBirthChangedEvent_ = function (eventDetails)
 {
-    this.ageFirstBirth_ = eventDetails.newValue;
+    this.ageFirstBirth_ = eventDetails.index;
     this.calcPopulation_();
     this.year_ = 0;
     this.yearSlider_.setValue(this.year_);
@@ -321,11 +364,13 @@ pearson.brix.mortar.AgeStructure.prototype.handleFirstBirthChangedEvent_ = funct
  ****************************************************************************/
 pearson.brix.mortar.AgeStructure.prototype.updateTargetBric_ = function ()
 {
-    this.targetBricLeft_.data_ = [this.populationWomen_[this.year_]];
-    this.targetBricLeft_.redraw();
-    this.targetBricRight_.data_ = [[], this.populationMen_[this.year_]];
-    this.targetBricRight_.redraw();
-    this.targetReadout_.setValue(this.totalPopulation);
+
+    this.targetBricLeft_.setData([[], this.populationWomen_[this.year_]]);
+    //this.targetBricLeft_.redraw();
+    this.targetBricRight_.setData([this.populationMen_[this.year_]]);
+    //this.targetBricRight_.redraw();
+    this.targetPopReadout_.setValue(this.totalPopulation[this.year_]);
+    this.targetYearReadout_.setValue(this.year_);
 };
 
 /* **************************************************************************
@@ -343,8 +388,8 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
     var n0 = this.initialPop_;    // total population - eventually slider
     var maxAge = 100;
     var endBearingAge = 50; //age at which women become infertile(ish)
-    var startBearingAge = this.ageFirstBirth_; //might want to set this on slider
-    var fertilityRate = this.totalFertilityRate_; //# kids born per woman, on slider
+    var startBearingAge = this.ageFirstBirth_ * 5 + 15; //might want to set this on slider
+    var fertilityRate = Number(this.totalFertilityRate_); //# kids born per woman, on slider
     //death rate, A and B need to be set by a dropdown for 3 population types
     //and different A and B for men and women
     function mort(A,B,age)
@@ -416,6 +461,7 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
     // initialize population zero year
     populationW[0] = init;
     populationM[0] = init;
+    this.totalPopulation[0] = n0;
 
     // now fill up the rest of the array
     for (var t = 1 ; t <= years; t++)
@@ -448,14 +494,16 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
        
         populationW[t] = popW;
         populationM[t] = popM;
+
+        var totalPop = 0;
+        populationW[t].forEach( function(o) { totalPop = o.x + totalPop; });
+        populationM[t].forEach( function(o) { totalPop = o.x + totalPop; });
+
+        this.totalPopulation[t] = d3.format(",.0f")(totalPop);
+
     }
 
-    var totalPop = 0;
-    populationW[years].forEach( function(o) { totalPop = o.x + totalPop; });
-    populationM[years].forEach( function(o) { totalPop = o.x + totalPop; });
-
-    this.totalPopulation = d3.format(",.0f")(totalPop);
-
+    
     this.populationWomen_ = populationW;
     this.populationMen_ = populationM;
 
