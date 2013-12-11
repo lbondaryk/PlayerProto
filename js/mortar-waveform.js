@@ -103,9 +103,9 @@ pearson.brix.mortar.WaveForm = function (config, eventManager)
 
     /**
      * The point data to be displayed in the target readout bric. 
-     * @type {number}
+     * @type {string}
      */
-    this.point_ = {x: 0, y: 0};
+    this.point_ = d3.format(",.0f")(0);
 
      /**
      * The key for the initial population profile to use in calculating data. 

@@ -125,13 +125,31 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
     this.ageFirstBirthTopic_ = config['ageFirstBirthTopic'];
 
     /**
-     * The target bric instances to draw the data.
+     * The target bric left of the pyramid bar chart
      * @private
-     * @type {!pearson.brix.ILightable}
+     * @type {!pearson.brix.BarChart}
      */
     this.targetBricLeft_ = config['targetBricLeft'];
+
+    /**
+     * The target bric right of the pyramid bar chart
+     * @private
+     * @type {!pearson.brix.BarChart}
+     */
     this.targetBricRight_ = config['targetBricRight'];
+
+    /**
+     * The target bric readout of the total population
+     * @private
+     * @type {!pearson.brix.Readout}
+     */
     this.targetPopReadout_ = config['targetPopReadout'];
+
+    /**
+     * The target bric readout for the displayed population year
+     * @private
+     * @type {!pearson.brix.Readout}
+     */
     this.targetYearReadout_ = config['targetYearReadout'];
 
     /**
@@ -166,24 +184,32 @@ pearson.brix.mortar.AgeStructure = function (config, eventManager)
      */
     this.totalFertilityRate_ = 2;
 
-     /**
-     * The age of first childbirth determining the bottom of the fertile group of women.
+    /**
+     * The index into the set of ages of first childbirth [15..20..}
+     * determining the bottom of the fertile group of women.
      * @type {number}
      */
-    this.ageFirstBirth_ = '0';
+    this.ageFirstBirth_ = 0;
 
     /**
-     * The calculated population data
+     * The calculated female population data
      * @private
      * @type {Array.<Array.<{x: number, y: number}>>}
      */
     this.populationWomen_ = [];
+
+    /**
+     * The calculated male population data
+     * @private
+     * @type {Array.<Array.<{x: number, y: number}>>}
+     */
     this.populationMen_ = [];
+
     /**
      * The array of total population for each year
      * @type {Array}
      */
-    this.totalPopulation = [[this.initialPop]];
+    this.totalPopulation = [[this.initialPop_]];
 
     // Init population data
     this.calcPopulation_();
@@ -321,7 +347,7 @@ pearson.brix.mortar.AgeStructure.prototype.handlePopDistributionChangedEvent_ = 
  ****************************************************************************/
 pearson.brix.mortar.AgeStructure.prototype.handleFirstBirthChangedEvent_ = function (eventDetails)
 {
-    this.ageFirstBirth_ = eventDetails.selectKey;
+    this.ageFirstBirth_ = eventDetails.index;
     this.calcPopulation_();
     this.year_ = 0;
     this.yearSlider_.setValue(this.year_);
@@ -362,7 +388,7 @@ pearson.brix.mortar.AgeStructure.prototype.calcPopulation_ = function ()
     var n0 = this.initialPop_;    // total population - eventually slider
     var maxAge = 100;
     var endBearingAge = 50; //age at which women become infertile(ish)
-    var startBearingAge = Number(this.ageFirstBirth_) * 5 + 15; //might want to set this on slider
+    var startBearingAge = this.ageFirstBirth_ * 5 + 15; //might want to set this on slider
     var fertilityRate = Number(this.totalFertilityRate_); //# kids born per woman, on slider
     //death rate, A and B need to be set by a dropdown for 3 population types
     //and different A and B for men and women
