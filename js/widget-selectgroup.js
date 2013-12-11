@@ -268,7 +268,7 @@ pearson.brix.SelectGroup.prototype.draw = function (container)
     this.lastdrawn.widgetGroup = widgetGroup;
 
     var selectTag = widgetGroup.append("select")
-                        .attr("name", this.isgId_)
+                        .attr("name", this.sgId_)
                         //set the width to auto so it sizes to content
                         .style("width","auto");
 
@@ -385,20 +385,21 @@ pearson.brix.SelectGroup.prototype.selectedItem = function ()
  ****************************************************************************/
 pearson.brix.SelectGroup.prototype.selectItemAtIndex = function (index)
 {
+    this.logger_.fine('id: ' + this.getId() + ': selectItemAtIndex(' + index + ') entered...');
 
-    var choiceInputs = this.lastdrawn.widgetGroup.select("select");
-    var selectedInput = choiceInputs[0][0][index];
+    var options = this.lastdrawn.widgetGroup.selectAll("select>option");
+    var selectedOption = options[0][index];
 
-    if (selectedInput.selected)
+    if (selectedOption.selected)
     {
         return;
     }
 
     // choice at index is not selected, so select it and publish selected event
-    selectedInput.selected = true;
+    selectedOption.selected = true;
 
-    var d = /** @type {!pearson.brix.Answer} */ (d3.select(selectedInput).datum());
-    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey});
+    var d = /** @type {!pearson.brix.Answer} */ (d3.select(selectedOption).datum());
+    this.eventManager.publish(this.selectedEventId, {selectKey: d.answerKey, index: index});
 };
 
 /* **************************************************************************
