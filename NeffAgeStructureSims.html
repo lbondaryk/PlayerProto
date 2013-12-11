@@ -78,7 +78,8 @@
 	<script>
 
 	// local aliases for convenience
-	
+    pearson.utils.logToConsole(true, 'FINER');
+
 var SVGContainer = pearson.brix.SVGContainer;
 var LineGraph = pearson.brix.LineGraph;
 var BarChart = pearson.brix.BarChart;
@@ -116,6 +117,7 @@ popDistribution.draw(d3.select("#dropdown0"));
 // Select mortality type
 var profiles = new SelectGroup(
 		{
+            id: "mort-selgrp",
 			choices: [
 			{
 			content: "Highly developed nations",
@@ -135,6 +137,7 @@ profiles.draw(d3.select("#dropdown1"));
 // slider for looking at different years in the population evolution
 var fertileDrop = new SelectGroup(
 		{
+            id: "fert-selgrp",
 			choices: [
 			{
 			content: "T<sub>f</sub> = 0 children/female",
@@ -162,6 +165,7 @@ fertileDrop.draw(d3.select("#dropdown0"));
 // slider for looking at different age of first childbirth
 var ageFirstBirthDrop =  new SelectGroup(
 		{
+            id: "ageBrth-selgrp",
 			choices: [
 			{
 			content: "A<sub>c</sub> = 15",
