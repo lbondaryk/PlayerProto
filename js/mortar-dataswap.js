@@ -96,7 +96,7 @@ pearson.brix.mortar.Dataswap = function (config, eventManager)
     /**
      * The id of this Dataswap mortar instance, as specified in the config.
      * @private
-     * @type {string|undefined}
+     * @type {string}
      */
     this.dswapId_ = pearson.brix.utils.getIdFromConfigOrAuto(config, pearson.brix.mortar.Dataswap);
 
@@ -230,6 +230,22 @@ goog.inherits(pearson.brix.mortar.Dataswap, pearson.brix.mortar.Mortar);
  * @type {string}
  */
 pearson.brix.mortar.Dataswap.autoIdPrefix = 'dataswap_auto_';
+
+/* **************************************************************************
+ * Dataswap.getId                                                      */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Returns the ID of this bric.
+ *
+ * @returns {string} The ID of this Bric.
+ *
+ ****************************************************************************/
+pearson.brix.mortar.Dataswap.prototype.getId = function ()
+{
+    return this.dswapId_;
+};
 
 /* **************************************************************************
  * Dataswap.setDataSource                                              */ /**

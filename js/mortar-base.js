@@ -43,3 +43,18 @@ pearson.brix.mortar.Mortar = function ()
 {
 };
 
+/* **************************************************************************
+ * Mortar.getId                                                        */ /**
+ *
+ * Returns the ID of this mortar.
+ *
+ * @returns {string} The ID of this Mortar.
+ *
+ ****************************************************************************/
+pearson.brix.mortar.Mortar.prototype.getId = function ()
+{
+    // There is no id defined unless the derived class defines one and
+    // overrides this method.
+    return 'override in derived class for real id';
+};
+
