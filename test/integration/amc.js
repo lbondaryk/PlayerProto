@@ -15,9 +15,12 @@
 	
 	var PAF = global.Ecourses.Paf;
 	
+	var logenabled = true;
 	
 	var log = function (e) {
-		//console.log (e ? ("[AMC] " + e) : e);
+		if (logenabled && console && console.log) {
+			console.log (e);
+		}
 	};
 	
 	if (PAF.AMC) {
@@ -26,16 +29,19 @@
 			console.log ("Added amc.js of different versions. " +
 					"Possible conflicts could happen");
 		}
-		
-		return;
+		//return;
 	}
+	
 	
 	
 	PAF.AMC = {};
 	PAF.AMC.version = version;
 	
+	var _callCtx = null, ctxInited = false;
 	
-	
+	PAF.AMC.enableLog = function (val) {
+		logenabled = !!val;
+	}
 	/**
 	 * AMC Level Helper function
 	 */
@@ -44,26 +50,48 @@
 	};	
 	
 	PAF.AMC.getCallerContext = function () {
-		if(PAF.AMC._callerCtx) {
-			return PAF.AMC._callerCtx;
-		}
-		
-		// Only for short term
-		return {
-			courseId : "course_c1",
-			identityId : "test1_t1",
-			assetId : "test1"
-
-		};
+		return _callCtx;
 	};
 	
-	PAF.AMC.setCallerContext = function (courseId, identityId) {
-		PAF.AMC._callerCtx = {
-			courseId: courseId,
-			identityId: identityId,
-			assetId : "test1"
-		};
-	};
+	PAF.AMC.initTestContext = function (laspafurl) {
+		if (ctxInited) {
+			log ("This function has already been called. Return as no-op");
+			return;
+		}
+		if (!laspafurl) {
+			laspafurl = "http://localhost:8080";
+			log ("Test context init not supplied las base url. Using " + laspafurl);
+		}
+		var url = laspafurl + "/las-paf/sd/paf-service/lasapi/defaultToken";
+		
+		var context = null;
+		ctxInited = true;
+	 	$.ajax ({
+	 		url : url,
+	 		processData : false,
+	 		type : 'GET',
+	 		contentType : 'application/json',
+	 		
+	 		success : function (data, textStatus, jqXHR) {
+	 			/*
+	 			 * On success set the status and other values properly.
+	 			 */
+	 			context = {
+	 					courseId :  "LAS-AMS-COURSE",
+	 					assetId : "LAS-AMS-ASSIGNMENT",
+	 					lasAuthToken : data.lasAuthToken
+	 			};
+	 		},
+	 		
+	 		error : function (jqXHR, textStatus, errorThrown ) {
+	 			log ("Unable to fetch token. " + textStatus);
+	 		},
+	 		
+			async : false		
+	 	});	
+	 	_callCtx = context;
+	 	return context;
+	}
 	
 	
 	/**

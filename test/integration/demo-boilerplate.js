@@ -66,7 +66,11 @@ function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl, opt_course, opt_user)
 
     // Since 2013/12/05 - Sets the course id and user(identity) id explicitly
     //                    Different course or user will retrieve different sequence node
-    PAF.AMC.setCallerContext (course, user);
+    // 2013/12/12 update - AMS no longer lets you set course & user context
+    //PAF.AMC.setCallerContext (course, user);
+    
+    // Required for testing
+    PAF.AMC.initTestContext (amsBaseUrl);
 
     // In iframe-mode, the requestbinding should not be provided
     // Note: Configure the LASPAF (AMS) server url appropriately.
@@ -74,9 +78,12 @@ function brixInitDiv(opt_amsBaseUrl, opt_ipsBaseUrl, opt_course, opt_user)
     //       (Tomcat comes with default setting to 8080 but my Local Jenkins is running on 8080)
     //       If you need to change the tomcat port, you may do so by modifing the file
     //       <tomcat>/config/server.xml:70 <Connector port="8080" protocol="HTTP/1.1"
+
+
     PAF.AMC.initialize ({
         laspafurl : amsBaseUrl,
         eventmanager : eventManager,
         requestbinding : itemsNormalized
     });
+
 }
