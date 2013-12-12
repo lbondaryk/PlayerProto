@@ -180,6 +180,13 @@ pearson.brix.mortar.Dataswap = function (config, eventManager)
      */
     this.keyArray_ = config['keyArray'];
 
+    /**
+     * The data index last swapped. Initially 0.
+     * @private
+     * @type {number}
+     */
+    this.lastDataIndex_ = 0;
+
     var eventPropIsString = this.keyArray_ !== undefined;
 
     /**
@@ -225,6 +232,30 @@ goog.inherits(pearson.brix.mortar.Dataswap, pearson.brix.mortar.Mortar);
 pearson.brix.mortar.Dataswap.autoIdPrefix = 'dataswap_auto_';
 
 /* **************************************************************************
+ * Dataswap.setDataSource                                              */ /**
+ *
+ * Set the data source array to the specified new array. After the data
+ * source is updated the last indexed element from the new array will be
+ * set on the target bric.
+ * @export
+ *
+ * @param {!Array.<*>}  newDataSource   -The new data source array to swap
+ *                                       data in the target bric from.
+ *
+ ****************************************************************************/
+pearson.brix.mortar.Dataswap.prototype.setDataSource = function (newDataSource)
+{
+    this.dataSource_ = newDataSource;
+
+    if (this.lastDataIndex_ > this.dataSource_.length - 1)
+    {
+        this.lastDataIndex_ = this.dataSource_.length - 1;
+    }
+
+    this.setDataOnTarget_();
+};
+
+/* **************************************************************************
  * Dataswap.handleEvent_                                               */ /**
  *
  * Handler for the event which triggers the data swap, ie setting the
@@ -236,11 +267,24 @@ pearson.brix.mortar.Dataswap.autoIdPrefix = 'dataswap_auto_';
  ****************************************************************************/
 pearson.brix.mortar.Dataswap.prototype.handleEvent_ = function (eventDetails)
 {
-    var index = this.getIndex_(eventDetails[this.edPropName_]);
-    this.logger_.finer('event: ' + this.topic_ + ' w/ eventDetails.' + this.edPropName_ + ': ' + eventDetails[this.edPropName_] + ' = index: ' + index);
+    this.lastDataIndex_ = this.getIndex_(eventDetails[this.edPropName_]);
+    this.logger_.finer('event: ' + this.topic_ + ' w/ eventDetails.' + this.edPropName_ + ': ' + eventDetails[this.edPropName_] + ' = index: ' + this.lastDataIndex_);
 
+    this.setDataOnTarget_();
+};
+
+/* **************************************************************************
+ * Dataswap.setDataOnTarget_                                           */ /**
+ *
+ * Call the data setter method on the target bric w/ the last data indexed
+ * element from the data source.
+ * @private
+ *
+ ****************************************************************************/
+pearson.brix.mortar.Dataswap.prototype.setDataOnTarget_ = function ()
+{
     var args = this.dataSetterInitialArgs_.slice(0);
-    args.push(this.dataSource_[index]);
+    args.push(this.dataSource_[this.lastDataIndex_]);
     this.targetBric_[this.dataSetterName_].apply(this.targetBric_, args);
 };
 
