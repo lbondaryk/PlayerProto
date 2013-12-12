@@ -121,6 +121,7 @@
                                     "oneOf":
                                         [
                                             {"$ref": "#/definitions/answerKey-multiplechoice"},
+                                            {"$ref": "#/definitions/answerKey-journal"}
                                         ]
                                 },
                             "description":
@@ -145,12 +146,7 @@
                                 },
                             "mortarType":
                                 {
-                                    "description": "MortarTypes enum name used to register the mortar with the BricWorks",
-                                    "type": "string",
-                                    "enum":
-                                        [
-                                            "Hilite"
-                                        ],
+                                    "$ref": "#/definitions/mortarType"
                                 },
                             "config":
                                 {
@@ -560,7 +556,9 @@
                             "Image",
                             "ImageViewer",
                             "Journal",
+                            "LabelCarousel",
                             "LabelGroup",
+                            "LabelSelector",
                             "Legend",
                             "LineGraph",
                             "MarkerGroup",
@@ -574,6 +572,19 @@
                             "SelectGroup",
                             "Sketch",
                             "Slider"
+                        ],
+                },
+            "mortarType":
+                {
+                    "description": "MortarTypes enum name used to register the mortar with the BricWorks",
+                    "type": "string",
+                    "enum":
+                        [
+                            "Dataswap",
+                            "Hilite",
+                            "AgeStructure",
+                            "TraceSelection",
+                            "WaveForm"
                         ],
                 },
             "answerKey-multiplechoice":
@@ -650,6 +661,6 @@
                                     "type": "string"
                                 }
                         }
-                },    
+                }
         }
 }
