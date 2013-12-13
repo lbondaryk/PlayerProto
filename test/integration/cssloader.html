@@ -1,0 +1,124 @@
+<!doctype html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Brix test page css loader</title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="../../css/bootstrap_plus.css" rel="stylesheet" media="screen">
+
+    <script src="../../js/jquery-latest.js"></script>
+</head>
+<body>
+	<div class="container loaderForm">
+		<p>
+			Upload a css file that contains headers for "PAF Assignment ID", "PAF Activity ID", and
+		    	"PAF Container ID" and you'll get a list of links below that you can click to view the 
+		    	content.  This defaults to showing content in the PAF cert environment only using the 
+		    	SanVan dev cloud environment.
+		</p>
+
+
+		<input type="file" id="files" name="file" /><br>
+		<span class="readCSVButton">
+			<button>submit</button>
+		</span>
+		<div id="csv_content"></div>
+
+
+
+	</div>
+	<div class="container linkList">
+		<!-- <a href="testpage-1div.html?assignment=aa00d153-1410-45ac-9c4e-d114e41d789b&activity=4ac52c14-dc36-4627-b919-922c1164330a&divid=bdc328cbba71b474eb02866361cfb1663&ams=dev&ips=dev">try</a> -->
+	</div>
+
+    <script>
+
+    (function() {
+
+    	document.querySelector('.readCSVButton').addEventListener('click', function(evt) {
+		    if (evt.target.tagName.toLowerCase() == 'button') {
+		    	readBlob();
+		    }
+	    }, false);
+
+    })();
+	function readBlob(opt_startByte, opt_stopByte) {
+		var files = document.getElementById('files').files;
+	    if (!files.length) {
+	      alert('Please select a file!');
+	      return;
+	    }
+
+	    var file = files[0];
+	    var start = 0;
+	    var stop = file.size - 1;
+
+	    var reader = new FileReader();
+
+	    // If we use onloadend, we need to check the readyState.
+	    reader.onloadend = function(evt) {
+	    	if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+	    		var csvText = evt.target.result;
+	    		//document.getElementById('csv_content').textContent = csvText;
+	    		var csv_arr = csvText.split(/\n/);
+
+	    		// indexes for the three things we want
+	    		var assIdx;
+				var actIdx;
+				var conIdx;
+				var fileIdx;
+
+				$.each(csv_arr, function(i,e)
+				{
+					var rowArray = splitRow(e);
+					// if we haven't set the indexes, look for them
+					if (!assIdx)
+					{
+						$.each(rowArray, function(i,e)
+						{
+							if (e.match(/paf assignment id/i))
+							{
+								assIdx = i;
+							}
+							if (e.match(/paf activity id/i))
+							{
+								actIdx = i;
+							}
+							if (e.match(/paf container id/i))
+							{
+								conIdx = i;
+							}
+							if (e.match(/file/i))
+							{
+								fileIdx = i;
+							}
+						});
+					} else {
+						var linky = '<a href="testpage-1div.html?assignment=' + rowArray[assIdx] + '&activity=' + rowArray[actIdx] + '&divid=' + rowArray[conIdx] + '&ams=dev&ips=dev">' + rowArray[fileIdx] + '</a><br>';
+						$(".linkList").append(linky);
+					}
+
+				});
+	    	}
+	    };
+
+	    var blob = file.slice(start, stop + 1);
+	    reader.readAsText(blob);
+	}
+
+	function splitRow(str) {
+		// replace any commas within quotes with a pipe, just to get them out of the way
+		var result = str.replace(/".*?"/g, function (match) {
+    		return match.replace(/,/g, '|');
+		});
+		// split on the commas and dump them into an array
+		var rowArray = result.split(',');
+		return rowArray;
+	}
+
+
+    </script>
+</body>
+</html>
