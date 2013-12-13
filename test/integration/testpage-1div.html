@@ -55,14 +55,18 @@
 .demo_params .dataval{
     font-weight: bold;
 }
+.demo {
+    padding: 10px;
+}
     </style>
 
 </head>
 
 <body>
-    <h1>Brix Integration test page (2013-12-12)</h1>
+    <h1>Brix Integration test page (2013-12-13)</h1>
     <div class="demo_message_box">
-        <div class="demo_params" >
+        <div class="demo"><button type="button" id="toggleButton" class="btn btn-mini">show/hide params</button></div>
+        <div class="demo_params">
             Params: (In parenthesis are the query string parameter names)
             <ul>
                 <li>The content div's ID (divid): <span class="dataval" id="div_id"></span></li>
@@ -74,7 +78,7 @@
                 <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
             </ul>
         </div>
-        <div >
+        <div class="demo_params">
             <p>This test will require to have Brix test servers (IPS &amp; CorrectnessEngine) up, along with 
                 the required components: Redis (for IPS). If you are connecting AMS locally, you will
                 also require to run Tomcat and Cassandra (Remember to configure laspaf.properties to NOT use the PAF Stub.) ** The actuall tomcat script may differ from platform</p>
@@ -87,7 +91,23 @@ If Running AMS locally you will also need to run:
 [BrixServer]$ node brixapp.js
 [CorrectnessEngine]$ node ceapp.js</pre>
         </div>
+        <div class="demo demo-form">
+            <form class="form-inline">
+                Use URL params or fill in all of these if you'd prefer:<br>
+                Ass: <input type="text" name="assignment" class="input" placeholder="assignment guid">
+                Act: <input type="text" name="activity" class="input" placeholder="activity guid">
+                Container: <input type="text" name="divid" class="input-small" placeholder="container id" value="target1">
+                <label class="checkbox inline">
+                  <input type="checkbox" id="ams" name="ams" value="dev" checked> ams dev
+                </label>
+                <label class="checkbox inline">
+                  <input type="checkbox" id="ips" name="ips" value="dev" checked> ips dev
+                </label>
+                <button type="submit" class="btn btn-mini">submit</button>
+            </form>
+        </div>
     </div>
+
 
     <!-- TEST CONTENT {{ -->
 
@@ -172,6 +192,13 @@ If Running AMS locally you will also need to run:
 
         targetDiv.attr("data-assignmenturl", repoContentBaseUrl + assignment);
         targetDiv.attr("data-activityurl", repoContentBaseUrl + activity);
+
+        /*
+         * Various page things
+         */
+        $("#toggleButton").click(function(){
+            $(".demo_params").toggle();
+        });
 
         /*
          * Display features and setup.
