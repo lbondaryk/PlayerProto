@@ -122,7 +122,7 @@
 												{ 
 													"type": "linear", 
 													"mode": "reverse",
-													"ticks": [0, 5, 10, 15],
+													"ticks": [0, 4, 8, 12],
 													"orientation": "bottom",
 													"label": "Male population (thousands)"
 												},
@@ -167,7 +167,7 @@
 											"xAxisFormat":
 												{ 
 													"type": "linear", 
-													"ticks": [0, 5, 10, 15],
+													"ticks": [0, 4, 8, 12],
 													"orientation": "bottom",
 													"label": "Female population (thousands)"
 												},
@@ -340,7 +340,50 @@
                                                 "value": { "type": "ref", "domain": "brix", "refId": "bar6" }
                                             }
                                         ]
-								}
+								},
+								{
+									"mortarId": "dataswap3a",
+									"mortarType": "Dataswap",
+									"config":
+										{
+                                            "eventDetailsProperty": "index",
+											"dataPropertySetter": "setDataSource",
+										},
+									"configFixup":
+                                        [
+                                            {
+                                                "type": "set-property",
+                                                "name": "topic",
+                                                "value":
+                                                    {
+                                                        "type": "brix-topic",
+                                                        "bricType": "SelectGroup",
+                                                        "instanceId": "country-selgrp",
+                                                        "eventName": "selected"
+                                                    }
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "sourceDataArray",
+                                                "value": 
+                                                	{
+                                                		"type": "array",
+                                                		"elements": 
+                                                			[
+                                                				{"type": "ref", "domain": "data", "refId": "womenUS" },
+                                                				{"type": "ref", "domain": "data", "refId": "womenKenya" }
+                                                			]
+                                                		
+                                                	}
+                                            },
+                                            {
+                                                "type": "set-property",
+                                                "name": "targetBric",
+                                                "value": { "type": "ref", "domain": "mortar", "refId": "dataswap3" }
+                                            }
+                                        ]
+								},
+
 							],
 						"hookupActions":
 							[
