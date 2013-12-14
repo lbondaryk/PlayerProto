@@ -2,8 +2,8 @@
   "@context" : "http://purl.org/pearson/content/v1/ctx/metadata/envelope",
   "@type" : "Envelope",
   "metadata" : {
-    "title" : "MCP Demo mcq1d",
-    "guid" : "test.sanvan.activity.mcq1d",
+    "title" : "MCP Demo mcq1a",
+    "guid" : "test.sanvan.activity.mcq1a",
     "description" : "",
     "contentTypeTier1" : "Demonstration",
     "contentTypeTier2" : [ "DemonstrationImage" ],

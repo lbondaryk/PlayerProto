@@ -63,18 +63,17 @@
 </head>
 
 <body>
-    <h1>Brix Integration test page (2013-12-13)</h1>
+    <h1>Brix Integration test page (2013-12-14)</h1>
     <div class="demo_message_box">
         <div class="demo"><button type="button" id="toggleButton" class="btn btn-mini">show/hide params</button></div>
         <div class="demo_params">
             Params: (In parenthesis are the query string parameter names)
             <ul>
                 <li>The content div's ID (divid): <span class="dataval" id="div_id"></span></li>
-                <li>AMS Base URL (ams): <span class="dataval" id="ams_base_url"></span></li>
-                <li>IPS Base URL (ips): <span class="dataval" id="ips_base_url"></span></li>
-                <li>Activity URL (activity*): <span class="dataval" id="activity_url"></span></li>
-                <li>Assignment URL (assignment*): <span class="dataval" id="assignment_url"></span></li>
-                <li>* You may also change the activity &amp; assignment server with paf query param, e.g. &amp;paf=dev, default is cert</li>
+                <li>AMS Base URL (env): <span class="dataval" id="ams_base_url"></span></li>
+                <li>IPS Base URL (env): <span class="dataval" id="ips_base_url"></span></li>
+                <li>Activity URL (activity): <span class="dataval" id="activity_url"></span></li>
+                <li>Assignment URL (assignment): <span class="dataval" id="assignment_url"></span></li>
                 <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
             </ul>
         </div>
@@ -96,13 +95,12 @@ If Running AMS locally you will also need to run:
                 Use URL params or fill in all of these if you'd prefer:<br>
                 Ass: <input type="text" name="assignment" class="input" placeholder="assignment guid">
                 Act: <input type="text" name="activity" class="input" placeholder="activity guid">
-                Container: <input type="text" name="divid" class="input-small" placeholder="container id" value="target1">
-                <label class="checkbox inline">
-                  <input type="checkbox" id="ams" name="ams" value="dev" checked> ams dev
-                </label>
-                <label class="checkbox inline">
-                  <input type="checkbox" id="ips" name="ips" value="dev" checked> ips dev
-                </label>
+                Container: <input type="text" name="divid" class="input-small" placeholder="container id" value="target1"> Env:
+                <select name="env" class="input-small">
+                  <option value="local" >local</option>
+                  <option value="dev" >dev</option>
+                  <option value="qa" selected="selected">qa</option>
+                </select>
                 <button type="submit" class="btn btn-mini">submit</button>
             </form>
         </div>
@@ -138,13 +136,34 @@ If Running AMS locally you will also need to run:
     <script>
 
     (function() {
+
+        // The configuration of servers by environment
+        var env_group = {
+            "local": {
+                "amsBaseUrl": "http://localhost:9080",
+                "ipsBaseUrl": "http://localhost:8088",
+                "contentRepoBaseUrl": "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/"
+            },
+            "dev": {
+                "amsBaseUrl": "http://dev-414158649.us-west-1.elb.amazonaws.com",
+                "ipsBaseUrl": "http://dev-414158649.us-west-1.elb.amazonaws.com/ips",
+                "contentRepoBaseUrl": "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/"
+            },
+            "qa": {
+                // @todo: We still don't know the AMS QA instance URL
+                "amsBaseUrl": "http://dev-414158649.us-west-1.elb.amazonaws.com",
+                "ipsBaseUrl": "http://qa-ips-lb-1087722155.us-west-1.elb.amazonaws.com",
+                "contentRepoBaseUrl": "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/"
+            },
+        }
+
         var divId = "target1"; // also containerId
-        var amcBaseUrl = "http://localhost:9080";
-        var ipsBaseUrl = "http://localhost:8088";
+        var amsBaseUrl = null;
+        var ipsBaseUrl = null;
         var course = "course_c2";
         var user = "test1_t2";
 
-        var repoContentBaseUrl = "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/";
+        var contentRepoBaseUrl = null;
         // NOTE: YOU MUST SET THESE HERE OR IN URL PARAMS
         var assignment = "eaf7f767-a4ad-42f9-b036-B";
         var activity = "e579114a-2b65-4d9e-8ed5-B";
@@ -160,18 +179,18 @@ If Running AMS locally you will also need to run:
         var targetDiv = $("#targetId");
         targetDiv.attr("id", divId);
 
-        if (queryString.ams && queryString.ams == "dev")
+        // For backward compatibility, if env is not found, take ams as the environment
+        var env = (queryString.env && queryString.env) ? queryString.env : queryString.ams;
+
+        if (!env || !env_group.hasOwnProperty(env))
         {
-            amcBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com";
+            env = "dev";
         }
-        if (queryString.ips && queryString.ips == "dev")
-        {
-            ipsBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com/ips";
-        }
-        if (queryString.paf && queryString.paf == "dev")
-        {
-            repoContentBaseUrl  = "http://repo.paf.dev.pearsoncmg.com/paf-repo/resources/activities/";
-        }
+        amsBaseUrl  = env_group[env].amsBaseUrl;
+        ipsBaseUrl  = env_group[env].ipsBaseUrl;
+        contentRepoBaseUrl  = env_group[env].contentRepoBaseUrl;
+        $('[name=env]').val( env );//To select Blue
+
         // NOTE: as of 12/12/13 course and user can NOT be set
         if (queryString.course)
         {
@@ -190,8 +209,8 @@ If Running AMS locally you will also need to run:
             activity = queryString.activity;
         }
 
-        targetDiv.attr("data-assignmenturl", repoContentBaseUrl + assignment);
-        targetDiv.attr("data-activityurl", repoContentBaseUrl + activity);
+        targetDiv.attr("data-assignmenturl", contentRepoBaseUrl + assignment);
+        targetDiv.attr("data-activityurl", contentRepoBaseUrl + activity);
 
         /*
          * Various page things
@@ -206,14 +225,14 @@ If Running AMS locally you will also need to run:
         var assignmentUrl = targetDiv.data("assignmenturl");
         var activityUrl = targetDiv.data("activityurl");
         $("#div_id").text(divId);
-        $("#ams_base_url").text(amcBaseUrl);
+        $("#ams_base_url").text(amsBaseUrl);
         $("#ips_base_url").text(ipsBaseUrl);
         $("#activity_url").text(activityUrl);
         $("#assignment_url").text(assignmentUrl);
         $("#course").text(course);
         $("#user").text(user);
 
-        brixInitDiv(amcBaseUrl, ipsBaseUrl, course, user);
+        brixInitDiv(amsBaseUrl, ipsBaseUrl, course, user);
     })();
 
     /**
