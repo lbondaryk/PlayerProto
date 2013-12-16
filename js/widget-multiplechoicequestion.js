@@ -82,6 +82,7 @@ goog.require('pearson.brix.HtmlBric');
  *
  * @constructor
  * @extends {pearson.brix.HtmlBric}
+ * @implements {pearson.brix.IState}
  * @implements {pearson.brix.IQuestionBric}
  * @export
  *
@@ -493,6 +494,42 @@ pearson.brix.MultipleChoiceQuestion.prototype.correctlyAnswered = function ()
 pearson.brix.MultipleChoiceQuestion.prototype.getId = function ()
 {
     return this.mcqId_;
+};
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.getState                                     */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Get a state object that represents the current state of this object and
+ * can be passed to restoreState.
+ *
+ * @returns {!Object} Object that when passed back to this type of object's
+ *          restoreState method will set its state to match the current state
+ *          of this object.
+ *
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.prototype.getState = function ()
+{
+    throw new Error('getState has not yet been implemented on MultipleChoiceQuestions');
+};
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.restoreState                                 */ /**
+ *
+ * @inheritDoc
+ * @export
+ * @description The following is here until jsdoc supports the inheritDoc tag.
+ * Restores the state of this object to match the state object given.
+ *
+ * @param {!Object} state   -Object returned by the call to getState on
+ *                           this type of an object representing the state
+ *                           to be restored.
+ *
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.prototype.restoreState = function (state)
+{
 };
 
 /* **************************************************************************

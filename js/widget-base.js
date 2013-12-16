@@ -559,6 +559,39 @@ pearson.brix.ILightable = function () {};
  ****************************************************************************/
 pearson.brix.ILightable.prototype.lite = function (liteKey) {};
 
+/* **************************************************************************
+ * IState                                                              */ /**
+ *
+ * An IState bric supports the 'getState' and 'restoreState' methods.
+ * @interface
+ ****************************************************************************/
+pearson.brix.IState = function () {};
+
+/* **************************************************************************
+ * IState.getState                                                     */ /**
+ *
+ * Get a state object that represents the current state of this object and
+ * can be passed to restoreState.
+ *
+ * @returns {!Object} Object that when passed back to this type of object's
+ *          restoreState method will set its state to match the current state
+ *          of this object.
+ *
+ ****************************************************************************/
+pearson.brix.IState.prototype.getState = function () {};
+
+/* **************************************************************************
+ * IState.restoreState                                                 */ /**
+ *
+ * Restores the state of this object to match the state object given.
+ *
+ * @param {!Object} state   -Object returned by the call to getState on
+ *                           this type of an object representing the state
+ *                           to be restored.
+ *
+ ****************************************************************************/
+pearson.brix.IState.prototype.restoreState = function (state) {};
+
 
 /**
  * KeyedAnswers are presented to users by certain brix that allow the user to
