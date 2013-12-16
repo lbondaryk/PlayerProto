@@ -3,6 +3,20 @@
 * required for San/Van.
 */
 
+/* all of our html foreign objects in svg have a body which we don't want to
+ * inherit any attributes, I think the best we can do is set the common body
+ * attributes here
+ */
+svg body
+{
+	margin: 0;
+	padding: 0;
+	border-style: none;
+	line-height: normal;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
 
 /* Images
 ================================================== */
