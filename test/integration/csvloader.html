@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Brix test page css loader</title>
+    <title>Brix test page csv loader</title>
 
     <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
     <link href="../../css/bootstrap_plus.css" rel="stylesheet" media="screen">
@@ -12,15 +12,22 @@
 </head>
 <body>
 	<div class="container loaderForm">
+		<h1>csv loader page</h1>
 		<p>
-			Upload a css file that contains headers for "PAF Assignment ID", "PAF Activity ID", and
+			Upload a csv file that contains headers for "PAF Assignment ID", "PAF Activity ID", and
 		    	"PAF Container ID" and you'll get a list of links below that you can click to view the 
-		    	content.  This defaults to showing content in the PAF cert environment only using the 
-		    	SanVan dev cloud environment.
+		    	content.
 		</p>
 
 
-		<input type="file" id="files" name="file" /><br>
+		<input type="file" id="files" name="file" />
+		<br>
+        <select name="env" class="input-mini env">
+          <option value="local">local</option>
+          <option value="dev">dev</option>
+          <option value="qa" selected="selected">qa</option>
+        </select> - which environment do you want (brix, sanvan core, and PAF repo/hub where qa = cert)
+        <br>
 		<span class="readCSVButton">
 			<button>submit</button>
 		</span>
@@ -64,11 +71,14 @@
 	    		//document.getElementById('csv_content').textContent = csvText;
 	    		var csv_arr = csvText.split(/\n/);
 
-	    		// indexes for the three things we want
+	    		// indexes for the things we want in each link
 	    		var assIdx;
 				var actIdx;
 				var conIdx;
 				var fileIdx;
+
+				// what environment we want
+				var env = $("select.env").val();
 
 				$.each(csv_arr, function(i,e)
 				{
@@ -96,7 +106,7 @@
 							}
 						});
 					} else {
-						var linky = '<a href="testpage-1div.html?assignment=' + rowArray[assIdx] + '&activity=' + rowArray[actIdx] + '&divid=' + rowArray[conIdx] + '&env=dev">' + rowArray[fileIdx] + '</a><br>';
+						var linky = '<a href="testpage-1div.html?assignment=' + rowArray[assIdx] + '&activity=' + rowArray[actIdx] + '&divid=' + rowArray[conIdx] + '&env=' + env + '">' + rowArray[fileIdx] + '</a><br>';
 						$(".linkList").append(linky);
 					}
 
