@@ -231,9 +231,10 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
     /**
      * List of responses that have been received for all submitted
      * scoring requests.
-     * @type {Array.<Object>}
+     * @private
+     * @type {Array.<!pearson.brix.MultipleChoiceQuestion.ResponseRecord>}
      */
-    this.responses = [];
+    this.responses_ = [];
 
     /**
      * The event manager to use to publish (and subscribe to) events for this bric
@@ -395,6 +396,24 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleAnswerSelected_ = function (
     this.eventManager.unsubscribe(this.presenterBric.selectedEventId, this.answerSelectedHandler_);
 };
 
+/**
+ * Record of the details of a submitted choice and the response received.
+ *
+ * @typedef {Object} pearson.brix.MultipleChoiceQuestion.ResponseRecord
+ * @property {{key: string}}
+ *                      studentSubmission   -The answer object sent for evaluation
+ * @property {number}   correctness         -correctness of the choice 0 incorrect
+ *                                           to 1 completely correct
+ * @property {string}   feedback            -Feedback about the choice
+ * @property {number}   attemptsMade        -what attempt at answering the question
+ *                                           this submission was.
+ * @property {{key: string, feedback: string}|undefined}
+ *                      correctAnswer       -optional property which is present only
+ *                                           when the student submission was not
+ *                                           correct AND no more attempts are allowed.
+ */
+pearson.brix.MultipleChoiceQuestion.ResponseRecord;
+
 /* **************************************************************************
  * MultipleChoiceQuestion.handleSubmitResponse_                        */ /**
  *
@@ -410,7 +429,22 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     this.logger_.fine('handling submit response');
     this.logger_.finer('responseDetails: ' + JSON.stringify(responseDetails));
 
-    this.responses.push(responseDetails);
+    // Extract the info from the responseDetails that we need in the response record
+    var respRec =
+        {
+            studentSubmission: responseDetails['submitDetails'].answer,
+            correctness: responseDetails['correctness'],
+            feedback: responseDetails['feedback'],
+            attemptsMade: responseDetails['attemptsMade']
+        };
+
+    if (responseDetails.correctAnswer)
+    {
+        respRec.correctAnswer = responseDetails.correctAnswer;
+    }
+
+    // add this response to the list of responses
+    this.responses_.push(respRec);
 
     var responseDiv = this.lastdrawn.widgetGroup.select('div.feedback');
 
@@ -423,13 +457,13 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
 
     // For now just use the helper function to write the response
     var selectedChoice = this.presenterBric.selectedChoice();
-    
+
     responseDetails.submission = selectedChoice.content;
     pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
 
     // if they answered correctly we will want the answerKey later
     var correctAnswerKey = null;
-    if (responseDetails.score === 1)
+    if (responseDetails['correctness'] === 1)
     {
         correctAnswerKey = selectedChoice.answerKey;
     }
@@ -454,9 +488,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     }
 
     // If we know the correct answer, tell the presenter bric to flag it
-    if (this.correctlyAnswered())
+    if (correctAnswerKey !== null)
     {
-        correctAnswerKey = selectedChoice.answerKey;
         this.presenterBric.flagChoice(correctAnswerKey);
     }
 };
@@ -471,8 +504,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.correctlyAnswered = function ()
 {
-    if (this.responses.length === 0 ||
-        this.responses[this.responses.length - 1].correctness !== 1)
+    if (this.responses_.length === 0 ||
+        this.responses_[this.responses_.length - 1].correctness !== 1)
     {
         return false;
     }
