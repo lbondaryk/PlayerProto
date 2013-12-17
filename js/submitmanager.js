@@ -175,7 +175,7 @@ pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (su
 
     if (typeof pendingDetails.responseCallback === 'function')
     {
-        submissionResponse.submitDetails = pendingDetails.requestDetails;
+        submissionResponse['submitDetails'] = pendingDetails.requestDetails;
         pendingDetails.responseCallback(submissionResponse);
     }
 };
