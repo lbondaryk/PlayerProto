@@ -127,8 +127,6 @@ pearson.brix.utils.IpsAnswerMan.prototype.scoreAnswer = function (seqNodeKey, st
     // Currently the IPS correctness engine expects the key property to be named 'submission'
     var ipsStudentAnswer = {};
     goog.object.extend(ipsStudentAnswer, studentAnswer);
-    ipsStudentAnswer['submission'] = ipsStudentAnswer['key'];
-    delete ipsStudentAnswer['key'];
 
     var timestamp = (new Date()).toISOString();
     var param =
