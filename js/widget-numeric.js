@@ -99,7 +99,7 @@ pearson.brix.Readout = function (config, eventManager)
 		.attr("id", this.readoutId_)
 		.text(this.startVal);
 
-	this.rootEl.append("span").html("&nbsp;" + (this.unit ? this.unit : ""));
+	this.rootEl.append("span").html('\u2007' + (this.unit ? this.unit : ''));
 	
 	// TEST: the written text span is the start value
 	window.console.log("text is the startVal:", d3.select("#" + this.readoutId_).text() == this.startVal, d3.select("#" + this.readoutId_).text());
