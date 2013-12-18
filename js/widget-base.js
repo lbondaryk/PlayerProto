@@ -795,6 +795,13 @@ pearson.brix.SVGContainer = function (config)
     goog.base(this);
 
     /**
+     * Logger for this Bric
+     * @private
+     * @type {goog.debug.Logger}
+     */
+    this.logger_ = goog.debug.Logger.getLogger('pearson.brix.SVGContainer');
+
+    /**
      * The parent node of the created svg element
      * @type {d3.selection}
      */
@@ -809,8 +816,9 @@ pearson.brix.SVGContainer = function (config)
     // It's easy to specify the node incorrectly, lets call that out right away!
     if (this.parentNode.empty())
     {
-        alert("SVGContainer parent node doesn't exist.");
-        return null;
+        var errmsg = "SVGContainer parent node doesn't exist.";
+        this.logger_.severe(errmsg);
+        throw new Error(errmsg);
     }
 
     // todo: why is the container talking about graphs? in the comment below -mjl
