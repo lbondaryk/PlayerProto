@@ -89,7 +89,7 @@
                   <option value="local" >local</option>
                   <option value="dev" >dev</option>
                   <option value="qa" selected="selected">qa</option>
-                  <option value="prod" selected="selected">prod</option>
+                  <option value="prod" >prod</option>
                 </select>
                 <button type="submit" class="btn btn-mini">submit</button>
             </form>
@@ -193,7 +193,7 @@
         amsBaseUrl  = env_group[env].amsBaseUrl;
         ipsBaseUrl  = env_group[env].ipsBaseUrl;
         contentRepoBaseUrl  = env_group[env].contentRepoBaseUrl;
-        $('[name=env]').val( env );//To select Blue
+        $('[name=env]').val( env ); //To select the chosen env
 
         // NOTE: as of 12/12/13 course and user can NOT be set
         if (queryString.course)
