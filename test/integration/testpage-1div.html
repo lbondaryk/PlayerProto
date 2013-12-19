@@ -63,7 +63,7 @@
 </head>
 
 <body>
-    <h1>Brix Integration test page (2013-12-14)</h1>
+    <h1>Brix Integration test page (2013-12-18)</h1>
     <div class="demo_message_box">
         <div class="demo"><button type="button" id="toggleButton" class="btn btn-mini">show/hide params</button></div>
         <div class="demo_params">
@@ -77,19 +77,8 @@
                 <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
             </ul>
         </div>
-        <div class="demo_params">
-            <p>This test will require to have Brix test servers (IPS &amp; CorrectnessEngine) up, along with 
-                the required components: Redis (for IPS). If you are connecting AMS locally, you will
-                also require to run Tomcat and Cassandra (Remember to configure laspaf.properties to NOT use the PAF Stub.) ** The actuall tomcat script may differ from platform</p>
-            <pre style="float:right; width: 50%">
-If Running AMS locally you will also need to run:
-[cassandra]$ ./cassandra -f
-[Tomcat/bin]$ ./catalina.sh run (or startup.sh)</pre>
-<pre>
-[Redis]$ redis-server
-[BrixServer]$ node brixapp.js
-[CorrectnessEngine]$ node ceapp.js</pre>
-        </div>
+
+        <hr />
         <div class="demo demo-form">
             <form class="form-inline">
                 Use URL params or fill in all of these if you'd prefer:<br>
@@ -100,9 +89,13 @@ If Running AMS locally you will also need to run:
                   <option value="local" >local</option>
                   <option value="dev" >dev</option>
                   <option value="qa" selected="selected">qa</option>
+                  <option value="prod" >prod</option>
                 </select>
                 <button type="submit" class="btn btn-mini">submit</button>
             </form>
+        </div>
+        <div id="prod_warning" style="display: none" class="alert">
+            <h4>Warning! You are accessing the PROD environment!</h4>
         </div>
     </div>
 
@@ -151,9 +144,15 @@ If Running AMS locally you will also need to run:
                 "contentRepoBaseUrl": "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/"
             },
             "qa": {
-                // @todo: We still don't know the AMS QA instance URL
                 "amsBaseUrl": "http://qa-ecs-8494243.us-west-1.elb.amazonaws.com",
                 "ipsBaseUrl": "http://qa-ips-lb-1087722155.us-west-1.elb.amazonaws.com",
+                "contentRepoBaseUrl": "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/"
+            },
+            "prod": {
+                // @todo: We still don't know the AMS PROD instance URL
+                "amsBaseUrl": "http://qa-ecs-8494243.us-west-1.elb.amazonaws.com",
+                "ipsBaseUrl": "http://prod-ips-803617329.us-west-1.elb.amazonaws.com",
+                // @todo: Change to PROD url when PROD AMS is ready
                 "contentRepoBaseUrl": "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/"
             },
         }
@@ -187,10 +186,14 @@ If Running AMS locally you will also need to run:
         {
             env = "dev";
         }
+        if (env == "prod")
+        {
+            $("#prod_warning").show();
+        }
         amsBaseUrl  = env_group[env].amsBaseUrl;
         ipsBaseUrl  = env_group[env].ipsBaseUrl;
         contentRepoBaseUrl  = env_group[env].contentRepoBaseUrl;
-        $('[name=env]').val( env );//To select Blue
+        $('[name=env]').val( env ); //To select the chosen env
 
         // NOTE: as of 12/12/13 course and user can NOT be set
         if (queryString.course)
@@ -227,7 +230,8 @@ If Running AMS locally you will also need to run:
         var activityUrl = targetDiv.data("activityurl");
         $("#div_id").text(divId);
         $("#ams_base_url").text(amsBaseUrl);
-        $("#ips_base_url").text(ipsBaseUrl);
+        var ipsLogHyperlink = " (<a href=\"" +  ipsBaseUrl + "/log\">server log</a>)";
+        $("#ips_base_url").html(ipsBaseUrl + ipsLogHyperlink);
         $("#activity_url").text(activityUrl);
         $("#assignment_url").text(assignmentUrl);
         $("#course").text(course);
