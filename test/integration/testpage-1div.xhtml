@@ -127,7 +127,7 @@
 <![CDATA[
 
     (function() {
-
+        var BRIX_TOOL_URL='http:localhost:8089/';
         // The configuration of servers by environment
         var env_group = {
             "local": {
@@ -228,10 +228,18 @@
         $("#div_id").text(divId);
         var amsVersionHyperlink = " (<a href=\"" +  amsBaseUrl + "/las-paf/version.txt\">las-api version</a>)";
         $("#ams_base_url").html(amsBaseUrl + amsVersionHyperlink);
+
         var ipsLogHyperlink = " (server <a href=\"" +  ipsBaseUrl + "/index.html\">info</a>, <a href=\"" +  ipsBaseUrl + "/log\">log</a>)";
         $("#ips_base_url").html(ipsBaseUrl + ipsLogHyperlink);
-        $("#activity_url").text(activityUrl);
-        $("#assignment_url").text(assignmentUrl);
+        
+        var activityHyperlink = " (<a href=\"" + BRIX_TOOL_URL +"?env=" + 
+            env + "&amp;type=activity&amp;guid=" + activity + "\">paf lookup</a>)";
+        $("#activity_url").html(activityUrl + activityHyperlink);
+
+        var assignHyperlink = " (<a href=\"" + BRIX_TOOL_URL +"?env=" + 
+            env + "&amp;type=assignment&amp;guid=" + assignment + "\">paf lookup</a>)";
+        
+        $("#assignment_url").html(assignmentUrl + assignHyperlink);
         $("#course").text(course);
         $("#user").text(user);
 
