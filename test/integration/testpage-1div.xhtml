@@ -60,7 +60,7 @@
 </head>
 
 <body>
-    <h1>Brix Integration test page (2013-12-18)</h1>
+    <h1>Brix Integration test page (2013-12-20)</h1>
     <div class="demo_message_box">
         <div class="demo"><button type="button" id="toggleButton" class="btn btn-mini">show/hide params</button></div>
         <div class="demo_params">
@@ -147,11 +147,10 @@
                 "contentRepoBaseUrl": "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/"
             },
             "prod": {
-                // @todo: We still don't know the AMS PROD instance URL
-                "amsBaseUrl": "http://qa-ecs-8494243.us-west-1.elb.amazonaws.com",
+                "amsBaseUrl": "http://las-b-360560787.us-west-1.elb.amazonaws.com",
                 "ipsBaseUrl": "http://prod-ips-803617329.us-west-1.elb.amazonaws.com",
                 // @todo: Change to PROD url when PROD AMS is ready
-                "contentRepoBaseUrl": "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/"
+                "contentRepoBaseUrl": "http://repo.paf.pearsoncmg.com/paf-repo/resources/activities/"
             },
         }
 
@@ -227,7 +226,7 @@
         var assignmentUrl = targetDiv.data("assignmenturl");
         var activityUrl = targetDiv.data("activityurl");
         $("#div_id").text(divId);
-        var amsVersionHyperlink = " (<a href=\"" +  amsBaseUrl + "/las-api/version.txt\">las-api version</a>)";
+        var amsVersionHyperlink = " (<a href=\"" +  amsBaseUrl + "/las-paf/version.txt\">las-api version</a>)";
         $("#ams_base_url").html(amsBaseUrl + amsVersionHyperlink);
         var ipsLogHyperlink = " (server <a href=\"" +  ipsBaseUrl + "/index.html\">info</a>, <a href=\"" +  ipsBaseUrl + "/log\">log</a>)";
         $("#ips_base_url").html(ipsBaseUrl + ipsLogHyperlink);
