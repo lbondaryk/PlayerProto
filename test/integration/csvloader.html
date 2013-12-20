@@ -26,6 +26,7 @@
           <option value="local">local</option>
           <option value="dev">dev</option>
           <option value="qa" selected="selected">qa</option>
+          <option value="prod">prod</option>
         </select> - which environment do you want (brix, sanvan core, and PAF repo/hub where qa = cert)
         <br>
 		<span class="readCSVButton">
@@ -37,7 +38,7 @@
 
 	</div>
 	<div class="container linkList">
-		<!-- <a href="testpage-1div.html?assignment=aa00d153-1410-45ac-9c4e-d114e41d789b&activity=4ac52c14-dc36-4627-b919-922c1164330a&divid=bdc328cbba71b474eb02866361cfb1663&ams=dev&ips=dev">try</a> -->
+		<!-- <a href="testpage-1div.xhtml?assignment=aa00d153-1410-45ac-9c4e-d114e41d789b&activity=4ac52c14-dc36-4627-b919-922c1164330a&divid=bdc328cbba71b474eb02866361cfb1663&ams=dev&ips=dev">try</a> -->
 	</div>
 
     <script>
@@ -106,7 +107,7 @@
 							}
 						});
 					} else {
-						var linky = '<a href="testpage-1div.html?assignment=' + rowArray[assIdx] + '&activity=' + rowArray[actIdx] + '&divid=' + rowArray[conIdx] + '&env=' + env + '">' + rowArray[fileIdx] + '</a><br>';
+						var linky = '<a href="testpage-1div.xhtml?assignment=' + rowArray[assIdx] + '&activity=' + rowArray[actIdx] + '&divid=' + rowArray[conIdx] + '&env=' + env + '">' + rowArray[fileIdx] + '</a><br>';
 						$(".linkList").append(linky);
 					}
 
