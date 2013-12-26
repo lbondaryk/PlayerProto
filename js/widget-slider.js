@@ -543,7 +543,7 @@ pearson.brix.Slider.prototype.getFormattedValue = function (unitOpt, value)
     {
         // @todo don't special case units which are degrees, if this type of functionality it desirable then generalize it. -mjl 11/26/2013
         // @todo why is the \u2007 character used here, is there some benefit over just using a regular space? -mjl 11/26/2013
-        return this.format(valueToFormat) + (this.unit !== '&deg;' ? '\u2007' : '') + this.unit;
+        return this.format(valueToFormat) + (this.unit !== '\u00b0' /*&deg;*/ ? '\u2007' : '') + this.unit;
     }
     else if (unitOpt === pearson.brix.UnitOpt.PREPEND)
     {

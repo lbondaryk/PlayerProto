@@ -762,6 +762,15 @@ pearson.brix.BricLayer.dynamicValueHandlers =
      ****************************************************************************/
     'd3select': function (building, dynamicValueConfig)
     {
-        return d3.select(dynamicValueConfig['selector']);
+        var d3sel = d3.select(dynamicValueConfig['selector']);
+
+        // an empty selection is likely to be unintended, log a warning
+        if (d3sel.empty())
+        {
+            var msg = 'd3select dynamic value w/ selector "' + dynamicValueConfig['selector'] + '" was empty.';
+            this.logger_.warning(msg);
+        }
+
+        return d3sel;
     },
 };

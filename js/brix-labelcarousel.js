@@ -89,13 +89,14 @@ pearson.brix.LabelCarousel = function (config, eventManager)
 
     this.assignMissingItemKeys_();
 
-    // The ImageViewer uses a standard layout of the Carousel to make its
+    // The LabelCarousel uses a standard layout of the LabelGroup to make its
     // configuration simpler.
+    // @todo why a non-breaking space placeholder label, and not just a space? -mjl
     var lblselConfig =
         {
             id: this.id + "_labels",
             labels: (config.type == 'textLabels') ?
-                config.images.map(function (e, i) {return e.selectorLabel || '&nbsp;';}) :
+                config.images.map(function (e, i) {return e.selectorLabel || '\u00a0';}) :
                 config.images.length,
             layout: "horizontal",
             type: (config.type == 'textLabels') ? 'none' : (config.type || 'numbered'),
