@@ -276,7 +276,11 @@ pearson.brix.LabelSelector.prototype.draw = function (container, size)
         // Carve the width up for the n labels (use an arbitrarily picked constant height)
         var labelCnt = this.labels.length;
         var selectorWidth = size.width - this.selectorMargin_.left - this.selectorMargin_.right;
-        var labelWidth = selectorWidth / (labelCnt ? labelCnt : 1) - (labelMargin.left + labelMargin.right);
+        // width of labels is width of container less selector margins divided by number of labels
+        // then subtract label margins if there are any, and subtract 1 to show all borders: otherwise
+        // the last one gets shoved off the edge of the svg window when full width and they overlap
+        // each other
+        var labelWidth = d3.round(selectorWidth / (labelCnt ? labelCnt : 1)) - (labelMargin.left + labelMargin.right) - 1;
         itemSize = {height: 34, width: labelWidth};
 
         this.labels.forEach(
