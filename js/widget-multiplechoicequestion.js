@@ -489,6 +489,18 @@ pearson.brix.MultipleChoiceQuestion.prototype.getId = function ()
     return this.mcqId_;
 };
 
+/**
+ * MultipleChoiceQuestion state object. This object represents the state
+ * of a MultipleChoiceQuestion bric and is returned by getState and is the
+ * parameter to setState.
+ *
+ * @typedef {Object} pearson.brix.MultipleChoiceQuestion.StateObject
+ * @property {Array.<!pearson.brix.MultipleChoiceQuestion.ResponseRecord>}
+ *                      submissions         -The collection of responses to
+ *                                           choices previously submitted.
+ */
+pearson.brix.MultipleChoiceQuestion.StateObject;
+
 /* **************************************************************************
  * MultipleChoiceQuestion.getState                                     */ /**
  *
@@ -498,9 +510,9 @@ pearson.brix.MultipleChoiceQuestion.prototype.getId = function ()
  * Get a state object that represents the current state of this object and
  * can be passed to restoreState.
  *
- * @returns {!Object} Object that when passed back to this type of object's
- *          restoreState method will set its state to match the current state
- *          of this object.
+ * @returns {!pearson.brix.MultipleChoiceQuestion.StateObject} Object that
+ *          when passed back to this type of object's restoreState method
+ *          will set its state to match the current state of this object.
  *
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.getState = function ()
@@ -523,6 +535,21 @@ pearson.brix.MultipleChoiceQuestion.prototype.getState = function ()
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.restoreState = function (state)
 {
+    // @note: is this shallow array copy sufficient, or do we need to a deep copy? -mjl
+    this.responses_ = state['submissions'].slice();
+
+    this.attemptsMade_ = 0;
+    if (this.responses_.length !== 0)
+    {
+        this.attemptsMade_ = this.responses_[this.responses_.length - 1]['attemptsMade'];
+    }
+
+    // If we're drawn, we need to redraw
+    if (this.lastdrawn_.container != null)
+    {
+        this.redrawFeedback_();
+        this.redrawAttempts_();
+    }
 };
 
 /* **************************************************************************
