@@ -699,11 +699,30 @@ pearson.brix.IChoicePresenter.prototype.flagChoice = function (key) {};
  * **************************************************************************/
 
 /* **************************************************************************
+ * BuildingBlock                                                       */ /**
+ *
+ * Base class constructor for Bric and Mortar ABCs, as a base unifying type.
+ * This is for use as a parameter type when any building block could be
+ * passed as the object.
+ *
+ *
+ * @constructor
+ *
+ * @classdesc
+ * A BuildingBlock is used as the base for ABCs like Bric and Mortar.
+ *
+ ****************************************************************************/
+pearson.brix.BuildingBlock = function ()
+{
+};
+
+/* **************************************************************************
  * Bric                                                                */ /**
  *
  * Base class constructor used only by derived Bric instances.
  *
  * @constructor
+ * @extends {pearson.brix.BuildingBlock}
  *
  * @classdesc
  * A Bric is a building block "widget" which is capable of drawing itself
@@ -787,7 +806,8 @@ goog.inherits(pearson.brix.SvgBric, pearson.brix.Bric);
 /* **************************************************************************
  * SvgBric.draw                                                        */ /**
  *
- * Draw this SvgBric in the given container (must be an svg element).
+ * Draw this SvgBric in the given container (must be an svg element). The
+ * container will be assumed to be the given size in pixels.
  * @abstract
  *
  * @param {!d3.selection}   container   -The container svg element to append

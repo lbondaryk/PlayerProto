@@ -220,6 +220,7 @@
             var dataswap = new Dataswap(dataswapConfig, eventManager);
             
             var eventArg = 1;
+            // test that string event values are properly looked up in the keyArray, 1st entry
             describe('the 1st event with a string value of "red"', function () {
                 before(function () {
                     eventArg = 'red';
@@ -240,6 +241,7 @@
                 });
             });
 
+            // test that string event values are properly looked up in the keyArray, last entry
             describe('a 2nd event with a string value of "violet"', function () {
                 before(function () {
                     eventArg = 'violet';
@@ -252,6 +254,41 @@
 
                 it('should call the dataPropertySetter with the 7th element from the sourceData', function () {
                     expect(mockBricWithData.data).to.equal(dataswapConfig.sourceDataArray[6]);
+                });
+            });
+
+            // new source data
+            var fruit = ['apple', 'orange', 'banana', 'kiwi', 'blueberry', 'plum', 'grape'];
+
+            // test that setDataSource updates the target w/ the new data element at the last index sent
+            describe('setDataSource w/ new data source of fruit names', function () {
+
+                before(function () {
+                    dataswap.setDataSource(fruit);
+                });
+
+                it('should call the dataPropertySetter of the targetBric a 3rd time', function () {
+                    expect(mockBricWithData.setDataCount).to.equal(3);
+                });
+
+                it('should call the dataPropertySetter of the target with the value at the last index swapped, 7th element="grape"', function () {
+                    expect(mockBricWithData.data).to.equal(fruit[6]);
+                });
+            });
+
+            // test that the data source is really changed after setDataSource
+            describe('a 3rd event with a string value of "green"', function () {
+                before(function () {
+                    eventArg = 'green';
+                    eventManager.lastSubscribe.callback({jamba: eventArg});
+                });
+
+                it('should call the dataPropertySetter of the targetBric a 4th time', function () {
+                    expect(mockBricWithData.setDataCount).to.equal(4);
+                });
+
+                it('should call the dataPropertySetter with the 4th element from the new sourceData="kiwi"', function () {
+                    expect(mockBricWithData.data).to.equal(fruit[3]);
                 });
             });
 		});

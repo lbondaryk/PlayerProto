@@ -30,6 +30,7 @@ pearson.brix.mortar;
  * Base class constructor used only by derived Mortar instances.
  *
  * @constructor
+ * @extends {pearson.brix.BuildingBlock}
  *
  * @classdesc
  * A Mortar is an object that provides functionality to connect Brix.
