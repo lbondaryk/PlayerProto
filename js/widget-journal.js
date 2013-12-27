@@ -273,7 +273,10 @@ pearson.brix.Journal.prototype.handleSubmitResponse_ = function (responseDetails
 
 /* **************************************************************************
  * Journal.toggleEnabler                                               */ /**
-
+ *
+ * Not sure what a toggleEnabler does, this is obviously under development
+ * but having a completely empty description causes an error when creating
+ * jsdoc. Therefore this paragraph. -mjl
  */
 pearson.brix.Journal.prototype.toggleEnabler = function ()
 {
