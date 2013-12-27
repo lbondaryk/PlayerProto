@@ -288,12 +288,13 @@ pearson.brix.MultipleChoiceQuestion = function (config, eventManager, bricWorks)
 
     /**
      * Information about the last drawn instance of this bric (from the draw method)
+     * @private
      * @type {Object}
      */
-    this.lastdrawn =
+    this.lastdrawn_ =
         {
             container: null,
-            widgetGroup: null,
+            bricGroup: null,
         };
 }; // end of MultipleChoiceQuestion constructor
 goog.inherits(pearson.brix.MultipleChoiceQuestion, pearson.brix.HtmlBric);
@@ -430,6 +431,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     this.logger_.finer('responseDetails: ' + JSON.stringify(responseDetails));
 
     // Extract the info from the responseDetails that we need in the response record
+    /** @type {pearson.brix.MultipleChoiceQuestion.ResponseRecord} */
     var respRec =
         {
             studentSubmission: responseDetails['submitDetails'].answer,
@@ -446,52 +448,10 @@ pearson.brix.MultipleChoiceQuestion.prototype.handleSubmitResponse_ = function (
     // add this response to the list of responses
     this.responses_.push(respRec);
 
-    var responseDiv = this.lastdrawn.widgetGroup.select('div.feedback');
-
-    // this removes any previous feedback and only shows student the most recent
-    var prevFeedback = this.lastdrawn.widgetGroup.selectAll('div.feedback > *');
-    prevFeedback.remove();
-
+    this.redrawFeedback_();
+    //
     // Update attempts remaining from the value in the response
-    this.updateAttemptsMade_(responseDetails.attemptsMade);
-
-    // For now just use the helper function to write the response
-    var selectedChoice = this.presenterBric.selectedChoice();
-
-    responseDetails.submission = selectedChoice.content;
-    pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
-
-    // if they answered correctly we will want the answerKey later
-    var correctAnswerKey = null;
-    if (responseDetails['correctness'] === 1)
-    {
-        correctAnswerKey = selectedChoice.answerKey;
-    }
-
-    // if the response contains the correct answer we should display its feedback
-    var correctAnswer = 'correctAnswer' in responseDetails ? responseDetails['correctAnswer'] : null;
-    if (correctAnswer !== null && typeof correctAnswer === 'object')
-    {
-        correctAnswerKey = correctAnswer['key'];
-        var correctChoice = this.presenterBric.getChoiceByKey(correctAnswerKey);
-        correctAnswer['correctness'] = 1;
-        correctAnswer['submission'] = correctChoice.content;
-        pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, correctAnswer, true);
-        this.presenterBric.flagChoice(correctAnswerKey);
-    }
-
-    // Re-enable the submit button if the answer was incorrect and there are attempts remaining
-    if (!this.correctlyAnswered() &&
-        (this.maxAttempts_ === null || this.attemptsMade_ < this.maxAttempts_))
-    {
-        this.submitButton.setEnabled(true);
-    }
-
-    // If we know the correct answer, tell the presenter bric to flag it
-    if (correctAnswerKey !== null)
-    {
-        this.presenterBric.flagChoice(correctAnswerKey);
-    }
+    this.updateAttemptsMade_(respRec.attemptsMade);
 };
 
 /* **************************************************************************
@@ -578,14 +538,14 @@ pearson.brix.MultipleChoiceQuestion.prototype.restoreState = function (state)
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
 {
-    this.lastdrawn.container = container;
+    this.lastdrawn_.container = container;
 
     // make a div to hold the multiple choice question
-    var widgetGroup = container.append("div")
+    var bricGroup = container.append("div")
         .attr("class", "brixMultipleChoiceQuestion");
 
     // use a fieldset (although w/o a form) to group the question and choices
-    var qCntr = widgetGroup.append('fieldset');
+    var qCntr = bricGroup.append('fieldset');
 
     var question = qCntr.append('legend')
         .attr("class", "question")
@@ -598,7 +558,7 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
     this.presenterBric.draw(presenterBricCntr);
 
     // We need a block container for the submit button and the attempts
-    var submitAndAttemptsCntr  = widgetGroup.append('div');
+    var submitAndAttemptsCntr  = bricGroup.append('div');
 
     // draw the submit button below
     var submitButtonCntr = submitAndAttemptsCntr.append('div')
@@ -610,15 +570,94 @@ pearson.brix.MultipleChoiceQuestion.prototype.draw = function (container)
     var attemptsCntr = submitAndAttemptsCntr.append('span')
         .attr('class', 'attempts');
 
-    // make a target for feedback when the question is answered
-    widgetGroup.append('div')
-        .attr('class', 'feedback');
+    this.lastdrawn_.bricGroup = bricGroup;
 
-    this.lastdrawn.widgetGroup = widgetGroup;
-
+    // Drawing these parts depends on this.lastdrawn_.bricGroup
+    this.drawFeedback_(bricGroup);
     this.drawAttempts_(attemptsCntr);
 
 }; // end of MultipleChoiceQuestion.draw()
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.drawFeedback_                                */ /**
+ *
+ * Draw the feedback from the responses to prior attempts to answer this
+ * question.
+ * @private
+ *
+ * @param {!d3.selection}   cntr   -The container html element to append
+ *                                  the feedback to.
+ *
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.prototype.drawFeedback_ = function (cntr)
+{
+    // make a target for feedback when the question is answered
+    cntr.append('div')
+        .attr('class', 'feedback');
+
+    this.redrawFeedback_();
+};
+
+/* **************************************************************************
+ * MultipleChoiceQuestion.redrawFeedback_                              */ /**
+ *
+ * Update the displayed response feedback.
+ * @private
+ *
+ ****************************************************************************/
+pearson.brix.MultipleChoiceQuestion.prototype.redrawFeedback_ = function ()
+{
+    var feedbackCntr = this.lastdrawn_.bricGroup.select('div.feedback');
+
+    // Currently we only display the feedback from the last response
+    // so 1st remove any feedback being displayed
+    var prevFeedback = this.lastdrawn_.bricGroup.selectAll('div.feedback > *');
+    prevFeedback.remove();
+
+    // If there's no responses then there's no feedback
+    if (this.responses_.length === 0)
+    {
+        return;
+    }
+
+    // then get the last response and display its feedback
+    var lastResponse = this.responses_[this.responses_.length - 1];
+
+    var responseChoice = this.presenterBric.getChoiceByKey(lastResponse.studentSubmission.key); 
+    var responseDetails =
+        {
+            correctness: lastResponse.correctness,
+            feedback: lastResponse.feedback,
+            submission: responseChoice !== null ? responseChoice.content : 'Uh Oh! choice not found, please report this question.'
+        };
+
+    pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(feedbackCntr, responseDetails);
+
+    // if the response was correct we'll want the presenterBric to flag that choice
+    var correctAnswerKey = null;
+    if (lastResponse.correctness === 1)
+    {
+        correctAnswerKey = lastResponse.studentSubmission.key;
+    }
+
+    // if the response contains the correct answer we should display its feedback also
+    var correctAnswer = 'correctAnswer' in lastResponse ? lastResponse['correctAnswer'] : null;
+    if (correctAnswer !== null && typeof correctAnswer === 'object')
+    {
+        correctAnswerKey = correctAnswer['key'];
+        var correctChoice = this.presenterBric.getChoiceByKey(correctAnswerKey);
+        responseDetails.correctness = 1;
+        responseDetails.feedback = correctAnswer['feedback'];
+        responseDetails.submission = correctChoice.content;
+        pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(feedbackCntr, responseDetails, true);
+    }
+
+    // if we know the correct answer key from this response, tell the presenterBric to flag it
+    if (correctAnswerKey !== null)
+    {
+        this.presenterBric.flagChoice(correctAnswerKey);
+    }
+};
 
 /* **************************************************************************
  * MultipleChoiceQuestion.drawAttempts_                                */ /**
@@ -650,8 +689,8 @@ pearson.brix.MultipleChoiceQuestion.prototype.drawAttempts_ = function (cntr)
  ****************************************************************************/
 pearson.brix.MultipleChoiceQuestion.prototype.redrawAttempts_ = function ()
 {
-    var count = this.lastdrawn.widgetGroup.select('span.attempts span.count');
-    var cntDescr = this.lastdrawn.widgetGroup.select('span.attempts span.descr');
+    var count = this.lastdrawn_.bricGroup.select('span.attempts span.count');
+    var cntDescr = this.lastdrawn_.bricGroup.select('span.attempts span.descr');
 
     if (this.correctlyAnswered())
     {
@@ -671,6 +710,13 @@ pearson.brix.MultipleChoiceQuestion.prototype.redrawAttempts_ = function ()
             cntDescr.text('Remaining Attempts');
         }
     }
+
+    // The submit button enabled state is linked to the attempts, so when we
+    // redraw attempts we make sure the submit button enabled state is set appropriately.
+    // Submit is enabled if the last answer was not correct AND there are attempts left.
+    var submitEnableState = !this.correctlyAnswered() &&
+                            (this.maxAttempts_ === null || this.attemptsMade_ < this.maxAttempts_);
+    this.submitButton.setEnabled(submitEnableState);
 };
 
 /* **************************************************************************
