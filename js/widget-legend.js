@@ -229,7 +229,7 @@ pearson.brix.Legend.prototype.getLabels = function ()
 /* **************************************************************************
  * Legend.setLabels                                                    */ /**
  *
- * Set the data that this LineGraph should display.
+ * Set the data that this legend should display.
  *
  * @param {Array.<{content: string}>}
  *                   newLabels      -The new data for this LineGraph to display
@@ -257,65 +257,26 @@ pearson.brix.Legend.prototype.setLabels = function (newLabels, delayRedraw)
  * Draw this Legend in the given container.
  *
  * @param {!d3.selection}	container	-The container svg element to append
- * 										 this SvgBric element tree to.
+ *                                       this SvgBric element tree to.
  * @param {!pearson.utils.ISize}
- * 							size		-The size (in pixels) of the area this
- * 										 SvgBric has been allocated.
+ *							size		-The size (in pixels) of the area this
+ *                                       SvgBric has been allocated.
  ****************************************************************************/
 pearson.brix.Legend.prototype.draw = function (container, size)
 {
 	this.lastdrawn.container = container;
 	this.lastdrawn.size = size;
 	
- 	var boxLength = 15, //attractive length for the colored lines or boxes
-		inset = 10;//attractive spacing from edge of axes boxes (innerWid/Ht)
-		//also used to space the enclosing legend box from the text
-	//take the number of rows from the number of labels
-	var rowCt = this.labels_.length;
-	//calculate the height of the box that frames the whole legend
-	//which should be as tall as the number of rows plus some padding
-	var boxHeight = (boxLength + 6) * rowCt;
-	
-	//to calculate the width of the box big enough for the longest text string, we have to
-	//render the string, get its bounding box, then remove it.
-	//note: this is the simple algorithm and may fail because of proportional fonts, 
-	//in which case we'll have to measure all labels.
-	
-	var longest = this.labels_.reduce(function (prev, cur) { 
-		return prev.content.length > cur.content.length ? prev : cur; }).content;
-	var longBox = container.append("g");
-	longBox.append("text").text(longest);
-	 
-	this.boxWid = longBox.node().getBBox().width + inset/2 + boxLength + 10;
-
-	//the box around the legend should be the width of the
-	//longest piece of text + inset + the marker length
-	//so it's always outside the text and markers, plus a little padding
-	longBox.remove();
-	
-	
-	//position the legend
-	var xOffset = (this.xPos == "left") ? inset : (size.width - this.boxWid - inset);
-	//if the position is left, start the legend on the left margin edge,
-	//otherwise start it across the graph box less its width less padding
-	var yOffset = (this.yPos == "bottom") ? size.height - boxHeight - inset : inset;
-	//if the position is at the bottom, measure up from bottom of graph,
-	//otherwise just space it down from the top.
-		
 	//make a new group to hold the legend
 	this.legendBox = container.append("g")
 	.attr("class","widgetLegend")
-	.attr('id', this.legendId_)
-	//move it to left/right/top/bottom position
-	.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')');
+	.attr('id', this.legendId_);
 
-	//draw a white box for the legend to sit on
 	this.legendBox.append("rect").attr("x", -5).attr("y", -5)
 	//create small padding around the contents at leading edge
-	.attr("width", this.boxWid).attr("height", boxHeight) //lineheight+padding x rows
+	.attr("width", 0).attr("height", 0) //lineheight+padding x rows
 	.attr("class", "legendBox");
-	
-	// Draw the data (each marker line and label)
+
 	this.drawData_();
 
 }; //end of Legend.draw
@@ -341,15 +302,56 @@ pearson.brix.Legend.prototype.redraw = function ()
  ****************************************************************************/
 pearson.brix.Legend.prototype.drawData_ = function ()
 {
-	var boxLength = 15, //attractive length for the colored lines or boxes
-		inset = 10;//attractive spacing from edge of axes boxes (innerWid/Ht)
+	//attractive length for the colored lines or boxes
+	var boxLength = 15;
+	//attractive spacing from edge of axes boxes (innerWid/Ht)
+	//also used to space the enclosing legend box from the text
+	var	inset = 10;
+	//take the number of rows from the number of labels
+	var rowCt = this.labels_.length;
+	//calculate the height of the box that frames the whole legend
+	//which should be as tall as the number of rows plus some padding
+	var boxHeight = (boxLength + 6) * rowCt;
+	
+	//to calculate the width of the box big enough for the longest text string, we have to
+	//render the string, get its bounding box, then remove it.
+	//note: this is the simple algorithm and may fail because of proportional fonts, 
+	//in which case we'll have to measure all labels.
+	
+	var longest = this.labels_.reduce(function (prev, cur) {
+			return prev.content.length > cur.content.length ? prev : cur;
+		}).content;
+	var longBox = this.legendBox.append("g");
+	longBox.append("text").text(longest).style('font-weight','bold');
+	 
+	this.boxWid = longBox.node().getBBox().width + inset/2 + boxLength + 10;
+
+	//the box around the legend should be the width of the
+	//longest piece of text + inset + the marker length
+	//so it's always outside the text and markers, plus a little padding
+	longBox.remove();
+	
+	
+	//position the legend
+	var xOffset = (this.xPos == "left") ? inset : (this.lastdrawn.size.width - this.boxWid - inset);
+	//if the position is left, start the legend on the left margin edge,
+	//otherwise start it across the graph box less its width less padding
+	var yOffset = (this.yPos == "bottom") ? this.lastdrawn.size.height - boxHeight - inset : inset;
+	//if the position is at the bottom, measure up from bottom of graph,
+	//otherwise just space it down from the top.
+	//move it to left/right/top/bottom position
+	this.legendBox.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')');
+
+	//modify the white box for the legend to sit on
+	this.legendBox.select('rect')
+	//create small padding around the contents at leading edge
+	.attr("width", this.boxWid).attr("height", boxHeight);
+	
+	// Draw the data (each marker line and label)
 	
 	var that = this;
 
-	//take the number of rows from the number of labels
-	var rowCt = this.labels_.length;
-
-	// determine the element name needed based on the type of legend
+	// determine the svg element name needed based on the type of legend
 	var typeMarkerElementName = this.type == "box" ? "rect" : "line";
 
 	//this selects all <g> elements with class legend  
@@ -433,6 +435,18 @@ pearson.brix.Legend.prototype.drawData_ = function ()
 	this.lastdrawn.legendRows = this.legendBox.selectAll("g.legend");
 
 }; //end of Legend.drawData_
+
+/* **************************************************************************
+ * Legend.drawBorderBox                                                 */ /**
+ *
+ * Legends that have a borderbox will need to remeasure and draw the box 
+ * when the number of labels changes.
+ *
+ ****************************************************************************/
+pearson.brix.Legend.prototype.drawBorderBox = function ()
+{
+
+};
 
 /* **************************************************************************
  * Legend.setScale                                                     */ /**
