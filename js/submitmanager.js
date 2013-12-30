@@ -175,7 +175,7 @@ pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (su
 
     if (typeof pendingDetails.responseCallback === 'function')
     {
-        submissionResponse.submitDetails = pendingDetails.requestDetails;
+        submissionResponse['submitDetails'] = pendingDetails.requestDetails;
         pendingDetails.responseCallback(submissionResponse);
     }
 };
@@ -195,7 +195,8 @@ pearson.brix.utils.SubmitManager.prototype.handleScoringResponse_ = function (su
  * @param {!d3.selection}
  *                   container       -The html element to write the formatted
  *                                    response into.
- * @param {Object}   responseDetails -The response details returned by the
+ * @param {{correctness: number, feedback: string, submission: string}}
+ *                   responseDetails -The response details returned by the
  *                                    scoring engine.
  *                                    The details must contain the following
  *                                    properties:

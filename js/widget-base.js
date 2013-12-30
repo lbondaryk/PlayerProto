@@ -559,6 +559,39 @@ pearson.brix.ILightable = function () {};
  ****************************************************************************/
 pearson.brix.ILightable.prototype.lite = function (liteKey) {};
 
+/* **************************************************************************
+ * IState                                                              */ /**
+ *
+ * An IState bric supports the 'getState' and 'restoreState' methods.
+ * @interface
+ ****************************************************************************/
+pearson.brix.IState = function () {};
+
+/* **************************************************************************
+ * IState.getState                                                     */ /**
+ *
+ * Get a state object that represents the current state of this object and
+ * can be passed to restoreState.
+ *
+ * @returns {!Object} Object that when passed back to this type of object's
+ *          restoreState method will set its state to match the current state
+ *          of this object.
+ *
+ ****************************************************************************/
+pearson.brix.IState.prototype.getState = function () {};
+
+/* **************************************************************************
+ * IState.restoreState                                                 */ /**
+ *
+ * Restores the state of this object to match the state object given.
+ *
+ * @param {!Object} state   -Object returned by the call to getState on
+ *                           this type of an object representing the state
+ *                           to be restored.
+ *
+ ****************************************************************************/
+pearson.brix.IState.prototype.restoreState = function (state) {};
+
 
 /**
  * KeyedAnswers are presented to users by certain brix that allow the user to
@@ -666,11 +699,30 @@ pearson.brix.IChoicePresenter.prototype.flagChoice = function (key) {};
  * **************************************************************************/
 
 /* **************************************************************************
+ * BuildingBlock                                                       */ /**
+ *
+ * Base class constructor for Bric and Mortar ABCs, as a base unifying type.
+ * This is for use as a parameter type when any building block could be
+ * passed as the object.
+ *
+ *
+ * @constructor
+ *
+ * @classdesc
+ * A BuildingBlock is used as the base for ABCs like Bric and Mortar.
+ *
+ ****************************************************************************/
+pearson.brix.BuildingBlock = function ()
+{
+};
+
+/* **************************************************************************
  * Bric                                                                */ /**
  *
  * Base class constructor used only by derived Bric instances.
  *
  * @constructor
+ * @extends {pearson.brix.BuildingBlock}
  *
  * @classdesc
  * A Bric is a building block "widget" which is capable of drawing itself
@@ -754,7 +806,8 @@ goog.inherits(pearson.brix.SvgBric, pearson.brix.Bric);
 /* **************************************************************************
  * SvgBric.draw                                                        */ /**
  *
- * Draw this SvgBric in the given container (must be an svg element).
+ * Draw this SvgBric in the given container (must be an svg element). The
+ * container will be assumed to be the given size in pixels.
  * @abstract
  *
  * @param {!d3.selection}   container   -The container svg element to append

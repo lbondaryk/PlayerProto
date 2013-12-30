@@ -114,9 +114,9 @@
                 expect(myMultipleChoiceQuestion.eventManager).to.equal(bricWorks.eventManager);
             });
 
-            it('should have an uninitialized lastdrawn property', function () {
-                expect(myMultipleChoiceQuestion.lastdrawn).to.have.property('container').that.is.null;
-                expect(myMultipleChoiceQuestion.lastdrawn).to.have.property('widgetGroup').that.is.null;
+            it('should have an uninitialized private lastdrawn_ property', function () {
+                expect(myMultipleChoiceQuestion.lastdrawn_).to.have.property('container').that.is.null;
+                expect(myMultipleChoiceQuestion.lastdrawn_).to.have.property('bricGroup').that.is.null;
             });
 
             describe('DOM manipulation (create/update elements) tests', function () {
@@ -133,17 +133,17 @@
                         myMultipleChoiceQuestion.draw(d3.select(cntrNode));
                     });
 
-                    it('should set the lastdrawn container property to the value passed in', function () {
-                        expect(myMultipleChoiceQuestion.lastdrawn.container.node()).to.deep.equal(cntrNode);
+                    it('should set the lastdrawn_ container property to the value passed in', function () {
+                        expect(myMultipleChoiceQuestion.lastdrawn_.container.node()).to.deep.equal(cntrNode);
                     });
 
                     it('should have appended a div element with class \'brixMultipleChoiceQuestion\' to the container' +
-                       ' and set the lastdrawn.widgetGroup to that d3 selection', function () {
+                       ' and set the lastdrawn_.bricGroup to that d3 selection', function () {
                         // get the last element of the container
                         var last = d3.select(cntrNode).select(":last-child");
                         expect(last.node().nodeName).to.equal('DIV');
                         expect(last.classed('brixMultipleChoiceQuestion'), 'has class brixMultipleChoiceQuestion').to.be.true;
-                        expect(myMultipleChoiceQuestion.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
+                        expect(myMultipleChoiceQuestion.lastdrawn_.bricGroup.node()).to.deep.equal(last.node());
                     });
 
                     it('should create a div with sections for the question, choices, button and responses', function () {
@@ -176,7 +176,7 @@
                                 ]
                             };
 
-                        helper.expectElementTree(myMultipleChoiceQuestion.lastdrawn.widgetGroup, tree);
+                        helper.expectElementTree(myMultipleChoiceQuestion.lastdrawn_.bricGroup, tree);
                     });
                 });
 
@@ -304,9 +304,9 @@
                 expect(myMultipleChoiceQuestion.eventManager).to.equal(bricWorks.eventManager);
             });
 
-            it('should have an uninitialized lastdrawn property', function () {
-                expect(myMultipleChoiceQuestion.lastdrawn).to.have.property('container').that.is.null;
-                expect(myMultipleChoiceQuestion.lastdrawn).to.have.property('widgetGroup').that.is.null;
+            it('should have an uninitialized private lastdrawn_ property', function () {
+                expect(myMultipleChoiceQuestion.lastdrawn_).to.have.property('container').that.is.null;
+                expect(myMultipleChoiceQuestion.lastdrawn_).to.have.property('bricGroup').that.is.null;
             });
 
             describe('DOM manipulation (create/update elements) tests', function () {
@@ -323,17 +323,17 @@
                         myMultipleChoiceQuestion.draw(d3.select(cntrNode));
                     });
 
-                    it('should set the lastdrawn container property to the value passed in', function () {
-                        expect(myMultipleChoiceQuestion.lastdrawn.container.node()).to.deep.equal(cntrNode);
+                    it('should set the lastdrawn_ container property to the value passed in', function () {
+                        expect(myMultipleChoiceQuestion.lastdrawn_.container.node()).to.deep.equal(cntrNode);
                     });
 
                     it('should have appended a div element with class \'brixMultipleChoiceQuestion\' to the container' +
-                       ' and set the lastdrawn.widgetGroup to that d3 selection', function () {
+                       ' and set the lastdrawn_.bricGroup to that d3 selection', function () {
                         // get the last element of the container
                         var last = d3.select(cntrNode).select(":last-child");
                         expect(last.node().nodeName).to.equal('DIV');
                         expect(last.classed('brixMultipleChoiceQuestion'), 'has class brixMultipleChoiceQuestion').to.be.true;
-                        expect(myMultipleChoiceQuestion.lastdrawn.widgetGroup.node()).to.deep.equal(last.node());
+                        expect(myMultipleChoiceQuestion.lastdrawn_.bricGroup.node()).to.deep.equal(last.node());
                     });
 
                     it('should create a div with sections for the question, choices, button and responses', function () {
@@ -367,7 +367,7 @@
                                 ]
                             };
 
-                        helper.expectElementTree(myMultipleChoiceQuestion.lastdrawn.widgetGroup, tree);
+                        helper.expectElementTree(myMultipleChoiceQuestion.lastdrawn_.bricGroup, tree);
                     });
                 });
 

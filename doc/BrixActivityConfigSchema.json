@@ -113,6 +113,10 @@
                                 {
                                     "description": "State information specific to this bric that it can use to restore itself. Will probably require a method on all brix to send this info to. Can state be restored before the bric is drawn or only after?",
                                     "type": "object",
+                                    "oneOf":
+                                        [
+                                            {"$ref": "#/definitions/state-multiplechoice"}
+                                        ]
                                 },
                             "answerKey":
                                 {
@@ -661,6 +665,85 @@
                                     "type": "string"
                                 }
                         }
+                },
+            "state-multiplechoice":
+                {
+                    "description": "The state object of a MultipleChoiceQuestion bric, that can be passed to its restoreState method",
+                    "type": "object",
+                    "required": ["submissions"],
+                    "properties":
+                        {
+                            "submissions":
+                                {
+                                    "description": "List in order of all previous choices and their responses",
+                                    "type": "array",
+                                    "items":
+                                        {
+                                            "description": "the choice and response of a previous submission",
+                                            "type": "object",
+                                            "required": ["studentSubmission", "correctness", "feedback", "attemptsMade"],
+                                            "properties":
+                                                {
+                                                    "studentSubmission":
+                                                        {
+                                                            "description": "The student's submission (answer) to the correctness engine",
+                                                            "type": "object",
+                                                            "required": ["key"],
+                                                            "properties":
+                                                                {
+                                                                    "key":
+                                                                        {
+                                                                            "description": "The key (property name) of the choice submitted by the student for this attempt",
+                                                                            "type": "string"
+                                                                        }
+                                                                }
+                                                        }
+                                                    "correctness":
+                                                        {
+                                                            "description": "A number between 0 and 1 where 0 is incorrect and 1 is correct",
+                                                            "type": "number",
+                                                            "minimum": 0,
+                                                            "maximum": 1
+                                                        },
+                                                    "feedback":
+                                                        {
+                                                            "description": "The feedback for this answer",
+                                                            "type": "string"
+                                                        },
+                                                    "attemptsMade":
+                                                        {
+                                                            "description": "An integer 0 or greater which is the total number of attempts that have been made",
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        },
+                                                    "correctAnswer":
+                                                        {
+                                                            "description": "An optional property that is included when the submitted choice was incorrect and no more attempts are allowed",                                                          "type": "object",
+                                                            "required": ["key", "feedback"],
+                                                            "properties":
+                                                                {
+                                                                    "key":
+                                                                        {
+                                                                            "description": "The key that identifies this correct answer",
+                                                                            "type": "string"
+                                                                        },
+                                                                    "feedback":
+                                                                        {
+                                                                            "description": "The feedback for this correct answer",
+                                                                            "type": "string"
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                },
+                            "description":
+                                {
+                                    "description": "A descriptive comment about this state object",
+                                    "type": "string"
+                                }
+                        }
                 }
         }
 }
+

@@ -255,7 +255,8 @@ pearson.brix.NumericQuestion.prototype.handleSubmitResponse_ = function (respons
 	var responseDiv = this.lastdrawn.widgetGroup.select("div.responses");
 
 	// For now just use the helper function to write the response.
-	pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv, responseDetails);
+	pearson.brix.utils.SubmitManager.appendResponseWithDefaultFormatting(responseDiv,
+            /**@type {{correctness: number, feedback: string, submission: string}}*/ (responseDetails));
 };
 
 /* **************************************************************************

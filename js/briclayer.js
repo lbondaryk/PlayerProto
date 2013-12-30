@@ -342,6 +342,14 @@ pearson.brix.BricLayer.prototype.buildBric_ = function (building, bricConfig)
     {
         this.logger_.warning('got null when creating a bric of type "' + type + '"');
     }
+
+    // if config has state and bric has restoreState method pass the state to the bric
+    if ('state' in bricConfig &&
+        'restoreState' in building['brix'][id] &&
+        goog.isFunction(building['brix'][id]['restoreState']))
+    {
+        building['brix'][id]['restoreState'](bricConfig['state']);
+    }
 };
 
 /* **************************************************************************

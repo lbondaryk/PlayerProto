@@ -54,8 +54,8 @@ goog.require('pearson.utils.IEventManager');
  *                                         the event property is a string, if it is not
  *                                         defined the event property is assumed to be a
  *                                         number.
- * @param {!pearson.brix.Bric}
- *                      config.targetBric -Bric instance whose data is to be swapped
+ * @param {!pearson.brix.BuildingBlock}
+ *                      config.targetBric -Brix building block instance whose data is to be swapped
  * @param {string}      config.dataPropertySetter
  *                                        -Name of the setter method that will be called
  *                                         with the new data.
@@ -121,19 +121,19 @@ pearson.brix.mortar.Dataswap = function (config, eventManager)
      * @private
      * @type {!pearson.brix.Bric}
      */
-    this.targetBric_ = config['targetBric'];
+    this.targetBuildingBlock_ = config['targetBric'];
 
     /**
-     * The name of the method of the target bric to call to set
-     * the new data on that bric.
+     * The name of the method of the target building block to call to set
+     * the new data on that target.
      * @private
      * @type {string}
      */
     this.dataSetterName_ = config['dataPropertySetter'];
 
-    if (!(this.dataSetterName_ in this.targetBric_) || typeof this.targetBric_[this.dataSetterName_] !== 'function')
+    if (!(this.dataSetterName_ in this.targetBuildingBlock_) || typeof this.targetBuildingBlock_[this.dataSetterName_] !== 'function')
     {
-        this.logger_.severe('data setter is not a method on the target bric');
+        this.logger_.severe('data setter is not a method on the target building block');
     }
 
     /**
@@ -203,7 +203,7 @@ pearson.brix.mortar.Dataswap = function (config, eventManager)
           '\ttopic: ' + this.topic_,
           '\tedPropName: ' + this.edPropName_,
           '\teventPropType: ' + (eventPropIsString ? 'string' : 'number'),
-          '\ttargetBric.getId(): ' + this.targetBric_.getId(),
+          '\ttargetBuildingBlock.getId(): ' + this.targetBuildingBlock_.getId(),
           '\tdataSetterName: ' + this.dataSetterName_,
           '\tdataSource: contains ' + this.dataSource_.length + ' elements',
           '\tvalueBase: ' + this.valueBase_,
@@ -301,7 +301,7 @@ pearson.brix.mortar.Dataswap.prototype.setDataOnTarget_ = function ()
 {
     var args = this.dataSetterInitialArgs_.slice(0);
     args.push(this.dataSource_[this.lastDataIndex_]);
-    this.targetBric_[this.dataSetterName_].apply(this.targetBric_, args);
+    this.targetBuildingBlock_[this.dataSetterName_].apply(this.targetBuildingBlock_, args);
 };
 
 /* **************************************************************************
