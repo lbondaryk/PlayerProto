@@ -254,7 +254,7 @@ pearson.brix.RadioGroup.prototype.draw = function (container)
     ansRows.enter().append("tr");
 
     /** @type {d3DataFunc} */
-    var getButtonId = function (d, i) {return that.id + "_btn" + i;};
+    var getButtonId = function (d, i) {return that.rgrpId_ + "_btn" + i;};
 
     var choiceIndex = this.getChoiceNumberToDisplayFn_();
     var choiceSeparator = (this.numberFormat != 'none') ? ')' : '';
@@ -390,23 +390,19 @@ pearson.brix.RadioGroup.prototype.selectChoice = function (choiceSelector)
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.flagChoice = function (key)
 {
-      
-    //find the radio button in the group to be flagged
+    this.logger_.fine('flagChoice key="' + key + '"');
+
+    // find the radio button in the group to be flagged
     var index = this.itemKeyToIndex(key);
-    var buttonId = this.rgrpId_ + "_btn" + index;
-    //select it using it's ID property
-    var buttonField = d3.select('#' + buttonId);
-    //remove the radio button
-    buttonField.remove();
-    //put in an <i> tag instead with a class that puts in a fontawesome glyph
-    //the glyph swap is done in CSS but the class name must be right
-    //There is an assumption here that the only empty cell is that with the removed
-    //radio button. I didn't have a good way to hold on to that location 
-    //otherwise, or to append the i tag to the parent <td> before removing the radio button
-    d3.select('td:empty').append('i').attr('class','icon-ok-sign');
+    var choiceInputs = this.lastdrawn.widgetGroup.selectAll("input");
+    var selectedInput = d3.select(choiceInputs[0][index]);
+    var inputParent = d3.select(selectedInput.node().parentNode);
 
-    this.logger_.finer('Button swapped for icon: ' + buttonId );
-
+    // remove the radio button and replace it w/ an 'i' element
+    // with a class that puts in a fontawesome glyph
+    // the glyph swap is done in CSS but the class name must be right
+    selectedInput.remove();
+    inputParent.append('i').attr('class', 'icon-ok-sign');
 };
 
 /* **************************************************************************
