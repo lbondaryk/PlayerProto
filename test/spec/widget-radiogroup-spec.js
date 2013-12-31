@@ -287,44 +287,15 @@
 
                         it('should swap the radio button matching the key with an icon', function () {
 
-                            myRadioGroup.flagChoice("ans3");
-                                /*
-                                 div.brixRadioGroup
-                                    table.questionTable
-                                        tbody
-                                            foreach choice
-                                                tr
-                                                    td
-                                                        input[type='radio'][name=this.id]
-                                                    td
-                                                        label
-                                 */
-                                var tree =
-                                    { name: 'DIV', class: 'brixRadioGroup', children:
-                                        [ { name: 'TABLE', class: 'questionTable', children:
-                                                [ { name: 'TBODY',
-                                                    foreach: { items: configRadioGroup.choices,
-                                                               fn: function (choice)
-                                                                   {
-                                                                       var choiceTree =
-                                                                            { name: 'TR', children:
-                                                                                [ { name: 'TD', children:
-                                                                                    [ { name: 'INPUT' } ]
-                                                                                  },
-                                                                              { name: 'TD', children:
-                                                                                [ { name: 'LABEL' } ]
-                                                                              },
-                                                                            ]
-                                                                        };
-
-                                                                   return choiceTree;
-                                                               }
-                                                         }
-                                            } ]
-                                    } ],
-                                };
-
-                                helper.expectElementTree(myRadioGroup.lastdrawn.widgetGroup, tree);
+                            myRadioGroup.flagChoice('ans3');
+                            var selectTheI = myRadioGroup.lastdrawn.widgetGroup.select('i:only-child');
+                            var siblingCell = d3.select(selectTheI.node().parentNode.parentNode);
+                            var qText = 'Because the total fertility rate increases with population.';
+                           
+                            // the i element is inserted, and it's alone in it's cell
+                            expect(selectTheI[0].length).is.equal(1);
+                            // the text in the adjacent cell matches the flag key but offset by the capital letters
+                            expect(siblingCell.select('label').text().search(qText)).is.equal(3);
                         });
                     });
                 
