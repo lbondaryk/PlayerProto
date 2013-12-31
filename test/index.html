@@ -24,7 +24,7 @@
 
 	<!-- include google library base for use in tests -->
 	<script src="../../closure/closure-library/closure/goog/base.js"></script>
-
+    <script src="../../closure/closure-library/closure/goog/deps.js"></script>
 	<!--
     <script src="../js/brixlib-compiled.js"></script>
 	-->
@@ -34,6 +34,10 @@
 		goog.require('pearson.brix.Ipc');
 		goog.require('pearson.utils.DomHelper');
 	</script>
+    <script>
+    pearson.utils.logToConsole(true, 'FINER', 'pearson');
+
+    </script>
     <!--
 	<script src="../js/eventmanager.js"></script>
 	<script src="../js/fakeactivitydb.js"></script>
@@ -105,6 +109,6 @@
     <script src="spec/domhelper-spec.js"></script>
     <script src="spec/ipsproxy-spec.js"></script>
     <script src="spec/ipc-spec.js"></script>
-    <script>mocha.run()</script>
+    <script>mocha.run();</script>
 </body>
 </html>

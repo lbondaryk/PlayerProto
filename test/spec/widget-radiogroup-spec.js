@@ -13,7 +13,6 @@
 
 'use strict';
 
-
 (function () {
     var expect = chai.expect;
 
@@ -231,8 +230,8 @@
                     });
                 });
 
-                describe.skip('IChoicePresenter interface', function () {
-                    describe('.selectedChoice', function () {
+                describe('IChoicePresenter interface', function () {
+                    describe.skip('.selectedChoice', function () {
                         it('should return null when there is no selected choice', function () {
                         
                         });
@@ -242,7 +241,7 @@
                         });
                     });
 
-                    describe('.getChoiceByKey', function () {
+                    describe.skip('.getChoiceByKey', function () {
                         it('should return null when the given key does not match any choice', function () {
                         
                         });
@@ -252,7 +251,7 @@
                         });
                     });
 
-                    describe('.selectChoice', function () {
+                    describe.skip('.selectChoice', function () {
                         it('should set the selected choice to the choice matching the given key and publish the selected event', function () {
                         
                         });
@@ -279,10 +278,54 @@
                     });
                 
                     describe('.flagChoice', function () {
-                        it('should flag the displayed choice matching the given key', function () {
                         
+                        before(function () {
+                            cntrNode && d3.select(cntrNode).remove();
+                            cntrNode = helper.createNewDiv();
+                            myRadioGroup.draw(d3.select(cntrNode));
                         });
 
+                        it('should swap the radio button matching the key with an icon', function () {
+
+                            myRadioGroup.flagChoice("ans3");
+                                /*
+                                 div.brixRadioGroup
+                                    table.questionTable
+                                        tbody
+                                            foreach choice
+                                                tr
+                                                    td
+                                                        input[type='radio'][name=this.id]
+                                                    td
+                                                        label
+                                 */
+                                var tree =
+                                    { name: 'DIV', class: 'brixRadioGroup', children:
+                                        [ { name: 'TABLE', class: 'questionTable', children:
+                                                [ { name: 'TBODY',
+                                                    foreach: { items: configRadioGroup.choices,
+                                                               fn: function (choice)
+                                                                   {
+                                                                       var choiceTree =
+                                                                            { name: 'TR', children:
+                                                                                [ { name: 'TD', children:
+                                                                                    [ { name: 'INPUT' } ]
+                                                                                  },
+                                                                              { name: 'TD', children:
+                                                                                [ { name: 'LABEL' } ]
+                                                                              },
+                                                                            ]
+                                                                        };
+
+                                                                   return choiceTree;
+                                                               }
+                                                         }
+                                            } ]
+                                    } ],
+                                };
+
+                                helper.expectElementTree(myRadioGroup.lastdrawn.widgetGroup, tree);
+                        });
                     });
                 
                 });

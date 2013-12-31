@@ -383,21 +383,29 @@ pearson.brix.RadioGroup.prototype.selectChoice = function (choiceSelector)
  * RadioGroup.flagChoice                                               */ /**
  *
  * Flag the choice with the given key in some way to make it stand out.
- * This is currently used to flag the correct answer.
+ * This is currently used to flag the correct answer after a question is answered.
  *
  * @param {string}  key     -The key that identifies the choice to be flagged
  *
  ****************************************************************************/
 pearson.brix.RadioGroup.prototype.flagChoice = function (key)
 {
-    // This needs to be implemented to replace the radio button element
-    // of the specified choice w/ a checked icon.
       
+    //find the radio button in the group to be flagged
     var index = this.itemKeyToIndex(key);
     var buttonId = this.rgrpId_ + "_btn" + index;
+    //select it using it's ID property
     var buttonField = d3.select('#' + buttonId);
+    //remove the radio button
     buttonField.remove();
+    //put in an <i> tag instead with a class that puts in a fontawesome glyph
+    //the glyph swap is done in CSS but the class name must be right
+    //There is an assumption here that the only empty cell is that with the removed
+    //radio button. I didn't have a good way to hold on to that location 
+    //otherwise, or to append the i tag to the parent <td> before removing the radio button
     d3.select('td:empty').append('i').attr('class','icon-ok-sign');
+
+    this.logger_.finer('Button swapped for icon: ' + buttonId );
 
 };
 
