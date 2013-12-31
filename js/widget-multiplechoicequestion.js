@@ -738,12 +738,18 @@ pearson.brix.MultipleChoiceQuestion.prototype.redrawAttempts_ = function ()
         }
     }
 
-    // The submit button enabled state is linked to the attempts, so when we
-    // redraw attempts we make sure the submit button enabled state is set appropriately.
-    // Submit is enabled if the last answer was not correct AND there are attempts left.
-    var submitEnableState = !this.correctlyAnswered() &&
-                            (this.maxAttempts_ === null || this.attemptsMade_ < this.maxAttempts_);
-    this.submitButton.setEnabled(submitEnableState);
+    // only set the submit button enable state here if there have been
+    // some prior responses, otherwise rely on the initial logic
+    // that enables the submit button after a choice is made.
+    if (this.responses_.length !== 0)
+    {
+        // The submit button enabled state is linked to the attempts, so when we
+        // redraw attempts we make sure the submit button enabled state is set appropriately.
+        // Submit is enabled if the last answer was not correct AND there are attempts left.
+        var submitEnableState = !this.correctlyAnswered() &&
+                                (this.maxAttempts_ === null || this.attemptsMade_ < this.maxAttempts_);
+        this.submitButton.setEnabled(submitEnableState);
+    }
 };
 
 /* **************************************************************************
