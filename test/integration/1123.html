@@ -1,0 +1,245 @@
+<!doctype html>
+<!-- 
+    This is a staging test html so I can isolate and try out (temporarily) 
+    before putting in index.html 
+    -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Multiple Choice Demo</title>
+
+    <!-- bootstrap_plus.css contains styling for the dropdown menu and other common core styles -->
+    <link href="../../css/bootstrap_plus.css" rel="stylesheet" media="screen">
+    
+    <!-- widgets.css contains styling for the interactive brix -->
+    <link href="../../css/widgets.css" rel="stylesheet">
+
+    <!-- eCourse-master.css contains styling for all the navigation -->
+    <link href="../../css/eCourse-master.css" rel="stylesheet" media="screen">
+
+    <!-- content_styles.css contains styling for the narrative layout and responsive design -->
+    <link href="../../css/content_styles.css" rel="stylesheet" media="screen">
+
+    <!-- function created by David Bau to allow seeding Math.random -->
+    <!-- downloaded from github https://github.com/davidbau/seedrandom -->
+    <script src="../lib/seedrandom.js"></script>
+    <!-- mocking framework -->
+    <script src="../lib/sinon-1.7.3.js"></script>
+
+    <!-- include source files here... -->
+    <script src="../../js/d3.v3.min.js"></script>
+
+    <!-- include google library base for use in tests -->
+    <script src="../../js/jquery-latest.js"></script>
+
+    <!-- Local directory copy of built brixlib -->
+    <script src="brixlib-compiled.js"></script>
+
+    <!-- Non-compiled brixlib code.  BEWARE: this can get incomplete quickly and easily -->
+<!--
+    <script src="../../../closure/closure-library/closure/goog/base.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/deps.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/debug/logger.js"></script>
+    <script src="../../../closure/closure-library/closure/goog/debug/console.js"></script>
+    
+
+    <script src="../../js/eventmanager.js"></script>
+
+    <script src="../../js/domhelper.js"></script>
+    <script src="../../js/ipsproxy.js"></script>
+
+    <script src="../../js/fakeactivitydb.js"></script>
+    <script src="../../js/answerman.js"></script>
+    <script src="../../js/localanswerman.js"></script>
+    <script src="../../js/submitmanager.js"></script>
+    <script src="../../js/widget-base.js"></script>
+    <script src="../../js/mortar-base.js"></script>
+    <script src="../../js/bricworks.js"></script>
+    <script src="../../js/widget-numeric.js"></script>
+    <script src="../../js/widget-legend.js"></script>
+    <script src="../../js/widget-callouts.js"></script>
+    <script src="../../js/widget-button.js"></script>
+    <script src="../../js/widget-sketch.js"></script>
+    <script src="../../js/widget-prototype-axes.js"></script>
+    <script src="../../js/widget-linegraph.js"></script>
+    <script src="../../js/widget-barchart.js"></script>
+    <script src="../../js/widget-piechart.js"></script>
+    <script src="../../js/widget-image.js"></script>
+    <script src="../../js/widget-carousel.js"></script>
+    <script src="../../js/widget-imageviewer.js"></script>
+    <script src="../../js/widget-labelgroup.js"></script>
+    <script src="../../js/widget-markergroup.js"></script>
+    <script src="../../js/widget-radiogroup.js"></script>
+    <script src="../../js/widget-checkgroup.js"></script>
+    <script src="../../js/widget-selectgroup.js"></script>
+    <script src="../../js/widget-multiplechoicequestion.js"></script>
+    <script src="../../js/widget-multiselectquestion.js"></script>
+    <script src="../../js/widget-numericquestion.js"></script>
+    <script src="../../js/widget-slider.js"></script>
+    <script src="../../js/brix-labelcarousel.js"></script>
+    <script src="../../js/brix-labelselector.js"></script>
+    <script src="../../js/brix-pyramicchart.js"></script>
+    <script src="../../js/mortar-hilite.js"></script>
+    <script src="../../js/briclayer.js"></script>
+    <script src="../../js/ipc.js"></script>
+-->   
+    <!-- IPC initialization and pointers to IPS and AMS -->
+    
+    <script src="demo-boilerplate.js"></script>
+
+
+    <script>
+    // The logToConsole abstracts the google closure logging configuration:
+        pearson.utils.logToConsole(true, 'FINER', 'pearson');
+    </script>
+
+    <!-- SanVan core (LAS-PAF)'s amc -->
+    <script src="amc.js"></script>
+    <style type="text/css">
+
+.demo_message_box {
+    border: orange 1px solid; padding: 10px;
+}
+.demo_params .dataval{
+    font-weight: bold;
+}
+    </style>
+
+</head>
+
+<body>
+    <h1>Submission (MCQ) Integration demo.</h1>
+    <div class="demo_message_box">
+        <div class="demo_params" >
+            Params: (In parenthesis are the query string parameter names)
+            <ul>
+            <li>AMS Base URL (ams): <span class="dataval" id="ams_base_url"></span></li>
+            <li>IPS Base URL (ips): <span class="dataval" id="ips_base_url"></span></li>
+            <li>Activity URL (activity): <span class="dataval" id="activity_url"></span></li>
+            <li>Assignment URL (assignment): <span class="dataval" id="assignment_url"></span></li>
+            <li>Course: <span class="dataval" id="course"></span>, User: <span class="dataval" id="user"></span></li>
+            </ul>
+        </div>
+        <div >
+            <p>This test will require to have Brix test servers (IPS & CorrectnessEngine) up, along with 
+                the required components: Redis (for IPS). If you are connecting AMS locally, you will
+                also require to run Tomcat and Cassandra (Remember to configure laspaf.properties to NOT use the PAF Stub.) ** The actuall tomcat script may differ from platform</p>
+            <pre style="float:right; width: 50%">
+If Running AMS locally you will also need to run:
+[cassandra]$ ./cassandra -f
+[Tomcat/bin]$ ./catalina.sh run (or startup.sh)</pre>
+<pre>
+[Redis]$ redis-server
+[BrixServer]$ node brixapp.js
+[CorrectnessEngine]$ node ceapp.js</pre>
+        </div>
+    </div>
+
+    <!-- TEST CONTENT {{ -->
+
+<div class="container">
+        <div class="span12 lc_ec_page">
+            <section class="lc_ec_majorMinor lc_ec_pageInner">
+                <div class="lc_ec_content">
+                    <h2 class="lc_ec_bHead"><span class='number setId'></span> 
+                                            <span class="setTitle"></span>
+                    </h2>
+                    <div class="lc_ec_leading">
+                        <!-- When using PAF, make sure the ID matches with what
+                        was added to the server (DEV | CERT)
+                         -->
+                       <div id="target1" habitat-id="some_habitat_id1" class="brix" 
+                            data-assignmenturl="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/d2974bd9-d78d-42dc-a583-assignment"
+                            data-activityurl  ="http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/d2974bd9-d78d-42dc-a583-activity"
+                            data-containerid="target1"
+                            data-type="brix" >
+                            
+                            // d2974bd9-d78d-42dc-a583-assignment         
+                            // d2974bd9-d78d-42dc-a583-activity 
+                        <p>Q1-test. Multiple Choice question, randomized</p></div>
+                    </div>
+            </div>
+        </section>
+    </div>
+</div>
+    <!-- }} TEST CONTENT -->
+
+    <script>
+
+    (function() {
+        var amcBaseUrl = "http://localhost:9080";
+        var ipsBaseUrl = "http://localhost:8088";
+        var course = "course_1123";
+        var user = "test1_1123";
+
+        var repoContentBaseUrl = "http://repo.paf.cert.pearsoncmg.com/paf-repo/resources/activities/"
+        var assignment = "d2974bd9-d78d-42dc-a583-assignment";
+        var activity   = "d2974bd9-d78d-42dc-a583-activity"
+
+        // Override to local based on query string parameter
+        // E.g. file://../multiplechoice-demo.html?ams={dev|qa}
+        var queryString = parseQueryString();
+        if (queryString.ams && queryString.ams == "dev")
+        {
+            amcBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com";
+        }
+        if (queryString.ips && queryString.ips == "dev")
+        {
+            ipsBaseUrl  = "http://dev-414158649.us-west-1.elb.amazonaws.com/ips";
+        }
+        if (queryString.course)
+        {
+            course = queryString.course;
+        }
+        if (queryString.user)
+        {
+            user = queryString.user;
+        }
+        if (queryString.assignment)
+        {
+            assignment = queryString.assignment;
+        }
+        if (queryString.activity)
+        {
+            activity = queryString.activity;
+        }
+
+        $("#target1").attr("data-assignmenturl", repoContentBaseUrl + assignment);
+        $("#target1").attr("data-activityurl", repoContentBaseUrl + activity);
+
+        /*
+         * Display features and setup.
+         */
+        var assignmentUrl = $("#target1").data("assignmenturl");
+        var activityUrl = $("#target1").data("activityurl");
+        $("#ams_base_url").text(amcBaseUrl);
+        $("#ips_base_url").text(ipsBaseUrl);
+        $("#activity_url").text(activityUrl);
+        $("#assignment_url").text(assignmentUrl);
+        $("#course").text(course);
+        $("#user").text(user);
+
+        brixInitDiv(amcBaseUrl, ipsBaseUrl, course, user);
+    })();
+
+    /**
+     * Parses the URL's query string and returns an object representing the parameters.
+     * From https://developer.mozilla.org/en-US/docs/Web/API/window.location, 
+     * Example #7
+     * 
+     * @return {object} Object where properties are the parameters.
+     */
+    function parseQueryString() {
+        var oGetVars = {};
+        if (window.location.search.length > 1) {
+            for (var aItKey, nKeyId = 0, aCouples = window.location.search.substr(1).split("&"); nKeyId < aCouples.length; nKeyId++) {
+                aItKey = aCouples[nKeyId].split("=");
+                oGetVars[unescape(aItKey[0])] = aItKey.length > 1 ? unescape(aItKey[1]) : "";
+            }
+        }
+        return oGetVars;
+    }
+
+    </script>
+</body>
+</html> 
